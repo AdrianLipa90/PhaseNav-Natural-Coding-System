@@ -122,4 +122,27 @@ from .execution_v20 import (
     expected_leaf_path,
     load_live_surface,
 )
+from .cost_v21 import (
+    COST_CONTRACT_ID,
+    MASS_SCALE,
+    CostRuntimeContext,
+    EquivalenceEvidence,
+    GraphCost,
+    GrowthBudget,
+    KakuMassWitness,
+    MassAwareCostV21Error,
+    MassCostRegistry,
+    RewriteAdmission,
+    assess_cost_aware_distributivity,
+    assess_cost_aware_rewrite,
+    bind_kaku_mass_witness,
+    cost_path,
+    cost_predicate,
+    cost_program,
+    cost_radical,
+    distributive_candidate_once,
+    live_cost_context,
+    predicate_leaf_path,
+    prove_pure_boolean_equivalence,
+)
 

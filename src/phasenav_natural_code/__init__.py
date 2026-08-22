@@ -74,3 +74,10 @@ from .natural_control_v16 import (
     default_route_registry,
     resolve_natural_control,
 )
+from .written_v17 import (
+    ProjectionRegistry,
+    WrittenProjection,
+    WrittenV17Error,
+    parse_written_projection,
+    render_written_projection,
+)

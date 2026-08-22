@@ -73,13 +73,18 @@ Pure natural predicate surfaces resolve through explicit symbol/relation registr
 ### v0.16 — Bounded natural control resolver
 Bounded `IF/THEN/ELSE` natural control statements resolve onto existing `INTERNAL_BRANCH` Definition content. Predicate semantics reuse v0.15; route targets require an explicit internal-route registry and reduce to `TRANSFORM(control_location, route, target)`. Candidate route declarations are separated from admission. Runtime-support evaluation uses `TRUE`, `FALSE`, and `UNRESOLVED`; unresolved inputs remain `CHYBA` and admit no route. No effect request or new opcode is introduced.
 
-## Next gates
+## Completed written-projection gate
 
-### Gate 17 — Written PNCS projection
-Define compact written syntax as a lossless projection of canonical PNV graph objects rather than as an independent parser-first language.
+### v0.17 — Written PNCS projection
+Registered Definition content now has a deterministic four-line written form (`PNCS 0.17`, `KIND`, `CID`, `BODY`). Parsing requires the claimed content to pre-exist in `ProjectionRegistry`; BODY is reconstructed, rehashed and compared to the registered semantic payload, then exact canonical re-render equality is required. Text therefore cannot create new semantic content. No new opcode is introduced.
+
+## Next gates
 
 ### Gate 18 — Exact 36D realization binding
 Attach verified PhaseNav 36D realizations to content-addressed graph identities without allowing vector similarity to promote semantic equivalence. Validate full inverse lineage and live `/dev/shm/ciel_noema` execution receipts.
+
+### Gate 19 — Semantic mass binding
+Bind the KAKU semantic-mass field to a validated PhaseNav mass functional only after exact 36D realization identity and provenance are stable.
 
 ## Deferred algebra gates
 

@@ -1,0 +1,19 @@
+{
+  "canon_allowed": false,
+  "fail_closed": true,
+  "generic_natural_language_compiler_enabled": false,
+  "github_mutated_for_v016": false,
+  "github_target": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "github_base_main": "f7eb27a623d3b56c034ea46b1899f704bbf5e4af",
+  "new_opcodes": 0,
+  "project": "PhaseNav Natural Coding System",
+  "runtime_surface": "/dev/shm/ciel_noema",
+  "schema": "PNCS_FOUNDATION_STATUS_V0_16",
+  "scope": "BOUNDED_NATURAL_INTERNAL_CONTROL",
+  "status": "NATURAL_CONTROL_RESOLVER_CANDIDATE",
+  "technical_verdict": "PASS",
+  "truth_states": ["TRUE", "FALSE", "UNRESOLVED"],
+  "unresolved_policy": "CHYBA_NO_ROUTE",
+  "effect_requests_emitted": false,
+  "tests": "274/274 PASS"
+}

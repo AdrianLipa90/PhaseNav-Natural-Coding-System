@@ -1,0 +1,21 @@
+{
+  "schema": "PNCS_NATURAL_CONTROL_RESOLVER_LEDGER_V0_16",
+  "status": "CANDIDATE_FAIL_CLOSED",
+  "new_opcodes": [],
+  "generic_natural_language_compiler_enabled": false,
+  "semantic_authority": "CANONICAL_PNV_INTERNAL_BRANCH_GRAPH",
+  "surface_authority": false,
+  "resolver_scope": "INTERNAL_CONTROL_ONLY",
+  "route_registry_required": true,
+  "route_kind": "INTERNAL_TRANSFORM",
+  "effect_requests_emitted": false,
+  "action_request_used_for_internal_routes": false,
+  "candidate_route_declaration_is_admission": false,
+  "truth_states": ["TRUE", "FALSE", "UNRESOLVED"],
+  "unresolved_truth_state": "CHYBA_NO_ROUTE",
+  "unknown_route_fails_closed": true,
+  "ambiguous_route_alias_fails_closed": true,
+  "route_trace_affects_content_id": false,
+  "natural_control_content_kind": "INTERNAL_BRANCH",
+  "natural_control_reuses_definition_content_id": true
+}

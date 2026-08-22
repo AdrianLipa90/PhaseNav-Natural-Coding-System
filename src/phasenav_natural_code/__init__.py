@@ -60,3 +60,17 @@ from .natural_v15 import (
     default_natural_registry,
     resolve_natural_predicate,
 )
+
+from .natural_control_v16 import (
+    NaturalControlRegistry,
+    NaturalControlResolution,
+    NaturalControlV16Error,
+    RouteAdmission,
+    RouteRegistry,
+    RouteResolutionStep,
+    RouteSpec,
+    admit_internal_route,
+    default_control_registry,
+    default_route_registry,
+    resolve_natural_control,
+)

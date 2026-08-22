@@ -1,0 +1,31 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PNCS v0.16 — bounded natural internal-control resolution.
+# IF/THEN/ELSE/GO/ROUTE are surface forms, not PNV opcodes.
+# Internal route targets must resolve through an explicit route registry.
+# No ACTION_REQUEST is emitted by internal routing.
+
+OP K.DISTINGUISH DIFFERENCE left right
+OP K.CONDITION CONDITION predicate relation reference
+OP K.NEGATE NEGATION value
+OP K.ORDER ORDER before after
+OP K.TRANSFORM TRANSFORM source map target
+OP K.COMPOSE COMPOSITION left relation right
+
+# IF risk above 0.8 THEN GO safety.pause ELSE GO runtime.continue
+OP EX.V16.RISK.DELTA DIFFERENCE risk 0.8
+OP EX.V16.RISK.PRED CONDITION EX.V16.RISK.DELTA gt 0
+OP EX.V16.RISK.NOT NEGATION EX.V16.RISK.PRED
+OP EX.V16.TRUE.ROUTE TRANSFORM control_location route safety.pause
+OP EX.V16.TRUE.ORDER ORDER EX.V16.RISK.PRED EX.V16.TRUE.ROUTE
+OP EX.V16.FALSE.ROUTE TRANSFORM control_location route runtime.continue
+OP EX.V16.FALSE.ORDER ORDER EX.V16.RISK.NOT EX.V16.FALSE.ROUTE
+OP EX.V16.PROGRAM COMPOSITION EX.V16.TRUE.ORDER branches EX.V16.FALSE.ORDER
+
+VECTOR V.EX.V16.PREDICATE "PNCS.v0.16.natural_control.risk_gt_0_8" PRECISE
+VECTOR V.EX.V16.TRUE "PNCS.v0.16.internal_route.safety_pause" PRECISE
+VECTOR V.EX.V16.FALSE "PNCS.v0.16.internal_route.runtime_continue" PRECISE
+VECTOR V.EX.V16.PROGRAM "PNCS.v0.16.natural_control.conditional_bifurcation" PRECISE
+EMIT EX.V16.PROGRAM

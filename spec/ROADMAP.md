@@ -68,10 +68,12 @@ CLUSTER content IDs compose into sibling SUBSYSTEM and DAEMON levels; LOW_ORCHES
 ### v0.15 — Bounded natural relation resolver
 Pure natural predicate surfaces resolve through explicit symbol/relation registries into existing PNCS comparison and Boolean graphs. Equivalent registered paraphrases converge to one Definition content ID. Unknown or ambiguous aliases, unsupported relations, unit guesses, and mixed ungrouped Boolean precedence fail closed. Generic natural-language execution remains disabled.
 
-## Next gates
+## Completed natural-control gate
 
-### Gate 16 — Natural control resolution
-Resolve bounded `IF/THEN/ELSE` natural control statements onto existing content-addressed predicate definitions and internal `TRANSFORM` route targets. Target names must come from an explicit route registry. Natural text must never imply an effect request or authorization.
+### v0.16 — Bounded natural control resolver
+Bounded `IF/THEN/ELSE` natural control statements resolve onto existing `INTERNAL_BRANCH` Definition content. Predicate semantics reuse v0.15; route targets require an explicit internal-route registry and reduce to `TRANSFORM(control_location, route, target)`. Candidate route declarations are separated from admission. Runtime-support evaluation uses `TRUE`, `FALSE`, and `UNRESOLVED`; unresolved inputs remain `CHYBA` and admit no route. No effect request or new opcode is introduced.
+
+## Next gates
 
 ### Gate 17 — Written PNCS projection
 Define compact written syntax as a lossless projection of canonical PNV graph objects rather than as an independent parser-first language.

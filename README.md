@@ -1,6 +1,6 @@
 # PhaseNav Natural Code System (PNCS)
 
-Status: HIGHER_HIERARCHY_PATHS_V0_14 / FOUNDATION LINEAGE V0.1-V0.14
+Status: NATURAL_CONTROL_RESOLVER_V0_16 / FOUNDATION LINEAGE V0.1-V0.16
 
 PhaseNav Natural Code System is a 36-dimensional relational coding system in which written code is a human-readable projection of a canonical semantic-phase graph.
 
@@ -91,3 +91,8 @@ CLUSTER content IDs now compose into sibling SUBSYSTEM and DAEMON semantic level
 ## v0.15 — Bounded Natural Relation Resolver
 
 Natural predicate phrases now resolve through explicit symbol and relation registries into the stabilized predicate graph. Surface forms such as `risk above 0.8`, `risk is greater than .80`, `risk exceeds 0.8`, and `risk > 0.8` converge to the same content-addressed Definition identity when their registered semantics are identical. Multi-word subjects such as `phase coherence` resolve to canonical identifiers, Boolean composition reuses v0.9/v0.10, and percent notation is accepted only for symbols with an explicit normalized-fraction policy. Unknown or ambiguous aliases, unsupported comparators, unit guesses, and free-form high/low wording fail closed. Generic `compile_natural_language()` remains disabled; v0.15 resolves pure predicates only and executes no routes or effects. No new PNV opcode is introduced. v0.15 passes 235/235 tests.
+
+
+## v0.16 — Bounded Natural Control Resolver
+
+Bounded natural `IF / THEN / ELSE` statements now resolve onto the existing content-addressed `INTERNAL_BRANCH` Definition graph. Predicate phrases reuse the v0.15 symbol/relation resolver; route phrases must resolve through an explicit internal route registry. `GO`, `GO TO`, and `ROUTE TO` are surface aliases only. Internal targets remain `TRANSFORM(control_location, route, target)` and v0.16 emits no `ACTION_REQUEST`, write, delete, exec, or network effect request. Candidate routes are declarations, not admissions: runtime-support evaluation distinguishes `TRUE`, `FALSE`, and `UNRESOLVED`; unresolved inputs remain `CHYBA` and admit no route. Equivalent natural surfaces and canonical BranchProgram objects share the same `pncs:def:sha256:<digest>` identity. Generic `compile_natural_language()` remains disabled. No new PNV opcode is introduced. v0.16 passes 274/274 tests.

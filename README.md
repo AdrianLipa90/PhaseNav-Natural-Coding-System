@@ -1,110 +1,84 @@
 # PhaseNav Natural Code System (PNCS)
 
-Status: SEMANTIC_MASS_BINDING_V0_19 / FOUNDATION LINEAGE V0.1-V0.19
+Status: MASS_AWARE_GRAPH_COST_V0_21 / FOUNDATION LINEAGE V0.1-V0.21
 
 PhaseNav Natural Code System is a 36-dimensional relational coding system in which written code is a human-readable projection of a canonical semantic-phase graph.
 
-Core construction:
+Canonical construction:
 
-KAKU -> RADICAL -> DEFINITION_PATH -> CLASS_PATH -> FILE_PATH -> CLUSTER_PATH -> SUBSYSTEM/DAEMON_PATH -> ORCHESTRATOR_PATH -> SYSTEM_PATH
+```text
+KAKU -> RADICAL -> DEFINITION -> CLASS -> FILE -> CLUSTER
+     -> SUBSYSTEM/DAEMON -> LOW_ORCHESTRATOR -> HIGH_ORCHESTRATOR -> SYSTEM
+```
 
-Natural language is an admissible input surface only after resolution to canonical relational paths.
+Natural language is an admissible input surface only after deterministic resolution to registered canonical relational paths. Unknown, ambiguous, or unsupported semantics fail closed.
 
-## Foundation rule
+## Current engineering state
 
-The language is derived bottom-up from a fixed 36D basis and composition rules. Keywords and textual syntax are not authoritative semantics.
+v0.20 closed the first admitted internal native-execution gate:
 
-## Current scope
+```text
+canonical graph -> admitted route -> existing PNV operators
+-> Sigma_t --KAKU--> Sigma_t+1 -> deterministic receipt
+```
 
-Version 0.1 establishes:
-- exact 36D vector container,
-- KAKU atom schema,
-- relational edge schema,
-- graph container,
-- path lineage model,
-- fail-closed validation,
-- natural-language compiler interface as an intentionally unimplemented boundary until the 36D semantic basis is canonized.
+The normative operational surface is `/dev/shm/ciel_noema`; no static runtime fallback is authoritative.
 
-No semantic axis names are invented in this foundation release.
+v0.21 adds mass-aware graph cost over the already bound v0.19 semantic masses:
 
-## v0.2 native-PNV direction
+```text
+C_M(G) = sum_i m_i
+```
 
-The first semantic basis seed is now derived from TIR + The Secret of a Half and encoded directly in native PNV/1 under `native/PNCS_TIR_SOH_SEED_V0_2.pnv`.
+Cost is measured for RADICAL, PATH, PROGRAM, and pure PREDICATE scopes. Cost does not alter semantic identity and does not prove semantic equivalence. Distributive candidates require independent Boolean-equivalence evidence, exact source KAKU witness reuse, and explicit growth-budget admission. Default added-node and added-mass budgets are zero.
 
-PNCS no longer assumes that the 36 coordinates require manually invented semantic axis names. The 36D PNV surface is the computational realization; relational operators and paths carry the typed structure.
+v0.19 recorded a 377/377 historical foundation baseline. The isolated v0.20 execution-core harness recorded 14/14 PASS. The isolated v0.21 logic harness recorded 14/14 PASS. The complete historical repository suite was not replayed in the isolated v0.21 construction environment, and PNCS does not claim otherwise.
 
-## v0.3 — Grammar Mining Pass 01
+## Canonical repository layout
 
-TIR + The Secret of a Half were reduced to source-backed relation chains. The first recurring graph motifs are now encoded natively in `native/PNCS_GRAMMAR_MINING_V0_3.pnv`: fixed-point, invariant, cancellation, conjugacy and convergence. They introduce no new PNV opcode; each is a composition over the existing PNV/1 relational vocabulary. Recurrence support is stored separately from semantic mass.
+```text
+/
+├── src/              reference implementation
+├── tests/            conformance and gate tests
+├── native/           native .pnv artifacts
+├── registry/         semantic registries and content indexes
+├── provenance/       ledgers and deterministic receipts
+└── spec/             normative specifications and ROADMAP.md
+```
 
+`spec/REPOSITORY_LAYOUT.md` is the placement contract. Repository placement is provenance/projection metadata and is not semantic identity.
 
+## Core invariants
 
-## v0.4 — Primitive Closure and Transfer
+- same canonical semantics -> same semantic content identity;
+- ambiguity or missing runtime support -> fail closed;
+- exact 36D realization identity remains separate from semantic identity;
+- semantic mass and graph cost remain separate from semantic identity;
+- equal mass or equal cost does not imply semantic equivalence;
+- semantic mass and graph cost are not authorization;
+- internal execution requires explicit route admission;
+- external effects remain closed until the explicit Effect Boundary gate;
+- execution and graph-cost results carry deterministic provenance;
+- no new PNV opcode is introduced without an explicit gate.
 
-The v0.3 radicals reduce to a seven-operator observed core. `R.INVARIANT = TRANSFORM -> DIFFERENCE -> IDENTITY` transferred unchanged into PhaseNav projective gauge invariance and the Consciousness Dictionary invariant definition, so it is promoted to `PROMOTED_GRAMMAR_RADICAL`. `R.TRAJECTORY = ORDER -> TRANSFORM -> COMPOSITION` is added as a transferred candidate. A first canonical path normal form now makes ordered KAKU expansion and argument binding authoritative; vector similarity and surface wording are non-authoritative.
+## Roadmap
 
-## v0.5 — Semantic Collision Repair
+The single authoritative engineering roadmap is `spec/ROADMAP.md`.
 
-`DERIVE` and unqualified `RESOLVE` are no longer classified as irreducible PNCS KAKU. `R.DERIVATION` expands to `SOURCE -> COMPOSITION -> TRANSFORM`. PNV name resolution is separated from mathematical solving and expands through `R.NAME_RESOLUTION = SOURCE -> COMPOSITION -> IDENTITY`. `R.FIXED_POINT` is reduced to a state-binding specialization of the already promoted `R.INVARIANT`, so both share the same leaf path `TRANSFORM -> DIFFERENCE -> IDENTITY`. The current mathematical leaf set is six operators (`SOURCE`, `ORDER`, `TRANSFORM`, `COMPOSITION`, `DIFFERENCE`, `IDENTITY`), while `CONDITION` remains a control-flow candidate for the next gate.
+Completed gate: **v0.21 — Mass-Aware Graph Cost**.
 
+Next gate: **v0.22 — Exact Inverse Execution Lineage**.
 
-## v0.6 — First Control-Flow Program
+The next requirement is exact result provenance:
 
-The frozen surface example `IF gravity BELOW 0.5 THEN GO physics.gravity.low` now normalizes to a native PNV graph without introducing `IF`, `BELOW`, `THEN`, or `GO` as opcodes. `BELOW` expands through `DIFFERENCE -> CONDITION`; `THEN` binds order; `GO` binds the recovered `ACTION_REQUEST(route,target)` operator. The complete candidate leaf path is `DIFFERENCE -> CONDITION -> ORDER -> ACTION_REQUEST -> COMPOSITION`. `ACTION_REQUEST` remains an inspectable request node and does not imply hidden execution. Generic natural-language compilation remains disabled; v0.6 only freezes and tests this bounded control-surface family.
+```text
+Result -> SYSTEM -> ... -> DEFINITION -> RADICAL -> KAKU
+```
 
+without relying on incidental process location or mutable runtime state.
 
-## v0.7 — Control Transfer Closure
+## Provenance
 
-The v0.6 internal `GO` binding to `ACTION_REQUEST` is superseded. Internal route changes now expand through `TRANSFORM(control_location, route, target)`, keeping control flow separate from effect requests. The shared comparison radical expands to `DIFFERENCE -> CONDITION`, and `R.CONDITIONAL_ROUTE` transferred unchanged across six domains with leaf path `DIFFERENCE -> CONDITION -> ORDER -> TRANSFORM -> COMPOSITION`; it is promoted to `PROMOTED_CONTROL_RADICAL`. No new PNV opcode is introduced.
+Historical gate specifications remain under `spec/`. Native witnesses remain under `native/`. Semantic registries are under `registry/`; ledgers and deterministic receipts are under `provenance/`.
 
-## v0.8 — Logic and Branching
-
-Bounded `AND`, `OR`, `NOT`, and `ELSE` surfaces now normalize without new machine opcodes. Two-predicate `AND`/`OR` expressions compose already-formed predicates with `COMPOSITION(..., all|any, ...)`; `NOT` uses the recovered `NEGATION` operator; `ELSE` binds a second internal `TRANSFORM` route to `NEGATION(primary_predicate)`. Internal routing remains separate from `ACTION_REQUEST`. Mixed/nested boolean expressions remain fail-closed pending a later grouping gate.
-
-## v0.9 — Recursive Grouping
-
-Predicate composition is now recursive. Explicit parentheses define tree structure but introduce no KAKU or opcode. Homogeneous N-ary AND/OR chains are supported as repeated `COMPOSITION` with `all`/`any` bindings. Mixed ungrouped AND/OR still fails closed; PNCS does not guess conventional precedence. `NOT` continues to use existing `NEGATION`, and internal routes remain `TRANSFORM(control_location, route, target)` rather than `ACTION_REQUEST`.
-
-## v0.10 — Pure Predicate Boolean Algebra
-
-Boolean equivalence canonicalization is now separated from surface parsing. For pure read-only predicate graphs only, PNCS admits commutativity/associativity of AND/OR, double-negation elimination, De Morgan rewrites, idempotence, and absorption. This does not make arbitrary PNV `COMPOSITION` commutative or associative. Distributivity and TRUE/FALSE constant folding remain deliberately deferred. No new opcode is introduced.
-
-## v0.11 — Content-Addressed Definition Paths
-
-Stable normalized predicate and internal-branch graphs can now be registered as reusable `DEFINITION`-level objects. Semantic identity is `pncs:def:sha256:<digest>` over canonical graph content plus fully expanded leaf path; alias, provenance, and dependency metadata are excluded from semantic identity and preserved separately in `pncs:def-record:sha256:<digest>` records. Equivalent aliases share one semantic content object while retaining independent provenance records. Dependencies reference prior content IDs and fail closed when unresolved. Native PNV roots are keyed by content-derived IDs and reuse prior roots directly; no `DEFINE` or `ALIAS` opcode was added. v0.11 passes 149/149 tests.
-
-## v0.12 — Content-addressed Class Paths
-
-Definition content IDs are now composable into ordered CLASS-level semantic trajectories. CLASS content identity is derived from the ordered Definition content-ID sequence, not from aliases or filesystem locations. Native class roots reference `D.<hash>.ROOT` nodes through recovered `ORDER` / `COMPOSITION` / `IDENTITY` operators; definition graphs are not copied. Inverse expansion `CLASS -> DEFINITION -> KAKU` is deterministic and missing dependencies fail closed.
-
-
-
-## v0.13 — Content-addressed File and Cluster Paths
-
-CLASS content IDs now compose into ordered FILE semantic trajectories, and FILE content IDs compose into ordered CLUSTER semantic trajectories. Filesystem/repository/deployment paths are preserved only as record metadata (`projection_path`) and are excluded from semantic identity. Native FILE roots reference `C.<hash>.ROOT`; CLUSTER roots reference `F.<hash>.ROOT`. Full inverse lineage `CLUSTER -> FILE -> CLASS -> DEFINITION -> KAKU` is deterministic, with missing dependencies failing closed. No new PNV opcode is introduced. v0.13 passes 188/188 tests.
-
-
-## v0.14 — Content-addressed Higher Hierarchy Paths
-
-CLUSTER content IDs now compose into sibling SUBSYSTEM and DAEMON semantic levels. LOW_ORCHESTRATOR paths may compose both sibling types; HIGH_ORCHESTRATOR paths compose LOW_ORCHESTRATOR IDs; SYSTEM paths compose HIGH_ORCHESTRATOR IDs. Level identity and ordered child content IDs determine semantic hashes. Aliases and deployment/service projections remain record metadata only. Native roots use existing `IDENTITY`, `ORDER`, and `COMPOSITION` operators, and full inverse expansion `SYSTEM -> ... -> KAKU` is deterministic and fail-closed. No new opcode is introduced. v0.14 passes 208/208 tests.
-
-## v0.15 — Bounded Natural Relation Resolver
-
-Natural predicate phrases now resolve through explicit symbol and relation registries into the stabilized predicate graph. Surface forms such as `risk above 0.8`, `risk is greater than .80`, `risk exceeds 0.8`, and `risk > 0.8` converge to the same content-addressed Definition identity when their registered semantics are identical. Multi-word subjects such as `phase coherence` resolve to canonical identifiers, Boolean composition reuses v0.9/v0.10, and percent notation is accepted only for symbols with an explicit normalized-fraction policy. Unknown or ambiguous aliases, unsupported comparators, unit guesses, and free-form high/low wording fail closed. Generic `compile_natural_language()` remains disabled; v0.15 resolves pure predicates only and executes no routes or effects. No new PNV opcode is introduced. v0.15 passes 235/235 tests.
-
-
-## v0.16 — Bounded Natural Control Resolver
-
-Bounded natural `IF / THEN / ELSE` statements now resolve onto the existing content-addressed `INTERNAL_BRANCH` Definition graph. Predicate phrases reuse the v0.15 symbol/relation resolver; route phrases must resolve through an explicit internal route registry. `GO`, `GO TO`, and `ROUTE TO` are surface aliases only. Internal targets remain `TRANSFORM(control_location, route, target)` and v0.16 emits no `ACTION_REQUEST`, write, delete, exec, or network effect request. Candidate routes are declarations, not admissions: runtime-support evaluation distinguishes `TRUE`, `FALSE`, and `UNRESOLVED`; unresolved inputs remain `CHYBA` and admit no route. Equivalent natural surfaces and canonical BranchProgram objects share the same `pncs:def:sha256:<digest>` identity. Generic `compile_natural_language()` remains disabled. No new PNV opcode is introduced. v0.16 passes 274/274 tests.
-
-## v0.17 — Written PNCS Projection
-
-Registered `DefinitionContent` objects now have a deterministic four-line written projection containing `KIND`, content-addressed `CID`, and canonical `BODY`. Text is not semantic authority: parsing requires a `ProjectionRegistry` that already contains the claimed CID, reconstructs the graph from `BODY`, recomputes content identity, compares the semantic payload, and requires exact canonical re-render equality. Predicate and internal-branch projections use canonical identifiers, explicit Boolean grouping, canonical route IDs, and round-trip float formatting. Unknown CIDs, altered thresholds/routes, noncanonical case/spacing, extra lines, or CID edits fail closed. No new PNV opcode is introduced and generic `compile_natural_language()` remains disabled. v0.17 passes 302/302 tests.
-
-## v0.18 — Exact 36D Realization Binding
-
-Existing typed PNCS content IDs can now be bound to exact provenance-carrying PhaseNav `T^36` vectors without making vector equality or similarity semantic authority. `PhaseVector36` requires exactly 36 finite phase angles in `[0,2π)` and hashes them as `SHA256(compact_json(phase36))`. `RealizationBinding` keeps semantic content ID, phase realization ID, and provenance binding ID separate and requires explicit basis, derivation, source digest, and source locator. Conflicting vectors for the same `(content_id, basis_id, derivation_id)` fail closed; different semantic content IDs may share the same exact phase vector without merging. The historical PNV/1 generator remains unrecovered, so v0.18 records exact evidenced bindings and does not claim generator replay. No new PNV opcode is introduced. v0.18 passes 336/336 tests.
-
-## v0.19 — Semantic Mass Binding
-
-`Kaku.semantic_mass` is now bound to the validated PhaseNav runtime scalar `m_k = κ*(1 + α_M*k) + (L4/L3)*R_k`, where `R_k` is computed from the full exact 36D realization and `k` is an explicit positive PhaseNav index. PNCS does not infer `k` from semantic content IDs. The contract is pinned to the validated `pnv_runtime.py` source SHA-256 `0b4df86cd01db313ea46ebac0eceee9cf6df0673391edd1a3fb2667c30464a32`; reference parity passed on 128 full 36D vectors and 896 mass cases. Semantic content identity, 36D realization identity, mass realization identity, and provenance binding identity remain separate. Equal mass does not imply semantic equivalence, and the scalar is not promoted to a physical-mass claim. No new PNV opcode is introduced. v0.19 passes 377/377 tests.
+The repository SHA-256 manifest is fail-closed after repository-layout changes and must be regenerated before this canonicalization is release-closed.

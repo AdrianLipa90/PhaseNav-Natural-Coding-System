@@ -1,6 +1,6 @@
 # PhaseNav Natural Code System (PNCS)
 
-Status: NATURAL_CONTROL_RESOLVER_V0_16 / FOUNDATION LINEAGE V0.1-V0.16
+Status: WRITTEN_PNCS_PROJECTION_V0_17 / FOUNDATION LINEAGE V0.1-V0.17
 
 PhaseNav Natural Code System is a 36-dimensional relational coding system in which written code is a human-readable projection of a canonical semantic-phase graph.
 
@@ -96,3 +96,7 @@ Natural predicate phrases now resolve through explicit symbol and relation regis
 ## v0.16 — Bounded Natural Control Resolver
 
 Bounded natural `IF / THEN / ELSE` statements now resolve onto the existing content-addressed `INTERNAL_BRANCH` Definition graph. Predicate phrases reuse the v0.15 symbol/relation resolver; route phrases must resolve through an explicit internal route registry. `GO`, `GO TO`, and `ROUTE TO` are surface aliases only. Internal targets remain `TRANSFORM(control_location, route, target)` and v0.16 emits no `ACTION_REQUEST`, write, delete, exec, or network effect request. Candidate routes are declarations, not admissions: runtime-support evaluation distinguishes `TRUE`, `FALSE`, and `UNRESOLVED`; unresolved inputs remain `CHYBA` and admit no route. Equivalent natural surfaces and canonical BranchProgram objects share the same `pncs:def:sha256:<digest>` identity. Generic `compile_natural_language()` remains disabled. No new PNV opcode is introduced. v0.16 passes 274/274 tests.
+
+## v0.17 — Written PNCS Projection
+
+Registered `DefinitionContent` objects now have a deterministic four-line written projection containing `KIND`, content-addressed `CID`, and canonical `BODY`. Text is not semantic authority: parsing requires a `ProjectionRegistry` that already contains the claimed CID, reconstructs the graph from `BODY`, recomputes content identity, compares the semantic payload, and requires exact canonical re-render equality. Predicate and internal-branch projections use canonical identifiers, explicit Boolean grouping, canonical route IDs, and round-trip float formatting. Unknown CIDs, altered thresholds/routes, noncanonical case/spacing, extra lines, or CID edits fail closed. No new PNV opcode is introduced and generic `compile_natural_language()` remains disabled. v0.17 passes 302/302 tests.

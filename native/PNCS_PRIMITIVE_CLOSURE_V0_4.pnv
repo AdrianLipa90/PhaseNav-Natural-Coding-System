@@ -1,0 +1,53 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PNCS grammar-mining pass 02: primitive closure and cross-domain transfer.
+# Sources: TIR, Secret of a Half, PhaseNav projective geometry, Consciousness Dictionary meta-formal layer.
+# No new PNV opcode. Python remains test harness only.
+
+# Minimal observed core required to expand every v0.3 radical.
+OP K.IDENTITY IDENTITY value
+OP K.DISTINGUISH DIFFERENCE left right
+OP K.COMPOSE COMPOSITION left relation right
+OP K.TRANSFORM TRANSFORM source map target
+OP K.CONDITION CONDITION subject relation object
+OP K.RESOLVE RESOLVE relation
+OP K.DERIVE DERIVE premises result
+
+# Transfer extension: ordered path is independently explicit in PhaseNav and the meta-formal trajectory definition.
+OP K.ORDER ORDER before after
+
+# Existing v0.3 radicals: atomic paths are frozen for transfer testing.
+OP R.FIXED_POINT COMPOSITION K.TRANSFORM K.CONDITION K.RESOLVE
+OP R.INVARIANT COMPOSITION K.TRANSFORM K.DISTINGUISH K.IDENTITY
+OP R.CANCELLATION COMPOSITION K.COMPOSE K.DISTINGUISH K.IDENTITY
+OP R.CONJUGACY COMPOSITION K.TRANSFORM K.COMPOSE K.IDENTITY
+OP R.CONVERGENCE COMPOSITION K.DERIVE K.COMPOSE K.IDENTITY K.RESOLVE
+
+# New transferred radical candidate.
+OP R.TRAJECTORY COMPOSITION K.ORDER K.TRANSFORM K.COMPOSE
+
+# Cross-domain realizations of R.INVARIANT. The atomic path is unchanged.
+OP TIR.TRANSLATION_INVARIANCE COMPOSITION R.INVARIANT residual common_shift pairwise_difference
+OP PNV.GLOBAL_PHASE_INVARIANCE COMPOSITION R.INVARIANT global_shift relative_phase projective_equivalence
+OP CD.INVARIANT_DEFINITION COMPOSITION R.INVARIANT admissible_transform preserved_property identity_check
+
+# Cross-domain realizations of R.TRAJECTORY.
+OP PNV.SENTENCE_TRAJECTORY COMPOSITION R.TRAJECTORY information_symbol ordered_transform relation_state_path
+OP CD.TRAJECTORY_DEFINITION COMPOSITION R.TRAJECTORY ordered_states transitions represented_path
+
+# Canonical definition paths. Surface words may alias these paths but do not define them.
+OP PATH.DEF.INVARIANT COMPOSITION K.TRANSFORM K.DISTINGUISH K.IDENTITY
+OP PATH.DEF.TRAJECTORY COMPOSITION K.ORDER K.TRANSFORM K.COMPOSE
+OP PATH.DEF.FIXED_POINT COMPOSITION K.TRANSFORM K.CONDITION K.RESOLVE
+OP PATH.DEF.CANCELLATION COMPOSITION K.COMPOSE K.DISTINGUISH K.IDENTITY
+OP PATH.DEF.CONJUGACY COMPOSITION K.TRANSFORM K.COMPOSE K.IDENTITY
+OP PATH.DEF.CONVERGENCE COMPOSITION K.DERIVE K.COMPOSE K.IDENTITY K.RESOLVE
+
+# 36D realization is attached to the canonical relational object; vector proximity is not semantic equality.
+VECTOR V.R.INVARIANT "PNCS.radical.invariant.v0.4" PRECISE
+VECTOR V.R.TRAJECTORY "PNCS.radical.trajectory.v0.4" PRECISE
+
+EMIT PATH.DEF.INVARIANT
+EMIT PATH.DEF.TRAJECTORY

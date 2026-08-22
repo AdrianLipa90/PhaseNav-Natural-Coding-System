@@ -1,0 +1,30 @@
+{
+  "alias_is_semantic_authority": false,
+  "canon_allowed": false,
+  "epistemic_operator": "CHYBA",
+  "generic_natural_language_compiler_enabled": false,
+  "github_mutated": false,
+  "github_target": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "graph_copying": false,
+  "historical_native_runtime_replay": "NOT_CLAIMED",
+  "inverse_expansion": "SYSTEM_TO_HIGH_TO_LOW_TO_SUBSYSTEM_DAEMON_TO_CLUSTER_TO_FILE_TO_CLASS_TO_DEFINITION_TO_KAKU_PASS",
+  "level_is_semantic": true,
+  "levels": [
+    "SUBSYSTEM",
+    "DAEMON",
+    "LOW_ORCHESTRATOR",
+    "HIGH_ORCHESTRATOR",
+    "SYSTEM"
+  ],
+  "new_opcodes": 0,
+  "next_gate": "DETERMINISTIC_NATURAL_LANGUAGE_RESOLUTION_TO_CONTENT_ADDRESSED_PATHS",
+  "ordering_semantic": true,
+  "project": "PhaseNav Natural Coding System",
+  "projection_path_is_semantic_identity": false,
+  "schema": "PNCS_FOUNDATION_STATUS_V0_14",
+  "semantic_identity": "LEVEL_PLUS_ORDERED_CHILD_CONTENT_IDS",
+  "status": "HIGHER_HIERARCHY_PATHS_CONTENT_ADDRESSED_PASS",
+  "technical_verdict": "PASS",
+  "tests": "208/208 PASS",
+  "typed_dependency_validation": "FAIL_CLOSED"
+}

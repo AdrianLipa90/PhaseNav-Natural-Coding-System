@@ -1,0 +1,21 @@
+{
+  "alias_is_semantic_identity": false,
+  "canon_allowed": false,
+  "github_mutated": false,
+  "inverse_lineage": "SYSTEM_TO_HIGH_TO_LOW_TO_SUBSYSTEM_DAEMON_TO_CLUSTER_TO_FILE_TO_CLASS_TO_DEFINITION_TO_KAKU",
+  "level_is_semantic": true,
+  "levels": [
+    "SUBSYSTEM",
+    "DAEMON",
+    "LOW_ORCHESTRATOR",
+    "HIGH_ORCHESTRATOR",
+    "SYSTEM"
+  ],
+  "new_opcodes": 0,
+  "ordering_semantic": true,
+  "projection_path_is_semantic_identity": false,
+  "schema": "PNCS_HIGHER_PATH_LEDGER_V0_14",
+  "semantic_identity": "LEVEL_PLUS_ORDERED_CHILD_CONTENT_IDS",
+  "status": "PASS",
+  "tests": "208/208 PASS"
+}

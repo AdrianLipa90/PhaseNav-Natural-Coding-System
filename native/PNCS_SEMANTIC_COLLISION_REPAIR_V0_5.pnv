@@ -1,0 +1,74 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PNCS grammar-mining pass 03: semantic-collision repair.
+# No new PNV opcode.
+# DERIVE and RESOLVE are not treated as irreducible KAKU in this pass.
+
+# Leaf KAKU retained by current cross-domain evidence.
+OP K.IDENTITY IDENTITY value
+OP K.DISTINGUISH DIFFERENCE left right
+OP K.COMPOSE COMPOSITION left relation right
+OP K.TRANSFORM TRANSFORM source map target
+OP K.SOURCE SOURCE source
+OP K.ORDER ORDER before after
+
+# CONDITION is retained as a control-flow primitive candidate.
+# It is not needed by the corrected mathematical fixed-point path.
+OP K.CONDITION CONDITION subject relation object
+
+# DERIVE is represented as an expandable radical:
+# source/premises -> composition with rule/model -> transformed result.
+OP R.DERIVATION COMPOSITION K.SOURCE K.COMPOSE K.TRANSFORM
+
+# PNV name resolution is represented separately from mathematical solving:
+# input term -> registry/alias composition -> identity/deduplication.
+OP R.NAME_RESOLUTION COMPOSITION K.SOURCE K.COMPOSE K.IDENTITY
+
+# The promoted invariant radical is unchanged.
+OP R.INVARIANT COMPOSITION K.TRANSFORM K.DISTINGUISH K.IDENTITY
+
+# Fixed point is a specialization of invariant with output bound to the input state.
+OP R.FIXED_POINT COMPOSITION R.INVARIANT state transform same_state
+
+# Other previously mined radicals.
+OP R.CANCELLATION COMPOSITION K.COMPOSE K.DISTINGUISH K.IDENTITY
+OP R.CONJUGACY COMPOSITION K.TRANSFORM K.COMPOSE K.IDENTITY
+OP R.TRAJECTORY COMPOSITION K.ORDER K.TRANSFORM K.COMPOSE
+
+# Convergence no longer depends on atomic DERIVE or unqualified RESOLVE.
+# Independent derivations are composed and checked for common identity.
+OP R.CONVERGENCE COMPOSITION R.DERIVATION K.COMPOSE K.IDENTITY
+
+# Source-backed realizations.
+OP TIR.INFORMATION_UNIT_DERIVATION COMPOSITION R.DERIVATION binary_distinction information_rule ln2
+OP TIR.PHASE_UNIT_DERIVATION COMPOSITION R.DERIVATION spin_half_cycle geometric_phase_rule pi
+OP TIR.HOLONOMY_NORMALIZER_DERIVATION COMPOSITION R.DERIVATION tetrahedral_spin_normalization normalization_rule 24pi
+
+OP PNV.CANONICAL_NAME_RESOLUTION COMPOSITION R.NAME_RESOLUTION term canonical_registry canonical_records
+OP PNV.ALIAS_NAME_RESOLUTION COMPOSITION R.NAME_RESOLUTION term alias_registry canonical_records
+
+OP SOH.COMPLEMENT_FIXED_POINT COMPOSITION R.FIXED_POINT sigma complement one_half
+OP SOH.RECIPROCAL_FIXED_POINT COMPOSITION R.FIXED_POINT omega reciprocal one
+OP SOH.HALF_CONVERGENCE COMPOSITION R.CONVERGENCE label_swap reciprocal spinor fisher_rao one_half
+
+# Fully expanded definition paths.
+OP PATH.DEF.DERIVATION COMPOSITION K.SOURCE K.COMPOSE K.TRANSFORM
+OP PATH.DEF.NAME_RESOLUTION COMPOSITION K.SOURCE K.COMPOSE K.IDENTITY
+OP PATH.DEF.INVARIANT COMPOSITION K.TRANSFORM K.DISTINGUISH K.IDENTITY
+OP PATH.DEF.FIXED_POINT COMPOSITION K.TRANSFORM K.DISTINGUISH K.IDENTITY
+OP PATH.DEF.CANCELLATION COMPOSITION K.COMPOSE K.DISTINGUISH K.IDENTITY
+OP PATH.DEF.CONJUGACY COMPOSITION K.TRANSFORM K.COMPOSE K.IDENTITY
+OP PATH.DEF.TRAJECTORY COMPOSITION K.ORDER K.TRANSFORM K.COMPOSE
+OP PATH.DEF.CONVERGENCE COMPOSITION K.SOURCE K.COMPOSE K.TRANSFORM K.COMPOSE K.IDENTITY
+
+VECTOR V.R.DERIVATION "PNCS.radical.derivation.v0.5" PRECISE
+VECTOR V.R.NAME_RESOLUTION "PNCS.radical.name_resolution.v0.5" PRECISE
+VECTOR V.R.FIXED_POINT "PNCS.radical.fixed_point.v0.5" PRECISE
+VECTOR V.R.CONVERGENCE "PNCS.radical.convergence.v0.5" PRECISE
+
+EMIT PATH.DEF.DERIVATION
+EMIT PATH.DEF.NAME_RESOLUTION
+EMIT PATH.DEF.FIXED_POINT
+EMIT PATH.DEF.CONVERGENCE

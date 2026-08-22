@@ -1,0 +1,112 @@
+{
+  "schema": "PNCS_PRIMITIVE_CLOSURE_LEDGER_V0_4",
+  "status": "PASS_02",
+  "domains": [
+    "TIR",
+    "SECRET_OF_A_HALF",
+    "PHASENAV_PROJECTIVE_GEOMETRY",
+    "CONSCIOUSNESS_DICTIONARY_META"
+  ],
+  "minimal_v03_core": [
+    "TRANSFORM",
+    "DIFFERENCE",
+    "IDENTITY",
+    "COMPOSITION",
+    "CONDITION",
+    "RESOLVE",
+    "DERIVE"
+  ],
+  "transfer_extension": [
+    "ORDER"
+  ],
+  "radicals": {
+    "R.INVARIANT": {
+      "path": [
+        "TRANSFORM",
+        "DIFFERENCE",
+        "IDENTITY"
+      ],
+      "status": "PROMOTED_GRAMMAR_RADICAL",
+      "realizations": [
+        "TIR.TRANSLATION_INVARIANCE",
+        "PNV.GLOBAL_PHASE_INVARIANCE",
+        "CD.INVARIANT_DEFINITION"
+      ]
+    },
+    "R.FIXED_POINT": {
+      "path": [
+        "TRANSFORM",
+        "CONDITION",
+        "RESOLVE"
+      ],
+      "status": "CANDIDATE"
+    },
+    "R.CANCELLATION": {
+      "path": [
+        "COMPOSITION",
+        "DIFFERENCE",
+        "IDENTITY"
+      ],
+      "status": "CANDIDATE"
+    },
+    "R.CONJUGACY": {
+      "path": [
+        "TRANSFORM",
+        "COMPOSITION",
+        "IDENTITY"
+      ],
+      "status": "CANDIDATE"
+    },
+    "R.CONVERGENCE": {
+      "path": [
+        "DERIVE",
+        "COMPOSITION",
+        "IDENTITY",
+        "RESOLVE"
+      ],
+      "status": "CANDIDATE"
+    },
+    "R.TRAJECTORY": {
+      "path": [
+        "ORDER",
+        "TRANSFORM",
+        "COMPOSITION"
+      ],
+      "status": "TRANSFERRED_CANDIDATE",
+      "realizations": [
+        "PNV.SENTENCE_TRAJECTORY",
+        "CD.TRAJECTORY_DEFINITION"
+      ]
+    }
+  },
+  "normal_form": {
+    "ordered_kaku_authoritative": true,
+    "radicals_expand_recursively": true,
+    "argument_binding_required": true,
+    "vector_similarity_implies_semantic_equivalence": false,
+    "surface_text_is_authoritative": false
+  },
+  "rules": {
+    "no_new_opcode": true,
+    "recurrence_is_not_semantic_mass": true,
+    "python_is_test_harness_not_language_authority": true
+  },
+  "provenance": [
+    {
+      "source": "TIR",
+      "evidence": "common shift preserves pairwise residual differences"
+    },
+    {
+      "source": "PhaseNav",
+      "evidence": "global phase is an unobservable/null projective direction; ordered symbols generate a trajectory"
+    },
+    {
+      "source": "Consciousness Dictionary",
+      "evidence": "Invariant and Trajectory are explicit meta-formal definitions"
+    },
+    {
+      "source": "Secret of a Half",
+      "evidence": "v0.3 fixed-point/conjugacy/convergence seed retained unchanged"
+    }
+  ]
+}

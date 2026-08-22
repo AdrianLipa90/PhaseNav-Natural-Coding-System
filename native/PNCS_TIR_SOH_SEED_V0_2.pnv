@@ -1,0 +1,82 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PhaseNav Natural Code System — TIR + Secret of a Half seed
+# Native PNV/1 only. No Python semantics are authoritative here.
+# Source status is preserved: exact mathematical identities are not promoted to a
+# broader physical or RH claim by this source file.
+
+# ---------------------------------------------------------------------------
+# L0 candidate KAKU: minimal relational operations
+# ---------------------------------------------------------------------------
+OP K.DISTINGUISH DIFFERENCE left right
+OP K.SOURCE SOURCE source
+OP K.ORDER ORDER before after
+OP K.COMPOSE COMPOSITION left relation right
+OP K.TRANSFORM TRANSFORM source map target
+OP K.BOUNDARY BOUNDARY left right
+OP K.CONDITION CONDITION subject relation object
+OP K.NEGATE NEGATION value
+OP K.RESOLVE RESOLVE relation
+OP K.DERIVE DERIVE premises result
+OP K.RETURN RETURN value
+
+# ---------------------------------------------------------------------------
+# TIR seed — distinction -> information -> phase/action relation
+# ---------------------------------------------------------------------------
+OP TIR.BINARY_DISTINCTION DIFFERENCE outcome_0 outcome_1
+OP TIR.INFORMATION_UNIT DERIVE TIR.BINARY_DISTINCTION ln2
+OP TIR.PHASE_UNIT DERIVE spin_half_cycle pi
+OP TIR.HOLONOMY_NORMALIZER DERIVE tetrahedral_spin_normalization 24pi
+OP TIR.KAPPA COMPOSITION TIR.INFORMATION_UNIT TIR.HOLONOMY_NORMALIZER kappa_eq_ln2_over_24pi
+OP TIR.RELATIONAL_ACTION COMPOSITION information geometry action
+
+# Candidate 36D PNV addresses. These are computational realizations, not semantic
+# identity claims. Canon promotion remains blocked until vector lineage is verified.
+VECTOR V.TIR.BINARY_DISTINCTION "TIR.binary.distinction" PRECISE
+VECTOR V.TIR.INFORMATION_UNIT "TIR.information.ln2" PRECISE
+VECTOR V.TIR.KAPPA "TIR.kappa.ln2_over_24pi" PRECISE
+VECTOR V.TIR.RELATIONAL_ACTION "TIR.relation.information.phase.action" PRECISE
+
+# ---------------------------------------------------------------------------
+# Secret of a Half seed — complement -> fixed relation -> boundary/inversion
+# ---------------------------------------------------------------------------
+OP SOH.COMPLEMENT TRANSFORM sigma one_minus_sigma complement_sigma
+OP SOH.HALF_FIXED_POINT CONDITION sigma equals one_minus_sigma
+OP SOH.HALF RESOLVE SOH.HALF_FIXED_POINT one_half
+
+OP SOH.CRITICAL_BOUNDARY BOUNDARY zero one
+OP SOH.OMEGA TRANSFORM s s_over_one_minus_s u
+OP SOH.RECIPROCAL_INVERSION TRANSFORM u one_over_u reciprocal_u
+OP SOH.CONJUGACY COMPOSITION SOH.OMEGA SOH.COMPLEMENT SOH.RECIPROCAL_INVERSION
+OP SOH.SELF_DUAL CONDITION abs_omega equals one
+OP SOH.IMBALANCE DIFFERENCE log_abs_omega zero
+OP SOH.DEFECT COMPOSITION SOH.IMBALANCE SOH.IMBALANCE square
+
+VECTOR V.SOH.COMPLEMENT "SOH.complement.s_to_1_minus_s" PRECISE
+VECTOR V.SOH.HALF "SOH.fixed_point.one_half" PRECISE
+VECTOR V.SOH.OMEGA "SOH.omega.s_over_1_minus_s" PRECISE
+VECTOR V.SOH.RECIPROCAL_INVERSION "SOH.inversion.u_to_1_over_u" PRECISE
+VECTOR V.SOH.SELF_DUAL "SOH.self_dual.abs_omega_eq_1" PRECISE
+VECTOR V.SOH.DEFECT "SOH.defect.log_abs_omega_squared" PRECISE
+
+# ---------------------------------------------------------------------------
+# First cross-source radicals
+# These do not add new physics; they expose reusable relational compositions.
+# ---------------------------------------------------------------------------
+OP R.BINARY_RELATION COMPOSITION K.DISTINGUISH K.CONDITION K.RESOLVE
+OP R.COMPLEMENTARY_BALANCE COMPOSITION SOH.COMPLEMENT SOH.HALF_FIXED_POINT SOH.HALF
+OP R.BOUNDARY_DUALITY COMPOSITION SOH.CRITICAL_BOUNDARY SOH.OMEGA SOH.RECIPROCAL_INVERSION
+OP R.INFORMATION_PHASE COMPOSITION TIR.INFORMATION_UNIT TIR.PHASE_UNIT TIR.KAPPA
+OP R.RELATIONAL_TRANSFORM COMPOSITION K.SOURCE K.TRANSFORM K.RETURN
+
+# First canonical-path candidates. They remain CHYBA until runtime vector/lineage
+# validation emits a promotion receipt.
+OP PATH.TIR.INFORMATION_TO_ACTION COMPOSITION TIR.BINARY_DISTINCTION R.INFORMATION_PHASE TIR.RELATIONAL_ACTION
+OP PATH.SOH.BOUNDARY_TO_SELF_DUAL COMPOSITION SOH.CRITICAL_BOUNDARY R.BOUNDARY_DUALITY SOH.SELF_DUAL
+OP PATH.PNCS.RELATION_TO_RESOLUTION COMPOSITION R.BINARY_RELATION R.RELATIONAL_TRANSFORM K.RESOLVE
+
+EMIT PATH.TIR.INFORMATION_TO_ACTION
+EMIT PATH.SOH.BOUNDARY_TO_SELF_DUAL
+EMIT PATH.PNCS.RELATION_TO_RESOLUTION

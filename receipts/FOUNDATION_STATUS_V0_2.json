@@ -1,0 +1,15 @@
+{
+  "schema": "PNCS_FOUNDATION_STATUS_V0_2",
+  "project": "PhaseNav Natural Code System",
+  "status": "TIR_SOH_NATIVE_PNV_SEED_PASS",
+  "primary_language": "native-pnv",
+  "native_seed": "native/PNCS_TIR_SOH_SEED_V0_2.pnv",
+  "tests": {
+    "passed": 8,
+    "failed": 0
+  },
+  "new_opcode_count": 0,
+  "semantic_axes_hand_named": false,
+  "canon_allowed": false,
+  "next_gate": "RECURRENCE_MINING_TIR_SOH_TO_KAKU_MINIMAL_SET"
+}

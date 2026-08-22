@@ -1,0 +1,110 @@
+{
+  "alias_equivalence_examples": [
+    {
+      "aliases": [
+        "high_risk",
+        "risk_guard"
+      ],
+      "canonical_graph": [
+        "comparison",
+        "risk",
+        "gt",
+        0.8
+      ],
+      "content_id": "pncs:def:sha256:9c3f6d9ac4c819e64ec85bb0616f38803abb94ed10fe8c0fff591547eadebd24"
+    },
+    {
+      "aliases": [
+        "safety_trigger",
+        "safety_trigger_alt"
+      ],
+      "canonical_graph": [
+        "or",
+        [
+          "comparison",
+          "memory_pressure",
+          "gt",
+          0.9
+        ],
+        [
+          "comparison",
+          "risk",
+          "gt",
+          0.8
+        ]
+      ],
+      "content_id": "pncs:def:sha256:e0568bb763b3af750265fc159af8d41c440e5f254b43328776fd1b95686b5076"
+    }
+  ],
+  "canon_allowed": false,
+  "content_address": {
+    "algorithm": "SHA256",
+    "canonical_serialization": "UTF-8 JSON sort_keys compact separators",
+    "record_prefix": "pncs:def-record:sha256:",
+    "semantic_payload_excludes": [
+      "alias",
+      "provenance",
+      "dependencies",
+      "record_id"
+    ],
+    "semantic_payload_fields": [
+      "schema",
+      "kind",
+      "canonical_graph",
+      "leaf_path"
+    ],
+    "semantic_prefix": "pncs:def:sha256:"
+  },
+  "counts": {
+    "alias_records": 7,
+    "deduplicated_alias_equivalences": 2,
+    "unique_semantic_contents": 5
+  },
+  "dependency_lineage": [
+    {
+      "alias": "system_guard",
+      "dependencies": [
+        "pncs:def:sha256:e0568bb763b3af750265fc159af8d41c440e5f254b43328776fd1b95686b5076",
+        "pncs:def:sha256:38e29c73f334158e297c93d4b6829679a01685bcf8f895bcd1d7f61362b8b734"
+      ],
+      "registration_policy": "DEPENDENCIES_MUST_ALREADY_EXIST"
+    },
+    {
+      "alias": "safety_bifurcation",
+      "dependencies": [
+        "pncs:def:sha256:e0568bb763b3af750265fc159af8d41c440e5f254b43328776fd1b95686b5076"
+      ],
+      "registration_policy": "DEPENDENCIES_MUST_ALREADY_EXIST"
+    }
+  ],
+  "epistemic_operator": "CHYBA",
+  "generic_natural_language_compiler_enabled": false,
+  "github_mutated": false,
+  "github_target": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "integrity": {
+    "duplicate_alias_fail_closed": "PASS",
+    "equivalent_boolean_normalization_same_hash": "PASS",
+    "lossless_leaf_expansion": "PASS",
+    "missing_dependency_fail_closed": "PASS",
+    "native_opcode_whitelist": "PASS",
+    "semantic_difference_changes_hash": "PASS",
+    "serialized_tamper_detection": "PASS"
+  },
+  "native_reuse": {
+    "aliases_in_active_native_ids": false,
+    "internal_action_request_used": false,
+    "reuses": [
+      "safety_trigger -> high_risk root",
+      "system_guard -> safety_trigger + phase_ready roots",
+      "safety_bifurcation -> safety_trigger root"
+    ],
+    "root_id_rule": "D.<first16-semantic-sha256>.ROOT",
+    "source": "native/PNCS_DEFINITION_PATHS_V0_11.pnv"
+  },
+  "new_opcodes": 0,
+  "next_gate": "CLASS_PATHS_OVER_CONTENT_ADDRESSED_DEFINITIONS",
+  "schema": "PNCS_DEFINITION_PATH_LEDGER_V0_11",
+  "stage": "CONTENT_ADDRESSED_DEFINITION_PATHS",
+  "status": "PASS_09",
+  "tests": "149/149 PASS"
+}

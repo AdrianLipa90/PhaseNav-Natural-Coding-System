@@ -55,13 +55,13 @@ This is an observed/mined working set, not a claim of final irreducibility.
 ## Completed hierarchy lift
 
 ### v0.12 — Class paths over definitions
-Content-addressed Definition Paths compose into ordered CLASS-level trajectories. CLASS semantic identity references Definition content IDs rather than copied graphs. Alias/Provenance remain record metadata, ordering is semantic, and inverse expansion `CLASS -> DEFINITION -> KAKU` is deterministic.
+Content-addressed Definition Paths compose into ordered CLASS-level trajectories. CLASS semantic identity references Definition content IDs rather than copied graphs. Alias/provenance remain record metadata, ordering is semantic, and inverse expansion `CLASS -> DEFINITION -> KAKU` is deterministic.
 
 ### v0.13 — File and cluster paths
 Ordered CLASS content IDs compose into FILE semantic trajectories; ordered FILE content IDs compose into CLUSTER trajectories. Physical/repository/deployment paths are projection metadata only and do not enter semantic identity. Inverse expansion `CLUSTER -> FILE -> CLASS -> DEFINITION -> KAKU` is deterministic.
 
 ### v0.14 — Subsystem / daemon / orchestrator / system paths
-CLUSTER content IDs now compose into sibling SUBSYSTEM and DAEMON semantic levels. LOW_ORCHESTRATOR paths may compose both sibling types; HIGH_ORCHESTRATOR paths compose LOW_ORCHESTRATOR IDs; SYSTEM paths compose HIGH_ORCHESTRATOR paths. Level and ordering are semantic; aliases and deployment projections are metadata only. Full inverse lineage reaches KAKU.
+CLUSTER content IDs compose into sibling SUBSYSTEM and DAEMON levels; LOW_ORCHESTRATOR composes those roles, HIGH_ORCHESTRATOR composes LOW_ORCHESTRATOR paths, and SYSTEM composes HIGH_ORCHESTRATOR paths. Level and ordering are semantic; aliases and deployment projections are metadata only. Full inverse lineage reaches KAKU.
 
 ## Completed natural-surface gate
 

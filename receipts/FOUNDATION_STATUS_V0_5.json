@@ -1,0 +1,12 @@
+{
+  "schema": "PNCS_FOUNDATION_STATUS_V0_5",
+  "project": "PhaseNav Natural Code System",
+  "version": "0.5.0",
+  "status": "SEMANTIC_COLLISION_REPAIR_PASS",
+  "native_pnv": true,
+  "new_opcodes": 0,
+  "derive_irreducible_kaku": false,
+  "resolve_irreducible_kaku": false,
+  "fixed_point_specializes_invariant": true,
+  "next_gate": "CONTROL_FLOW_AND_BRANCHING_MINING"
+}

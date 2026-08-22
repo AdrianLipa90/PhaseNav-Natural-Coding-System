@@ -1,0 +1,21 @@
+{
+  "alias_is_semantic_identity": false,
+  "canon_allowed": false,
+  "cluster_semantic_identity": "ORDERED_FILE_CONTENT_IDS",
+  "definition_or_class_graph_copying": false,
+  "file_semantic_identity": "ORDERED_CLASS_CONTENT_IDS",
+  "github_mutated": false,
+  "inverse_lineage": "CLUSTER_TO_FILE_TO_CLASS_TO_DEFINITION_TO_KAKU",
+  "levels": [
+    "FILE",
+    "CLUSTER"
+  ],
+  "native_cluster_children": "F.<file-hash>.ROOT",
+  "native_file_children": "C.<class-hash>.ROOT",
+  "new_opcodes": 0,
+  "ordering_semantic": true,
+  "projection_path_is_semantic_identity": false,
+  "schema": "PNCS_FILE_CLUSTER_PATH_LEDGER_V0_13",
+  "status": "PASS",
+  "tests": "188/188 PASS"
+}

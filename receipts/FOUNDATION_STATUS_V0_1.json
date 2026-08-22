@@ -1,0 +1,11 @@
+{
+  "schema": "PNCS_FOUNDATION_STATUS_V0_1",
+  "project": "PhaseNav Natural Code System",
+  "short_name": "PNCS",
+  "status": "FOUNDATION_IMPLEMENTED",
+  "semantic_axes_canonized": false,
+  "natural_language_compiler_enabled": false,
+  "static_semantic_fallback": false,
+  "vector_dimension": 36,
+  "next_gate": "CANONIZE_36D_BASIS"
+}

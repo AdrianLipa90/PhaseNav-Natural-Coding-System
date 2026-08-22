@@ -1,0 +1,21 @@
+{
+  "schema": "PNCS_FOUNDATION_STATUS_V0_7",
+  "project": "PhaseNav Natural Coding System",
+  "status": "CONTROL_RADICAL_PROMOTED",
+  "tests": "54/54 PASS",
+  "new_opcodes": 0,
+  "promoted_radical": "R.CONDITIONAL_ROUTE",
+  "leaf_path": [
+    "DIFFERENCE",
+    "CONDITION",
+    "ORDER",
+    "TRANSFORM",
+    "COMPOSITION"
+  ],
+  "v06_action_request_internal_go": "SUPERSEDED",
+  "generic_natural_language_compiler_enabled": false,
+  "github_target": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "github_mutated": false,
+  "test_command": "python -m pytest -q",
+  "technical_verdict": "PASS"
+}

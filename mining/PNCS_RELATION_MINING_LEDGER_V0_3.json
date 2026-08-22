@@ -1,0 +1,210 @@
+{
+  "schema": "PNCS_RELATION_MINING_LEDGER_V0_3",
+  "status": "CANDIDATE_GRAMMAR_MINING_PASS_01",
+  "sources": [
+    "TIR/Metatime_Monograph_Clean_PR77_2026-07-29",
+    "The Secret of a Half v0.8 Full Integrated"
+  ],
+  "rules": {
+    "no_new_opcode": true,
+    "semantic_authority_from_relation_not_vector": true,
+    "phase36_role": "COMPUTATIONAL_REALIZATION",
+    "recurrence_is_not_semantic_mass": true
+  },
+  "chains": [
+    {
+      "id": "TIR.BINARY_INFORMATION",
+      "source": "TIR/Metatime",
+      "status": "SOURCE_DECLARED_MODEL_CONSTRUCTION",
+      "atoms": [
+        "DIFFERENCE",
+        "DERIVE"
+      ],
+      "statement": "Binary distinction resolves to ln(2) information unit."
+    },
+    {
+      "id": "TIR.ACTION_TO_MASS",
+      "source": "TIR/Metatime",
+      "status": "MODEL_POSTULATE",
+      "atoms": [
+        "DERIVE",
+        "TRANSFORM"
+      ],
+      "statement": "Action S is transformed to a mass scale by m = E_P exp(-S/kappa)."
+    },
+    {
+      "id": "TIR.TRANSLATION_INVARIANT_DIFFERENCE",
+      "source": "TIR/Metatime Appendix L",
+      "status": "EXACT_ALGEBRA_WITHIN_DECLARED_ARCHITECTURE",
+      "atoms": [
+        "TRANSFORM",
+        "DIFFERENCE",
+        "IDENTITY"
+      ],
+      "statement": "A common additive shift preserves pairwise residual differences."
+    },
+    {
+      "id": "TIR.BASELINE_CANCELLATION",
+      "source": "TIR/Metatime Appendix M",
+      "status": "EXACT_ALGEBRA_WITHIN_DECLARED_ARCHITECTURE",
+      "atoms": [
+        "COMPOSITION",
+        "DIFFERENCE",
+        "IDENTITY"
+      ],
+      "statement": "Subtracting two same-sector log relations cancels the common baseline."
+    },
+    {
+      "id": "SOH.COMPLEMENT_FIXED_POINT",
+      "source": "The Secret of a Half v0.8",
+      "status": "EXACT",
+      "atoms": [
+        "TRANSFORM",
+        "CONDITION",
+        "RESOLVE"
+      ],
+      "statement": "sigma -> 1-sigma; fixed condition sigma=1-sigma resolves to 1/2."
+    },
+    {
+      "id": "SOH.INVERSE_BOUNDARY_CONJUGACY",
+      "source": "The Secret of a Half v0.8",
+      "status": "EXACT",
+      "atoms": [
+        "BOUNDARY",
+        "TRANSFORM",
+        "COMPOSITION",
+        "IDENTITY"
+      ],
+      "statement": "Omega maps the boundary pair and conjugates critical reflection to reciprocal-conjugate inversion."
+    },
+    {
+      "id": "SOH.SELF_DUAL_FIXED_LOCUS",
+      "source": "The Secret of a Half v0.8",
+      "status": "EXACT",
+      "atoms": [
+        "TRANSFORM",
+        "CONDITION",
+        "RESOLVE"
+      ],
+      "statement": "Re(s)=1/2 iff |Omega(s)|=1, the fixed locus of reciprocal-conjugate inversion."
+    },
+    {
+      "id": "SOH.CENTERED_NEGATION",
+      "source": "The Secret of a Half v0.8",
+      "status": "EXACT",
+      "atoms": [
+        "TRANSFORM",
+        "NEGATION",
+        "IDENTITY"
+      ],
+      "statement": "Centering at 1/2 converts the functional involution into z -> -z."
+    },
+    {
+      "id": "SOH.MULTIPATH_HALF_CONVERGENCE",
+      "source": "The Secret of a Half v0.8",
+      "status": "EXACT",
+      "atoms": [
+        "DERIVE",
+        "COMPOSITION",
+        "IDENTITY",
+        "RESOLVE"
+      ],
+      "statement": "Label-swap fixed point, reciprocal fixed point, spinor balance and Fisher-Rao midpoint converge to 1/2."
+    },
+    {
+      "id": "SOH.THETA_RECIPROCITY",
+      "source": "The Secret of a Half v0.8",
+      "status": "ESTABLISHED_SOURCE_RELATION",
+      "atoms": [
+        "TRANSFORM",
+        "COMPOSITION"
+      ],
+      "statement": "Theta representation contains x -> 1/x reciprocity before PhaseNav is introduced."
+    }
+  ],
+  "operator_recurrence": [
+    {
+      "operator": "IDENTITY",
+      "occurrences": 5,
+      "source_families": 2,
+      "classification": "CROSS_SOURCE_CORE"
+    },
+    {
+      "operator": "DIFFERENCE",
+      "occurrences": 3,
+      "source_families": 1,
+      "classification": "SOURCE_RECURRENT"
+    },
+    {
+      "operator": "ORDER",
+      "occurrences": 0,
+      "source_families": 0,
+      "classification": "UNOBSERVED_IN_PASS_01"
+    },
+    {
+      "operator": "COMPOSITION",
+      "occurrences": 4,
+      "source_families": 2,
+      "classification": "CROSS_SOURCE_CORE"
+    },
+    {
+      "operator": "NEGATION",
+      "occurrences": 1,
+      "source_families": 1,
+      "classification": "SUPPORTING"
+    },
+    {
+      "operator": "TRANSFORM",
+      "occurrences": 7,
+      "source_families": 2,
+      "classification": "CROSS_SOURCE_CORE"
+    },
+    {
+      "operator": "RETURN",
+      "occurrences": 0,
+      "source_families": 0,
+      "classification": "UNOBSERVED_IN_PASS_01"
+    },
+    {
+      "operator": "BOUNDARY",
+      "occurrences": 1,
+      "source_families": 1,
+      "classification": "SUPPORTING"
+    },
+    {
+      "operator": "SOURCE",
+      "occurrences": 0,
+      "source_families": 0,
+      "classification": "UNOBSERVED_IN_PASS_01"
+    },
+    {
+      "operator": "CONDITION",
+      "occurrences": 2,
+      "source_families": 1,
+      "classification": "SOURCE_RECURRENT"
+    },
+    {
+      "operator": "RESOLVE",
+      "occurrences": 3,
+      "source_families": 1,
+      "classification": "SOURCE_RECURRENT"
+    },
+    {
+      "operator": "DERIVE",
+      "occurrences": 3,
+      "source_families": 2,
+      "classification": "CROSS_SOURCE_CORE"
+    }
+  ],
+  "cross_source_core": [
+    "IDENTITY",
+    "COMPOSITION",
+    "TRANSFORM",
+    "DERIVE"
+  ],
+  "source_recurrent": [
+    "DIFFERENCE",
+    "CONDITION",
+    "RESOLVE"
+  ]
+}

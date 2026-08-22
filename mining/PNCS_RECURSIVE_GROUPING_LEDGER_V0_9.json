@@ -1,0 +1,48 @@
+{
+  "schema": "PNCS_RECURSIVE_GROUPING_LEDGER_V0_9",
+  "status": "PASS_07",
+  "new_opcodes": [],
+  "grouping_is_semantic_leaf": false,
+  "implicit_mixed_precedence": false,
+  "homogeneous_nary_chains": {
+    "AND": "COMPOSITION binding=all, repeated recursively",
+    "OR": "COMPOSITION binding=any, repeated recursively"
+  },
+  "recursive_forms": {
+    "comparison": [
+      "DIFFERENCE",
+      "CONDITION"
+    ],
+    "not": [
+      "predicate",
+      "NEGATION"
+    ],
+    "and": [
+      "predicate_1",
+      "predicate_2",
+      "...",
+      "COMPOSITION(all)"
+    ],
+    "or": [
+      "predicate_1",
+      "predicate_2",
+      "...",
+      "COMPOSITION(any)"
+    ],
+    "group": "structural boundary only; no KAKU"
+  },
+  "mixed_operator_rule": "AND/OR mixed at one syntactic level requires explicit parentheses",
+  "action_request_used": false,
+  "generic_natural_language_compiler_enabled": false,
+  "epistemic": "CHYBA",
+  "github_target": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "github_mutated": false,
+  "tests": "109/109 PASS",
+  "transfer_checks": {
+    "nested_domain_trees": 3,
+    "homogeneous_chain_terms_tested": 12,
+    "nested_not_complement": "PASS",
+    "nested_surface_paraphrase_convergence": "PASS",
+    "deep_parentheses_no_leaf_change": "PASS"
+  }
+}

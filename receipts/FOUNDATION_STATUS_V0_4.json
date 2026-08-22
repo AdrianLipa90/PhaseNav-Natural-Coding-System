@@ -1,0 +1,19 @@
+{
+  "schema": "PNCS_FOUNDATION_STATUS_V0_4",
+  "version": "0.4.0",
+  "status": "PASS",
+  "native_pnv": "native/PNCS_PRIMITIVE_CLOSURE_V0_4.pnv",
+  "new_opcodes": 0,
+  "promoted_radicals": [
+    "R.INVARIANT"
+  ],
+  "transferred_candidates": [
+    "R.TRAJECTORY"
+  ],
+  "minimal_v03_core_size": 7,
+  "extended_core_size": 8,
+  "epistemic_mode": "CHYBA",
+  "static_semantic_axis_names_invented": false,
+  "tests": "21/21 PASS",
+  "test_command": "python3 -m pytest -q"
+}

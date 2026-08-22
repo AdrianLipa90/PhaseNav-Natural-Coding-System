@@ -1,0 +1,63 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PNCS v0.11 — content-addressed reusable definition paths.
+# Definition aliases live in definitions/PNCS_DEFINITION_REGISTRY_V0_11.jsonl.
+# Native roots are keyed by semantic content digest, not by human alias.
+# No new PNV opcode is introduced.
+
+# ---------------------------------------------------------------------------
+# D.9c3f6d9ac4c819e6
+# aliases: high_risk, risk_guard
+# canonical predicate: risk > 0.8
+# ---------------------------------------------------------------------------
+OP D.9c3f6d9ac4c819e6.DELTA DIFFERENCE risk 0.8
+OP D.9c3f6d9ac4c819e6.ROOT CONDITION D.9c3f6d9ac4c819e6.DELTA gt 0
+VECTOR V.D.9c3f6d9ac4c819e6 "pncs:def:sha256:9c3f6d9ac4c819e64ec85bb0616f38803abb94ed10fe8c0fff591547eadebd24" PRECISE
+
+# ---------------------------------------------------------------------------
+# D.e0568bb763b3af75
+# aliases: safety_trigger, safety_trigger_alt
+# canonical predicate: risk > 0.8 OR memory_pressure > 0.9
+# Reuses D.9c3f... as the risk predicate instead of copying it.
+# ---------------------------------------------------------------------------
+OP D.e0568bb763b3af75.MEM.DELTA DIFFERENCE memory_pressure 0.9
+OP D.e0568bb763b3af75.MEM.PRED CONDITION D.e0568bb763b3af75.MEM.DELTA gt 0
+OP D.e0568bb763b3af75.ROOT COMPOSITION D.9c3f6d9ac4c819e6.ROOT D.e0568bb763b3af75.MEM.PRED any
+VECTOR V.D.e0568bb763b3af75 "pncs:def:sha256:e0568bb763b3af750265fc159af8d41c440e5f254b43328776fd1b95686b5076" PRECISE
+
+# ---------------------------------------------------------------------------
+# D.38e29c73f334158e
+# alias: phase_ready
+# canonical predicate: NOT (phase_coherence < 0.7)
+# ---------------------------------------------------------------------------
+OP D.38e29c73f334158e.DELTA DIFFERENCE phase_coherence 0.7
+OP D.38e29c73f334158e.PRED CONDITION D.38e29c73f334158e.DELTA lt 0
+OP D.38e29c73f334158e.ROOT NEGATION D.38e29c73f334158e.PRED
+VECTOR V.D.38e29c73f334158e "pncs:def:sha256:38e29c73f334158e297c93d4b6829679a01685bcf8f895bcd1d7f61362b8b734" PRECISE
+
+# ---------------------------------------------------------------------------
+# D.339c789b6c2a751a
+# alias: system_guard
+# canonical predicate: safety_trigger AND phase_ready
+# This definition is a graph-level reuse of two earlier content roots.
+# ---------------------------------------------------------------------------
+OP D.339c789b6c2a751a.ROOT COMPOSITION D.e0568bb763b3af75.ROOT D.38e29c73f334158e.ROOT all
+VECTOR V.D.339c789b6c2a751a "pncs:def:sha256:339c789b6c2a751a919c5fd921e5b68e93b4712d36a5c32e0f6144989f6034e2" PRECISE
+
+# ---------------------------------------------------------------------------
+# D.b7988497bab75a52
+# alias: safety_bifurcation
+# canonical internal branch over safety_trigger.
+# Reuses predicate root D.e056... and keeps internal routing on TRANSFORM.
+# ---------------------------------------------------------------------------
+OP D.b7988497bab75a52.NOT NEGATION D.e0568bb763b3af75.ROOT
+OP D.b7988497bab75a52.TRUE TRANSFORM control_location route safety.pause
+OP D.b7988497bab75a52.FALSE TRANSFORM control_location route runtime.continue
+OP D.b7988497bab75a52.TRUE.ORDER ORDER D.e0568bb763b3af75.ROOT D.b7988497bab75a52.TRUE
+OP D.b7988497bab75a52.FALSE.ORDER ORDER D.b7988497bab75a52.NOT D.b7988497bab75a52.FALSE
+OP D.b7988497bab75a52.ROOT COMPOSITION D.e0568bb763b3af75.ROOT D.b7988497bab75a52.TRUE.ORDER D.b7988497bab75a52.TRUE D.b7988497bab75a52.NOT D.b7988497bab75a52.FALSE.ORDER D.b7988497bab75a52.FALSE
+VECTOR V.D.b7988497bab75a52 "pncs:def:sha256:b7988497bab75a526771fa24aeca75e0182bd437fd707927cb0e78b04d360cce" PRECISE
+
+EMIT D.9c3f6d9ac4c819e6.ROOT D.e0568bb763b3af75.ROOT D.38e29c73f334158e.ROOT D.339c789b6c2a751a.ROOT D.b7988497bab75a52.ROOT

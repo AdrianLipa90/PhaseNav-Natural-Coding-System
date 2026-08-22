@@ -1,0 +1,20 @@
+{
+  "schema": "PNCS_FOUNDATION_STATUS_V0_3",
+  "status": "PASS_GRAMMAR_MINING_01",
+  "tests": "14/14 PASS",
+  "new_pnv_opcodes": 0,
+  "native_primary": true,
+  "sources": [
+    "TIR/Metatime",
+    "The Secret of a Half v0.8"
+  ],
+  "mined_radicals": [
+    "R.FIXED_POINT",
+    "R.INVARIANT",
+    "R.CANCELLATION",
+    "R.CONJUGACY",
+    "R.CONVERGENCE"
+  ],
+  "canon_status": "CANDIDATE_CHYBA",
+  "next_gate": "TRANSFER_MINING_ACROSS_ADDITIONAL_INDEPENDENT_DOMAINS"
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "PNCS_LOGIC_BRANCHING_LEDGER_V0_8",
+  "status": "PASS_06",
+  "new_opcodes": [],
+  "surface_tokens_non_authoritative": [
+    "AND",
+    "OR",
+    "NOT",
+    "ELSE"
+  ],
+  "radicals": {
+    "R.PREDICATE_AND": {
+      "binding": "COMPOSITION(left, all, right)",
+      "leaf_suffix": [
+        "COMPOSITION"
+      ],
+      "status": "PROMOTED_CONTROL_RADICAL",
+      "transfer_domains": [
+        "temperature+memory_pressure",
+        "risk+phase_coherence",
+        "phase_error+phase_coherence"
+      ]
+    },
+    "R.PREDICATE_OR": {
+      "binding": "COMPOSITION(left, any, right)",
+      "leaf_suffix": [
+        "COMPOSITION"
+      ],
+      "status": "PROMOTED_CONTROL_RADICAL",
+      "transfer_domains": [
+        "risk+phase_coherence",
+        "memory_pressure+temperature",
+        "phase_error+phase_coherence"
+      ]
+    },
+    "R.PREDICATE_NOT": {
+      "binding": "NEGATION(predicate)",
+      "leaf_path": [
+        "NEGATION"
+      ],
+      "status": "CONTROL_SUPPORTING_LEAF"
+    },
+    "R.CONDITIONAL_BIFURCATION": {
+      "construction": "predicate + NEGATION(predicate) + ordered true/false TRANSFORM routes + COMPOSITION",
+      "status": "PROMOTED_CONTROL_RADICAL",
+      "transfer_domains": [
+        "risk",
+        "temperature",
+        "phase_coherence"
+      ]
+    }
+  },
+  "canonical_boolean_composition": {
+    "AND": "all",
+    "OR": "any",
+    "NOT": "NEGATION"
+  },
+  "else_semantics": "false branch is bound to NEGATION(primary_predicate)",
+  "internal_routes_are_effect_requests": false,
+  "action_request_used": false,
+  "generic_natural_language_compiler_enabled": false,
+  "promotion_rule": "no new opcode; deterministic truth-table agreement; paraphrase convergence; recursive expansion to admitted PNV operators"
+}

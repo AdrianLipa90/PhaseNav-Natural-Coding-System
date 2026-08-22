@@ -1,0 +1,125 @@
+{
+  "schema": "PNCS_SEMANTIC_COLLISION_LEDGER_V0_5",
+  "status": "PASS_03",
+  "compatibility_vocabulary_retained": [
+    "DERIVE",
+    "RESOLVE"
+  ],
+  "irreducible_kaku_current": [
+    "SOURCE",
+    "ORDER",
+    "TRANSFORM",
+    "COMPOSITION",
+    "DIFFERENCE",
+    "IDENTITY"
+  ],
+  "control_flow_candidates": [
+    "CONDITION"
+  ],
+  "demotions": {
+    "DERIVE": {
+      "from": "KAKU_CANDIDATE",
+      "to": "EXPANDABLE_RADICAL",
+      "replacement": "R.DERIVATION",
+      "leaf_path": [
+        "SOURCE",
+        "COMPOSITION",
+        "TRANSFORM"
+      ]
+    },
+    "RESOLVE": {
+      "from": "UNQUALIFIED_KAKU_CANDIDATE",
+      "to": "NAMESPACE_SPLIT",
+      "runtime_meaning": "canonical/alias lookup returning matching records",
+      "replacement_for_lookup": "R.NAME_RESOLUTION",
+      "leaf_path": [
+        "SOURCE",
+        "COMPOSITION",
+        "IDENTITY"
+      ],
+      "mathematical_solving_uses_unqualified_resolve": false
+    }
+  },
+  "radicals": {
+    "R.INVARIANT": {
+      "leaf_path": [
+        "TRANSFORM",
+        "DIFFERENCE",
+        "IDENTITY"
+      ],
+      "status": "PROMOTED_GRAMMAR_RADICAL"
+    },
+    "R.FIXED_POINT": {
+      "leaf_path": [
+        "TRANSFORM",
+        "DIFFERENCE",
+        "IDENTITY"
+      ],
+      "status": "SPECIALIZATION_OF_R.INVARIANT",
+      "binding": "output == input"
+    },
+    "R.DERIVATION": {
+      "leaf_path": [
+        "SOURCE",
+        "COMPOSITION",
+        "TRANSFORM"
+      ],
+      "status": "TRANSFERRED_RADICAL_CANDIDATE"
+    },
+    "R.NAME_RESOLUTION": {
+      "leaf_path": [
+        "SOURCE",
+        "COMPOSITION",
+        "IDENTITY"
+      ],
+      "status": "IMPLEMENTATION_ALIGNED_RADICAL"
+    },
+    "R.CONVERGENCE": {
+      "leaf_path": [
+        "SOURCE",
+        "COMPOSITION",
+        "TRANSFORM",
+        "COMPOSITION",
+        "IDENTITY"
+      ],
+      "status": "CORRECTED_CANDIDATE"
+    },
+    "R.CANCELLATION": {
+      "leaf_path": [
+        "COMPOSITION",
+        "DIFFERENCE",
+        "IDENTITY"
+      ],
+      "status": "CANDIDATE"
+    },
+    "R.CONJUGACY": {
+      "leaf_path": [
+        "TRANSFORM",
+        "COMPOSITION",
+        "IDENTITY"
+      ],
+      "status": "CANDIDATE"
+    },
+    "R.TRAJECTORY": {
+      "leaf_path": [
+        "ORDER",
+        "TRANSFORM",
+        "COMPOSITION"
+      ],
+      "status": "TRANSFERRED_CANDIDATE"
+    }
+  },
+  "collision_repairs": [
+    "PNV_CLI_RESOLVE_IS_LOOKUP_NOT_EQUATION_SOLVER",
+    "FIXED_POINT_COLLAPSES_TO_INVARIANT_SPECIALIZATION",
+    "DERIVATION_EXPANDS_TO_SOURCE_COMPOSITION_TRANSFORM",
+    "CONVERGENCE_NO_LONGER_REQUIRES_ATOMIC_DERIVE_OR_RESOLVE"
+  ],
+  "rules": {
+    "no_new_opcode": true,
+    "recursive_expansion_required": true,
+    "vector_similarity_implies_semantic_equivalence": false,
+    "surface_text_is_authoritative": false,
+    "unqualified_resolve_for_equation_solving": false
+  }
+}

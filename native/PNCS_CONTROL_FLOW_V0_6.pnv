@@ -1,0 +1,37 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PNCS v0.6 — first control-flow graph.
+# Surface words IF / BELOW / THEN / GO are not PNV opcodes.
+# No effect is silently executed; ACTION_REQUEST is an inspectable request node.
+
+# Reused mathematical KAKU
+OP K.DISTINGUISH DIFFERENCE left right
+OP K.ORDER ORDER before after
+OP K.COMPOSE COMPOSITION left relation right
+
+# Control-flow KAKU candidates from recovered PNV/1 vocabulary
+OP K.CONDITION CONDITION predicate relation reference
+OP K.ACTION_REQUEST ACTION_REQUEST action target
+
+# Surface relation BELOW: numeric delta followed by a strict-negative condition.
+OP R.BELOW COMPOSITION K.DISTINGUISH K.CONDITION
+
+# Conditional routing: predicate precedes action request and both form one program graph.
+OP R.CONDITIONAL_ROUTE COMPOSITION K.CONDITION K.ORDER K.ACTION_REQUEST K.COMPOSE
+
+# Canonical example for the surface sentence:
+# IF gravity BELOW 0.5 THEN GO physics.gravity.low
+OP EX.GRAVITY.DELTA DIFFERENCE gravity 0.5
+OP EX.GRAVITY.BELOW CONDITION EX.GRAVITY.DELTA lt 0
+OP EX.GRAVITY.GO ACTION_REQUEST route physics.gravity.low
+OP EX.GRAVITY.ORDER ORDER EX.GRAVITY.BELOW EX.GRAVITY.GO
+OP EX.GRAVITY.PROGRAM COMPOSITION EX.GRAVITY.BELOW EX.GRAVITY.ORDER EX.GRAVITY.GO
+
+# 36D bindings are computational addresses, not semantic authority.
+VECTOR V.R.BELOW "PNCS.radical.below" PRECISE
+VECTOR V.R.CONDITIONAL_ROUTE "PNCS.radical.conditional_route" PRECISE
+VECTOR V.EX.GRAVITY.PROGRAM "PNCS.example.if_gravity_below_0_5_go_physics_gravity_low" PRECISE
+
+EMIT EX.GRAVITY.PROGRAM

@@ -1,0 +1,13 @@
+{
+  "schema": "PNCS_FOUNDATION_STATUS_V0_6",
+  "project": "PhaseNav Natural Code System",
+  "status": "CONTROL_FLOW_GRAPH_PASS",
+  "version": "0.6",
+  "new_opcodes": 0,
+  "control_surface_enabled": "FROZEN_PATTERN_ONLY",
+  "generic_natural_language_compiler_enabled": false,
+  "native_pnv_authority": true,
+  "next_gate": "TRANSFER_CONTROL_GRAPH_AND_PARAPHRASE_CONVERGENCE",
+  "tests_passed": 41,
+  "tests_failed": 0
+}

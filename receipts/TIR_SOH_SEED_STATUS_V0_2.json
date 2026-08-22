@@ -1,0 +1,25 @@
+{
+  "schema": "PNCS_TIR_SOH_SEED_STATUS_V0_2",
+  "status": "CANDIDATE_NATIVE_PNV_SEED",
+  "sources": [
+    "TIR/Metatime monograph",
+    "The Secret of a Half v0.8"
+  ],
+  "native_source": "native/PNCS_TIR_SOH_SEED_V0_2.pnv",
+  "new_opcode_count": 0,
+  "canon_allowed": false,
+  "epistemic_operator": "CHYBA",
+  "vector_semantic_authority": false,
+  "next_gate": "RECURRENCE_MINING_AND_NATIVE_PNV_RUNTIME_VALIDATION",
+  "source_provenance": {
+    "TIR": {
+      "library_file_id": "file_00000000cf2081f48b79b090cda8edd8",
+      "name": "Metatime_Monograph_Clean_PR77_2026-07-29.pdf"
+    },
+    "SECRET_OF_A_HALF": {
+      "library_file_id": "file_00000000cbcc81f4bcd03992427b755c",
+      "name": "Secret-of-a-Half_v0.8_Full-Integrated_2026-08-16.tex"
+    }
+  },
+  "tests": "8/8 PASS"
+}

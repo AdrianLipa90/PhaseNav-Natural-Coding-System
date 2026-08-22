@@ -1,0 +1,26 @@
+{
+  "schema": "PNCS_EXACT_36D_BINDING_LEDGER_V0_18",
+  "version": "0.18",
+  "gate": "EXACT_36D_REALIZATION_BINDING",
+  "phase_dimension": 36,
+  "space": "T^36",
+  "coordinate_semantics": "phase_angles_radians",
+  "coordinate_range": "[0,2π)",
+  "phase_digest": "SHA256(compact_json(phase36))",
+  "generator_status": "DEFERRED_SOURCE_BYTES",
+  "historical_native_runtime_replay": "NOT_CLAIMED",
+  "semantic_equivalence_from_vector_similarity": false,
+  "content_id_phase_id_separation": true,
+  "provenance_binding_id_separation": true,
+  "new_opcodes": 0,
+  "canon_allowed": false,
+  "source_evidence": [
+    "LANGUAGE_SPEC.md:file_00000000256c81f886fc2c2d1273975d",
+    "FROZEN_ANCHOR_GENERATOR_RECOVERY_V1.md:file_00000000388c81f69b91edce4d59c040",
+    "FROZEN_ANCHOR_GENERATOR_RECOVERY_ADDENDUM_V2.md:file_00000000994c81f4a74c06aaf227244f",
+    "glossary_36d.jsonl:recovered_phase_marker_formula"
+  ],
+  "status": "PASS",
+  "tests": "336/336 PASS",
+  "validation_scope": "STRUCTURAL_PLUS_REFERENCE_EXECUTION_ON_LIVE_DEV_SHM"
+}

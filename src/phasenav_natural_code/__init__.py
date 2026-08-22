@@ -145,4 +145,23 @@ from .cost_v21 import (
     predicate_leaf_path,
     prove_pure_boolean_equivalence,
 )
-
+from .lineage_v22 import (
+    DEFINITION_RADICAL_BINDING_SCHEMA,
+    EXECUTION_CONTRACT_ID_V20,
+    EXECUTION_RECEIPT_SCHEMA_V20,
+    HIERARCHY_PATH_SCHEMA,
+    LINEAGE_CONTRACT_ID,
+    LINEAGE_SCHEMA,
+    RESULT_ID_SCHEMA,
+    DefinitionRadicalBinding,
+    ExactInverseLineage,
+    ExactInverseLineageV22Error,
+    HierarchyLineage,
+    LineageNode,
+    LineageRegistries,
+    bind_definition_radical,
+    find_definition_occurrences,
+    persist_exact_inverse_lineage,
+    resolve_exact_inverse_lineage,
+    select_exact_occurrence,
+)

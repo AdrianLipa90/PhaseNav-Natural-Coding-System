@@ -1,6 +1,6 @@
 # PhaseNav Natural Code System (PNCS)
 
-Status: MASS_AWARE_GRAPH_COST_V0_21 / FOUNDATION LINEAGE V0.1-V0.21
+Status: EXACT_INVERSE_EXECUTION_LINEAGE_V0_22 / FOUNDATION LINEAGE V0.1-V0.22
 
 PhaseNav Natural Code System is a 36-dimensional relational coding system in which written code is a human-readable projection of a canonical semantic-phase graph.
 
@@ -22,17 +22,35 @@ canonical graph -> admitted route -> existing PNV operators
 -> Sigma_t --KAKU--> Sigma_t+1 -> deterministic receipt
 ```
 
-The normative operational surface is `/dev/shm/ciel_noema`; no static runtime fallback is authoritative.
-
-v0.21 adds mass-aware graph cost over the already bound v0.19 semantic masses:
+v0.21 added mass-aware graph cost over already-bound v0.19 semantic masses:
 
 ```text
 C_M(G) = sum_i m_i
 ```
 
-Cost is measured for RADICAL, PATH, PROGRAM, and pure PREDICATE scopes. Cost does not alter semantic identity and does not prove semantic equivalence. Distributive candidates require independent Boolean-equivalence evidence, exact source KAKU witness reuse, and explicit growth-budget admission. Default added-node and added-mass budgets are zero.
+Cost does not alter semantic identity or establish semantic equivalence. Graph-growing algebra requires independent equivalence evidence and explicit node/mass budget admission.
 
-v0.19 recorded a 377/377 historical foundation baseline. The isolated v0.20 execution-core harness recorded 14/14 PASS. The isolated v0.21 logic harness recorded 14/14 PASS. The complete historical repository suite was not replayed in the isolated v0.21 construction environment, and PNCS does not claim otherwise.
+v0.22 closes exact inverse execution provenance:
+
+```text
+Result
+-> SYSTEM
+-> HIGH_ORCHESTRATOR
+-> LOW_ORCHESTRATOR
+-> SUBSYSTEM / DAEMON
+-> CLUSTER
+-> FILE
+-> CLASS
+-> DEFINITION
+-> RADICAL
+-> KAKU
+```
+
+The lineage stores exact hierarchy occurrence indexes, revalidates the v0.20 receipt and continuous Sigma transition trace, rebounds the receipt to the registered Definition graph/leaf path, and binds the Definition to one fully hashed RadicalGraph plus exact ordered KAKU schedule.
+
+A reused CID at two hierarchy positions is not guessed away: zero matches fail closed; multiple matches fail closed unless one exact occurrence is explicitly selected.
+
+The normative operational surface remains `/dev/shm/ciel_noema`; no static runtime fallback is authoritative.
 
 ## Canonical repository layout
 
@@ -58,27 +76,36 @@ v0.19 recorded a 377/377 historical foundation baseline. The isolated v0.20 exec
 - semantic mass and graph cost are not authorization;
 - internal execution requires explicit route admission;
 - external effects remain closed until the explicit Effect Boundary gate;
-- execution and graph-cost results carry deterministic provenance;
+- result provenance must recover one exact content-addressed hierarchy occurrence;
+- execution transition trace must be continuous and deterministic;
+- aliases, filesystem paths and runtime location are not semantic authority;
+- Definition->Radical->KAKU role schedule must equal the canonical Definition leaf path;
 - no new PNV opcode is introduced without an explicit gate.
+
+## Validation status
+
+Historical evidence remains gate-scoped. v0.19 recorded a 377/377 historical foundation baseline. The isolated v0.20 execution-core harness recorded 14/14 PASS; v0.21 recorded 14/14 PASS; v0.22 currently records 27/27 PASS in its isolated pure-core harness and includes repository integration tests using the real PNCS registries.
+
+The complete historical repository suite was not replayed in the isolated v0.22 construction environment, and PNCS does not claim otherwise.
 
 ## Roadmap
 
 The single authoritative engineering roadmap is `spec/ROADMAP.md`.
 
-Completed gate: **v0.21 — Mass-Aware Graph Cost**.
+Completed gate: **v0.22 — Exact Inverse Execution Lineage**.
 
-Next gate: **v0.22 — Exact Inverse Execution Lineage**.
-
-The next requirement is exact result provenance:
+Next gate: **v0.23 — Natural Program Composition**.
 
 ```text
-Result -> SYSTEM -> ... -> DEFINITION -> RADICAL -> KAKU
+IF ...
+THEN ...
+ELSE ...
+AND THEN ...
+RETURN ...
 ```
 
-without relying on incidental process location or mutable runtime state.
+Every executable phrase must resolve through registered canonical semantics; arbitrary free-form natural-language execution remains closed.
 
-## Provenance
+## Manifest status
 
-Historical gate specifications remain under `spec/`. Native witnesses remain under `native/`. Semantic registries are under `registry/`; ledgers and deterministic receipts are under `provenance/`.
-
-The repository SHA-256 manifest is fail-closed after repository-layout changes and must be regenerated before this canonicalization is release-closed.
+`MANIFEST.sha256.json` remains fail-closed after the repository-layout canonicalization and v0.22 branch construction. A complete SHA-256 manifest must be regenerated from the bytes of the final branch tree before release closure. Git blob SHA-1 values are not substituted for file SHA-256 values.

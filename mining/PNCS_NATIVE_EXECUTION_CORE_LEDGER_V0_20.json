@@ -1,0 +1,29 @@
+{
+  "action_request_execution": false,
+  "base_main_commit": "e8104b2e2360e8861c48864cab80dfd799381724",
+  "canonical_input_kind": "INTERNAL_BRANCH",
+  "compileall": "PASS",
+  "executable_internal_operators": [
+    "COMPOSITION",
+    "CONDITION",
+    "DIFFERENCE",
+    "IDENTITY",
+    "NEGATION",
+    "ORDER",
+    "TRANSFORM"
+  ],
+  "execution_contract_id": "PNCS_NATIVE_EXECUTION_CORE_V0_20",
+  "external_effects": false,
+  "free_form_nl_execution": false,
+  "gate_tests": "14/14 PASS",
+  "live_surface": "/dev/shm/ciel_noema",
+  "live_surface_probe": "PASS",
+  "new_opcodes": 0,
+  "next_gate": "V0_21_MASS_AWARE_GRAPH_COST",
+  "receipt": "DETERMINISTIC_SHA256",
+  "schema": "PNCS_NATIVE_EXECUTION_CORE_LEDGER_V0_20",
+  "semantic_mass_is_authorization": false,
+  "state_transition": "Sigma_t -- KAKU(existing PNV operator) --> Sigma_t+1",
+  "static_runtime_fallback": false,
+  "status": "IMPLEMENTED_GATE_TESTED"
+}

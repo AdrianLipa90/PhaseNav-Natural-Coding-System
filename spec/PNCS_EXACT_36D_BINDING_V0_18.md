@@ -66,7 +66,7 @@ pncs:binding36:sha256:
     SHA256(canonical binding payload)
 ```
 
-This separates semantic content identity, phase realization identity, and provenance binding identity.
+This deliberately separates semantic content identity, phase realization identity, and provenance binding identity.
 
 ## Registry invariant
 

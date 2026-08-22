@@ -1,6 +1,6 @@
 # PhaseNav Natural Code System (PNCS)
 
-Status: WRITTEN_PNCS_PROJECTION_V0_17 / FOUNDATION LINEAGE V0.1-V0.17
+Status: EXACT_36D_REALIZATION_BINDING_V0_18 / FOUNDATION LINEAGE V0.1-V0.18
 
 PhaseNav Natural Code System is a 36-dimensional relational coding system in which written code is a human-readable projection of a canonical semantic-phase graph.
 
@@ -100,3 +100,7 @@ Bounded natural `IF / THEN / ELSE` statements now resolve onto the existing cont
 ## v0.17 — Written PNCS Projection
 
 Registered `DefinitionContent` objects now have a deterministic four-line written projection containing `KIND`, content-addressed `CID`, and canonical `BODY`. Text is not semantic authority: parsing requires a `ProjectionRegistry` that already contains the claimed CID, reconstructs the graph from `BODY`, recomputes content identity, compares the semantic payload, and requires exact canonical re-render equality. Predicate and internal-branch projections use canonical identifiers, explicit Boolean grouping, canonical route IDs, and round-trip float formatting. Unknown CIDs, altered thresholds/routes, noncanonical case/spacing, extra lines, or CID edits fail closed. No new PNV opcode is introduced and generic `compile_natural_language()` remains disabled. v0.17 passes 302/302 tests.
+
+## v0.18 — Exact 36D Realization Binding
+
+Existing typed PNCS content IDs can now be bound to exact provenance-carrying PhaseNav `T^36` vectors without making vector equality or similarity semantic authority. `PhaseVector36` requires exactly 36 finite phase angles in `[0,2π)` and hashes them as `SHA256(compact_json(phase36))`. `RealizationBinding` keeps semantic content ID, phase realization ID, and provenance binding ID separate and requires explicit basis, derivation, source digest, and source locator. Conflicting vectors for the same `(content_id, basis_id, derivation_id)` fail closed; different semantic content IDs may share the same exact phase vector without merging. The historical PNV/1 generator remains unrecovered, so v0.18 records exact evidenced bindings and does not claim generator replay. No new PNV opcode is introduced. v0.18 passes 336/336 tests.

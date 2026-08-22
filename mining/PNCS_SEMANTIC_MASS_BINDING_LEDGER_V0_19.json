@@ -1,0 +1,23 @@
+{
+  "schema": "PNCS_SEMANTIC_MASS_BINDING_LEDGER_V0_19",
+  "version": "0.19",
+  "gate": "SEMANTIC_MASS_BINDING",
+  "formula": "m_k = kappa*(1 + alpha_M*k) + (L4/L3)*R_k",
+  "phase_dimension": 36,
+  "phase_index_policy": "EXPLICIT_POSITIVE_INTEGER",
+  "content_id_to_phase_index_inference": false,
+  "semantic_equivalence_from_mass_equality": false,
+  "physical_mass_claim": false,
+  "new_opcodes": 0,
+  "mass_contract_id": "PNV_SEMANTIC_MASS_V1",
+  "runtime_source_sha256": "0b4df86cd01db313ea46ebac0eceee9cf6df0673391edd1a3fb2667c30464a32",
+  "runtime_source_locator": "NOEMA_LIBRARY:file_00000000ea0c8210b0ff0db8ea94071a:v1:pnv_runtime.py",
+  "epistemic_operator": "CHYBA",
+  "canon_allowed": false,
+  "status": "PASS",
+  "tests": "377/377 PASS",
+  "runtime_parity_vectors": 128,
+  "runtime_parity_mass_cases": 896,
+  "runtime_parity": "PASS",
+  "validation_scope": "FULL_LINEAGE_PLUS_EXACT_RUNTIME_PARITY_ON_LIVE_DEV_SHM"
+}

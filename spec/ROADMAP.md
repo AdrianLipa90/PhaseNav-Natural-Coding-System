@@ -78,13 +78,21 @@ Bounded `IF/THEN/ELSE` natural control statements resolve onto existing `INTERNA
 ### v0.17 — Written PNCS projection
 Registered Definition content now has a deterministic four-line written form (`PNCS 0.17`, `KIND`, `CID`, `BODY`). Parsing requires the claimed content to pre-exist in `ProjectionRegistry`; BODY is reconstructed, rehashed and compared to the registered semantic payload, then exact canonical re-render equality is required. Text therefore cannot create new semantic content. No new opcode is introduced.
 
+## Completed realization and mass gates
+
+### v0.18 — Exact 36D realization binding
+Typed PNCS content IDs bind to exact provenance-carrying `T^36` realizations. Vector equality/similarity is not semantic authority, conflicting realizations fail closed, and the unrecovered historical PNV/1 vector generator is not replay-claimed.
+
+### v0.19 — Semantic mass binding
+`Kaku.semantic_mass` binds to the validated PhaseNav runtime functional `m_k = κ*(1 + α_M*k) + (L4/L3)*R_k`. `R_k` uses the full exact 36D realization and `k` is an explicit positive index; no content-ID-to-index inference is admitted. The runtime source contract is SHA-256 pinned, direct parity is validated, and equal mass is not semantic-equivalence authority.
+
 ## Next gates
 
-### Gate 18 — Exact 36D realization binding
-Attach verified PhaseNav 36D realizations to content-addressed graph identities without allowing vector similarity to promote semantic equivalence. Validate full inverse lineage and live `/dev/shm/ciel_noema` execution receipts.
+### Gate 20 — Mass-aware graph cost and safe distributivity
+Define graph cost from bound KAKU mass without changing semantic identity. Use that cost only as an optimization/admission observable, then admit distributive rewrites only when canonical equivalence is preserved and duplication policy is explicit.
 
-### Gate 19 — Semantic mass binding
-Bind the KAKU semantic-mass field to a validated PhaseNav mass functional only after exact 36D realization identity and provenance are stable.
+### Gate 21 — Boolean constant evaluation
+Evaluate TRUE/FALSE outcomes as runtime values without silently creating new KAKU or semantic content objects.
 
 ## Deferred algebra gates
 

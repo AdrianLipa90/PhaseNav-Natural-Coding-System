@@ -1,6 +1,6 @@
 # PhaseNav Natural Code System (PNCS)
 
-Status: EXACT_36D_REALIZATION_BINDING_V0_18 / FOUNDATION LINEAGE V0.1-V0.18
+Status: SEMANTIC_MASS_BINDING_V0_19 / FOUNDATION LINEAGE V0.1-V0.19
 
 PhaseNav Natural Code System is a 36-dimensional relational coding system in which written code is a human-readable projection of a canonical semantic-phase graph.
 
@@ -104,3 +104,7 @@ Registered `DefinitionContent` objects now have a deterministic four-line writte
 ## v0.18 — Exact 36D Realization Binding
 
 Existing typed PNCS content IDs can now be bound to exact provenance-carrying PhaseNav `T^36` vectors without making vector equality or similarity semantic authority. `PhaseVector36` requires exactly 36 finite phase angles in `[0,2π)` and hashes them as `SHA256(compact_json(phase36))`. `RealizationBinding` keeps semantic content ID, phase realization ID, and provenance binding ID separate and requires explicit basis, derivation, source digest, and source locator. Conflicting vectors for the same `(content_id, basis_id, derivation_id)` fail closed; different semantic content IDs may share the same exact phase vector without merging. The historical PNV/1 generator remains unrecovered, so v0.18 records exact evidenced bindings and does not claim generator replay. No new PNV opcode is introduced. v0.18 passes 336/336 tests.
+
+## v0.19 — Semantic Mass Binding
+
+`Kaku.semantic_mass` is now bound to the validated PhaseNav runtime scalar `m_k = κ*(1 + α_M*k) + (L4/L3)*R_k`, where `R_k` is computed from the full exact 36D realization and `k` is an explicit positive PhaseNav index. PNCS does not infer `k` from semantic content IDs. The contract is pinned to the validated `pnv_runtime.py` source SHA-256 `0b4df86cd01db313ea46ebac0eceee9cf6df0673391edd1a3fb2667c30464a32`; reference parity passed on 128 full 36D vectors and 896 mass cases. Semantic content identity, 36D realization identity, mass realization identity, and provenance binding identity remain separate. Equal mass does not imply semantic equivalence, and the scalar is not promoted to a physical-mass claim. No new PNV opcode is introduced. v0.19 passes 377/377 tests.

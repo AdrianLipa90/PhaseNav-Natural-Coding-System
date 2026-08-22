@@ -1,0 +1,29 @@
+{
+  "schema": "PNCS_FOUNDATION_STATUS_V0_19",
+  "project": "PhaseNav Natural Coding System",
+  "status": "SEMANTIC_MASS_BINDING_PASS",
+  "formula": "m_k = kappa*(1 + alpha_M*k) + (L4/L3)*R_k",
+  "mass_contract_id": "PNV_SEMANTIC_MASS_V1",
+  "runtime_source_sha256": "0b4df86cd01db313ea46ebac0eceee9cf6df0673391edd1a3fb2667c30464a32",
+  "runtime_source_library_file_id": "file_00000000ea0c8210b0ff0db8ea94071a",
+  "phase_dimension": 36,
+  "phase_index_policy": "EXPLICIT_POSITIVE_INTEGER",
+  "content_id_to_phase_index_inference": false,
+  "semantic_equivalence_from_mass_equality": false,
+  "physical_mass_claim": false,
+  "new_opcodes": 0,
+  "tests": "377/377 PASS",
+  "compileall": "PASS",
+  "runtime_parity": {
+    "vectors": 128,
+    "mass_cases": 896,
+    "status": "PASS"
+  },
+  "live_surface": "/dev/shm/ciel_noema",
+  "tether_status": "ACTIVE",
+  "tether_seq": 65941,
+  "epistemic_operator": "CHYBA",
+  "canon_allowed": false,
+  "next_gate": "MASS_AWARE_GRAPH_COST_SAFE_DISTRIBUTIVITY",
+  "timestamp_utc": "2026-08-22T18:40:00Z"
+}

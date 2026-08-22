@@ -1,0 +1,15 @@
+{
+  "schema": "PNCS_NATURAL_RELATION_RESOLVER_LEDGER_V0_15",
+  "status": "CANDIDATE_FAIL_CLOSED",
+  "new_opcodes": [],
+  "generic_natural_language_compiler_enabled": false,
+  "semantic_authority": "CANONICAL_PNV_RELATION_GRAPH",
+  "surface_authority": false,
+  "resolver_scope": "PURE_PREDICATE",
+  "comparators": ["lt", "gt", "eq"],
+  "implicit_mixed_precedence": false,
+  "percent_requires_symbol_policy": true,
+  "unknown_alias_fails_closed": true,
+  "ambiguous_alias_fails_closed": true,
+  "resolution_trace_affects_content_id": false
+}

@@ -1,0 +1,28 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PNCS v0.15 — bounded natural relation resolution.
+# Natural surface aliases are resolver inputs, not PNV opcodes.
+# Generic natural-language execution remains disabled.
+
+OP K.DISTINGUISH DIFFERENCE left right
+OP K.CONDITION CONDITION predicate relation reference
+OP K.COMPOSE COMPOSITION left relation right
+OP K.NEGATE NEGATION value
+
+# risk is above 0.8 -> canonical risk gt 0.8
+OP EX.V15.RISK.DELTA DIFFERENCE risk 0.8
+OP EX.V15.RISK.PRED CONDITION EX.V15.RISK.DELTA gt 0
+
+# phase coherence is below 70% -> canonical phase_coherence lt 0.7
+OP EX.V15.PHASE.DELTA DIFFERENCE phase_coherence 0.7
+OP EX.V15.PHASE.PRED CONDITION EX.V15.PHASE.DELTA lt 0
+
+# conjunction remains ordinary predicate composition.
+OP EX.V15.GUARD COMPOSITION EX.V15.RISK.PRED all EX.V15.PHASE.PRED
+
+VECTOR V.EX.V15.RISK "PNCS.v0.15.natural_relation.risk_gt_0_8" PRECISE
+VECTOR V.EX.V15.PHASE "PNCS.v0.15.natural_relation.phase_coherence_lt_0_7" PRECISE
+VECTOR V.EX.V15.GUARD "PNCS.v0.15.natural_relation.guard" PRECISE
+EMIT EX.V15.GUARD

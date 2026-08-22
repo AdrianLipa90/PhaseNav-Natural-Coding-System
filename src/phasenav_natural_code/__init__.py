@@ -106,4 +106,20 @@ from .mass_v19 import (
     verify_kaku_mass,
     verify_serialized_mass_binding,
 )
+from .execution_v20 import (
+    BoundInternalProgram,
+    EXECUTABLE_INTERNAL_OPERATORS,
+    ExecutionStep,
+    LiveSurfaceSnapshot,
+    LiveSurfaceV20Error,
+    NativeExecutionResult,
+    NativeExecutionV20Error,
+    SigmaState,
+    bind_internal_program,
+    definition_content_id,
+    execute_admitted_internal,
+    execute_control_resolution,
+    expected_leaf_path,
+    load_live_surface,
+)
 

@@ -1,0 +1,39 @@
+{
+  "schema": "PNCS_BOOLEAN_ALGEBRA_LEDGER_V0_10",
+  "status": "PASS_08",
+  "new_opcodes": [],
+  "scope": {
+    "pure_predicate_only": true,
+    "global_composition_commutative": false,
+    "global_composition_associative": false,
+    "effects_reorder_allowed": false,
+    "control_transform_reorder_allowed": false
+  },
+  "admitted_rewrites": [
+    "AND_COMMUTATIVITY",
+    "OR_COMMUTATIVITY",
+    "AND_ASSOCIATIVITY",
+    "OR_ASSOCIATIVITY",
+    "DOUBLE_NEGATION",
+    "DE_MORGAN",
+    "IDEMPOTENCE",
+    "ABSORPTION"
+  ],
+  "deferred_rewrites": [
+    "DISTRIBUTIVITY",
+    "CONSTANT_FOLDING"
+  ],
+  "canonicalization": [
+    "NEGATION_NORMAL_FORM",
+    "DOUBLE_NEGATION_ELIMINATION",
+    "DE_MORGAN_PUSHDOWN",
+    "SAME_KIND_FLATTEN",
+    "DETERMINISTIC_COMMUTATIVE_SORT",
+    "IDEMPOTENT_DEDUPLICATION",
+    "ABSORPTION"
+  ],
+  "constant_primitive_added": false,
+  "generic_natural_language_compiler_enabled": false,
+  "github_target": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "github_mutated": false
+}

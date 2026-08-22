@@ -1,0 +1,81 @@
+{
+  "schema": "PNCS_CONTROL_FLOW_LEDGER_V0_6",
+  "status": "PASS_04",
+  "surface_example": "IF gravity BELOW 0.5 THEN GO physics.gravity.low",
+  "new_opcodes": [],
+  "mathematical_core_v05": [
+    "SOURCE",
+    "ORDER",
+    "TRANSFORM",
+    "COMPOSITION",
+    "DIFFERENCE",
+    "IDENTITY"
+  ],
+  "control_kaku_candidates": [
+    "CONDITION",
+    "ACTION_REQUEST"
+  ],
+  "surface_aliases": {
+    "BELOW": {
+      "leaf_path": [
+        "DIFFERENCE",
+        "CONDITION"
+      ],
+      "binding": "delta=subject-threshold; delta < 0"
+    },
+    "IF": {
+      "new_leaf": false,
+      "binding": "predicate admission"
+    },
+    "THEN": {
+      "new_leaf": false,
+      "binding": "ORDER(predicate, action)"
+    },
+    "GO": {
+      "new_leaf": false,
+      "binding": "ACTION_REQUEST(route,target)"
+    }
+  },
+  "radicals": {
+    "R.BELOW": {
+      "leaf_path": [
+        "DIFFERENCE",
+        "CONDITION"
+      ],
+      "status": "CONTROL_CANDIDATE"
+    },
+    "R.CONDITIONAL_ROUTE": {
+      "leaf_path": [
+        "DIFFERENCE",
+        "CONDITION",
+        "ORDER",
+        "ACTION_REQUEST",
+        "COMPOSITION"
+      ],
+      "status": "CONTROL_CANDIDATE"
+    }
+  },
+  "canonical_example": {
+    "subject": "gravity",
+    "relation": "lt",
+    "threshold": 0.5,
+    "action": "route",
+    "target": "physics.gravity.low",
+    "leaf_path": [
+      "DIFFERENCE",
+      "CONDITION",
+      "ORDER",
+      "ACTION_REQUEST",
+      "COMPOSITION"
+    ]
+  },
+  "execution_boundary": {
+    "action_request_is_request_node": true,
+    "hidden_execution": false,
+    "historical_native_v01_mutating_executor": false
+  },
+  "name_resolution_separate": true,
+  "surface_text_authoritative": false,
+  "vector_similarity_implies_semantic_equivalence": false,
+  "next_gate": "TRANSFER_CONTROL_GRAPH_AND_PARAPHRASE_CONVERGENCE"
+}

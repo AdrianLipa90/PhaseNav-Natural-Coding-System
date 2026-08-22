@@ -1,0 +1,64 @@
+{
+  "schema": "PNCS_CONTROL_TRANSFER_LEDGER_V0_7",
+  "status": "PASS_05",
+  "supersedes_control_binding": "V0_6_ACTION_REQUEST_FOR_INTERNAL_GO",
+  "new_opcodes": [],
+  "correction": {
+    "surface_GO": "internal_control_transfer",
+    "v06_binding": "ACTION_REQUEST(route,target)",
+    "v07_binding": "TRANSFORM(control_location,route,target)",
+    "reason": "ACTION_REQUEST is reserved for action/effect requests; internal route changes the control location without requesting an external effect",
+    "external_effect_boundary_preserved": true
+  },
+  "radicals": {
+    "R.COMPARISON": {
+      "leaf_path": [
+        "DIFFERENCE",
+        "CONDITION"
+      ],
+      "status": "TRANSFERRED_GRAMMAR_RADICAL",
+      "bindings": {
+        "BELOW": "lt",
+        "ABOVE": "gt",
+        "EQUAL": "eq"
+      }
+    },
+    "R.CONDITIONAL_ROUTE": {
+      "leaf_path": [
+        "DIFFERENCE",
+        "CONDITION",
+        "ORDER",
+        "TRANSFORM",
+        "COMPOSITION"
+      ],
+      "status": "PROMOTED_CONTROL_RADICAL",
+      "transfer_domains": [
+        "gravity",
+        "temperature",
+        "memory_pressure",
+        "phase_coherence",
+        "risk",
+        "phase_error"
+      ]
+    }
+  },
+  "surface_tokens_non_authoritative": [
+    "IF",
+    "BELOW",
+    "ABOVE",
+    "EQUAL",
+    "THEN",
+    "GO",
+    "->"
+  ],
+  "internal_route_is_effect_request": false,
+  "action_request_retained_for_effect_plane": true,
+  "canonical_program_shape": {
+    "subject": "concept_or_binding",
+    "comparator": "lt|gt|eq",
+    "threshold": "finite_scalar",
+    "target": "canonical_path"
+  },
+  "promotion_rule": "same expanded leaf path across independent domains with no special-case opcode",
+  "generic_natural_language_compiler_enabled": false
+}

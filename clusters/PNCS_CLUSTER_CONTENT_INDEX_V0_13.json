@@ -1,0 +1,30 @@
+{
+  "cluster_alias_count": 3,
+  "cluster_content_count": 2,
+  "clusters": [
+    {
+      "aliases": [
+        "monitor_cluster"
+      ],
+      "content_id": "pncs:cluster:sha256:2ed05026bcf9dda323816fa25e34a05e856b01201f9aa24257de4d3fa4779a79",
+      "file_ids": [
+        "pncs:file:sha256:a007b2ec6e830f10fd3c54f0c8958c27b015191157643c45d35d2db5d7b5729a",
+        "pncs:file:sha256:bae27dd1f1d2068c1a6fdc23dcca76a3a2639b17af99771c8497a6d6f359448b"
+      ],
+      "native_root_id": "CL.2ed05026bcf9dda3.ROOT"
+    },
+    {
+      "aliases": [
+        "runtime_cluster",
+        "safety_cluster"
+      ],
+      "content_id": "pncs:cluster:sha256:71b1495605c8cbf88e5c9f0d865558edb2dfe84c707a29b8231f6d1e538da94f",
+      "file_ids": [
+        "pncs:file:sha256:bae27dd1f1d2068c1a6fdc23dcca76a3a2639b17af99771c8497a6d6f359448b",
+        "pncs:file:sha256:2fa71aafe502b714d1c31c47dbde135f7f9ec67d3d10f82f7bc899b3b5aa53e2"
+      ],
+      "native_root_id": "CL.71b1495605c8cbf8.ROOT"
+    }
+  ],
+  "schema": "PNCS_CLUSTER_CONTENT_INDEX_V0_13"
+}

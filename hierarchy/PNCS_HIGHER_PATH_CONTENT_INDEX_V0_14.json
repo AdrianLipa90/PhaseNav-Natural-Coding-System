@@ -1,0 +1,96 @@
+{
+  "content_count": 7,
+  "contents": [
+    {
+      "aliases": [
+        "monitor_daemon"
+      ],
+      "child_ids": [
+        "pncs:cluster:sha256:2ed05026bcf9dda323816fa25e34a05e856b01201f9aa24257de4d3fa4779a79"
+      ],
+      "content_id": "pncs:daemon:sha256:b492676c83c052226f943ccec6cdb6f172e177425b43860c8e10a1e201552c98",
+      "level": "DAEMON",
+      "native_root_id": "DM.b492676c83c05222.ROOT"
+    },
+    {
+      "aliases": [
+        "safety_high"
+      ],
+      "child_ids": [
+        "pncs:low-orchestrator:sha256:faa057a3218e386b20eedc1302c620d2f8b7665cc4978485ed6cacce43276f17",
+        "pncs:low-orchestrator:sha256:0e262dd97b73ffbcd8a5236cbe7cf7138bcd3191bb6f36115036934338f54935"
+      ],
+      "content_id": "pncs:high-orchestrator:sha256:3381160781e8aeff36c10bbbc90140e0360e8182233dbc5dbdc750d913830c63",
+      "level": "HIGH_ORCHESTRATOR",
+      "native_root_id": "HO.3381160781e8aeff.ROOT"
+    },
+    {
+      "aliases": [
+        "monitor_high"
+      ],
+      "child_ids": [
+        "pncs:low-orchestrator:sha256:0e262dd97b73ffbcd8a5236cbe7cf7138bcd3191bb6f36115036934338f54935"
+      ],
+      "content_id": "pncs:high-orchestrator:sha256:7018353136460ffbd4cf2d016d0bc458952258e8337aee83856d07789e1bd9f2",
+      "level": "HIGH_ORCHESTRATOR",
+      "native_root_id": "HO.7018353136460ffb.ROOT"
+    },
+    {
+      "aliases": [
+        "monitor_low"
+      ],
+      "child_ids": [
+        "pncs:daemon:sha256:b492676c83c052226f943ccec6cdb6f172e177425b43860c8e10a1e201552c98",
+        "pncs:subsystem:sha256:e4b96baa8ef4379c100ecf084be4388d8c403f8f4a430ba416a8ed412a3d0161"
+      ],
+      "content_id": "pncs:low-orchestrator:sha256:0e262dd97b73ffbcd8a5236cbe7cf7138bcd3191bb6f36115036934338f54935",
+      "level": "LOW_ORCHESTRATOR",
+      "native_root_id": "LO.0e262dd97b73ffbc.ROOT"
+    },
+    {
+      "aliases": [
+        "safety_low"
+      ],
+      "child_ids": [
+        "pncs:subsystem:sha256:e4b96baa8ef4379c100ecf084be4388d8c403f8f4a430ba416a8ed412a3d0161",
+        "pncs:daemon:sha256:b492676c83c052226f943ccec6cdb6f172e177425b43860c8e10a1e201552c98"
+      ],
+      "content_id": "pncs:low-orchestrator:sha256:faa057a3218e386b20eedc1302c620d2f8b7665cc4978485ed6cacce43276f17",
+      "level": "LOW_ORCHESTRATOR",
+      "native_root_id": "LO.faa057a3218e386b.ROOT"
+    },
+    {
+      "aliases": [
+        "safety_subsystem",
+        "safety_subsystem_alias"
+      ],
+      "child_ids": [
+        "pncs:cluster:sha256:71b1495605c8cbf88e5c9f0d865558edb2dfe84c707a29b8231f6d1e538da94f"
+      ],
+      "content_id": "pncs:subsystem:sha256:e4b96baa8ef4379c100ecf084be4388d8c403f8f4a430ba416a8ed412a3d0161",
+      "level": "SUBSYSTEM",
+      "native_root_id": "SS.e4b96baa8ef4379c.ROOT"
+    },
+    {
+      "aliases": [
+        "pncs_safety_system"
+      ],
+      "child_ids": [
+        "pncs:high-orchestrator:sha256:3381160781e8aeff36c10bbbc90140e0360e8182233dbc5dbdc750d913830c63",
+        "pncs:high-orchestrator:sha256:7018353136460ffbd4cf2d016d0bc458952258e8337aee83856d07789e1bd9f2"
+      ],
+      "content_id": "pncs:system:sha256:af6461218dc0ed353315839d8423c47a4ccac769b9250c8270b93bf49085e756",
+      "level": "SYSTEM",
+      "native_root_id": "SYS.af6461218dc0ed35.ROOT"
+    }
+  ],
+  "counts_by_level": {
+    "DAEMON": 1,
+    "HIGH_ORCHESTRATOR": 2,
+    "LOW_ORCHESTRATOR": 2,
+    "SUBSYSTEM": 1,
+    "SYSTEM": 1
+  },
+  "record_count": 8,
+  "schema": "PNCS_HIGHER_PATH_CONTENT_INDEX_V0_14"
+}

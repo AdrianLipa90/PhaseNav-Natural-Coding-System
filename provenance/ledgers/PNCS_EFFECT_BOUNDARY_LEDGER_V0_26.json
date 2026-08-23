@@ -1,0 +1,45 @@
+{
+  "adapter_id": "pncs:effect-adapter:sha256:dae04f919e137886c8775b337e5acb4a66775111e2a150fe5702d46032356339",
+  "authorization_exact_request_only": true,
+  "authorization_id": "pncs:effect-authorization:sha256:7a9397d86bc854d835559eb1d4f27af308962a68dad52a568263e878410f764c",
+  "authorization_no_delegation": true,
+  "base_branch": "feat/pncs-v0.25-persistent-runtime",
+  "base_commit": "39c012d33bfe8fe21bed91ee090fb556334d7555",
+  "closed_effect_classes": [
+    "ARBITRARY_FILESYSTEM",
+    "GIT",
+    "NETWORK",
+    "SUBPROCESS",
+    "DEVICE",
+    "EXTERNAL_TOOL_CONNECTOR"
+  ],
+  "default_policy": "DENY",
+  "effect_contract_id": "PNCS_EFFECT_BOUNDARY_V0_26",
+  "effect_id": "pncs:effect:sha256:1fb02a1f9b068aab2b04a0faa453fecab3086fe61e22514d4b8b2b6a979220c7",
+  "effect_receipt_id": "pncs:effect-receipt:sha256:f8f4aeee9ef26168579e883a508c0eb3cb9c4c551c25faa7a95c64b032efb4ea",
+  "effect_record_sha256": "6778f36ccf139a9e99facdd75f04778e0808d480b437da4a01e0707f7ce9184c",
+  "effect_record_size_bytes": 1763,
+  "full_historical_suite_replayed": false,
+  "gate": "v0.26 Effect Boundary",
+  "live_generation_id": "pncs:runtime-generation:sha256:05736b12ac8470998901421dabd2dfff0bd663c141d96ad96bc9d5b09351bbb1",
+  "live_surface": "/dev/shm/ciel_noema",
+  "new_pnv_opcodes": 0,
+  "opened_effect_classes": [
+    "NOEMA_RUNTIME_RECORD_WRITE"
+  ],
+  "origin_dispatch_id": "pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2",
+  "post_effect_tether_guard": "PASS_ACTIVE_FAILURES_EMPTY",
+  "program_supplied_path_authority": false,
+  "pure_harness": "28/28 PASS",
+  "request_id": "pncs:effect-request:sha256:d6c3ef3801d64c7469650673efc7cbf56e01c896cbc235be98c113543fcea347",
+  "schema": "PNCS_EFFECT_BOUNDARY_LEDGER_V0_26",
+  "source_files_sha256": {
+    "effect_v26.py": "eededa57dd5ebb061b4cfa533f3592a6d7330770ed87b324689659990fc53339",
+    "effect_v26_core.py": "a0fb023ecca78aa66253084d1bb698954b009bcf33d34e97fe9e84260d72d8a7",
+    "effect_v26_fs.py": "21da7b4a4deeae7a6ff262eb42783590ba944d24c4307dc6fc20905113c3a977",
+    "effect_v26_runtime.py": "4ac9a0f5acc694f94b61812aa8030fc1c752d990e3ddfdb05c9e3e5183215446"
+  },
+  "static_runtime_fallback": false,
+  "status": "PASS_RELEASE_CLOSED_BOUNDED_NOEMA_RUNTIME_RECORD_EFFECT",
+  "test_effect_v26_sha256": "14e25bf99b4c5a266f3a19cb7ebe82e2ee3840a009f72f76036c30e468d3a219"
+}

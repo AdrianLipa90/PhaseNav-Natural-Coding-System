@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - feat/pncs-full-program-executor-v01
+  pull_request:
+    branches:
+      - feat/pncs-v029-orchorbital-harvest-hardening
   workflow_dispatch:
 
 permissions:

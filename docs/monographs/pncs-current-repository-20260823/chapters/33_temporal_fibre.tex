@@ -1,0 +1,46 @@
+\chapter{T\texorpdfstring{$^{36}$}{36} temporal-fibre optimization}
+
+\begin{statusbox}{Repository status}
+The optimization source, specification, tests and receipt are present on current main. Its own specification remains labelled \status{EXPERIMENTAL OPTIMIZATION VALIDATED}; that evidence label is preserved rather than silently promoted to a release gate.
+\end{statusbox}
+
+The temporal-fibre layer optimizes fixed-Hamiltonian local phase evolution without changing semantic identity, effect authority, or the v0.27 release semantics. For explicit local rate,
+\[
+\Delta\tau=\texttt{local\_rate}\,\Delta t.
+\]
+No local rate is inferred from semantic mass, density, viscosity, intention, natural language or phase proximity.
+
+For a fixed Hermitian Hamiltonian,
+\[
+H=VEV^\dagger,
+\qquad
+\psi(\tau)=V\exp(-iE\tau/\hbar)V^\dagger\psi_0.
+\]
+The eigendecomposition is performed once per exact Hamiltonian digest. A different Hamiltonian requires a different prepared-kernel identity.
+
+\section{Optimization levels}
+The implementation supports four bounded levels:
+\begin{enumerate}
+\item prepared temporal fibre: one eigendecomposition reused across admitted local times;
+\item vectorized fixed-H trajectory: all cumulative \(\tau_k\) evaluated through one phase matrix and matrix product;
+\item finite compiled gate set: explicit bounded \(\Delta\tau\) values, unknown gates denied;
+\item compiled bounded route schedule: an admitted sequence reduced to exact gate indices before the hot loop.
+\end{enumerate}
+
+\section{Measured validation}
+All declared numerical equivalence checks pass under tolerance \(2\times10^{-12}\). Reported maxima include sequential/vectorized trajectory error \(3.766\times10^{-14}\), compiled-gate error \(1.085\times10^{-14}\), and norm error \(1.110\times10^{-16}\).
+
+The repository record reports 18/18 pure tests PASS. Environment-specific measured medians include:
+\begin{longtable}{p{0.48\linewidth}r}
+\toprule
+Workload & Reported speedup\\\midrule
+400 steps, repeated eigendecomposition vs prepared & 15.26x\\
+400 dynamic steps over 5 compiled gates & 25.98x\\
+400-step precompiled bounded route & 101.92x\\
+2000 fixed-H snapshots, loop vs vectorized & 4.30x\\\bottomrule
+\end{longtable}
+These are historical, environment-specific software benchmarks, not universal performance claims.
+
+\begin{boundarybox}
+The temporal-fibre optimization does not define a BEC constitutive law, does not make semantic mass a time authority, does not claim physical spacetime dilation, and does not open external effects. Its current presence on main records implementation history and reusable code, not a separate PNCS semantic release.
+\end{boundarybox}

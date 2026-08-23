@@ -1,0 +1,52 @@
+{
+  "artifacts": {
+    "native/PNCS_V1_RELEASE_TRAIN_V0_1.pnv": {
+      "sha256": "83610f0477160eb19aafa8c0dfd59868bb6bc37c6282d9a18d71b82de0c70655"
+    },
+    "spec/PNCS_V1_RELEASE_TRAIN_V0_1.md": {
+      "sha256": "5be4dd463d170aac48ef98c47e7988a2750171573b2dfa4db964ec30942172fd"
+    },
+    "src/phasenav_natural_code/release_train_v1.py": {
+      "sha256": "1c4f6f20e17299fe36b1a3d439dbe02145a94739872b22aac5b9956f68beca99"
+    },
+    "tests/test_release_train_native_v1.py": {
+      "sha256": "8000394277c1f25b234ff09037479c48bd48f33aa4577b46ba5b8cf45f02784b"
+    },
+    "tests/test_release_train_v1.py": {
+      "sha256": "27a7a1bac26ad790ec5f718c557cb4eee750d90543f50914bb4c69ef97a8eb7b"
+    }
+  },
+  "branch": "feat/pncs-v1-release-train-freeze",
+  "date": "2026-08-23",
+  "experimental_research_deleted": false,
+  "live_surface": "/dev/shm/ciel_noema",
+  "main_modified": false,
+  "parent_v028_head": "25905ccf78686823cfaef93cd6ece2eefbc8586a",
+  "post_v1_preserved": [
+    "prime_temporal_hydro",
+    "radical_engine",
+    "1024ion_embedding",
+    "primeflow_v02",
+    "temporal_geometry_v02",
+    "non_coboundary_prime_interaction"
+  ],
+  "purpose": "freeze the v1.0 release-critical path while preserving new research in post-v1 quarantine",
+  "release_train": [
+    "V0_28_RELEASE_CLOSURE",
+    "V0_29_RELEASE_HARDENING",
+    "V0_30_RELEASE_CANDIDATE",
+    "V1_0_RELEASED"
+  ],
+  "repository": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "schema": "PNCS_V1_RELEASE_TRAIN_FREEZE_V0_1",
+  "status": "PURE_POLICY_PASS",
+  "tether_status": "ACTIVE",
+  "v028_scope_modified": false,
+  "validation": {
+    "fail_closed": true,
+    "missing_gate_blocks_advance": "PASS",
+    "native_pnv": "PASS",
+    "new_ideas_quarantine_all_stages": "PASS",
+    "pytest": "15 passed in 0.05s"
+  }
+}

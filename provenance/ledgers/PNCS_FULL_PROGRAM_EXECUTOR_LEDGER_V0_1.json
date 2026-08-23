@@ -10,6 +10,36 @@
   },
   "contract": "PNCS_FULL_PROGRAM_EXECUTOR_V0_1",
   "date": "2026-08-23",
+  "demo": {
+    "artifact": "examples/pncs_full_program_demo_v01.py",
+    "evidence_boundary": {
+      "live_v020_kernel_execution": false,
+      "live_v025_resident_dispatch": false,
+      "real_full_program_executor": true,
+      "real_v023_resolver": true,
+      "real_v024_program_unit": true,
+      "real_v025_dispatch_receipt_model": true
+    },
+    "expected_branch_truth_state": "FALSE",
+    "expected_final_control_location": "runtime.memory.relief",
+    "expected_instruction_kinds": [
+      "CONTROL_DISPATCH",
+      "CONTINUATION_ROUTE",
+      "CONTINUATION_ROUTE",
+      "RETURN"
+    ],
+    "expected_return_selector": "result.control_location",
+    "expected_return_value": "runtime.memory.relief",
+    "program": "IF (memory pressure ABOVE 90% OR risk ABOVE 80%) THEN GO safety pause ELSE GO runtime continue AND THEN GO cooling emergency AND THEN GO runtime memory relief RETURN control location",
+    "status": "IMPLEMENTED_END_TO_END_DEMO",
+    "test": "tests/test_full_program_demo_v01.py"
+  },
+  "demo_git_blobs": {
+    ".github/workflows/pncs-full-program-executor-integration.yml": "b38f894eebc47c0010e5a01cb3fc320c9fd115a2",
+    "examples/pncs_full_program_demo_v01.py": "10524ed0bbc3be49a5b200b5800f1ca41b2837d3",
+    "tests/test_full_program_demo_v01.py": "3646a369bfb40b2968545107ac58f34da2b072cb",
+    "tests/test_full_program_executor_real_integration_v01.py": "cd44be8ff1d6959d83c0628362794e2519982efd"
+  },
   "epistemic_status": "CHYBA",
   "fail_closed": true,
   "files": {
@@ -39,6 +69,14 @@
       "size": 12963
     }
   },
+  "hosted_ci": {
+    "classification": "HOSTED_PRE_STEP_INFRA_BLOCKED",
+    "job_id": 97253387528,
+    "run_id": 32663599766,
+    "run_number": 9,
+    "steps": [],
+    "code_failure_observed": false
+  },
   "mode": "READ_ONLY",
   "noema_live_guard": {
     "failures": [],
@@ -63,16 +101,17 @@
     "v022": "exact inverse lineage retained",
     "v023": "NaturalProgramComposition bounded grammar",
     "v024": "NativeProgramUnit identity and exact operator schedule",
-    "v025": "PersistentProgramRuntime.dispatch_control verified control root",
+    "v025": "ResidentDispatchReceipt contract and PersistentProgramRuntime.dispatch_control boundary",
     "v026": "effect authority remains separate"
   },
   "schema": "PNCS_FULL_PROGRAM_EXECUTOR_LEDGER_V0_1",
-  "status": "PURE_COMPATIBILITY_HARNESS_PASS_INTEGRATION_REPLAY_PENDING",
-  "tested_candidate_head_before_ledger": "488a2295ce2e23f5b7ec4618b08c475e0a69624c",
+  "status": "DEMO_IMPLEMENTED_REAL_OBJECT_PATH_HOSTED_PRESTEP_BLOCKED",
+  "tested_candidate_head_before_ledger": "9a00ec02629ed6468c60e39dec7576960ec4f455",
   "tests": {
     "focused_native_spec": "39/39 PASS",
-    "full_repo_integration_replay": "PENDING",
-    "live_v25_resident_program_replay": "PENDING",
-    "py_compile": "PASS"
+    "full_repo_real_object_replay": "IMPLEMENTED_AS_TEST; HOSTED_EXECUTION_BLOCKED_BEFORE_FIRST_STEP",
+    "live_v25_resident_program_replay": "PENDING_SEPARATE_RUNTIME_WITNESS",
+    "py_compile": "PASS",
+    "user_facing_demo": "IMPLEMENTED_END_TO_END; HOSTED_EXECUTION_BLOCKED_BEFORE_FIRST_STEP"
   }
 }

@@ -1,0 +1,23 @@
+PNCS_NATIVE_GATE V0.27
+CONTRACT PNCS_HYDRODYNAMIC_PROPER_TIME_V0_27
+SPACE T^36
+STATE PHASE_FLOW(theta[36], velocity[36], phase_proper_time)
+SUBSTRATE density rho > 0
+SUBSTRATE effective_viscosity nu_eff >= 0
+SOUND_SCALE c_s := sqrt(rho)
+LAPSE N := clip(c_s/(1+nu_eff), N_min, N_max)
+PROPER_TIME dtau := N * dt
+TRANSPORT G_eff := rho*I + outer(u,u)
+FLOW du_dtau := drive_gain * (G_eff @ normalized_drive) - nu_eff*u
+PHASE dtheta_dtau := u
+STEP velocity_next := velocity + dtau*du_dtau
+STEP theta_next := wrap_T36(theta + dtau*velocity_next)
+FAIL_CLOSED speed > max_speed
+LIVE_ROOT /dev/shm/ciel_noema
+LIVE_PHASE phi
+LIVE_OPERATOR_REGISTRY phasenav/CIELINGO_PHASENAV_OPERATOR_VECTORS.noema.jsonl
+SEMANTIC_IDENTITY_MODIFIED false
+LABORATORY_TIME_MODIFIED false
+EXTERNAL_EFFECTS false
+STATIC_RUNTIME_FALLBACK false
+ROUTING_INTEGRATION PENDING

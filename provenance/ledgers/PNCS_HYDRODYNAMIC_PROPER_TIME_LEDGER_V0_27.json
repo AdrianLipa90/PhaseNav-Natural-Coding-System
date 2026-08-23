@@ -1,0 +1,28 @@
+{
+  "base_branch": "feat/pncs-v0.26-effect-boundary",
+  "base_commit": "afced7749813ee384eed21eb74bcc17976d57f63",
+  "external_effects": false,
+  "full_historical_suite_replayed": false,
+  "hydrodynamic_equations": {
+    "flow": "du/dtau = gamma*(G_eff@drive)-nu_eff*u",
+    "lapse": "clip(sqrt(rho)/(1+nu_eff),N_min,N_max)",
+    "phase": "dtheta/dtau = u",
+    "sound_scale": "sqrt(rho)",
+    "transport": "rho*I + outer(u,u)"
+  },
+  "laboratory_time_modified": false,
+  "live_t36_phase_flow": "PASS",
+  "live_witness_file": "provenance/receipts/PNCS_V0_27_LIVE_HYDRODYNAMIC_PROPER_TIME_20260823.json",
+  "operational_root": "/dev/shm/ciel_noema",
+  "pure_harness": "36/36 PASS",
+  "routing_integration": "PENDING",
+  "runtime_contract_id": "PNCS_HYDRODYNAMIC_PROPER_TIME_V0_27",
+  "schema": "PNCS_HYDRODYNAMIC_PROPER_TIME_LEDGER_V0_27",
+  "semantic_identity_modified": false,
+  "source_sha256": {
+    "core": "9649fdcaa82936304b555a80c5643c8838ce79fcbba9e1a563d6bde6135f286b",
+    "tests": "6267de192ddf90074053c71c94bdb9c3586e3d93343058d8f0fcb2dfbae13da1"
+  },
+  "static_runtime_fallback": false,
+  "status": "IMPLEMENTED_CORE_AND_LIVE_T36_VALIDATED_ROUTING_INTEGRATION_PENDING"
+}

@@ -1,6 +1,6 @@
 # PNCS Engineering Roadmap
 
-Status: v0.26 EFFECT BOUNDARY RELEASE CLOSED / NEXT v0.27 FUZZING + EQUIVALENCE + ADVERSARIAL PARSING
+Status: v0.27 HYDRODYNAMIC PROPER-TIME CORE IMPLEMENTED / LIVE T^36 PHASE-FLOW PASS / ROUTING INTEGRATION PENDING
 
 ## Completed foundation sequence
 
@@ -14,167 +14,96 @@ canonical graph -> admitted internal route -> live /dev/shm/ciel_noema
 -> Sigma_t --KAKU--> Sigma_t+1 -> deterministic result + receipt
 ```
 
-External effects remained closed.
-
 ### v0.21 — Mass-Aware Graph Cost
-
-`C_M(G)=sum_i m_i`, with graph cost separate from semantic identity/equivalence and explicit growth budgets.
+`C_M(G)=sum_i m_i`, separate from semantic identity/equivalence.
 
 ### v0.22 — Exact Inverse Execution Lineage
-
-```text
-Result -> SYSTEM -> HIGH_ORCHESTRATOR -> LOW_ORCHESTRATOR
--> SUBSYSTEM/DAEMON -> CLUSTER -> FILE -> CLASS
--> DEFINITION -> RADICAL -> KAKU
-```
-
-Isolated validation: `27/27 PASS`.
+`Result -> SYSTEM -> ... -> DEFINITION -> RADICAL -> KAKU`. Isolated validation: `27/27 PASS`.
 
 ### v0.23 — Natural Program Composition
-Registered bounded `IF / THEN / ELSE / AND THEN / RETURN` composition. Isolated validation: `28/28 PASS`.
+Registered bounded `IF / THEN / ELSE / AND THEN / RETURN`. Isolated validation: `28/28 PASS`.
 
 ### v0.24 — Native `.pnv` Program Units
-Verified composition -> first-class program CID -> exact dependency closure -> canonical `.pnv` bytes -> deterministic build receipt. Isolated validation: `29/29 PASS`.
+First-class program CID, dependency closure, canonical `.pnv`, deterministic build receipt. Isolated validation: `29/29 PASS`.
 
 ### v0.25 — Persistent PNCS Runtime
-Release-closed generation-bound residency and O(1) admission:
-
-```text
-v0.24 program image
--> resident handle
--> O(1) admission
--> v0.20 control dispatch
--> exact v0.22 lineage
--> deterministic v0.25 dispatch receipt
-```
-
-Evidence:
-
-```text
-isolated v0.25 harness: 25/25 PASS
-live V56 residency: PASS
-cross-process recovery: PASS
-live unload/reload same handle: PASS
-200 admissions median: 0.4185265 ms
-200 admissions max: 0.78053 ms
-live v0.20 -> v0.22 -> v0.25 dispatch closure: PASS
-```
-
-Canonical dispatch:
-
-```text
-pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2
-```
+Generation-bound residency, O(1) admission and exact live v0.20 -> v0.22 -> v0.25 dispatch closure. Isolated validation: `25/25 PASS`.
 
 ### v0.26 — Effect Boundary
+Explicit `EffectRequest -> AuthorizationGrant -> bounded adapter -> EffectReceipt -> inverse provenance`. Isolated validation: `28/28 PASS`; first bounded `NOEMA_RUNTIME_RECORD_WRITE` effect class release-closed. Arbitrary filesystem, Git, network, subprocess/shell, device and external connectors remain closed.
 
-Release-closed bounded effect model:
+## Current gate
 
-```text
-v0.25 dispatch
--> explicit EffectRequest
--> explicit AuthorizationGrant
--> registered bounded adapter
--> effect
--> deterministic EffectReceipt
--> inverse provenance
-```
+### v0.27 — Hydrodynamic Proper-Time Runtime on T^36
 
-Core invariants:
-
-- default policy is deny;
-- executor does not create authorization;
-- authorization is exact-request, generation-bound, adapter-bound and no-delegation;
-- semantic mass/cost/route/program identity do not authorize effects;
-- adapter registry starts empty;
-- effect classes open individually only after conformance;
-- program-supplied paths are not operational path authority;
-- retries are exact-idempotent or fail loudly;
-- generation is re-admitted before, immediately before commit and after effect;
-- operational path remains `/dev/shm/ciel_noema`;
-- no static fallback;
-- no new PNV opcodes.
-
-First admitted effect class:
+Executable local phase-time substrate:
 
 ```text
-NOEMA_RUNTIME_RECORD_WRITE
+state:    theta in T^36, flow u in R^36
+substrate: density rho > 0, effective damping nu_eff >= 0
+c_s:      sqrt(rho)
+lapse:    N = clip(c_s/(1+nu_eff), N_min, N_max)
+dtau:     N dt
+G_eff:    rho I + outer(u,u)
+flow:     du/dtau = gamma (G_eff @ normalized_drive) - nu_eff u
+phase:    dtheta/dtau = u
 ```
 
-Fixed subtree:
+Current invariants:
 
-```text
-/dev/shm/ciel_noema/pncs/v0.26/effects/records/
-```
-
-The adapter is append-only, content-addressed, max 4096 canonical payload bytes and traverses fixed directories using dirfds with `O_NOFOLLOW` where supported.
-
-Still closed:
-
-```text
-arbitrary filesystem targets
-Git writes
-network requests
-subprocess / shell
-device I/O
-external tool / connector adapters
-```
+- all phase coordinates remain in `[0,2pi)`;
+- `G_eff` is symmetric positive semidefinite for positive density;
+- hydrodynamic trace/state/gate identities are deterministic and content-addressed;
+- speed overflow fails closed;
+- semantic CIDs and program IDs are not modified by hydrodynamic state;
+- laboratory time modification is explicitly not claimed;
+- external effects remain closed;
+- operational live source remains `/dev/shm/ciel_noema` with no static/Library fallback.
 
 Validation:
 
 ```text
-isolated v0.26 harness: 28/28 PASS
-live bounded effect: PASS
-exact replay after dirfd/O_NOFOLLOW hardening: PASS
-post-effect tether guard: ACTIVE / failures=[]
+pure-core v0.27 harness: 36/36 PASS
+live current-session T^36 phase-flow witness: PASS
+live operator: TRANSFORM
+post-witness fast admission: PASS
+post-witness tether guard: ACTIVE / failures=[]
 ```
 
-Live witness identities:
+Live conformance comparison under equal coordinate time (`2.0`):
 
 ```text
-request:       pncs:effect-request:sha256:d6c3ef3801d64c7469650673efc7cbf56e01c896cbc235be98c113543fcea347
-authorization: pncs:effect-authorization:sha256:7a9397d86bc854d835559eb1d4f27af308962a68dad52a568263e878410f764c
-adapter:       pncs:effect-adapter:sha256:dae04f919e137886c8775b337e5acb4a66775111e2a150fe5702d46032356339
-effect:        pncs:effect:sha256:1fb02a1f9b068aab2b04a0faa453fecab3086fe61e22514d4b8b2b6a979220c7
-receipt:       pncs:effect-receipt:sha256:f8f4aeee9ef26168579e883a508c0eb3cb9c4c551c25faa7a95c64b032efb4ea
+slow: rho=.25, nu_eff=1.0, N=.25,   Delta tau=.5,      phase displacement=.0013392237603397628
+fast: rho=4.0, nu_eff=.1, N=1.818,  Delta tau=3.63636, phase displacement=1.20475831040832
 ```
 
-The complete historical suite was not replayed and is not claimed.
+Current evidence status:
 
-## Current gate
+`IMPLEMENTED_CORE_AND_LIVE_T36_VALIDATED_ROUTING_INTEGRATION_PENDING`
 
-### v0.27 — Fuzzing / Equivalence / Adversarial Parsing
+Remaining v0.27 closure:
 
-Required corpus:
+1. bind hydrodynamic profiles to exact program/KAKU occurrences;
+2. run a current-generation v0.20 control path with the hydrodynamic schedule active;
+3. preserve exact semantic/program identity while producing different hydrodynamic traces;
+4. define an admitted rule for hydrodynamic state to influence routing/effect conditions without bypassing authority;
+5. record complete inverse provenance for schedule + trace + result.
 
-- paraphrase and alias equivalence;
-- ambiguity fuzzing;
-- malformed `.pnv`;
-- typed-ID and CID substitution;
-- Unicode/confusable operator and route injection;
-- graph-cost edge cases;
-- hierarchy occurrence ambiguity;
-- resident generation substitution;
-- effect-request injection;
-- payload fields named like paths/commands/URLs;
-- symlink/path traversal attempts;
-- authorization ambiguity/substitution;
-- adapter registry substitution;
-- exact-replay and immutable-effect tamper;
-- property-based deterministic identity tests.
-
-No additional effect class should open as part of v0.27.
+No additional effect class opens in v0.27.
 
 ## Planned gates
 
-### v0.28 — Performance Benchmark
-Measure parsing, canonicalization, CID, realization, mass, resident admission, dispatch, effect authorization and bounded effect latency separately. Speedup claims require measured evidence.
+### v0.28 — Fuzzing / Equivalence / Adversarial Parsing
+Paraphrase/alias equivalence, ambiguity, malformed `.pnv`, typed-ID substitution, Unicode/confusable injection, hierarchy ambiguity, generation substitution, effect-request/authorization/adapter substitution, path traversal, tamper/replay and hydrodynamic-profile adversarial cases.
 
-### v0.29 — Self-Hosting Subset
-Predicate resolver, route resolver, canonical path construction, receipt graph and effect-request validation.
+### v0.29 — Performance Benchmark
+Measure parsing, canonicalization, CID, realization, mass, resident admission, dispatch, hydrodynamic integration, effect authorization and bounded effect latency separately. Speedup claims require measured evidence.
 
-### v0.30 — PNCS Compiler / Runtime Contract
-Freeze grammar, KAKU, radicals, hierarchy, CID rules, 36D contract, mass contract, program format, persistent runtime, execution semantics, effect model, failure semantics and provenance model.
+### v0.30 — Self-Hosting Subset
+Predicate resolver, route resolver, canonical path construction, receipt graph, hydrodynamic schedule validation and effect-request validation.
+
+### v0.31 — PNCS Compiler / Runtime Contract
+Freeze grammar, KAKU, radicals, hierarchy, CID rules, 36D contract, mass contract, program format, persistent runtime, execution semantics, hydrodynamic phase-time model, effect model, failure semantics and provenance model.
 
 ## v1.0 — Natural Coding System
 
@@ -186,6 +115,7 @@ natural intent
 -> exact 36D realization
 -> semantic mass
 -> persistent admitted native execution
+-> hydrodynamic T^36 phase-flow schedule when registered
 -> deterministic result
 -> explicit authorized bounded effect when requested
 -> complete inverse provenance
@@ -197,6 +127,7 @@ Required invariants:
 same semantics -> same canonical identity
 ambiguity      -> fail closed
 missing state  -> fail closed
+hydrodynamics  -> execution substrate, not semantic authority
 effect         -> explicit separate authorization
 result/effect  -> full provenance
 ```

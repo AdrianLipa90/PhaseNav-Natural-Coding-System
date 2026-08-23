@@ -13,84 +13,53 @@ permissions:
   contents: read
 
 jobs:
-  conformance:
+  exact_sha_conformance:
+    name: ${{ matrix.label }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: orch-core
+            tests: tests/test_orchorbital_v27.py tests/test_orchorbital_foundation_constraints_v27.py
+          - label: direct-executor
+            tests: tests/test_orchorbital_executor_v27.py
+          - label: hydro-core
+            tests: tests/test_hydro_time_v27.py
+          - label: hydro-schedule
+            tests: tests/test_hydro_schedule_v27.py
+    env:
+      TEST_FILES: ${{ matrix.tests }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install pytest
+      - name: Download immutable PR-head source and run tests
         shell: python {0}
         run: |
-          import subprocess, sys
-          subprocess.run([sys.executable, '-m', 'pip', 'install', 'pytest'], check=True)
-      - name: Run ORCHORBITAL v0.27 conformance
-        shell: python {0}
-        run: |
+          import json
+          import os
           from pathlib import Path
-          import json, subprocess, sys
-          tests = [
-              'tests/test_orchorbital_v27.py',
-              'tests/test_orchorbital_foundation_constraints_v27.py',
-              'tests/test_orchorbital_executor_v27.py',
-              'tests/test_hydro_time_v27.py',
-              'tests/test_hydro_schedule_v27.py',
-          ]
-          p = subprocess.run([sys.executable, '-m', 'pytest', '-q', *tests, '--junitxml=pncs-v027-orch-junit.xml'], capture_output=True, text=True)
-          Path('pncs-v027-orch-pytest-stdout.txt').write_text(p.stdout)
-          Path('pncs-v027-orch-pytest-stderr.txt').write_text(p.stderr)
-          Path('pncs-v027-orch-pytest-result.json').write_text(json.dumps({'returncode': p.returncode, 'tests': tests}, indent=2) + '\n')
-      - name: Record exact commit and source hashes
-        shell: python {0}
-        run: |
-          from pathlib import Path
-          import hashlib, json, os
-          paths = [
-              'src/phasenav_natural_code/orchorbital_v27.py',
-              'src/phasenav_natural_code/orchorbital_hydro_v27.py',
-              'src/phasenav_natural_code/orchorbital_executor_v27.py',
-              'src/phasenav_natural_code/hydro_time_v27.py',
-              'src/phasenav_natural_code/hydro_schedule_v27.py',
-              'src/phasenav_natural_code/execution_v20.py',
-              'src/phasenav_natural_code/execution_v20_model.py',
-              'src/phasenav_natural_code/execution_v20_state.py',
-              'src/phasenav_natural_code/execution_v20_live.py',
-          ]
-          out = {'commit': os.environ.get('GITHUB_SHA'), 'sha256': {}}
-          for name in paths:
-              raw = Path(name).read_bytes()
-              out['sha256'][name] = hashlib.sha256(raw).hexdigest()
-          Path('pncs-v027-orch-source-hashes.json').write_text(json.dumps(out, indent=2, sort_keys=True) + '\n')
-      - name: Upload exact tested snapshot and diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pncs-v027-orchorbital-tested-snapshot
-          if-no-files-found: error
-          path: |
-            src/phasenav_natural_code/
-            tests/test_orchorbital_v27.py
-            tests/test_orchorbital_foundation_constraints_v27.py
-            tests/test_orchorbital_executor_v27.py
-            tests/test_hydro_time_v27.py
-            tests/test_hydro_schedule_v27.py
-            native/PNCS_ORCHORBITAL_HYDRO_COUPLING_V0_27.pnv
-            spec/PNCS_ORCHORBITAL_HYDRO_COUPLING_V0_27.md
-            provenance/receipts/FOUNDATION_STATUS_V0_27_ORCHORBITAL.json
-            pncs-v027-orch-junit.xml
-            pncs-v027-orch-source-hashes.json
-            pncs-v027-orch-pytest-stdout.txt
-            pncs-v027-orch-pytest-stderr.txt
-            pncs-v027-orch-pytest-result.json
-          retention-days: 7
-      - name: Enforce conformance result
-        if: always()
-        shell: python {0}
-        run: |
-          from pathlib import Path
-          import json, sys
-          result = json.loads(Path('pncs-v027-orch-pytest-result.json').read_text())
-          raise SystemExit(int(result['returncode']))
+          import subprocess
+          import sys
+          import tempfile
+          import urllib.request
+          import zipfile
+
+          event = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text())
+          head_sha = event.get('pull_request', {}).get('head', {}).get('sha') or os.environ['GITHUB_SHA']
+          repo = os.environ['GITHUB_REPOSITORY']
+          url = f'https://codeload.github.com/{repo}/zip/{head_sha}'
+          with tempfile.TemporaryDirectory() as td:
+              td = Path(td)
+              archive = td / 'repo.zip'
+              urllib.request.urlretrieve(url, archive)
+              with zipfile.ZipFile(archive) as zf:
+                  zf.extractall(td / 'repo')
+              roots = [p for p in (td / 'repo').iterdir() if p.is_dir()]
+              if len(roots) != 1:
+                  raise RuntimeError(f'unexpected archive roots: {roots}')
+              root = roots[0]
+              subprocess.run([sys.executable, '-m', 'pip', 'install', 'pytest'], check=True)
+              tests = [str(root / p) for p in os.environ['TEST_FILES'].split()]
+              env = dict(os.environ)
+              env['PYTHONPATH'] = str(root / 'src')
+              print(json.dumps({'exact_head_sha': head_sha, 'tests': os.environ['TEST_FILES']}))
+              raise SystemExit(subprocess.run([sys.executable, '-m', 'pytest', '-q', *tests], cwd=root, env=env).returncode)

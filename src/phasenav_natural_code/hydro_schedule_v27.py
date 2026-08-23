@@ -8,7 +8,7 @@ import struct
 from pathlib import Path
 from typing import Mapping, Sequence
 
-from hydro_time_v27 import (
+from .hydro_time_v27 import (
     DEFAULT_SURFACE_ROOT,
     HydrodynamicPhaseGate,
     HydrodynamicProperTimeV27Error,

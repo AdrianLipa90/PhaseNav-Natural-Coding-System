@@ -1,6 +1,6 @@
 # PNCS v0.27 ORCHORBITAL × Hydrodynamic T^36 Coupling
 
-Status: ORCH/OORP CORE + EXACT-KAKU REPLAY PASS / DIRECT v0.20 EXECUTOR COUPLING IMPLEMENTED / LIVE V56 VALIDATION PENDING
+Status: RELEASE GATE CLOSED / LIVE V56 DIRECT-COUPLED CLOSURE PASS / NEXT v0.28 FUZZING + EQUIVALENCE + ADVERSARIAL PARSING
 
 ## Authority
 
@@ -235,31 +235,86 @@ After v0.20 receipt construction, `bind_direct_trace_to_receipt()` requires exac
 
 Only then is the direct trace bound to the final v0.20 receipt SHA-256. This binding does not modify the v0.20 receipt.
 
-## Current validation
+## Release-closure validation
 
-Committed ORCH core/replay feature harness:
+Gate-scoped validation executed for release closure:
 
 ```text
-18/18 PASS
+committed compact ORCH conformance: 18/18 PASS
+broader ORCH development harness:    33/33 PASS
+current-worker ORCH core harness:     51/51 PASS
+exact branch direct-executor tests:   9/9 PASS
+fresh live V56 direct coupling:       PASS
+Sigma_base == Sigma_coupled:          PASS
+base v0.20 steps == coupled steps:    PASS
+fresh direct trace -> v0.20 receipt:  PASS
+post-witness fast admission:          PASS
+post-witness tether guard:            PASS / failures=[]
 ```
 
-The broader development harness used while constructing the ORCH core reached `33/33 PASS`. The committed 18-test suite covers geometry anchoring, K_ij symmetry, observables, truth scalar, explicit subjective time, reduction/no-reduction behavior, ambiguity fail-closed, exact occurrence identity, vector and receipt tamper rejection, proper-time coupling, dynamic winding, exact replay order, deterministic trace identity, `AttractorLLMTemp` fail-closed without a decay schedule, and invalid negative selection-tie tolerance.
+The exact direct-executor dependency closure was verified against Git blob identities before execution. The live execution used the current tethered `/dev/shm/ciel_noema` surface and no static runtime fallback.
 
-A separate direct-executor test module is now committed. It tests base-v0.20 vs coupled Sigma/step equality, one ORCH transition per actual KAKU transition, authority closure, phase-sidecar evolution, adjacency coupling, missing-gate fail-closed, exact receipt binding, receipt tamper rejection and deterministic configuration identity.
+Fresh live closure identifiers:
 
-Those direct-executor tests were not run in the current worker because this worker exposes neither the repository source tree through a runnable checkout nor `/dev/shm/ciel_noema`. They remain `COMMITTED_NOT_RUN_IN_CURRENT_WORKER`, not PASS.
+```text
+v0.20 receipt:
+1b3ca3c311492e16d447a333e2d1a4f0381c9de77ec7ebfb293637e08021fbf4
 
-No fresh V56 live-runtime claim and no full historical-suite replay are made in this pass.
+v0.27 direct trace:
+pncs:orch-direct-trace:sha256:bac0af63fe8fe01a7138613555c266129108183e39b09b6a75ebe7a90b13f17b
 
-## Closure still required
+v0.27 receipt-bound trace:
+pncs:orch-receipt-bound-trace:sha256:1d98527a6975bf82246e1fcb521c05b082b296c2ce79758f0e0c72184d945907
 
-Before v0.27 ORCH coupling may be release-closed:
+final Sigma:
+pncs:sigma:sha256:fa551b6d741b73c4eb0988acbbe54e18ed2c0cccda77d78c93007f900a3dbbaf
 
-1. execute the committed direct-executor conformance suite on the repository branch;
-2. run against current tethered `/dev/shm/ciel_noema`;
-3. revalidate all nine canonical v0.20 operator-vector byte hashes;
-4. execute a fresh current-generation direct ORCH × hydro run inside `_Executor._transition()`;
-5. construct the normal v0.20 receipt and bind the direct ORCH trace to it without changing receipt bytes;
-6. extend inverse provenance from the receipt-bound ORCH trace through v0.22 lineage and v0.25 resident program/generation;
-7. run the repository conformance suite;
-8. keep manifest fail-closed until final-tree file-byte SHA-256 regeneration.
+final ORCH state:
+pncs:orch-state:sha256:f51b71a75346f5809b30ab5f3950256ec43c79d9f9c1dd39e80cc7babd802f64
+
+final T^36 phase state:
+pncs:t36-flow-state:sha256:f58dec65239662bab256ed0c60cbe750801fcfe40f4b757c7d6306e32c825346
+
+full live witness SHA-256:
+95072fcf3c10a82fb510cd2857bf497d885b79635536dd069e35394bdda58691
+
+repository closure receipt SHA-256:
+88710ab288eb759aeed0b151cc03ba85c0529f58fb8eaade65df17d1970d1a07
+```
+
+Inverse provenance preserves the evidence boundary:
+
+```text
+fresh V56:
+ORCH direct trace -> fresh v0.20 execution receipt -> Definition
+
+repository-verified historical closure:
+Definition -> v0.22 result/lineage -> v0.25 resident dispatch/witness
+```
+
+Historical v0.22/v0.25 artifacts are not reclassified as current live execution evidence.
+
+## Explicit non-claims at closure
+
+The following are not claimed:
+
+```text
+current-head GitHub Actions CI PASS
+full repository suite replay
+full historical suite replay
+MANIFEST.sha256.json regeneration
+new v0.27 effect class
+routing authority from ORCHORBITAL
+persistent memory write from ORCHORBITAL
+laboratory-time modification
+```
+
+A prior GitHub Actions run failed without a retrievable artifact/log (`404 BlobNotFound`). That CI state is recorded separately and is not rewritten as PASS. Release closure is based on the byte-verified gate-scoped harnesses plus the fresh live V56 witness above.
+
+## Release status
+
+`v0.27 ORCHORBITAL × Hydrodynamic T^36 Coupling` is release-closed.
+
+No additional effect class opens in v0.27. `MANIFEST.sha256.json` remains fail-closed until complete final-tree file-byte SHA-256 regeneration.
+
+Next gate: **v0.28 — Fuzzing / Equivalence / Adversarial Parsing**.

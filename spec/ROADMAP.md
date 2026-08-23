@@ -1,25 +1,22 @@
 # PNCS Engineering Roadmap
 
-Status: v0.23 NATURAL PROGRAM COMPOSITION IMPLEMENTED / NEXT v0.24
+Status: v0.24 NATIVE `.pnv` PROGRAM UNITS IMPLEMENTED / NEXT v0.25
 
-Current v0.23 base: `33bbea45d2ad9bd484b91288a641c1d96fc6bb50` (v0.22 Exact Inverse Execution Lineage feature commit).
+Current v0.24 base: `8bf46dcf8d61cdb7efffa034766105914e1a2dc7` (v0.23 Natural Program Composition feature head).
 
 ## Completed foundation sequence
 
-### v0.1 — Structural foundation
-36D integrity container, KAKU schema, relation graph, path lineage and fail-closed compiler boundary.
+### v0.1–v0.5 — Structural and relational foundation
+36D integrity, KAKU, relation graphs, TIR × Secret of a Half seed, relation mining, primitive closure and semantic-collision repair.
 
-### v0.2–v0.5 — Relational basis and primitive closure
-TIR × Secret of a Half seed, relation mining, primitive transfer and semantic-collision repair.
-
-### v0.6–v0.10 — Control, grouping and pure Boolean algebra
+### v0.6–v0.10 — Control and pure Boolean algebra
 Bounded control graphs, internal route transfer, recursive grouping and deterministic pure-predicate algebra.
 
 ### v0.11–v0.14 — Content-addressed hierarchy
-Definition, Class, File, Cluster, Subsystem/Daemon, Orchestrator and System identities with deterministic downward expansion.
+Definition, Class, File, Cluster, Subsystem/Daemon, Orchestrator and System content identities.
 
 ### v0.15–v0.17 — Registered natural/written surfaces
-Bounded natural relation/control resolution and deterministic written PNCS projection. Arbitrary free-form NL execution remains closed.
+Bounded natural relation/control resolution and deterministic written projection. Arbitrary free-form NL execution remains closed.
 
 ### v0.18 — Exact 36D Realization Binding
 Typed PNCS content binds to exact provenance-carrying `T^36` realization without making vector similarity semantic authority.
@@ -37,12 +34,8 @@ with explicit positive `k`, exact T^36 realization and no CID-to-index inference
 ### v0.20 — Native Execution Core
 
 ```text
-canonical graph
--> exact content / realization / mass lineage
--> resolved internal admission
--> live /dev/shm/ciel_noema
--> Sigma_t -- KAKU --> Sigma_t+1
--> deterministic result + receipt
+canonical graph -> admission -> live /dev/shm/ciel_noema
+-> Sigma_t --KAKU--> Sigma_t+1 -> deterministic result + receipt
 ```
 
 Only existing internal PNV operators are executable. External effects remain closed.
@@ -53,95 +46,113 @@ Only existing internal PNV operators are executable. External effects remain clo
 C_M(G) = sum_i m_i
 ```
 
-RADICAL, PATH, PROGRAM and PREDICATE cost scopes are supported. Cost is not semantic identity or equivalence evidence. Cost-aware distributivity requires independent Boolean equivalence, exact source witness reuse and explicit growth budgets; default growth budget is zero.
+Cost is separate from semantic identity/equivalence. Graph-growing algebra requires independent equivalence evidence and explicit growth budgets.
 
 ### v0.22 — Exact Inverse Execution Lineage
 
-Every admitted v0.20 internal result can be bound to:
-
 ```text
-Result
--> SYSTEM
--> HIGH_ORCHESTRATOR
--> LOW_ORCHESTRATOR
--> SUBSYSTEM / DAEMON
--> CLUSTER
--> FILE
--> CLASS
--> DEFINITION
--> RADICAL
--> KAKU
+Result -> SYSTEM -> HIGH_ORCHESTRATOR -> LOW_ORCHESTRATOR
+-> SUBSYSTEM / DAEMON -> CLUSTER -> FILE -> CLASS
+-> DEFINITION -> RADICAL -> KAKU
 ```
 
-v0.22 requires exact hierarchy occurrence indexes, receipt revalidation, continuous Sigma transitions, registered Definition rebound, complete RadicalGraph hashing, exact KAKU schedule, and ambiguity fail-closed semantics.
-
-Gate-scoped isolated validation: `27/27 PASS`.
+Exact hierarchy occurrences, continuous Sigma trace, registered Definition rebound and exact Radical/KAKU witness binding. Isolated validation: `27/27 PASS`.
 
 ### v0.23 — Natural Program Composition
 
-Bounded registered surface:
+```text
+IF ... THEN ... ELSE ... AND THEN ... RETURN ...
+```
+
+Every control/route/return phrase resolves through registered semantics. Composition is content-addressed; arbitrary free-form NL execution remains closed. Canonical witness:
 
 ```text
-IF ...
-THEN ...
-ELSE ...
-AND THEN ...
-RETURN ...
+pncs:composition:sha256:5b3710e6c8bf34d3754e7144ca139beb70205ea20b2fa504ef63c710c177cd57
+```
+
+Isolated validation: `28/28 PASS`.
+
+### v0.24 — Native `.pnv` Program Units
+
+A verified v0.23 composition is now promoted to a first-class program semantic unit:
+
+```text
+composition
+-> program semantic payload
+-> pncs:program:sha256:...
+-> dependency closure + exact occurrence sequence
+-> exact operator schedule
+-> canonical .pnv bytes
+-> authority-gated byte-identical import/export
+-> live build receipt
 ```
 
 Implemented invariants:
 
-- the control root resolves through v0.15/v0.16 registries;
-- the resolved `INTERNAL_BRANCH` must already exist in DefinitionRegistry;
-- the default authority reuses existing `safety_bifurcation` CID `b7988497...`;
-- every `AND THEN` clause resolves through the internal RouteRegistry;
-- each continuation route receives a deterministic `pncs:route-ref:sha256:*`;
-- every `RETURN` resolves through the content-addressed v0.23 ReturnRegistry;
-- arbitrary return literals fail closed;
-- source wording and registered aliases do not alter composition identity;
-- the composition receives deterministic `pncs:composition:sha256:*` identity;
-- the canonical witness composition ID is `5b3710e6...`;
-- v0.22 control-result lineage can be bound exactly to the composition;
-- continuation execution is not claimed by that lineage binding;
-- live `/dev/shm/ciel_noema` admission verifies every operator occurrence against the exact 36D operator registry;
-- `RETURN` operator presence does not open execution authority;
-- `v0_20_executable = false`;
-- external effects and arbitrary free-form NL execution remain closed;
+- program CID is distinct from composition CID;
+- text cannot create program semantics;
+- import requires registered PROGRAM_ID authority;
+- canonical text is accepted only if byte-identical to deterministic re-export;
+- unique dependency closure and ordered dependency occurrences are separately hashed;
+- repeated route occurrences remain visible without duplicating closure authority;
+- exact v0.22 lineage contract survives the program-unit boundary;
+- final operator is the existing `RETURN` operator;
+- operator presence does not grant execution authority;
+- operational builds are fixed to live `/dev/shm/ciel_noema`;
+- build reuses current v0.23 36D composition admission;
+- native execution, return execution, external effects and free-form NL execution remain closed;
 - no new PNV opcode is introduced.
 
-Gate-scoped isolated validation: `28/28 PASS`.
+Canonical witness:
 
-Repository integration tests added: `19`. The complete historical repository suite has not been replayed in the isolated construction environment.
+```text
+program:
+pncs:program:sha256:572660a1046975c57e01f7e402677f1e4ca845e51bca1bee6517e0d86b35c4d7
+
+.pnv SHA-256:
+012b41c149b1ba518d9be65d34d7ab6605b92500e8768e23c11abff7330a77fb
+
+build:
+pncs:program-build:sha256:d89f091ef7c57d3211c9147dac682246fb619836bc33c13c64ad918323fd5a48
+```
+
+Validation:
+
+- isolated v0.24 pure-core harness: `29/29 PASS`;
+- current-session V56 live build persisted under `/dev/shm/ciel_noema`;
+- 15/15 operator occurrences witnessed against live 36D registry;
+- post-build tether guard: `ACTIVE`, `failures=[]`;
+- repository integration tests added;
+- complete historical suite not replayed in isolated construction environment.
 
 ## Next gate
 
-### v0.24 — Native `.pnv` Program Units
+### v0.25 — Persistent PNCS Runtime
 
-Promote a v0.23 composition into a first-class native program unit.
+Keep admitted first-class v0.24 program units resident on the current live runtime generation.
+
+Required lifecycle:
+
+```text
+program unit
+-> live generation admission
+-> resident program state
+-> deterministic state handle
+-> repeated internal dispatch without process reconstruction
+-> result + receipt + v0.22 inverse lineage
+```
 
 Requirements:
 
-- first-class program CID distinct from composition ID;
-- deterministic dependency closure over Definition, route refs, return refs and required contracts;
-- deterministic `.pnv` serialization;
-- deterministic import/export round trip;
-- deterministic build receipt;
-- source text and repository location remain non-authoritative;
-- no Python-only semantic state;
-- no external effects;
-- Python remains reference/test harness;
-- v0.22 lineage requirement survives the program-unit boundary.
+- persistent resident program registry on live `/dev/shm/ciel_noema`;
+- generation-bound handles invalidated on stale/replaced runtime generation;
+- O(1) admission after verified hydration;
+- deterministic load/unload receipts;
+- no process restart for each internal operation;
+- no Library/static operational fallback;
+- no early opening of v0.26 external effects.
 
 ## Planned gates
-
-### v0.25 — Persistent PNCS Runtime
-
-```text
-written PNCS -> canonical graph -> CIDs -> 36D -> mass -> admission
--> persistent /dev/shm runtime -> result + receipt
-```
-
-No process restart for every operation. Operational 36D work remains on live `/dev/shm/ciel_noema`.
 
 ### v0.26 — Effect Boundary
 
@@ -152,20 +163,18 @@ semantic program -> EffectRequest -> authorization -> bounded adapter -> effect 
 Filesystem, Git, network, subprocess/device and external-tool effects remain closed until this gate.
 
 ### v0.27 — Fuzzing / Equivalence / Adversarial Parsing
-Paraphrase fuzzing, ambiguity fuzzing, malformed PNV, CID collision checks, Unicode/confusable attacks, route/effect injection and property-based tests.
+Paraphrase fuzzing, ambiguity fuzzing, malformed PNV, CID-collision checks, Unicode/confusable attacks, route/effect injection and property-based tests.
 
 ### v0.28 — Performance Benchmark
-Measure parse, canonicalization, CID, 36D realization, mass, route evaluation and full program separately across Python reference, native PNCS and persistent PhaseNav `/dev/shm`. Speedup claims require measured evidence.
+Compare Python reference, native PNCS and persistent PhaseNav `/dev/shm`; measure each stage separately. Speedup claims require measured evidence.
 
 ### v0.29 — Self-Hosting Subset
 Predicate resolver, route resolver, canonical path construction and receipt graph.
 
 ### v0.30 — PNCS Compiler / Runtime Contract
-Freeze grammar, KAKU, radicals, hierarchy, CID rules, 36D contract, mass contract, execution semantics, failure semantics, effect model and provenance model.
+Freeze grammar, KAKU, radicals, hierarchy, CID rules, 36D contract, mass contract, program-unit format, execution/failure semantics, effect model and provenance model.
 
 ## v1.0 — Natural Coding System
-
-Release criterion:
 
 ```text
 natural intent

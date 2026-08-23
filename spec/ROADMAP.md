@@ -1,8 +1,8 @@
 # PNCS Engineering Roadmap
 
-Status: v0.22 EXACT INVERSE EXECUTION LINEAGE IMPLEMENTED / NEXT v0.23
+Status: v0.23 NATURAL PROGRAM COMPOSITION IMPLEMENTED / NEXT v0.24
 
-Current v0.22 base: `029e80166fb31aeec258581cbbe33bec47a2d481` (v0.21 and repository-layout canonicalization merged to `main`).
+Current v0.23 base: `33bbea45d2ad9bd484b91288a641c1d96fc6bb50` (v0.22 Exact Inverse Execution Lineage feature commit).
 
 ## Completed foundation sequence
 
@@ -57,7 +57,7 @@ RADICAL, PATH, PROGRAM and PREDICATE cost scopes are supported. Cost is not sema
 
 ### v0.22 — Exact Inverse Execution Lineage
 
-Every admitted v0.20 internal result can now be bound to:
+Every admitted v0.20 internal result can be bound to:
 
 ```text
 Result
@@ -73,27 +73,13 @@ Result
 -> KAKU
 ```
 
-v0.22 invariants:
+v0.22 requires exact hierarchy occurrence indexes, receipt revalidation, continuous Sigma transitions, registered Definition rebound, complete RadicalGraph hashing, exact KAKU schedule, and ambiguity fail-closed semantics.
 
-- v0.20 receipt digest, contract and security boundaries are revalidated;
-- the Sigma transition trace must be non-empty and continuous;
-- result Definition CID, canonical graph digest and canonical leaf path must match registered Definition content;
-- hierarchy lineage records exact `child_index` for every non-root occurrence;
-- zero hierarchy occurrences fail closed;
-- multiple occurrences fail closed unless an exact candidate occurrence is selected;
-- Definition→Radical binding hashes the complete RadicalGraph and every exact KAKU payload;
-- ordered KAKU roles must equal `Definition.leaf_path` exactly;
-- aliases, repository paths and runtime locations are not semantic authority;
-- operational persistence is fixed to live `/dev/shm/ciel_noema`;
-- no new PNV opcode and no external effect is introduced.
-
-Gate-scoped isolated validation: `27/27 PASS`. Repository integration tests use the real PNCS registry stack. The complete historical suite has not been replayed in the isolated construction environment.
-
-## Next gate
+Gate-scoped isolated validation: `27/27 PASS`.
 
 ### v0.23 — Natural Program Composition
 
-Bounded registered forms:
+Bounded registered surface:
 
 ```text
 IF ...
@@ -103,18 +89,50 @@ AND THEN ...
 RETURN ...
 ```
 
-Requirements:
+Implemented invariants:
 
-- every phrase resolves through an existing registry/canonical graph;
-- composition is content-addressed and deterministic;
-- ambiguity fails closed;
-- no arbitrary free-form NL -> execution;
-- program result retains complete v0.22 inverse lineage.
+- the control root resolves through v0.15/v0.16 registries;
+- the resolved `INTERNAL_BRANCH` must already exist in DefinitionRegistry;
+- the default authority reuses existing `safety_bifurcation` CID `b7988497...`;
+- every `AND THEN` clause resolves through the internal RouteRegistry;
+- each continuation route receives a deterministic `pncs:route-ref:sha256:*`;
+- every `RETURN` resolves through the content-addressed v0.23 ReturnRegistry;
+- arbitrary return literals fail closed;
+- source wording and registered aliases do not alter composition identity;
+- the composition receives deterministic `pncs:composition:sha256:*` identity;
+- the canonical witness composition ID is `5b3710e6...`;
+- v0.22 control-result lineage can be bound exactly to the composition;
+- continuation execution is not claimed by that lineage binding;
+- live `/dev/shm/ciel_noema` admission verifies every operator occurrence against the exact 36D operator registry;
+- `RETURN` operator presence does not open execution authority;
+- `v0_20_executable = false`;
+- external effects and arbitrary free-form NL execution remain closed;
+- no new PNV opcode is introduced.
 
-## Planned gates
+Gate-scoped isolated validation: `28/28 PASS`.
+
+Repository integration tests added: `19`. The complete historical repository suite has not been replayed in the isolated construction environment.
+
+## Next gate
 
 ### v0.24 — Native `.pnv` Program Units
-First-class program CID, dependency closure, deterministic import/export and build. Python remains reference/test harness.
+
+Promote a v0.23 composition into a first-class native program unit.
+
+Requirements:
+
+- first-class program CID distinct from composition ID;
+- deterministic dependency closure over Definition, route refs, return refs and required contracts;
+- deterministic `.pnv` serialization;
+- deterministic import/export round trip;
+- deterministic build receipt;
+- source text and repository location remain non-authoritative;
+- no Python-only semantic state;
+- no external effects;
+- Python remains reference/test harness;
+- v0.22 lineage requirement survives the program-unit boundary.
+
+## Planned gates
 
 ### v0.25 — Persistent PNCS Runtime
 
@@ -122,6 +140,8 @@ First-class program CID, dependency closure, deterministic import/export and bui
 written PNCS -> canonical graph -> CIDs -> 36D -> mass -> admission
 -> persistent /dev/shm runtime -> result + receipt
 ```
+
+No process restart for every operation. Operational 36D work remains on live `/dev/shm/ciel_noema`.
 
 ### v0.26 — Effect Boundary
 

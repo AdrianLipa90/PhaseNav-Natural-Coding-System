@@ -1,6 +1,6 @@
 {
   "schema": "PNCS_FOUNDATION_STATUS_V0_27_ORCHORBITAL_COUPLING",
-  "status": "PASS_ISOLATED_ORCH_CORE_AND_EXACT_KAKU_REPLAY_DIRECT_EXECUTOR_IMPLEMENTED_LIVE_PENDING",
+  "status": "PASS_RELEASE_CLOSED",
   "gate": "v0.27 ORCHORBITAL x Hydrodynamic T^36 Coupling",
   "base_commit": "0e7784af3a313f335c436d8a759f705109455464",
   "foundation_pack": {
@@ -18,6 +18,7 @@
   "validation": {
     "committed_compact_conformance": "18/18 PASS",
     "broader_development_harness": "33/33 PASS",
+    "orch_core_current_worker": "51/51 PASS",
     "exact_kaku_occurrence_identity": "PASS",
     "receipt_tamper_rejection": "PASS",
     "operator_vector_byte_tamper_rejection": "PASS",
@@ -27,13 +28,31 @@
     "ambiguous_reduction_selection": "FAIL_CLOSED_PASS",
     "attractor_llm_temp_without_decay_schedule": "FAIL_CLOSED_PASS",
     "negative_selection_tie_tolerance": "FAIL_CLOSED_PASS",
-    "coupled_t36_phase_flow": "PASS_ISOLATED",
-    "dynamic_winding": "PASS_ISOLATED",
-    "v020_executor_coupling": "IMPLEMENTED_VALIDATION_PENDING",
-    "v020_sigma_semantics_preservation_test": "COMMITTED_NOT_RUN_IN_CURRENT_WORKER",
-    "direct_trace_receipt_binding_test": "COMMITTED_NOT_RUN_IN_CURRENT_WORKER",
-    "live_v56": "PENDING",
-    "full_repository_suite": "NOT_REPLAYED"
+    "coupled_t36_phase_flow": "PASS",
+    "dynamic_winding": "PASS",
+    "v020_executor_coupling": "PASS_LIVE_V56",
+    "v020_sigma_semantics_preservation_test": "9/9 PASS_EXACT_BRANCH",
+    "direct_trace_receipt_binding_test": "9/9 PASS_EXACT_BRANCH",
+    "live_v56": "PASS",
+    "live_direct_coupled_transition_count": 9,
+    "sigma_base_equals_sigma_coupled": true,
+    "base_steps_equal_coupled_steps": true,
+    "current_head_github_actions_ci": "NOT_ESTABLISHED",
+    "prior_github_actions_failure": "RECORDED_SEPARATELY_NO_ARTIFACT_LOG_404",
+    "full_repository_suite": "NOT_REPLAYED",
+    "full_historical_suite": "NOT_REPLAYED"
+  },
+  "closure": {
+    "receipt_path": "provenance/receipts/PNCS_V0_27_LIVE_DIRECT_COUPLED_CLOSURE_20260823.json",
+    "receipt_sha256": "88710ab288eb759aeed0b151cc03ba85c0529f58fb8eaade65df17d1970d1a07",
+    "full_live_witness_sha256": "95072fcf3c10a82fb510cd2857bf497d885b79635536dd069e35394bdda58691",
+    "direct_trace_id": "pncs:orch-direct-trace:sha256:bac0af63fe8fe01a7138613555c266129108183e39b09b6a75ebe7a90b13f17b",
+    "receipt_bound_trace_id": "pncs:orch-receipt-bound-trace:sha256:1d98527a6975bf82246e1fcb521c05b082b296c2ce79758f0e0c72184d945907",
+    "fresh_v020_execution_receipt_sha256": "1b3ca3c311492e16d447a333e2d1a4f0381c9de77ec7ebfb293637e08021fbf4",
+    "fresh_final_sigma_id": "pncs:sigma:sha256:fa551b6d741b73c4eb0988acbbe54e18ed2c0cccda77d78c93007f900a3dbbaf",
+    "fresh_final_orch_state_id": "pncs:orch-state:sha256:f51b71a75346f5809b30ab5f3950256ec43c79d9f9c1dd39e80cc7babd802f64",
+    "fresh_final_t36_phase_id": "pncs:t36-flow-state:sha256:f58dec65239662bab256ed0c60cbe750801fcfe40f4b757c7d6306e32c825346",
+    "inverse_provenance_historical_reclassified_as_current_live": false
   },
   "closed_boundaries": {
     "attractor_llm_temp_without_decay_schedule": true,
@@ -43,7 +62,17 @@
     "external_effects": true,
     "semantic_identity_mutation": true,
     "laboratory_time_claim": true,
+    "continuation_execution": true,
+    "return_execution": true,
     "static_runtime_fallback": true
   },
-  "release_gate_closed": false
+  "not_claimed": {
+    "current_head_github_actions_ci_pass": true,
+    "full_repository_suite_replay": true,
+    "full_historical_suite_replay": true,
+    "manifest_regenerated": true,
+    "new_effect_class_opened": true
+  },
+  "next_gate": "v0.28 Fuzzing / Equivalence / Adversarial Parsing",
+  "release_gate_closed": true
 }

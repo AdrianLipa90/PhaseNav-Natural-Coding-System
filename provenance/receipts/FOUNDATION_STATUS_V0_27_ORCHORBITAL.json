@@ -16,7 +16,7 @@
     ]
   },
   "validation": {
-    "committed_compact_conformance": "16/16 PASS",
+    "committed_compact_conformance": "18/18 PASS",
     "broader_development_harness": "33/33 PASS",
     "exact_kaku_occurrence_identity": "PASS",
     "receipt_tamper_rejection": "PASS",
@@ -25,6 +25,8 @@
     "oorp_reduction_formula": "PASS",
     "no_reduction_no_memory_residue": "PASS",
     "ambiguous_reduction_selection": "FAIL_CLOSED_PASS",
+    "attractor_llm_temp_without_decay_schedule": "FAIL_CLOSED_PASS",
+    "negative_selection_tie_tolerance": "FAIL_CLOSED_PASS",
     "coupled_t36_phase_flow": "PASS_ISOLATED",
     "dynamic_winding": "PASS_ISOLATED",
     "live_v56": "PENDING",
@@ -32,6 +34,7 @@
     "full_repository_suite": "NOT_REPLAYED"
   },
   "closed_boundaries": {
+    "attractor_llm_temp_without_decay_schedule": true,
     "persistent_memory_write": true,
     "external_effects": true,
     "semantic_identity_mutation": true,

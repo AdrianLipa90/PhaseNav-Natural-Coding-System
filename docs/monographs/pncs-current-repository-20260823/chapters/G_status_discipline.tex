@@ -1,20 +1,44 @@
 \chapter{Extended evidence-status discipline}
-The v0.26 discipline remains in force and is extended for branch-aware repository work.
+The v0.26 discipline remains in force and is extended for branch-aware repository work. Full-width records are used here deliberately so that long machine-readable labels remain unambiguous and printable.
 
-\begin{longtable}{p{0.34\linewidth}p{0.58\linewidth}}
-\toprule
-Label & Meaning\\\midrule
-\status{IMPLEMENTED} & code/spec exists; says nothing by itself about test or release state\\
-\status{ISOLATED\_HARNESS\_PASS} & pure/local harness passed\\
-\status{LIVE\_RUNTIME\_PASS} & exact live runtime gate passed\\
-\status{PASS\_RELEASE\_CLOSED} & all conditions of the defined gate are closed by bound evidence\\
-\status{EXACT\_BLOB\_PURE\_PASS} & exact Git blob set executed successfully outside authoritative hosted CI\\
-\status{BRANCH\_ONLY} & evidence exists only on a non-main branch\\
-\status{MERGED\_EXPERIMENTAL} & implementation is on main but its contract explicitly forbids release/scientific promotion\\
-\status{RELEASE\_NOT\_CLOSED} & one or more required gates/evidence layers remain open\\
-\status{SUPERSEDED\_DOCUMENTATION} & branch/document remains in Git history but is not the current synthesis\\
-\status{FULL\_HISTORICAL\_SUITE\_REPLAYED} & reserved for an actual complete replay; never inferred from a smaller harness\\
-\bottomrule
-\end{longtable}
+\begin{statusbox}{\status{IMPLEMENTED}}
+Code or specification exists. This label says nothing by itself about test, integration, live-runtime or release state.
+\end{statusbox}
+
+\begin{statusbox}{\status{ISOLATED\_HARNESS\_PASS}}
+A pure or local harness passed for the explicitly identified source tree and dependency set.
+\end{statusbox}
+
+\begin{statusbox}{\status{LIVE\_RUNTIME\_PASS}}
+The exact live runtime gate passed against the explicitly identified live surface and snapshot.
+\end{statusbox}
+
+\begin{statusbox}{\status{PASS\_RELEASE\_CLOSED}}
+All conditions of the defined gate are closed by bound evidence. This label cannot be inferred from a branch name, PR title or merge event.
+\end{statusbox}
+
+\begin{statusbox}{\status{EXACT\_BLOB\_PURE\_PASS}}
+An exact Git-blob set executed successfully outside authoritative hosted CI. It remains a distinct evidence layer from hosted CI and live-runtime conformance.
+\end{statusbox}
+
+\begin{statusbox}{\status{BRANCH\_ONLY}}
+Evidence exists only on a non-main branch and is not silently promoted to the current main tree.
+\end{statusbox}
+
+\begin{statusbox}{\status{MERGED\_EXPERIMENTAL}}
+Implementation is on main, but its own contract explicitly forbids release or scientific promotion. Repository membership is not release authority.
+\end{statusbox}
+
+\begin{statusbox}{\status{RELEASE\_NOT\_CLOSED}}
+One or more required gates or evidence layers remain open.
+\end{statusbox}
+
+\begin{statusbox}{\status{SUPERSEDED\_DOCUMENTATION}}
+A branch or document remains in Git history but is not the current synthesis or authority source.
+\end{statusbox}
+
+\begin{statusbox}{\status{FULL\_HISTORICAL\_SUITE\_REPLAYED}}
+Reserved for an actual complete historical-suite replay. It is never inferred from a smaller harness or a package-scoped regression set.
+\end{statusbox}
 
 No branch name, PR title, commit count or merged status may substitute for these evidence labels.

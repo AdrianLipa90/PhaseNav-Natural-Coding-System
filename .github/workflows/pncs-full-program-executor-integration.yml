@@ -24,7 +24,7 @@ jobs:
           python-version: '3.12'
       - name: Install pytest
         run: python -m pip install pytest
-      - name: Run concrete v0.23 -> v0.24 -> full executor replay
+      - name: Run concrete v0.23 -> v0.24 -> full executor replay and demo
         env:
           PYTHONPATH: src
         run: >-
@@ -32,3 +32,8 @@ jobs:
           tests/test_full_program_executor_real_integration_v01.py
           tests/test_full_program_executor_v01.py
           tests/test_full_program_executor_native_v01.py
+          tests/test_full_program_demo_v01.py
+      - name: Run user-facing full-program demo
+        env:
+          PYTHONPATH: src
+        run: python examples/pncs_full_program_demo_v01.py

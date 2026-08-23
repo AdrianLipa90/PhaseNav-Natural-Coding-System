@@ -1,0 +1,79 @@
+\chapter{Experimental prime-temporal hydrodynamic coding layer on main}
+
+\begin{statusbox}{Status}
+Merged to current main by PR \#16. Contract status remains \status{EXPERIMENTAL / READ\_ONLY / NON-PROMOTING}; ledger status \status{EXPERIMENTAL\_PURE\_CORE\_PASS}. The PNCS release sequence is explicitly unchanged.
+\end{statusbox}
+
+This module is the current repository implementation of the prime-valuation and temporal-flow research line. The implemented path is
+\begin{lstlisting}
+positive integer
+-> exact prime valuation
+-> exact Collatz prime flux
+-> content-addressed spectral registry
+-> explicit spectral weights
+-> relative-phase evolution
+-> temporal coherence C_Z
+-> temporal fuzziness F_Z
+-> Fubini-Study temporal speed v_T
+-> continuity accumulator Lambda_T
+-> 18 complementary pairs
+-> T^36 realization
+-> typed temporal-hydrodynamic observable
+\end{lstlisting}
+
+\section{Exact arithmetic layer}
+For positive integer \(n\),
+\[
+v(n)=(v_2(n),v_3(n),v_5(n),\ldots),
+\qquad
+\log n=\sum_p v_p(n)\log p.
+\]
+For the exact shortcut-Collatz step \(C(n)\),
+\[
+\Delta v_p=v_p(C(n))-v_p(n),
+\qquad
+\boxed{\log\frac{C(n)}n=\sum_p\Delta v_p\log p.}
+\]
+For odd \(n\), the implementation verifies the support-disjoint control \(\gcd(n,C(n))=1\).
+
+On the critical-line parameterization,
+\[
+p^{-(1/2+i\tau)\Delta v_p}=p^{-\Delta v_p/2}e^{-i\tau\Delta v_p\log p}.
+\]
+This is a numerical realization of the exact prime flux; it does not identify Collatz dynamics with the Riemann zeta function.
+
+\section{Spectral boundary}
+The arithmetic product is not automatically promoted to a spectral superposition. A spectral state requires an explicit content-addressed frequency registry, normalized weights, registry kind and frequency scale. \status{PRIME\_LOG}, \status{ZETA\_ZERO}, and \status{EXPLICIT} registries are distinct evidence layers.
+
+\section{Temporal observables}
+For normalized probabilities \(p_j\) and registered angular frequencies \(\omega_j\),
+\[
+C_Z(t)=\left|\sum_jp_je^{-i\omega_jt}\right|,
+\qquad
+\boxed{F_Z(t)=1-C_Z(t)^2}.
+\]
+The implemented Fubini--Study temporal speed is
+\[
+\boxed{v_T^2=\frac14\sum_j\frac{\dot p_j^2}{p_j}+\operatorname{Var}_p(\omega_j)}.
+\]
+Population-rate terms are admitted only when explicit and normalization-conserving. The monotone continuity coordinate is
+\[
+\Lambda_T(t+\Delta t)=\Lambda_T(t)+v_T\Delta t.
+\]
+A revival can decrease \(F_Z\) without decreasing \(\Lambda_T\).
+
+\section{T\texorpdfstring{$^{36}$}{36} projection}
+Exactly 18 registered frequencies map to complementary pairs,
+\[
+\theta_{2j-1}=(\theta_c-\omega_jt)\bmod2\pi,
+\qquad
+\theta_{2j}=(\theta_c+\omega_jt)\bmod2\pi.
+\]
+The centre phase is explicit input; no unparented constant is inserted.
+
+\section{Validation}
+The merged ledger records \texttt{23 passed in 0.04s}, native PNV directive PASS, opcode-vocabulary PASS, unique native operator IDs PASS, and local Git-blob/GitHub-blob agreement. Implemented observables are \(C_Z,F_Z,v_T,\Lambda_T\) and complementary temporal \(T^{36}\) pairs.
+
+\begin{boundarybox}
+The module does not modify the hydrodynamic lapse; routing feedback is closed; external effects are closed; semantic identity is unchanged; laboratory time is unchanged; static fallback is forbidden; scientific promotion is false. A later map \(N_i=\mathcal N(v_{T,i},F_{Z,i},\rho_i,\nu_{\rm eff,i},\ldots)\) requires its own preregistered policy and validation gate.
+\end{boundarybox}

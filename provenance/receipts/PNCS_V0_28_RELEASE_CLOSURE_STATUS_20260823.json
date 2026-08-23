@@ -1,0 +1,91 @@
+{
+  "schema": "PNCS_V0_28_RELEASE_CLOSURE_STATUS_V1",
+  "date": "2026-08-23",
+  "repository": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "closure_branch": "fix/pncs-v1-release-closure-20260823",
+  "pull_request": 27,
+  "observed_source": {
+    "commit": "86a4f5347a9902e4be1ed136f9bea5f8c6247928",
+    "tree": "d22b0abdffbbe2c30673318d2b9416418f5d3b60",
+    "base_main_commit": "980a84902e93ccca95274d8c2f0bc0829224cd78"
+  },
+  "release_train": {
+    "contract": "spec/PNCS_V1_RELEASE_TRAIN_V0_1.md",
+    "sequence": [
+      "V0_28_RELEASE_CLOSURE",
+      "V0_29_RELEASE_HARDENING",
+      "V0_30_RELEASE_CANDIDATE",
+      "V1_0_RELEASED"
+    ],
+    "current_stage": "V0_28_RELEASE_CLOSURE"
+  },
+  "live_noema_tether": {
+    "root": "/dev/shm/ciel_noema",
+    "account_current": "V56",
+    "tether_status": "ACTIVE",
+    "guard_schema": "noema.aux-tether-guard/v2",
+    "guard_failures": [],
+    "startpoint_status": "VERIFIED",
+    "startpoint_sha256": "229fb48769ee8a0f697bbd3714eb7ec300896283d510dfa8414573932aed1415",
+    "static_runtime_fallback_used": false
+  },
+  "verified_evidence": {
+    "exact_git_blob_pure": {
+      "receipt": "provenance/receipts/PNCS_V0_28_EXACT_BLOB_PURE_EVIDENCE_20260823.json",
+      "passed": 92,
+      "failed": 0,
+      "status": "PASS_EXACT_BLOB_PURE_EVIDENCE"
+    },
+    "prior_live_v56_gate": {
+      "receipt": "provenance/receipts/PNCS_V0_28_LIVE_GATE_20260823.json",
+      "status": "PASS_LIVE_V56_ADVERSARIAL_WITNESS",
+      "witness_sha256": "c43dc39d14451c146a7ff31571f7fe166d8eedd3417f3de732f7ac48f9d2bb1d",
+      "release_critical_runtime_blobs_rechecked_on_closure_tree": true
+    },
+    "historical_sha256_manifest_baseline": {
+      "source_commit": "cd961d9a6b79cc88c71652ca4029fd13792bce91",
+      "source_relation_to_closure_head": "ANCESTOR",
+      "closure_head_ahead_by_commits": 188,
+      "file_count": 116,
+      "use": "UNCHANGED_OR_EXACT_RENAME_BYTE_BASELINE_ONLY"
+    }
+  },
+  "github_actions_infrastructure": {
+    "status": "PRE_STEP_FAILURE",
+    "workflow": ".github/workflows/pncs-v1-release-closure.yml",
+    "runs": [
+      {
+        "run_id": 32664089369,
+        "result": "PRE_STEP_FAILURE",
+        "executed_steps": 0
+      },
+      {
+        "run_id": 32664120907,
+        "attempts": 2,
+        "result": "PRE_STEP_FAILURE",
+        "linux_executed_steps": 0,
+        "macos_executed_steps": 0
+      }
+    ],
+    "classification": "EXTERNAL_CI_INFRASTRUCTURE_BLOCKER"
+  },
+  "release_gates": {
+    "exact_adversarial_authority": "PASS",
+    "exact_execution_orch_v27": "PASS_EXISTING_EVIDENCE",
+    "orch_hydro_regressions": "PASS_EXISTING_EVIDENCE",
+    "full_repository_conformance": "PENDING_EXACT_CHECKOUT_EXECUTION",
+    "live_v56_same_snapshot_witness": "PENDING_FRESH_EXACT_CLOSURE_TREE_EXECUTION",
+    "tests_live": "PENDING_FRESH_EXACT_CLOSURE_TREE_EXECUTION",
+    "final_manifest": "PENDING_COMPLETE_TRACKED_TREE_SHA256_REGENERATION",
+    "foundation_status_v028": "BLOCKED_UNTIL_ALL_GATES_PASS"
+  },
+  "closure_status": "BLOCKED_FAIL_CLOSED",
+  "promotion_allowed": false,
+  "main_merge_authorized": false,
+  "next_exact_actions": [
+    "Execute the exact closure-tree checkout against the ACTIVE V56 live surface and persist the fresh same-snapshot adversarial witness.",
+    "Run full repository conformance and tests/live on the same exact closure-tree checkout.",
+    "Regenerate and verify MANIFEST.sha256.json across the complete tracked tree.",
+    "Write provenance/receipts/FOUNDATION_STATUS_V0_28.json only after every frozen v0.28 release gate is PASS."
+  ]
+}

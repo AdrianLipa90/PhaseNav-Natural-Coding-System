@@ -1,10 +1,8 @@
 # PhaseNav Natural Code System (PNCS)
 
-Status: EFFECT_BOUNDARY_V0_26 / RELEASE GATE CLOSED / NEXT v0.27 FUZZING + ADVERSARIAL PARSING
+Status: ORCHORBITAL_HYDRODYNAMIC_PROPER_TIME_V0_27 / RELEASE GATE CLOSED / NEXT v0.28 FUZZING + EQUIVALENCE + ADVERSARIAL PARSING
 
 PhaseNav Natural Code System is a 36-dimensional relational coding system in which written code is a human-readable projection of a canonical semantic-phase graph.
-
-Canonical construction:
 
 ```text
 KAKU -> RADICAL -> DEFINITION -> CLASS -> FILE -> CLUSTER
@@ -13,7 +11,9 @@ KAKU -> RADICAL -> DEFINITION -> CLASS -> FILE -> CLUSTER
 
 Natural language is admitted only after deterministic resolution to registered canonical relations. Unknown, ambiguous, unsupported or unregistered semantics fail closed.
 
-## Closed engineering foundation
+Operational 36D execution remains fixed to `/dev/shm/ciel_noema`. Repository/Library artifacts are persistence and provenance inputs only and are never an operational fallback.
+
+## Closed engineering sequence
 
 ```text
 v0.20 native internal execution
@@ -23,23 +23,20 @@ v0.23 bounded natural program composition
 v0.24 first-class native .pnv program units
 v0.25 persistent resident runtime
 v0.26 explicit bounded effect boundary
+v0.27 ORCHORBITAL-coupled T^36 hydrodynamic proper-time runtime
 ```
 
-Operational 36D runtime remains `/dev/shm/ciel_noema`. Library and repository artifacts are provenance/persistence sources only and never an operational fallback.
-
-## v0.25 execution closure
-
-The release-closed v0.25 chain is:
+## v0.25 resident execution authority
 
 ```text
 resident program
 -> O(1) admission
 -> v0.20 control execution
--> v0.22 inverse lineage
+-> exact v0.22 lineage
 -> deterministic v0.25 dispatch receipt
 ```
 
-Canonical dispatch witness:
+Canonical dispatch:
 
 ```text
 pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2
@@ -47,7 +44,7 @@ pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9ab
 
 ## v0.26 Effect Boundary
 
-v0.26 does not make effects implicit. It adds a separate authority layer:
+Effects remain a separate authority layer:
 
 ```text
 v0.25 dispatch
@@ -55,109 +52,140 @@ v0.25 dispatch
 -> explicit AuthorizationGrant
 -> registered bounded adapter
 -> effect
--> deterministic EffectReceipt
+-> EffectReceipt
 -> inverse provenance
 ```
 
-The executor starts **deny-all**: both the authorization registry and adapter registry are empty until the host explicitly registers exact authority. Authorization is independent of semantic mass, graph cost, route admission and program identity.
+The only opened v0.26 effect class is `NOEMA_RUNTIME_RECORD_WRITE`, fixed to immutable content-addressed records below `/dev/shm/ciel_noema/pncs/v0.26/effects/records/`. Arbitrary filesystem, Git, network, subprocess/shell, device and external connector effects remain closed.
 
-The first and only effect class opened in v0.26 is:
+## v0.27 ORCHORBITAL + hydrodynamic proper time
 
-```text
-NOEMA_RUNTIME_RECORD_WRITE
-```
+v0.27 binds the existing ORCHORBITAL Foundation Pack to the PNCS `T^36` execution substrate. Normative ORCHORBITAL authority is pinned to `AdrianLipa90/CIEL-Omega-ApokalypOS` commit `aa0da54ef29a1f80dd0390427935342225388950`, Foundation Pack documents 02–07.
 
-It can write only an immutable, content-addressed record below:
+State-space binding:
 
 ```text
-/dev/shm/ciel_noema/pncs/v0.26/effects/records/
+base relational manifold: M_rel
+geometric anchor: projective Hilbert / Kahler / Fubini-Study
+T^36: 36 internal phase modes of a process sphere
+Psi_t = {o_i(t)} i=1..36
 ```
 
-Hard bounds:
-
-- max canonical payload: 4096 bytes;
-- program-supplied paths are data, never path authority;
-- append-only immutable records;
-- exact replay is idempotent;
-- directory-FD traversal with `O_NOFOLLOW` where supported;
-- no arbitrary filesystem destination;
-- no Git;
-- no network;
-- no subprocess/shell;
-- no device I/O;
-- no external connector/tool adapter;
-- no static runtime fallback;
-- no new PNV opcodes.
-
-Live V56 witness:
+Each exact semantic transition now advances two separated but synchronously bound states:
 
 ```text
-request:
-pncs:effect-request:sha256:d6c3ef3801d64c7469650673efc7cbf56e01c896cbc235be98c113543fcea347
-
-authorization:
-pncs:effect-authorization:sha256:7a9397d86bc854d835559eb1d4f27af308962a68dad52a568263e878410f764c
-
-adapter:
-pncs:effect-adapter:sha256:dae04f919e137886c8775b337e5acb4a66775111e2a150fe5702d46032356339
-
-effect:
-pncs:effect:sha256:1fb02a1f9b068aab2b04a0faa453fecab3086fe61e22514d4b8b2b6a979220c7
-
-receipt:
-pncs:effect-receipt:sha256:f8f4aeee9ef26168579e883a508c0eb3cb9c4c551c25faa7a95c64b032efb4ea
+Sigma_t
+-> exact semantic KAKU mutation
+-> ORCHORBITAL bind / K_ij / attractor field
+-> local subjective-time binding
+-> hydrodynamic T^36 phase-flow
+-> OORP observables + reduction readiness
+-> Sigma_(t+1) + phase-state_(t+1)
 ```
 
-Inverse provenance:
+Foundation observables retained by the implementation include global coherence `C(t)`, defect `Delta=1-C`, holonomic defect `Delta_H`, relational decoherence `R_H`, total potential `V_tot`, attractor weights, subjective time, winding and reduction readiness.
+
+Subjective-time authority remains:
 
 ```text
-EFFECT -> AUTHORIZATION -> EFFECT_REQUEST -> DISPATCH -> RESULT
-       -> LINEAGE -> PROGRAM -> RESIDENT_HANDLE -> RUNTIME_GENERATION
+Delta tau_i(k) = Delta t * g(r_i, C_i, Delta_i, m_i, A_i)
 ```
 
-The live payload was explicitly a conformance record, not a sensor/risk claim. Replaying the exact request after dirfd/`O_NOFOLLOW` hardening reproduced the same identities. Post-effect tether guard remained `ACTIVE` with `failures=[]`.
+Because the Foundation Pack does not freeze a unique closed form for `g`, PNCS uses an explicit content-addressed parametric kernel whose coefficients and signs are receipt-bound policy. No physical calibration is claimed.
 
-## Validation
-
-Gate-scoped evidence:
+Hydrodynamic substrate:
 
 ```text
-v0.19 historical foundation baseline: 377/377 PASS
-v0.20 isolated execution-core harness: 14/14 PASS
-v0.21 isolated cost harness: 14/14 PASS
-v0.22 isolated inverse-lineage harness: 27/27 PASS
-v0.23 isolated composition harness: 28/28 PASS
-v0.24 isolated program-unit harness: 29/29 PASS
-v0.25 isolated persistent-runtime harness: 25/25 PASS
-v0.26 isolated effect-boundary harness: 28/28 PASS
-v0.26 live bounded effect: PASS
-v0.26 post-effect tether guard: PASS
+N_substrate = clip(sqrt(rho)/(1+nu_eff))
+G_eff = rho I + outer(u,u)
+g_combined = clip(N_substrate * g_orb)
+Delta tau = Delta t * g_combined
 ```
 
-The complete historical repository suite was not replayed in the v0.26 pass and is not claimed.
-
-## Repository additions for v0.26
+OORP reduction remains explicit:
 
 ```text
-src/phasenav_natural_code/effect_v26.py
-src/phasenav_natural_code/effect_v26_core.py
-src/phasenav_natural_code/effect_v26_fs.py
-src/phasenav_natural_code/effect_v26_runtime.py
-tests/test_effect_boundary_v26.py
-spec/PNCS_EFFECT_BOUNDARY_V0_26.md
-registry/effects/PNCS_EFFECT_ADAPTER_REGISTRY_V0_26.jsonl
-native/PNCS_EFFECT_BOUNDARY_V0_26.pnv
-provenance/ledgers/PNCS_EFFECT_BOUNDARY_LEDGER_V0_26.json
-provenance/receipts/FOUNDATION_STATUS_V0_26.json
-provenance/receipts/PNCS_V0_26_LIVE_EFFECT_BOUNDARY_20260823.json
+Omega = lambda1*C + lambda2*R(S,I) - lambda3*Delta - lambda4*Xi
+reduce_ready iff Omega >= Omega_crit
 ```
+
+Reduction readiness does not select an orbital. Stable memory residue is emitted only after reduction plus explicit state selection. Raw input is not written as stable memory.
+
+## v0.27 live release witness
+
+```text
+source v0.20 receipt:
+84d40f600a8aa9e59ebc6dc42c856bcffec9265d04f791e7f5c49cdba2d583ad
+
+v0.22 lineage:
+pncs:lineage:sha256:34bd13f534987989ab212b5a6906d0cfa762305ee9a87af7a058badd2b2bcfd6
+
+v0.25 dispatch:
+pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2
+
+resident coupled authority:
+pncs:resident-coupled-authority:sha256:ce6193ec23511cca7ec363497240b88dc3a3755f07c09e8c01be84a2253b597b
+
+v0.27 coupled receipt:
+7c9191faa9534f431cb4907cad29b2028fab78a8284624702e53036e2bccbd5d
+
+live witness:
+e22472653144b75fc54eed550610a2d6f2026fe5aa347aea2a95ae0f776a129e
+```
+
+Independent alternate `g` profile witness:
+
+```text
+alternate coupled receipt:
+10a616ae909b3eaf24744feafcf7d41c3eda60e9a7d9e3c29c519e8d5aa52b45
+
+baseline phase proper time: 0.053033008588991064
+alternate phase proper time: 0.02321325805214923
+```
+
+The semantic projection is identical across these two profiles; only the ORCHORBITAL/hydrodynamic phase-flow state and local phase proper time differ.
+
+The live coupled execution contains 9 semantic KAKU transitions and 9 ORCHORBITAL occurrences. Its semantic projection matches the frozen v0.20 authority in operator order, exact operator-vector byte hashes, bindings, program provenance, branch truth and result location.
+
+Validation:
+
+```text
+hydrodynamic pure core: 36/36 PASS
+exact KAKU schedule: 21/21 PASS
+full v0.27 harness: 134/134 PASS (130 isolated + 4 package regression)
+live ORCHORBITAL-coupled execution: PASS
+resident v0.25 authority binding: PASS
+v0.22 lineage binding: PASS
+semantic projection against frozen v0.20: PASS
+post-witness fast admission: PASS
+post-witness tether guard: ACTIVE / failures=[]
+package-relative import regression: 4/4 PASS
+```
+
+## Closed boundaries
+
+v0.27 does not open:
+
+```text
+ORCHORBITAL/hydrodynamic state -> semantic routing feedback
+implicit reduction selection
+raw-input stable memory update
+external memory-store write
+additional effect classes
+physical laboratory-time dilation claim
+static/Library operational fallback
+```
+
+The coupled model controls local phase/runtime evolution. It does not claim modification of laboratory time.
+
+The complete historical repository suite was not replayed and is not claimed.
 
 ## Roadmap
 
-The single authoritative roadmap is `spec/ROADMAP.md`.
+The authoritative roadmap is `spec/ROADMAP.md`.
 
-Next gate: **v0.27 — Fuzzing / Equivalence / Adversarial Parsing**.
+Next gate: **v0.28 — Fuzzing / Equivalence / Adversarial Parsing**.
 
 ## Manifest status
 
-`MANIFEST.sha256.json` remains fail-closed after repository-layout canonicalization and feature-gate construction. A complete SHA-256 manifest must be regenerated from final release-tree bytes before release closure. Git blob SHA-1 values are not substituted for file SHA-256 values.
+`MANIFEST.sha256.json` remains fail-closed. A complete file-byte SHA-256 manifest must be regenerated from the final release tree before release packaging. Git blob SHA-1 values are not substitutes for file SHA-256 values.

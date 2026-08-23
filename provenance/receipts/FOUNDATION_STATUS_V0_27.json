@@ -1,29 +1,57 @@
 {
   "closed_boundaries": {
     "external_effects": true,
+    "external_memory_write": true,
+    "implicit_reduction_selection": true,
     "laboratory_time_claim": true,
+    "raw_input_memory_write": true,
+    "routing_feedback": true,
     "semantic_identity_mutation": true,
     "static_runtime_fallback": true
   },
-  "gate": "v0.27 Hydrodynamic Proper-Time Runtime",
-  "next_gate_after_closure": "v0.28 Fuzzing / Equivalence / Adversarial Parsing",
-  "next_required_closure": "couple hydrodynamic state into current-generation v0.20 execution without semantic/authority bypass, then record inverse provenance",
+  "foundation_contracts": {
+    "commit": "aa0da54ef29a1f80dd0390427935342225388950",
+    "paths": [
+      "src/CIEL_Orbital_Foundation_Packk/02_ONTOLOGY_AND_OBSERVABLES.md",
+      "src/CIEL_Orbital_Foundation_Packk/03_STATE_SPACE_AND_BOUNDARY_CONDITIONS.md",
+      "src/CIEL_Orbital_Foundation_Packk/04_INVARIANTS_POTENTIALS_AND_ATTRACTORS.md",
+      "src/CIEL_Orbital_Foundation_Packk/05_ENTITY_REGISTRY_AND_SPHERE_EMBEDDING.md",
+      "src/CIEL_Orbital_Foundation_Packk/06_SUBJECTIVE_TIME_WINDING_AND_SEMANTIC_MASS.md",
+      "src/CIEL_Orbital_Foundation_Packk/07_OORP_PIPELINE_AND_MEMORY.md"
+    ],
+    "repository": "AdrianLipa90/CIEL-Omega-ApokalypOS"
+  },
+  "gate": "v0.27 ORCHORBITAL Hydrodynamic Proper-Time Runtime",
+  "live_witness": {
+    "alternate_g_coupled_receipt_sha256": "10a616ae909b3eaf24744feafcf7d41c3eda60e9a7d9e3c29c519e8d5aa52b45",
+    "baseline_coupled_receipt_sha256": "7c9191faa9534f431cb4907cad29b2028fab78a8284624702e53036e2bccbd5d",
+    "resident_authority_id": "pncs:resident-coupled-authority:sha256:ce6193ec23511cca7ec363497240b88dc3a3755f07c09e8c01be84a2253b597b",
+    "resident_dispatch_id": "pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2",
+    "source_v20_receipt_sha256": "84d40f600a8aa9e59ebc6dc42c856bcffec9265d04f791e7f5c49cdba2d583ad",
+    "v22_lineage_id": "pncs:lineage:sha256:34bd13f534987989ab212b5a6906d0cfa762305ee9a87af7a058badd2b2bcfd6",
+    "witness_sha256": "e22472653144b75fc54eed550610a2d6f2026fe5aa347aea2a95ae0f776a129e"
+  },
+  "next_gate": "v0.28 Fuzzing / Equivalence / Adversarial Parsing",
   "not_claimed": {
     "complete_historical_suite_replay": true,
+    "external_memory_write": true,
     "physical_time_dilation": true,
-    "release_closed": true
+    "routing_feedback_opened": true
   },
-  "runtime_contract_id": "PNCS_HYDRODYNAMIC_PROPER_TIME_V0_27",
+  "release_scope": "ORCHORBITAL-coupled T^36 hydrodynamic proper-time execution with semantic/routing feedback closed",
+  "runtime_contract_id": "PNCS_ORCHORBITAL_COUPLED_EXECUTION_V0_27",
   "schema": "PNCS_FOUNDATION_STATUS_V0_27",
-  "status": "PASS_CORE_LIVE_PHASE_FLOW_AND_EXACT_KAKU_SCHEDULE_PARTIAL_GATE",
+  "status": "PASS_RELEASE_CLOSED",
   "validation": {
-    "combined_harness": "57/57 PASS",
-    "exact_kaku_schedule": "PASS",
-    "live_t36_phase_flow": "PASS",
+    "alternate_g_profile_semantic_equivalence": "PASS",
+    "combined_orchorbital_hydrodynamic_and_coupled_executor": "134/134 PASS (130 isolated + 4 package regression)",
+    "live_orchorbital_coupled_execution": "PASS",
+    "package_import": "PASS",
+    "package_relative_import_regression": "4/4 PASS",
     "post_witness_fast_admission": "PASS",
     "post_witness_tether_guard": "PASS",
-    "pure_core": "36/36 PASS",
-    "v020_executor_coupling": "PENDING",
-    "v020_routing_integration": "PENDING"
+    "resident_v025_authority_binding": "PASS",
+    "semantic_projection_matches_frozen_v020_operator_order_hashes_bindings_program_result": "PASS",
+    "v022_inverse_lineage_binding": "PASS"
   }
 }

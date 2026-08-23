@@ -1,0 +1,130 @@
+{
+  "alternate_g_profile": {
+    "coupled_receipt_sha256": "10a616ae909b3eaf24744feafcf7d41c3eda60e9a7d9e3c29c519e8d5aa52b45",
+    "final_phase_state_id": "pncs:t36-flow-state:sha256:36af8e1a9d58c7e9803bec910a34ecb99e5b1bcc48deb92e0047e3f1dff23c56",
+    "final_sigma_id": "pncs:sigma:sha256:d093a2f4deaf88aabff1d440dca8a16b99d4076f0555a75dd233b84f35ebf026",
+    "phase_proper_time_advanced": 0.02321325805214923,
+    "profile_id": "pncs:orch-hydro-profile:sha256:f646d5576f1439baced45f032cb4558fbffffd4664cd8586dc40ea8d636b54c3",
+    "receipt_path": "/dev/shm/ciel_noema/pncs/v0.27/orch_execution/receipts/10a616ae909b3eaf24744feafcf7d41c3eda60e9a7d9e3c29c519e8d5aa52b45.json",
+    "semantic_projection_sha256": "338100fc75974baf9d0ed296d6f835a76ef382adeb75176813c17c55272b7ec6"
+  },
+  "baseline": {
+    "coupled_receipt_sha256": "7c9191faa9534f431cb4907cad29b2028fab78a8284624702e53036e2bccbd5d",
+    "final_phase_state_id": "pncs:t36-flow-state:sha256:54a533264bbfac649218e17ee9d140870800d02edec58c43f64423bb7fd18db3",
+    "final_sigma_id": "pncs:sigma:sha256:96c3ee6a40461fefbfdee163296ef5ad925a56a2bb1bc1111b2b6a94becc814b",
+    "phase_proper_time_advanced": 0.053033008588991064,
+    "profile_id": "pncs:orch-hydro-profile:sha256:30e0b56b6420dc76bdc391d6bd32314678261c1eedcb5acb99da0ca60752e446",
+    "receipt_path": "/dev/shm/ciel_noema/pncs/v0.27/orch_execution/receipts/7c9191faa9534f431cb4907cad29b2028fab78a8284624702e53036e2bccbd5d.json",
+    "semantic_projection_sha256": "6869962c08d50ccde9783dfc927f1b1fcf9b31fadecadf69c825c1b87d69cf88"
+  },
+  "checks": {
+    "different_phase_flow": true,
+    "different_proper_time": true,
+    "external_effects_closed": true,
+    "lineage_bound": true,
+    "memory_stable_updates_zero": true,
+    "resident_dispatch_bound": true,
+    "routing_feedback_closed": true,
+    "same_bindings": true,
+    "same_branch_truth": true,
+    "same_operator_hashes": true,
+    "same_operator_order": true,
+    "same_program": true,
+    "same_result": true
+  },
+  "foundation": {
+    "commit": "aa0da54ef29a1f80dd0390427935342225388950",
+    "paths": [
+      "src/CIEL_Orbital_Foundation_Packk/02_ONTOLOGY_AND_OBSERVABLES.md",
+      "src/CIEL_Orbital_Foundation_Packk/03_STATE_SPACE_AND_BOUNDARY_CONDITIONS.md",
+      "src/CIEL_Orbital_Foundation_Packk/04_INVARIANTS_POTENTIALS_AND_ATTRACTORS.md",
+      "src/CIEL_Orbital_Foundation_Packk/05_ENTITY_REGISTRY_AND_SPHERE_EMBEDDING.md",
+      "src/CIEL_Orbital_Foundation_Packk/06_SUBJECTIVE_TIME_WINDING_AND_SEMANTIC_MASS.md",
+      "src/CIEL_Orbital_Foundation_Packk/07_OORP_PIPELINE_AND_MEMORY.md"
+    ],
+    "repository": "AdrianLipa90/CIEL-Omega-ApokalypOS"
+  },
+  "gate": "v0.27 ORCHORBITAL Hydrodynamic Proper-Time Runtime",
+  "input_provenance": {
+    "attractor_reports": "CONFORMANCE_PARAMETERS",
+    "kind": "CONFORMANCE_VECTOR_NOT_SENSOR_CLAIM",
+    "memory_pressure": 0.0,
+    "potential_components": "ZERO_CONFORMANCE_VECTOR",
+    "reduction_threshold": "NO_REDUCTION_EXPECTED",
+    "risk": 0.0
+  },
+  "live": {
+    "operator_registry_sha256": "29767957ae775b1968bbb4c531728cc153137c88e819b135227dff73e3cca7ec",
+    "phi_sha256": "2ad9d5bb8b32e1a4bc80e9a26ef345a648f086462332b2674df439889b208c81",
+    "root": "/dev/shm/ciel_noema"
+  },
+  "not_claimed": {
+    "complete_historical_suite_replay": true,
+    "external_memory_write": true,
+    "physical_time_dilation": true,
+    "routing_feedback_opened": true
+  },
+  "operator_count": 9,
+  "orch_occurrence_count": 9,
+  "post_witness_fast_admission": {
+    "ac_aux_status": "ACTIVE",
+    "account_current": "NOEMA_ACCOUNT_DEFAULT_CURRENT_V56",
+    "elapsed_ms": 0.801712,
+    "ethics_field_status": "ACTIVE",
+    "library_search_used": false,
+    "rehydration_required": false,
+    "runtime": "LIVE_AC_AUX",
+    "schema": "noema.fast-admission/v2",
+    "status": "PASS",
+    "tether_status": "ACTIVE"
+  },
+  "post_witness_tether_guard": {
+    "fail_closed": true,
+    "failures": [],
+    "heartbeat_age_s": {
+      "aux": 0.039971881,
+      "tether": 0.072054729
+    },
+    "max_heartbeat_age_s": 2.0,
+    "root": "/dev/shm/ciel_noema",
+    "schema": "noema.aux-tether-guard/v2",
+    "tether_status": "ACTIVE"
+  },
+  "program_content_id": "pncs:def:sha256:b7988497bab75a526771fa24aeca75e0182bd437fd707927cb0e78b04d360cce",
+  "release_scope_closed": true,
+  "resident_authority_id": "pncs:resident-coupled-authority:sha256:ce6193ec23511cca7ec363497240b88dc3a3755f07c09e8c01be84a2253b597b",
+  "resident_dispatch_id": "pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2",
+  "resident_handle_id": "pncs:resident:sha256:60184c7213960ad746b69c6c2dd8b43eacfe8055015ae31e347475881df438e8",
+  "resident_program_id": "pncs:program:sha256:572660a1046975c57e01f7e402677f1e4ca845e51bca1bee6517e0d86b35c4d7",
+  "runtime_generation_id": "pncs:runtime-generation:sha256:05736b12ac8470998901421dabd2dfff0bd663c141d96ad96bc9d5b09351bbb1",
+  "schema": "PNCS_V0_27_LIVE_ORCHORBITAL_COUPLED_EXECUTION_WITNESS_V3",
+  "source_sha256": {
+    "execution_orch_authority_v27.py": "6545f1e3c3d3087668569e98291d532d7efcb969a63afccbab36a19ad05396b4",
+    "execution_orch_executor_v27.py": "5c75a2ea6584acbd5392df115cb6105535598f5699371667cca7f41fd2b7720e",
+    "execution_orch_state_v27.py": "a07d50b437ceb5d29863b5fa55e7cd0fc6357cb5acb52be56864885efb196daf",
+    "execution_orch_v27.py": "1838c9e9bbc72c9de7803012640c25465f9b244da126d4db5c220011c15acd45",
+    "hydro_schedule_v27.py": "289a947f08a5fe3e7aa9faee477f42228f5a3369312945a98171b98c81f873f3",
+    "hydro_time_v27.py": "9649fdcaa82936304b555a80c5643c8838ce79fcbba9e1a563d6bde6135f286b",
+    "orch_hydro_v27.py": "aae8a973ea7669a91ff6da1838ec92c1ad38be364494e4b1123bf5dd1685b36c",
+    "orch_orbital_core_v27.py": "c0c5603d0a6300195c56ad39de49e35c28e4b6546ce6fc1db394b3a1455f4933",
+    "orch_orbital_reduction_v27.py": "be06f5f2954e3eb944bdf16a3f9bafcedd93b7132372ed1ab700745b016d8457",
+    "orch_orbital_time_v27.py": "e1ae8908f41898a6cdf5b2d8dfb9024746a4a71014a846b33ebafb38c15d6dbc",
+    "orch_orbital_v27.py": "633565a48f06cdefdbae1500baa48a6d2d7d398e340317cb208041f834f98c66",
+    "test_execution_orch_v27.py": "81a49af03f641c42c15146d2faeedf996e09f0174851b4c6d3fc58b6996491d3",
+    "test_hydro_schedule_v27.py": "4ddbc2375e80be7bfb55afc9f0ba3d9cc2a79234b3215c2f3da104d0929b93ef",
+    "test_hydro_time_v27.py": "6267de192ddf90074053c71c94bdb9c3586e3d93343058d8f0fcb2dfbae13da1",
+    "test_orch_hydro_v27.py": "105dea37f64b058b5cab7fa8e2d4114cee63bb6fa67229af145a7cd0cf2fea3f",
+    "test_orch_package_v27.py": "d96b361ed813ea702285a694e3440fd607f9aa0fc444baf4749656f10bd5c81d"
+  },
+  "source_v20_receipt_sha256": "84d40f600a8aa9e59ebc6dc42c856bcffec9265d04f791e7f5c49cdba2d583ad",
+  "status": "PASS",
+  "v22_lineage_id": "pncs:lineage:sha256:34bd13f534987989ab212b5a6906d0cfa762305ee9a87af7a058badd2b2bcfd6",
+  "v22_result_id": "pncs:result:sha256:a1ebb02927a4c216d965cb6177271c580303d9968472dca9ea67c2cd8c5661d6",
+  "validation": {
+    "combined_total": "134/134 PASS",
+    "isolated_combined_harness": "130/130 PASS",
+    "package_import": "PASS",
+    "package_regression_harness": "4/4 PASS"
+  },
+  "witness_sha256": "e22472653144b75fc54eed550610a2d6f2026fe5aa347aea2a95ae0f776a129e"
+}

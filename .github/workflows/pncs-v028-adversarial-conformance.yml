@@ -54,6 +54,22 @@ jobs:
           PYTHONPATH: src
         run: python -m pytest -q tests/test_adversarial_dynamics_v28.py
 
+  concurrency-pure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pytest
+        run: python -m pip install pytest
+      - name: Run branch/session collision gate corpus
+        env:
+          PYTHONPATH: src
+        run: python -m pytest -q tests/test_branch_session_collision_v28.py
+
   live-dev-shm:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_live == true }}
     runs-on: self-hosted

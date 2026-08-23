@@ -1,0 +1,182 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+from typing import Iterable
+
+SCHEMA = "PNCS_TRACKED_TREE_SHA256_MANIFEST_V2"
+DEFAULT_OUTPUT = "MANIFEST.sha256.json"
+DEFAULT_EXCLUSIONS = (
+    DEFAULT_OUTPUT,
+    "provenance/receipts/FOUNDATION_STATUS_V0_28.json",
+)
+
+
+class ManifestError(RuntimeError):
+    pass
+
+
+def _run_git(root: Path, *args: str) -> str:
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(root), *args],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except (OSError, subprocess.CalledProcessError) as exc:
+        detail = getattr(exc, "stderr", b"")
+        if isinstance(detail, bytes):
+            detail = detail.decode("utf-8", "replace")
+        raise ManifestError(f"git command failed: {' '.join(args)}: {detail}") from exc
+    return proc.stdout.decode("utf-8", "strict").strip()
+
+
+def tracked_paths(root: Path) -> tuple[str, ...]:
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "-z"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except (OSError, subprocess.CalledProcessError) as exc:
+        detail = getattr(exc, "stderr", b"")
+        if isinstance(detail, bytes):
+            detail = detail.decode("utf-8", "replace")
+        raise ManifestError(f"git ls-files failed: {detail}") from exc
+    raw = proc.stdout
+    if not raw:
+        raise ManifestError("tracked file set is empty")
+    try:
+        paths = tuple(item.decode("utf-8", "strict") for item in raw.split(b"\0") if item)
+    except UnicodeDecodeError as exc:
+        raise ManifestError("tracked path is not valid UTF-8") from exc
+    if len(set(paths)) != len(paths):
+        raise ManifestError("duplicate tracked path")
+    return tuple(sorted(paths))
+
+
+def _entry(root: Path, rel: str) -> dict[str, object]:
+    path = root / rel
+    if not path.is_file():
+        raise ManifestError(f"tracked path is not a regular file: {rel}")
+    raw = path.read_bytes()
+    return {
+        "path": rel,
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "size": len(raw),
+    }
+
+
+def _canonical_json(value: object) -> bytes:
+    return json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")
+
+
+def build_manifest(root: Path, *, exclusions: Iterable[str] = DEFAULT_EXCLUSIONS) -> dict[str, object]:
+    root = root.resolve()
+    excluded = tuple(sorted(set(str(item) for item in exclusions)))
+    tracked = tracked_paths(root)
+    entries = [_entry(root, rel) for rel in tracked if rel not in excluded]
+    if not entries:
+        raise ManifestError("manifest file set is empty")
+    entry_root = hashlib.sha256(_canonical_json(entries)).hexdigest()
+    source_commit = _run_git(root, "rev-parse", "HEAD")
+    source_tree = _run_git(root, "rev-parse", "HEAD^{tree}")
+    return {
+        "schema": SCHEMA,
+        "status": "AUTHORITATIVE_FOR_DECLARED_SCOPE",
+        "hash_algorithm": "SHA-256",
+        "path_order": "UTF8_LEXICOGRAPHIC_ASCENDING",
+        "scope": "ALL_GIT_TRACKED_REGULAR_FILES_EXCEPT_DECLARED_EXCLUSIONS",
+        "source_commit": source_commit,
+        "source_tree": source_tree,
+        "exclusions": list(excluded),
+        "file_count": len(entries),
+        "entries_sha256": entry_root,
+        "files": entries,
+        "fail_closed": True,
+    }
+
+
+def verify_manifest(root: Path, manifest: dict[str, object]) -> None:
+    if manifest.get("schema") != SCHEMA:
+        raise ManifestError("unexpected manifest schema")
+    exclusions = manifest.get("exclusions")
+    if not isinstance(exclusions, list) or not all(isinstance(x, str) and x for x in exclusions):
+        raise ManifestError("manifest exclusions must be a non-empty string list")
+    expected = build_manifest(root, exclusions=exclusions)
+    for field in (
+        "hash_algorithm",
+        "path_order",
+        "scope",
+        "exclusions",
+        "file_count",
+        "entries_sha256",
+        "files",
+        "fail_closed",
+    ):
+        if manifest.get(field) != expected.get(field):
+            raise ManifestError(f"manifest mismatch: {field}")
+    # source_commit/source_tree identify the tree from which the manifest was generated.
+    # A later metadata-only release commit may add the excluded foundation receipt.
+    if not isinstance(manifest.get("source_commit"), str) or len(str(manifest["source_commit"])) != 40:
+        raise ManifestError("invalid source_commit")
+    if not isinstance(manifest.get("source_tree"), str) or len(str(manifest["source_tree"])) != 40:
+        raise ManifestError("invalid source_tree")
+
+
+def _load_manifest(path: Path) -> dict[str, object]:
+    try:
+        value = json.loads(path.read_text("utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise ManifestError(f"cannot read manifest: {exc}") from exc
+    if not isinstance(value, dict):
+        raise ManifestError("manifest root must be an object")
+    return value
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description="Generate or verify the PNCS tracked-tree SHA-256 manifest.")
+    ap.add_argument("--root", default=".", help="repository root")
+    ap.add_argument("--output", default=DEFAULT_OUTPUT)
+    ap.add_argument("--check", action="store_true")
+    args = ap.parse_args(argv)
+
+    root = Path(args.root).resolve()
+    output = root / args.output
+    try:
+        if args.check:
+            verify_manifest(root, _load_manifest(output))
+            print(json.dumps({"schema": SCHEMA, "status": "PASS", "manifest": args.output}, sort_keys=True))
+            return 0
+        manifest = build_manifest(root)
+        raw = _canonical_json(manifest) + b"\n"
+        output.write_bytes(raw)
+        print(json.dumps({
+            "schema": SCHEMA,
+            "status": "WRITTEN",
+            "manifest": args.output,
+            "sha256": hashlib.sha256(raw).hexdigest(),
+            "file_count": manifest["file_count"],
+            "entries_sha256": manifest["entries_sha256"],
+        }, sort_keys=True))
+        return 0
+    except ManifestError as exc:
+        print(json.dumps({"schema": SCHEMA, "status": "FAIL", "error": str(exc), "fail_closed": True}, sort_keys=True), file=sys.stderr)
+        return 23
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

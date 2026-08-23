@@ -1,0 +1,49 @@
+{
+  "schema": "PNCS_V0_28_CI_INFRASTRUCTURE_BLOCKER_V1",
+  "date": "2026-08-23",
+  "status": "BLOCKED_GITHUB_ACTIONS_PRE_STEP_STARTUP",
+  "release_gate": "v0.28",
+  "repository": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "observations": [
+    {
+      "workflow_run_id": 32636498519,
+      "head_sha": "60654dea0f55e9d32d90b8a87702767f11ebb3e9",
+      "event": "pull_request",
+      "jobs": [
+        {"name": "structural-authority", "conclusion": "failure", "steps_observed": null},
+        {"name": "semantic-equivalence", "conclusion": "failure", "steps_observed": null},
+        {"name": "dynamics-pure", "conclusion": "failure", "steps_observed": null},
+        {"name": "concurrency-pure", "conclusion": "failure", "steps_observed": null},
+        {"name": "repository-integrity", "conclusion": "failure", "steps_observed": null},
+        {"name": "live-dev-shm", "conclusion": "skipped", "steps_observed": null}
+      ]
+    },
+    {
+      "workflow_run_id": 32635917297,
+      "head_sha": "527152d188e783a9821ca8b03f9e858b43d416f3",
+      "event": "pull_request",
+      "jobs": [
+        {"name": "structural-authority", "conclusion": "failure", "steps_observed": null},
+        {"name": "dynamics-pure", "conclusion": "failure", "steps_observed": null},
+        {"name": "concurrency-pure", "conclusion": "failure", "steps_observed": null},
+        {"name": "live-dev-shm", "conclusion": "skipped", "steps_observed": null}
+      ]
+    },
+    {
+      "workflow_run_id": 32633836644,
+      "head_sha": "d272b550a383c38b0c75a58a8b2ca3536b16dfa6",
+      "event": "pull_request",
+      "jobs": [
+        {"name": "conformance", "conclusion": "failure", "steps_observed": null}
+      ],
+      "predates_release_closure_branch": true
+    }
+  ],
+  "classification": "CI_RUNNER_OR_ACTIONS_STARTUP_BLOCKER_BEFORE_REPOSITORY_TEST_STEPS",
+  "test_failure_claimed": false,
+  "ci_pass_claimed": false,
+  "live_pass_claimed": false,
+  "release_closed": false,
+  "required_resolution": "Obtain a workflow run in which hosted jobs actually start steps, then evaluate their pytest conclusions separately from this infrastructure blocker.",
+  "fail_closed": true
+}

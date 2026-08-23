@@ -1,0 +1,29 @@
+{
+  "schema": "PNCS_V0_28_HOSTED_CI_BLOCKER_V1",
+  "date": "2026-08-23",
+  "repository": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "branch": "feat/pncs-v0.28-release-closure",
+  "head_sha": "babffaec3792ea6785891072e435fb65485375ca",
+  "workflow": "PNCS v0.28 adversarial conformance",
+  "workflow_run_id": 32638894965,
+  "run_number": 64,
+  "status": "BLOCKED_INFRASTRUCTURE",
+  "classification": "HOSTED_RUNNER_PRE_STEP_FAILURE",
+  "evidence": {
+    "hosted_jobs": [
+      {"name": "dynamics-pure", "job_id": 97192789265, "conclusion": "failure", "steps": null, "logs_url": null},
+      {"name": "repository-integrity", "job_id": 97192789371, "conclusion": "failure", "steps": null, "logs_url": null},
+      {"name": "semantic-equivalence", "job_id": 97192789386, "conclusion": "failure", "steps": null, "logs_url": null},
+      {"name": "structural-authority", "job_id": 97192789393, "conclusion": "failure", "steps": null, "logs_url": null},
+      {"name": "concurrency-pure", "job_id": 97192789421, "conclusion": "failure", "steps": null, "logs_url": null}
+    ],
+    "structural_authority_steps_endpoint": [],
+    "structural_authority_log_fetch": "BlobNotFound / no job log artifact exists",
+    "self_hosted_pure": "SKIPPED_BY_INPUT",
+    "live_dev_shm": "SKIPPED_BY_INPUT"
+  },
+  "test_failure_claimed": false,
+  "code_failure_claimed": false,
+  "release_closed": false,
+  "fail_closed": true
+}

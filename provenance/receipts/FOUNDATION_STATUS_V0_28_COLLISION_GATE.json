@@ -1,0 +1,39 @@
+{
+  "schema": "PNCS_FOUNDATION_STATUS_V0_28_BRANCH_SESSION_COLLISION_GATE",
+  "status": "PASS_PURE_CORE_ADAPTER_ENFORCEMENT_PENDING",
+  "gate": "v0.28 Branch / Session Collision Gate",
+  "base_commit": "cd1a5ac1d35c37f534dcdf3219ad4712cb20771f",
+  "validation": {
+    "pure_core": "25/25 PASS",
+    "target_head_move": "FAIL_CLOSED_PASS",
+    "foreign_active_session": "FAIL_CLOSED_PASS",
+    "expired_foreign_session": "PASS_NON_BLOCKING",
+    "missing_own_lease": "FAIL_CLOSED_PASS",
+    "stale_own_lease": "FAIL_CLOSED_PASS",
+    "merge_source_move": "FAIL_CLOSED_PASS",
+    "merge_source_foreign_session": "FAIL_CLOSED_PASS",
+    "immediate_revalidation": "PASS",
+    "stale_admission_replay": "FAIL_CLOSED_PASS",
+    "write_parent_exactness": "PASS",
+    "merge_parent_exactness": "PASS",
+    "force_allowed": false,
+    "git_adapter_enforcement": "PENDING",
+    "full_repository_suite": "NOT_REPLAYED"
+  },
+  "observed_collision_evidence": {
+    "status": "OBSERVED_ABORTED_BEFORE_WRITE",
+    "previously_observed_branch_head": "512ae39ec65c9da7214b9f91da82faf391e066f8",
+    "later_observed_branch_head": "8213f0cade4a2f0a1884278b025721f032ab6983",
+    "write_performed_after_mismatch": false
+  },
+  "closed_boundaries": {
+    "force_push": true,
+    "silent_rebase_after_collision": true,
+    "silent_retry_after_collision": true,
+    "stale_admission_replay": true,
+    "semantic_mass_bypass": true,
+    "orchorbital_bypass": true,
+    "write_without_finalize_parent_check": true
+  },
+  "release_gate_closed": false
+}

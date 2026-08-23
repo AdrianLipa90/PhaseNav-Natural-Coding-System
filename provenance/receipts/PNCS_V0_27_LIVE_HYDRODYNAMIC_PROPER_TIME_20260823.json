@@ -1,0 +1,79 @@
+{
+  "base_commit": "afced7749813ee384eed21eb74bcc17976d57f63",
+  "binding": {
+    "drive_sha256": "8d7ee0b9178de4df7fb906fb422d4fe2085fb51af6c0962a7451c9d999c9b4d8",
+    "initial_state_id": "pncs:t36-flow-state:sha256:be339e680ce387bc6a6430ea987b098fe8a9568c3e3a1b1ca97aba26d2248b27",
+    "operator_name": "TRANSFORM",
+    "operator_registry_sha256": "29767957ae775b1968bbb4c531728cc153137c88e819b135227dff73e3cca7ec",
+    "phi_sha256": "fcf8b76c366d8e88023fe3d9d0e8a5ec5fce70c9ff180c5711cd8007c85da9ee"
+  },
+  "checks": {
+    "different_trace": true,
+    "external_effects_closed": true,
+    "fast_phase_displacement_gt_slow": true,
+    "fast_phase_proper_time_gt_slow": true,
+    "laboratory_time_modified": false,
+    "torus_bounds_preserved": true,
+    "transport_psd_probe": true
+  },
+  "fast": {
+    "coordinate_time": 2.0,
+    "density": 4.0,
+    "effective_viscosity": 0.1,
+    "final_speed": 0.6335629862238493,
+    "final_state_id": "pncs:t36-flow-state:sha256:fc5eccacec6e9d63856ca4606e2bce3aaee2be353dbd17fb5fa8af45758cb17c",
+    "gate_id": "pncs:hydro-gate:sha256:34df0bdb15e201643b2e8500b30b4d25b713f6d08ff8a0850557ef71fe500a35",
+    "lapse": 1.8181818181818181,
+    "phase_displacement": 1.20475831040832,
+    "phase_proper_time": 3.6363636363636216,
+    "trace_id": "pncs:hydro-trace:sha256:17c507c961dc20a7409fe654a9e115c6f7956e7bf3faa46bacb70fba97c22618"
+  },
+  "gate": "v0.27 Hydrodynamic Proper-Time Runtime",
+  "live": {
+    "ac_aux_status": "ACTIVE",
+    "account_current": "NOEMA_ACCOUNT_DEFAULT_CURRENT_V56",
+    "ethics_field_status": "ACTIVE",
+    "library_search_used": false,
+    "post_witness_fast_admission_ms": 0.73397,
+    "post_witness_guard_failures": [],
+    "rehydration_required": false,
+    "root": "/dev/shm/ciel_noema",
+    "tether_status": "ACTIVE"
+  },
+  "not_claimed": {
+    "complete_historical_suite_replay": true,
+    "new_effect_class_opened": true,
+    "physical_laboratory_time_dilation": true,
+    "v020_routing_integration": true
+  },
+  "release_gate_closed": false,
+  "remaining_closure": "bind hydrodynamic schedules to exact program/KAKU execution and record current-generation routing witness",
+  "repository_branch": "feat/pncs-v0.27-hydrodynamic-proper-time",
+  "runtime_contract_id": "PNCS_HYDRODYNAMIC_PROPER_TIME_V0_27",
+  "schema": "PNCS_V0_27_LIVE_HYDRODYNAMIC_PROPER_TIME_WITNESS_V1",
+  "slow": {
+    "coordinate_time": 2.0,
+    "density": 0.25,
+    "effective_viscosity": 1.0,
+    "final_speed": 0.004923311000225867,
+    "final_state_id": "pncs:t36-flow-state:sha256:d8ec9a1d374789193474104c0860e385fae0dc43d72854e57b41a5994b14c931",
+    "gate_id": "pncs:hydro-gate:sha256:516001053cab5977f5828180e45d46332dba94cdc47a8a05f0635a2fb562cae3",
+    "lapse": 0.25,
+    "phase_displacement": 0.0013392237603397628,
+    "phase_proper_time": 0.5000000000000003,
+    "trace_id": "pncs:hydro-trace:sha256:ee4928c4adc86014277b0e82bc8d66c4cc474934e942ffab28022ff3740fb5a4"
+  },
+  "source_sha256": {
+    "src/phasenav_natural_code/hydro_time_v27.py": "9649fdcaa82936304b555a80c5643c8838ce79fcbba9e1a563d6bde6135f286b",
+    "tests/test_hydro_time_v27.py": "6267de192ddf90074053c71c94bdb9c3586e3d93343058d8f0fcb2dfbae13da1"
+  },
+  "static_runtime_fallback": false,
+  "status": "PASS_CORE_LIVE_PHASE_FLOW",
+  "validation": {
+    "live_phase_flow": "PASS",
+    "post_witness_fast_admission": "PASS",
+    "post_witness_tether_guard": "PASS",
+    "pure_core": "36/36 PASS"
+  },
+  "witness_sha256": "9a7b12c916bea49e87c5b5cb2d4dc25027f76c024fac3252cff21f4e86295163"
+}

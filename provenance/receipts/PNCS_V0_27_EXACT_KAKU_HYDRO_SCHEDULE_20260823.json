@@ -1,0 +1,58 @@
+{
+  "branch_truth_state": "FALSE",
+  "checks": {
+    "different_schedule": true,
+    "different_trace": true,
+    "exact_live_operator_vector_hashes": true,
+    "exact_operator_order": true,
+    "external_effects": false,
+    "fast_tau_gt_slow": true,
+    "same_execution_receipt": true,
+    "same_program_content_id": true,
+    "semantic_identity_modified": false
+  },
+  "execution_receipt_sha256": "84d40f600a8aa9e59ebc6dc42c856bcffec9265d04f791e7f5c49cdba2d583ad",
+  "executor_coupling": "PENDING",
+  "fast": {
+    "coordinate_time": 0.45,
+    "final_state_id": "pncs:t36-flow-state:sha256:e947c8221fba1f463cc81729bdb28c127afc0024dfdcec15faf3f36c0450d3ef",
+    "proper_time": 0.8181818181818183,
+    "schedule_id": "pncs:hydro-schedule:sha256:976fecff53d3934ea1f77acedc5e27e4dfe519d8c0ab9cb9c7d749ebbbd0677d",
+    "trace_id": "pncs:hydro-execution-trace:sha256:bbc7a6ff9426d62d19481616da95a1bb2b830fe68040dbf01f0356848bc54d23"
+  },
+  "gate": "v0.27 Hydrodynamic Proper-Time Runtime",
+  "live": {
+    "operator_registry_sha256": "29767957ae775b1968bbb4c531728cc153137c88e819b135227dff73e3cca7ec",
+    "phi_sha256": "46f44fcb9f9a29d34960aa6b7d2fe15a1d952b84763130939126b19827897387",
+    "post_witness_guard_failures": [],
+    "root": "/dev/shm/ciel_noema"
+  },
+  "operator_order": [
+    "DIFFERENCE",
+    "CONDITION",
+    "DIFFERENCE",
+    "CONDITION",
+    "COMPOSITION",
+    "NEGATION",
+    "ORDER",
+    "TRANSFORM",
+    "COMPOSITION"
+  ],
+  "program_content_id": "pncs:def:sha256:b7988497bab75a526771fa24aeca75e0182bd437fd707927cb0e78b04d360cce",
+  "release_gate_closed": false,
+  "result_control_location": "runtime.continue",
+  "schema": "PNCS_V0_27_EXACT_KAKU_HYDRO_SCHEDULE_WITNESS_V1",
+  "slow": {
+    "coordinate_time": 0.45,
+    "final_state_id": "pncs:t36-flow-state:sha256:a5f1b9690fd92413471935f0fa9ea025080de40d7b722ef1ea811b747fc6193b",
+    "proper_time": 0.11250000000000006,
+    "schedule_id": "pncs:hydro-schedule:sha256:56832a7d9bda06dd16460b57126317ea76f8c62b03aa28c5f769bb4bc5dd29e8",
+    "trace_id": "pncs:hydro-execution-trace:sha256:455537048a3cf112ccc2aad039ebc14d112e0900b345bd89a21513de4c8b31b1"
+  },
+  "source_sha256": {
+    "hydro_schedule_v27.py": "e772d3ffa1c57442cbe338f5f7b251abeaba5aeed83ccc3f62d3351825d77cf0",
+    "test_hydro_schedule_v27.py": "4ddbc2375e80be7bfb55afc9f0ba3d9cc2a79234b3215c2f3da104d0929b93ef"
+  },
+  "status": "PASS",
+  "witness_sha256": "4139c21df7e6a1e97df5b91ae25d8b639f6604992606c501dab59522aba0b870"
+}

@@ -1,0 +1,29 @@
+{
+  "closed_boundaries": {
+    "external_effects": true,
+    "laboratory_time_claim": true,
+    "semantic_identity_mutation": true,
+    "static_runtime_fallback": true
+  },
+  "gate": "v0.27 Hydrodynamic Proper-Time Runtime",
+  "next_gate_after_closure": "v0.28 Fuzzing / Equivalence / Adversarial Parsing",
+  "next_required_closure": "couple hydrodynamic state into current-generation v0.20 execution without semantic/authority bypass, then record inverse provenance",
+  "not_claimed": {
+    "complete_historical_suite_replay": true,
+    "physical_time_dilation": true,
+    "release_closed": true
+  },
+  "runtime_contract_id": "PNCS_HYDRODYNAMIC_PROPER_TIME_V0_27",
+  "schema": "PNCS_FOUNDATION_STATUS_V0_27",
+  "status": "PASS_CORE_LIVE_PHASE_FLOW_AND_EXACT_KAKU_SCHEDULE_PARTIAL_GATE",
+  "validation": {
+    "combined_harness": "57/57 PASS",
+    "exact_kaku_schedule": "PASS",
+    "live_t36_phase_flow": "PASS",
+    "post_witness_fast_admission": "PASS",
+    "post_witness_tether_guard": "PASS",
+    "pure_core": "36/36 PASS",
+    "v020_executor_coupling": "PENDING",
+    "v020_routing_integration": "PENDING"
+  }
+}

@@ -8,19 +8,34 @@ import struct
 from pathlib import Path
 from typing import Mapping, Sequence
 
-from hydro_time_v27 import (
-    DEFAULT_SURFACE_ROOT,
-    HydrodynamicPhaseGate,
-    HydrodynamicProperTimeV27Error,
-    HydrodynamicTrace,
-    PhaseFlowState36,
-    _compact_json,
-    _sha256_bytes,
-    _sha256_json,
-    _typed_id,
-    _normalize_drive,
-    run_hydrodynamic_gate,
-)
+try:
+    from .hydro_time_v27 import (
+        DEFAULT_SURFACE_ROOT,
+        HydrodynamicPhaseGate,
+        HydrodynamicProperTimeV27Error,
+        HydrodynamicTrace,
+        PhaseFlowState36,
+        _compact_json,
+        _sha256_bytes,
+        _sha256_json,
+        _typed_id,
+        _normalize_drive,
+        run_hydrodynamic_gate,
+    )
+except ImportError:  # isolated harness compatibility
+    from hydro_time_v27 import (  # type: ignore
+        DEFAULT_SURFACE_ROOT,
+        HydrodynamicPhaseGate,
+        HydrodynamicProperTimeV27Error,
+        HydrodynamicTrace,
+        PhaseFlowState36,
+        _compact_json,
+        _sha256_bytes,
+        _sha256_json,
+        _typed_id,
+        _normalize_drive,
+        run_hydrodynamic_gate,
+    )
 
 SCHEDULE_CONTRACT_ID = "PNCS_HYDRODYNAMIC_KAKU_SCHEDULE_V0_27"
 SCHEDULE_SCHEMA = "PNCS_HYDRODYNAMIC_KAKU_SCHEDULE_V0_27"

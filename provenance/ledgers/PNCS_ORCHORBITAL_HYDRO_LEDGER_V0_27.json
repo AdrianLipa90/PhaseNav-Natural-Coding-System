@@ -1,0 +1,63 @@
+{
+  "base_v026_commit": "afced7749813ee384eed21eb74bcc17976d57f63",
+  "branch": "feat/pncs-v0.27-hydrodynamic-proper-time",
+  "closed": {
+    "external_effects": true,
+    "implicit_reduction_selection": true,
+    "laboratory_time_claim": true,
+    "routing_feedback": true
+  },
+  "contract_id": "PNCS_ORCHORBITAL_COUPLED_EXECUTION_V0_27",
+  "foundation_authority": {
+    "commit": "aa0da54ef29a1f80dd0390427935342225388950",
+    "paths": [
+      "src/CIEL_Orbital_Foundation_Packk/02_ONTOLOGY_AND_OBSERVABLES.md",
+      "src/CIEL_Orbital_Foundation_Packk/03_STATE_SPACE_AND_BOUNDARY_CONDITIONS.md",
+      "src/CIEL_Orbital_Foundation_Packk/04_INVARIANTS_POTENTIALS_AND_ATTRACTORS.md",
+      "src/CIEL_Orbital_Foundation_Packk/05_ENTITY_REGISTRY_AND_SPHERE_EMBEDDING.md",
+      "src/CIEL_Orbital_Foundation_Packk/06_SUBJECTIVE_TIME_WINDING_AND_SEMANTIC_MASS.md",
+      "src/CIEL_Orbital_Foundation_Packk/07_OORP_PIPELINE_AND_MEMORY.md"
+    ],
+    "repository": "AdrianLipa90/CIEL-Omega-ApokalypOS"
+  },
+  "gate": "v0.27",
+  "live": {
+    "alternate_g_coupled_receipt_sha256": "10a616ae909b3eaf24744feafcf7d41c3eda60e9a7d9e3c29c519e8d5aa52b45",
+    "baseline_coupled_receipt_sha256": "7c9191faa9534f431cb4907cad29b2028fab78a8284624702e53036e2bccbd5d",
+    "resident_authority_id": "pncs:resident-coupled-authority:sha256:ce6193ec23511cca7ec363497240b88dc3a3755f07c09e8c01be84a2253b597b",
+    "resident_dispatch_id": "pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2",
+    "source_v20_receipt_sha256": "84d40f600a8aa9e59ebc6dc42c856bcffec9265d04f791e7f5c49cdba2d583ad",
+    "witness_sha256": "e22472653144b75fc54eed550610a2d6f2026fe5aa347aea2a95ae0f776a129e"
+  },
+  "manifest_sha256_regenerated": false,
+  "schema": "PNCS_ORCHORBITAL_HYDRO_LEDGER_V0_27",
+  "source_sha256": {
+    "execution_orch_authority_v27.py": "6545f1e3c3d3087668569e98291d532d7efcb969a63afccbab36a19ad05396b4",
+    "execution_orch_executor_v27.py": "5c75a2ea6584acbd5392df115cb6105535598f5699371667cca7f41fd2b7720e",
+    "execution_orch_state_v27.py": "a07d50b437ceb5d29863b5fa55e7cd0fc6357cb5acb52be56864885efb196daf",
+    "execution_orch_v27.py": "1838c9e9bbc72c9de7803012640c25465f9b244da126d4db5c220011c15acd45",
+    "hydro_schedule_v27.py": "289a947f08a5fe3e7aa9faee477f42228f5a3369312945a98171b98c81f873f3",
+    "hydro_time_v27.py": "9649fdcaa82936304b555a80c5643c8838ce79fcbba9e1a563d6bde6135f286b",
+    "orch_hydro_v27.py": "aae8a973ea7669a91ff6da1838ec92c1ad38be364494e4b1123bf5dd1685b36c",
+    "orch_orbital_core_v27.py": "c0c5603d0a6300195c56ad39de49e35c28e4b6546ce6fc1db394b3a1455f4933",
+    "orch_orbital_reduction_v27.py": "be06f5f2954e3eb944bdf16a3f9bafcedd93b7132372ed1ab700745b016d8457",
+    "orch_orbital_time_v27.py": "e1ae8908f41898a6cdf5b2d8dfb9024746a4a71014a846b33ebafb38c15d6dbc",
+    "orch_orbital_v27.py": "633565a48f06cdefdbae1500baa48a6d2d7d398e340317cb208041f834f98c66",
+    "test_execution_orch_v27.py": "81a49af03f641c42c15146d2faeedf996e09f0174851b4c6d3fc58b6996491d3",
+    "test_hydro_schedule_v27.py": "4ddbc2375e80be7bfb55afc9f0ba3d9cc2a79234b3215c2f3da104d0929b93ef",
+    "test_hydro_time_v27.py": "6267de192ddf90074053c71c94bdb9c3586e3d93343058d8f0fcb2dfbae13da1",
+    "test_orch_hydro_v27.py": "105dea37f64b058b5cab7fa8e2d4114cee63bb6fa67229af145a7cd0cf2fea3f",
+    "test_orch_package_v27.py": "d96b361ed813ea702285a694e3440fd607f9aa0fc444baf4749656f10bd5c81d"
+  },
+  "status": "PASS_RELEASE_CLOSED",
+  "validation": {
+    "alternate_g_semantic_equivalence": "PASS",
+    "combined_harness": "134/134 PASS (130 isolated + 4 package regression)",
+    "live_coupled_execution": "PASS",
+    "package_import": "PASS",
+    "package_regression": "4/4 PASS",
+    "post_guard": "PASS",
+    "resident_authority": "PASS",
+    "semantic_projection_exact_against_frozen_v020": "PASS"
+  }
+}

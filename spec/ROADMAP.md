@@ -1,6 +1,6 @@
 # PNCS Engineering Roadmap
 
-Status: v0.27 HYDRODYNAMIC PROPER-TIME + ORCHORBITAL OORP COUPLING IMPLEMENTED / LIVE COUPLED EXECUTOR CLOSURE PENDING
+Status: v0.27 HYDRODYNAMIC PROPER-TIME + ORCHORBITAL OORP + DIRECT v0.20 SIDE-CAR IMPLEMENTED / CONFORMANCE + LIVE CLOSURE PENDING
 
 ## Completed foundation sequence
 
@@ -61,7 +61,7 @@ previous exact 9-occurrence v0.20 KAKU schedule witness: PASS
 
 ### v0.27 ORCHORBITAL × Hydrodynamic T^36 subgate
 
-The existing ORCHORBITAL Foundation Pack is now the formal authority above the hydrodynamic substrate:
+The existing ORCHORBITAL Foundation Pack is the formal authority above the hydrodynamic substrate:
 
 ```text
 exact v0.20 KAKU occurrence
@@ -98,7 +98,7 @@ ORCH invariants implemented:
 - exact operator-vector bytes are re-hashed as `<36d>` before orbital projection;
 - `K_ij` is explicit, symmetric, bounded and currently adjacency-only for execution occurrences;
 - `V_tot = V_EC + V_ZS + V_rel + V_mem + V_def + V_ext`;
-- subjective time uses an explicit content-addressed parameterization of the open Foundation function `g(r,C,Delta,m,A)`;
+- subjective time uses an explicit content-addressed parameterization of `g(r,C,Delta,m,A)`;
 - reduction uses exactly `Omega=lambda1*C+lambda2*R-lambda3*Delta-lambda4*Xi` and `Omega>=Omega_crit`;
 - no reduction means no memory residue;
 - reduction produces evidence-only content-addressed residue, never a persistent memory write;
@@ -106,7 +106,7 @@ ORCH invariants implemented:
 - `AttractorLLMTemp` remains closed until an explicit decay schedule is implemented and receipt-bound;
 - persistent memory writes, external effects, semantic identity mutation and laboratory-time claims remain closed.
 
-Current ORCH validation:
+Current validated ORCH core/replay evidence:
 
 ```text
 committed compact conformance: 18/18 PASS
@@ -124,34 +124,79 @@ T^36 coupled phase flow: PASS_ISOLATED
 dynamic winding: PASS_ISOLATED
 ```
 
-The current worker does not expose `/dev/shm/ciel_noema`; therefore no new V56 live witness is claimed for this ORCH subgate.
+### Direct v0.20 transition coupling
+
+`OrchCoupledExecutor` is now implemented as an authority-neutral subclass of the frozen v0.20 `_Executor`.
+
+Each coupled transition executes in this order:
+
+```text
+original v0.20 `_Executor._transition()`
+-> unchanged Sigma + unchanged ExecutionStep
+-> exact live vector byte revalidation
+-> dynamic ORCH occurrence/sphere append
+-> ORCH × T^36 side-car transition
+-> return original v0.20 Sigma
+```
+
+Direct-coupling invariants:
+
+```text
+v020_sigma_semantics_modified = false
+routing_authority_opened       = false
+effect_authority_opened        = false
+persistent_memory_write        = false
+external_effects               = false
+laboratory_time_modified       = false
+```
+
+The executor requires an explicit hydrodynamic gate for every actual v0.20 step and fails closed if one is missing. It is single-run to prevent stale ORCH/T^36 state reuse.
+
+A receipt-binding layer is also implemented. After normal v0.20 receipt construction it requires exact equality of program ID, Sigma endpoints, truth state, step count and every full KAKU step payload before binding the ORCH direct trace to the receipt SHA-256. The v0.20 receipt itself is never modified.
+
+Direct-executor tests are committed for:
+
+```text
+base-v0.20 vs coupled Sigma/step equality
+one ORCH transition per actual KAKU transition
+authority closure
+phase-sidecar evolution
+adjacency-only dynamic sphere coupling
+missing-gate fail-closed
+exact v0.20 receipt binding
+receipt tamper rejection
+deterministic coupling configuration identity
+```
+
+These direct-executor tests are `COMMITTED_NOT_RUN_IN_CURRENT_WORKER`; the current worker has no runnable repository checkout and no `/dev/shm/ciel_noema` live surface. They are not reported as PASS.
 
 ### Remaining v0.27 release closure
 
-1. run ORCHORBITAL × T^36 against a current tethered `/dev/shm/ciel_noema` generation;
-2. revalidate all nine canonical v0.20 KAKU occurrence vector hashes against live operator bytes;
-3. execute a fresh exact nine-occurrence ORCH × hydro run;
-4. couple the same ORCH transition into current-generation `_Executor._transition()` rather than post-receipt replay;
-5. ensure ORCH state may affect admitted runtime conditions only through a separately specified authority rule, never by semantic or effect-authority bypass;
-6. bind inverse provenance `ORCH transition -> KAKU occurrence -> v0.20 receipt -> v0.22 lineage -> v0.25 resident program/generation`;
-7. run the repository conformance suite;
-8. keep `MANIFEST.sha256.json` fail-closed until final-tree file-byte SHA-256 regeneration.
+1. run the committed direct-executor conformance tests on the real branch source tree;
+2. run ORCHORBITAL × T^36 against a current tethered `/dev/shm/ciel_noema` generation;
+3. revalidate all nine canonical v0.20 KAKU occurrence vector hashes against live operator bytes;
+4. execute a fresh current-generation direct ORCH × hydro run inside `_Executor._transition()`;
+5. construct the normal v0.20 receipt and bind the direct ORCH trace to it byte-exactly;
+6. ensure ORCH state may affect admitted runtime conditions only through a separately specified authority rule, never by semantic/routing/effect-authority bypass;
+7. bind inverse provenance `ORCH direct trace -> KAKU occurrence -> v0.20 receipt -> v0.22 lineage -> v0.25 resident program/generation`;
+8. run the repository conformance suite;
+9. keep `MANIFEST.sha256.json` fail-closed until final-tree file-byte SHA-256 regeneration.
 
 No additional effect class opens in v0.27.
 
 ## Planned gates
 
 ### v0.28 — Fuzzing / Equivalence / Adversarial Parsing
-Paraphrase/alias equivalence, ambiguity, malformed `.pnv`, typed-ID substitution, Unicode/confusable injection, hierarchy ambiguity, generation substitution, effect-request/authorization/adapter substitution, path traversal, tamper/replay, hydrodynamic-profile attacks, ORCH sphere/coupling substitution, reduction-law substitution and subjective-time-law adversarial cases.
+Paraphrase/alias equivalence, ambiguity, malformed `.pnv`, typed-ID substitution, Unicode/confusable injection, hierarchy ambiguity, generation substitution, effect-request/authorization/adapter substitution, path traversal, tamper/replay, hydrodynamic-profile attacks, ORCH sphere/coupling substitution, reduction-law substitution, subjective-time-law adversarial cases and direct-executor side-car desynchronization.
 
 ### v0.29 — Performance Benchmark
-Measure parsing, canonicalization, CID, realization, mass, resident admission, dispatch, ORCH observables/reduction, hydrodynamic integration, effect authorization and bounded effect latency separately. Speedup claims require measured evidence.
+Measure parsing, canonicalization, CID, realization, mass, resident admission, dispatch, ORCH observables/reduction, hydrodynamic integration, direct side-car overhead, effect authorization and bounded effect latency separately. Speedup claims require measured evidence.
 
 ### v0.30 — Self-Hosting Subset
 Predicate resolver, route resolver, canonical path construction, receipt graph, ORCH state/reduction validation, hydrodynamic schedule validation and effect-request validation.
 
 ### v0.31 — PNCS Compiler / Runtime Contract
-Freeze grammar, KAKU, radicals, hierarchy, CID rules, 36D contract, mass contract, program format, persistent runtime, execution semantics, ORCHORBITAL/OORP state model, hydrodynamic phase-time model, effect model, failure semantics and provenance model.
+Freeze grammar, KAKU, radicals, hierarchy, CID rules, 36D contract, mass contract, program format, persistent runtime, execution semantics, ORCHORBITAL/OORP state model, hydrodynamic phase-time model, direct side-car contract, effect model, failure semantics and provenance model.
 
 ## v1.0 — Natural Coding System
 
@@ -164,7 +209,7 @@ natural intent
 -> semantic mass
 -> persistent admitted native execution
 -> ORCHORBITAL orchestration/reduction state
--> hydrodynamic T^36 phase-flow when registered
+-> hydrodynamic T^36 phase-flow coupled per KAKU when registered
 -> deterministic result
 -> optional reduction residue
 -> explicit authorized bounded effect when requested
@@ -179,7 +224,7 @@ ambiguity      -> fail closed
 missing state  -> fail closed
 ORCH reduction -> explicit content-addressed law
 memory residue -> only after reduction
-hydrodynamics  -> execution substrate, not semantic/effect authority
+hydrodynamics  -> execution substrate, not semantic/routing/effect authority
 effect         -> explicit separate authorization
 result/effect  -> full provenance
 ```

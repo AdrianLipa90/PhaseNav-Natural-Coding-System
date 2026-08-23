@@ -1,0 +1,77 @@
+name: PNCS v0.27 ORCHORBITAL conformance
+
+on:
+  push:
+    branches:
+      - feat/pncs-v0.27-orchorbital-coupling
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pytest
+        shell: python {0}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-m', 'pip', 'install', 'pytest'], check=True)
+      - name: Run ORCHORBITAL v0.27 conformance
+        shell: python {0}
+        run: |
+          import subprocess, sys
+          tests = [
+              'tests/test_orchorbital_v27.py',
+              'tests/test_orchorbital_foundation_constraints_v27.py',
+              'tests/test_orchorbital_executor_v27.py',
+              'tests/test_hydro_time_v27.py',
+              'tests/test_hydro_schedule_v27.py',
+          ]
+          subprocess.run([sys.executable, '-m', 'pytest', '-q', *tests, '--junitxml=pncs-v027-orch-junit.xml'], check=True)
+      - name: Record exact commit and source hashes
+        shell: python {0}
+        run: |
+          from pathlib import Path
+          import hashlib, json, os
+          paths = [
+              'src/phasenav_natural_code/orchorbital_v27.py',
+              'src/phasenav_natural_code/orchorbital_hydro_v27.py',
+              'src/phasenav_natural_code/orchorbital_executor_v27.py',
+              'src/phasenav_natural_code/hydro_time_v27.py',
+              'src/phasenav_natural_code/hydro_schedule_v27.py',
+              'src/phasenav_natural_code/execution_v20.py',
+              'src/phasenav_natural_code/execution_v20_model.py',
+              'src/phasenav_natural_code/execution_v20_state.py',
+              'src/phasenav_natural_code/execution_v20_live.py',
+          ]
+          out = {'commit': os.environ.get('GITHUB_SHA'), 'sha256': {}}
+          for name in paths:
+              raw = Path(name).read_bytes()
+              out['sha256'][name] = hashlib.sha256(raw).hexdigest()
+          Path('pncs-v027-orch-source-hashes.json').write_text(json.dumps(out, indent=2, sort_keys=True) + '\n')
+      - name: Upload exact tested snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: pncs-v027-orchorbital-tested-snapshot
+          if-no-files-found: error
+          path: |
+            src/phasenav_natural_code/
+            tests/test_orchorbital_v27.py
+            tests/test_orchorbital_foundation_constraints_v27.py
+            tests/test_orchorbital_executor_v27.py
+            tests/test_hydro_time_v27.py
+            tests/test_hydro_schedule_v27.py
+            native/PNCS_ORCHORBITAL_HYDRO_COUPLING_V0_27.pnv
+            spec/PNCS_ORCHORBITAL_HYDRO_COUPLING_V0_27.md
+            provenance/receipts/FOUNDATION_STATUS_V0_27_ORCHORBITAL.json
+            pncs-v027-orch-junit.xml
+            pncs-v027-orch-source-hashes.json
+          retention-days: 7

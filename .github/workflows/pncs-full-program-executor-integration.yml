@@ -1,0 +1,39 @@
+name: PNCS full ProgramUnit executor integration
+
+on:
+  push:
+    branches:
+      - feat/pncs-full-program-executor-v01
+  pull_request:
+    branches:
+      - feat/pncs-v029-orchorbital-harvest-hardening
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-v023-v024-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pytest
+        run: python -m pip install pytest
+      - name: Run concrete v0.23 -> v0.24 -> full executor replay and demo
+        env:
+          PYTHONPATH: src
+        run: >-
+          python -m pytest -q
+          tests/test_full_program_executor_real_integration_v01.py
+          tests/test_full_program_executor_v01.py
+          tests/test_full_program_executor_native_v01.py
+          tests/test_full_program_demo_v01.py
+      - name: Run user-facing full-program demo
+        env:
+          PYTHONPATH: src
+        run: python examples/pncs_full_program_demo_v01.py

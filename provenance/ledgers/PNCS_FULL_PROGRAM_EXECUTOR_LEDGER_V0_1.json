@@ -1,0 +1,117 @@
+{
+  "base": "28e0850d02230a8afd61674d96d49a67e0d6843c",
+  "branch": "feat/pncs-full-program-executor-v01",
+  "closed": {
+    "external_effects": true,
+    "free_form_nl_execution": true,
+    "function_calls": true,
+    "loops": true,
+    "static_runtime_fallback": true
+  },
+  "contract": "PNCS_FULL_PROGRAM_EXECUTOR_V0_1",
+  "date": "2026-08-23",
+  "demo": {
+    "artifact": "examples/pncs_full_program_demo_v01.py",
+    "evidence_boundary": {
+      "live_v020_kernel_execution": false,
+      "live_v025_resident_dispatch": false,
+      "real_full_program_executor": true,
+      "real_v023_resolver": true,
+      "real_v024_program_unit": true,
+      "real_v025_dispatch_receipt_model": true
+    },
+    "expected_branch_truth_state": "FALSE",
+    "expected_final_control_location": "runtime.memory.relief",
+    "expected_instruction_kinds": [
+      "CONTROL_DISPATCH",
+      "CONTINUATION_ROUTE",
+      "CONTINUATION_ROUTE",
+      "RETURN"
+    ],
+    "expected_return_selector": "result.control_location",
+    "expected_return_value": "runtime.memory.relief",
+    "program": "IF (memory pressure ABOVE 90% OR risk ABOVE 80%) THEN GO safety pause ELSE GO runtime continue AND THEN GO cooling emergency AND THEN GO runtime memory relief RETURN control location",
+    "status": "IMPLEMENTED_END_TO_END_DEMO",
+    "test": "tests/test_full_program_demo_v01.py"
+  },
+  "demo_git_blobs": {
+    ".github/workflows/pncs-full-program-executor-integration.yml": "b38f894eebc47c0010e5a01cb3fc320c9fd115a2",
+    "examples/pncs_full_program_demo_v01.py": "10524ed0bbc3be49a5b200b5800f1ca41b2837d3",
+    "tests/test_full_program_demo_v01.py": "3646a369bfb40b2968545107ac58f34da2b072cb",
+    "tests/test_full_program_executor_real_integration_v01.py": "cd44be8ff1d6959d83c0628362794e2519982efd"
+  },
+  "epistemic_status": "CHYBA",
+  "fail_closed": true,
+  "files": {
+    "native/experimental/PNCS_FULL_PROGRAM_EXECUTOR_V0_1.pnv": {
+      "git_blob_sha1": "ebf785f6b52fc56563ee7cb60af16c5837242ab3",
+      "sha256": "cfb4d8b5168826e5c5d2c38d9a912886358421360936e22cd6d912478932bf16",
+      "size": 1661
+    },
+    "spec/experimental/PNCS_FULL_PROGRAM_EXECUTOR_V0_1.md": {
+      "git_blob_sha1": "9fd7161e6b28be84c47c40a159cdf526e3abbdc2",
+      "sha256": "f12f81e56079bca1cddc3db4940c1d69d7157d643ce5d70e5d3bcc7c584b36ee",
+      "size": 7111
+    },
+    "src/phasenav_natural_code/full_program_executor_v01.py": {
+      "git_blob_sha1": "8e14212540684295cb062cf61ee9955ad34bfc70",
+      "sha256": "956b4947de5cd661a06444daaa5aa910cffc7226c46f802a714005d0552494c1",
+      "size": 21970
+    },
+    "tests/test_full_program_executor_native_v01.py": {
+      "git_blob_sha1": "29dd12d379a89511a91738784dd62fab57d1acd8",
+      "sha256": "86c9e6e7cab1d42bbbb491b26cb0ff26dbb65e4e700dfc71f90cd601dd9ea6b9",
+      "size": 2336
+    },
+    "tests/test_full_program_executor_v01.py": {
+      "git_blob_sha1": "36643be95ca22bfe45e33491f895cd78fe6285c4",
+      "sha256": "95b151f73de87b3c30e82386ebfc9d1aa456a0426d97fc64affa1b0f07fdd261",
+      "size": 12963
+    }
+  },
+  "hosted_ci": {
+    "classification": "HOSTED_PRE_STEP_INFRA_BLOCKED",
+    "job_id": 97254097494,
+    "run_id": 32663865507,
+    "run_number": 11,
+    "steps": [],
+    "code_failure_observed": false
+  },
+  "mode": "READ_ONLY",
+  "noema_live_guard": {
+    "failures": [],
+    "require_socket": true,
+    "root": "/dev/shm/ciel_noema",
+    "static_fallback": false,
+    "tether_status": "ACTIVE"
+  },
+  "opened": {
+    "continuation_execution": true,
+    "full_current_bounded_program_execution": true,
+    "return_execution": true
+  },
+  "optimization": {
+    "benchmark_scope": "local validation environment; two continuation routes; 9 repeats x 5000 executions",
+    "full_compile_execute_median_us": 110.8363074,
+    "overhead_ratio": 3.6338232415261875,
+    "prepared_execute_median_us": 30.501293
+  },
+  "promotion_track": "POST_V1_LANGUAGE_ENGINEERING",
+  "reuse": {
+    "v022": "exact inverse lineage retained",
+    "v023": "NaturalProgramComposition bounded grammar",
+    "v024": "NativeProgramUnit identity and exact operator schedule",
+    "v025": "ResidentDispatchReceipt contract and PersistentProgramRuntime.dispatch_control boundary",
+    "v026": "effect authority remains separate"
+  },
+  "schema": "PNCS_FULL_PROGRAM_EXECUTOR_LEDGER_V0_1",
+  "status": "DEMO_IMPLEMENTED_REAL_OBJECT_PATH_HOSTED_PRESTEP_BLOCKED",
+  "tested_candidate_head_before_ledger": "e7eee1480cb963e8f9167c709d4f4715fabddb0b",
+  "tests": {
+    "focused_native_spec": "39/39 PASS",
+    "full_repo_real_object_replay": "IMPLEMENTED_AS_TEST; HOSTED_EXECUTION_BLOCKED_BEFORE_FIRST_STEP",
+    "live_v25_resident_program_replay": "PENDING_SEPARATE_RUNTIME_WITNESS",
+    "py_compile": "PASS",
+    "user_facing_demo": "IMPLEMENTED_END_TO_END; HOSTED_EXECUTION_BLOCKED_BEFORE_FIRST_STEP"
+  }
+}

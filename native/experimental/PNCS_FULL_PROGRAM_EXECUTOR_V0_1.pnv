@@ -1,0 +1,31 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# Full Program Executor v0.1 — current bounded PNCS program grammar.
+# Zero new KAKU. Control root remains delegated to verified v0.25 resident dispatch.
+
+OP FPE.PROGRAM_SOURCE SOURCE native_program_unit exact_registered_v024
+OP FPE.CONTROL_SOURCE SOURCE resident_control_dispatch exact_v025
+OP FPE.CONTROL_ORDER ORDER program_counter control_result continuation_head
+
+OP FPE.CONTINUATION_ORDER ORDER control_location registered_route_ref
+OP FPE.CONTINUATION_TRANSFORM TRANSFORM control_location route registered_target
+OP FPE.CONTINUATION_COMPOSE COMPOSITION prior_state ordered_route transformed_state
+
+OP FPE.RETURN_ORDER ORDER final_control_state registered_return_ref
+OP FPE.RETURN_VALUE RETURN registered_return_selector verified_bound_value
+OP FPE.RECEIPT COMPOSITION program_plan execution_trace return_value
+
+OP FPE.SCOPE CONDITION epistemic_status equals CHYBA
+OP FPE.PROMOTION CONDITION promotion_track equals POST_V1_LANGUAGE_ENGINEERING
+OP FPE.NO_EFFECTS CONDITION external_effects equals FALSE
+OP FPE.NO_STATIC_FALLBACK CONDITION static_runtime_fallback equals FALSE
+OP FPE.NO_LOOPS CONDITION loops_opened equals FALSE
+OP FPE.NO_CALLS CONDITION function_calls_opened equals FALSE
+
+OP PATH.FPE.CONTINUATION COMPOSITION FPE.CONTINUATION_ORDER FPE.CONTINUATION_TRANSFORM FPE.CONTINUATION_COMPOSE
+OP PATH.FPE.RETURN COMPOSITION FPE.RETURN_ORDER FPE.RETURN_VALUE
+OP PATH.FPE.PROGRAM COMPOSITION FPE.PROGRAM_SOURCE FPE.CONTROL_SOURCE FPE.CONTROL_ORDER PATH.FPE.CONTINUATION PATH.FPE.RETURN FPE.RECEIPT FPE.SCOPE FPE.PROMOTION FPE.NO_EFFECTS FPE.NO_STATIC_FALLBACK FPE.NO_LOOPS FPE.NO_CALLS
+
+EMIT PATH.FPE.PROGRAM

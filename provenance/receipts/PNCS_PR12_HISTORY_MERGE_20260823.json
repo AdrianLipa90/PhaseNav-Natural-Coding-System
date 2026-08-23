@@ -1,0 +1,11 @@
+{
+  "schema": "PNCS_BRANCH_HISTORY_MERGE_V1",
+  "date": "2026-08-23",
+  "pull_request": 12,
+  "branch": "feat/pncs-v0.28-adversarial-fuzzing",
+  "branch_head": "c9177bf560915afd9c367e18801d1da45608ff58",
+  "main_before_merge": "38f8ab8f0f945a1cabaa7da749f4429f1238f89f",
+  "merge_policy": "PRESERVE_CURRENT_MAIN_TREE_FOR_CONFLICTING_OR_SUPERSEDED_PATHS",
+  "history_incorporated_as_parent": true,
+  "force_push": false
+}

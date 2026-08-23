@@ -1,0 +1,11 @@
+{
+  "schema": "PNCS_BRANCH_HISTORY_MERGE_V1",
+  "date": "2026-08-23",
+  "pull_request": 10,
+  "branch": "feat/pncs-v0.27-orchorbital-coupling",
+  "branch_head": "abe0f127a013cbed9084786f7a2a393bd5c5943e",
+  "main_before_merge": "cc578fe390a5acdf30a18fa3dddd3ada83afb501",
+  "merge_policy": "PRESERVE_CURRENT_MAIN_TREE_FOR_CONFLICTING_OR_SUPERSEDED_PATHS",
+  "history_incorporated_as_parent": true,
+  "force_push": false
+}

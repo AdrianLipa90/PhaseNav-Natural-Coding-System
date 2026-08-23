@@ -1,0 +1,18 @@
+{
+  "schema": "PNCS_BRANCH_MERGE_SUMMARY_V1",
+  "date": "2026-08-23",
+  "merged_histories": [
+    {
+      "pull_request": 10,
+      "branch": "feat/pncs-v0.27-orchorbital-coupling",
+      "head": "abe0f127a013cbed9084786f7a2a393bd5c5943e"
+    },
+    {
+      "pull_request": 12,
+      "branch": "feat/pncs-v0.28-adversarial-fuzzing",
+      "head": "c9177bf560915afd9c367e18801d1da45608ff58"
+    }
+  ],
+  "conflict_resolution": "CURRENT_MAIN_TREE_WINS_ON_SUPERSEDED_OR_CONFLICTING_PATHS",
+  "force_push": false
+}

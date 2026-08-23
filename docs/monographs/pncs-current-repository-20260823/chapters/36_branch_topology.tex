@@ -1,0 +1,51 @@
+\chapter{Repository branch topology}
+
+This chapter records the branch topology against current main \sha{de8ccd4a6d7c32bd0a079a679416c556c5901790}. The repository moved during preparation of this edition: PR \#16 merged the experimental prime-temporal layer, and PR \#15 subsequently merged the v0.28 release-closure implementation. The branch map below therefore distinguishes merged history from still-open gate status.
+
+\section{Current main and recently merged branches}
+\begin{statusbox}{\texttt{main}}
+\textbf{Classification:} \status{MAIN}.\\
+Contains the v0.27 release-closed runtime, temporal-fibre history, the experimental prime-temporal module, and the v0.28 adversarial release-closure implementation. The v0.28 specification on main still states \status{RELEASE NOT CLOSED}.
+\end{statusbox}
+
+\begin{statusbox}{\texttt{feat/pncs-v0.28-release-closure}}
+\textbf{Relation:} behind current main, ahead 0; merged by PR \#15.\\
+Its implementation is now on main. The branch name is historical after merge; remaining v0.28 closure conditions are evidence conditions on current main, not branch-presence conditions.
+\end{statusbox}
+
+\begin{statusbox}{\texttt{feat/experimental-prime-temporal-hydro}}
+\textbf{Relation:} behind current main, ahead 0; merged by PR \#16.\\
+The module remains \status{EXPERIMENTAL / READ\_ONLY / NON-PROMOTING} even though its source is present on main.
+\end{statusbox}
+
+\section{Still-separate or divergent historical branches}
+\begin{statusbox}{\texttt{feat/pncs-holonomic-temporal-arithmetic-monograph-v0.2}}
+Documentation/research branch. \status{SUPERSEDED\_DOCUMENTATION}: its separate 22-page document is not the PNCS repository monograph and is superseded by this corrected edition.
+\end{statusbox}
+
+\begin{statusbox}{\texttt{feat/pncs-v0.27-orchorbital-coupling}}
+Divergent historical v0.27 branch with branch-only leftovers. Current v0.27 release authority is the integrated main tree plus \texttt{FOUNDATION\_STATUS\_V0\_27.json}, not this branch tip.
+\end{statusbox}
+
+\begin{statusbox}{Historical/contained development branches}
+The following branches are retained as development ancestry or earlier integration surfaces; their released or merged functionality is already represented on main where applicable:
+\begin{lstlisting}
+feat/pncs-v0.20-native-execution-core
+feat/pncs-v0.21-mass-aware-graph-cost
+feat/pncs-v0.22-exact-inverse-execution-lineage
+feat/pncs-v0.23-natural-program-composition
+feat/pncs-v0.24-native-pnv-program-units
+feat/pncs-v0.25-persistent-runtime
+feat/pncs-v0.26-effect-boundary
+feat/pncs-v0.27-hydrodynamic-proper-time
+feat/pncs-t36-temporal-fibre-optimization
+feat/pncs-v0.28-adversarial-fuzzing
+feat/pncs-v0.28-branch-session-collision-gate
+integration/pncs-v0.28-current-main
+\end{lstlisting}
+\end{statusbox}
+
+\section{Branch authority rule}
+\begin{statusbox}{Fail-closed branch rule}
+A branch name, PR title, merge event or ``release-closure'' label is not release authority. Release status is derived from the exact current tree plus gate-specific specifications, receipts, manifest state and required live evidence. After a merge, any condition worded as ``current-main'' must be satisfied against the post-merge tree.
+\end{statusbox}

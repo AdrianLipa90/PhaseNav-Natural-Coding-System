@@ -1,0 +1,35 @@
+\chapter{Updated evidence matrix}
+
+The v0.26 evidence matrix remains valid for its historical gates. The table below adds the post-v0.26 layers without collapsing isolated, live, merged and release statuses.
+
+\begin{longtable}{p{0.14\linewidth}p{0.32\linewidth}p{0.42\linewidth}}
+\toprule
+Layer & Repository status & Evidence status at this snapshot\\\midrule
+v0.19 & main / historical & historical 377/377 baseline recorded; not reasserted as a fresh full-suite replay\\
+v0.20 & main & isolated 14/14 historical gate + live execution authority used by later witnesses\\
+v0.21 & main & isolated 14/14 historical gate\\
+v0.22 & main & 27/27 isolated; inverse-lineage binding PASS in v0.27 witness\\
+v0.23 & main & 28/28 isolated historical gate\\
+v0.24 & main & 29/29 isolated + deterministic native program build witness\\
+v0.25 & main & 25/25 isolated + live resident dispatch closure\\
+v0.26 & main & 28/28 isolated + live bounded effect; default-deny remains\\
+v0.27 & main, release closed & 134/134 combined harness; live coupled execution PASS; semantic projection, residency and lineage bindings PASS\\
+Temporal fibre V1 & main, experimental optimization & 18/18 pure; numerical equivalence PASS; environment-specific benchmark record preserved\\
+Prime-temporal hydro v0.1 & main, experimental non-promoting & 23 pure tests PASS; native PNV checks PASS; no routing/effect/lab-time authority\\
+v0.28 implementation & main, not closed & release-closure code merged by PR \#15; exact-blob pure aggregate 92 PASS / 0 FAIL; no live-surface claim in that receipt\\
+v0.28 live closure & OPEN & fresh current-main same-snapshot V56 adversarial witness still required by the main spec\\
+Final-tree manifest & FAIL-CLOSED & current main manifest non-authoritative / invalidated; complete SHA-256 regeneration required\\
+\bottomrule
+\end{longtable}
+
+\section{Evidence discipline}
+A PASS at one layer does not imply all other layers. In particular:
+\begin{itemize}
+\item pure exact-blob execution is not hosted GitHub Actions evidence;
+\item hosted CI infrastructure failure before steps execute is not a test verdict;
+\item a historical live witness cannot be rebound to a different live phase snapshot;
+\item branch-level PASS does not become current-main PASS after main advances;
+\item code merged to main may remain explicitly experimental and non-promoting.
+\end{itemize}
+
+This distinction extends the v0.26 labels with \status{EXACT\_BLOB\_PURE\_PASS}, \status{SAME\_SNAPSHOT\_LIVE\_PASS}, \status{BRANCH\_ONLY}, \status{MERGED\_EXPERIMENTAL}, and \status{RELEASE\_NOT\_CLOSED} where required.

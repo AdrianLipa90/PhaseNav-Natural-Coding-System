@@ -1,0 +1,139 @@
+\section{Physical phase branch: induction, proper time, Unruh, Aharonov--Bohm, Berry, Euler}
+
+\subsection{Faraday and Maxwell as the classical control layer}
+
+For a coil with \(N\) turns and magnetic flux \(\Phi_B\), Faraday's law gives
+\begin{equation}
+\boxed{\mathcal E=-N\frac{d\Phi_B}{dt}.}
+\end{equation}
+For the idealised rotating-flux control
+\begin{equation}
+\Phi_B(t)=BA\cos(\omega t+\phi),
+\end{equation}
+one obtains
+\begin{equation}
+\boxed{\mathcal E(t)=NAB\omega\sin(\omega t+\phi).}
+\label{eq:faraday-rot}
+\end{equation}
+Status: \status{STANDARD\_EXACT} under the stated idealisation. Equation~\eqref{eq:faraday-rot} explains why a product containing \(B\omega N\) is natural in a rotating magnetic generator. It does \emph{not} make the source equation~\eqref{eq:source-zpe} identical to Faraday's law: Faraday contains a flux geometry and a derivative-generated trigonometric factor.
+
+Maxwell's field-energy density supplies the ordinary electromagnetic baseline,
+\begin{equation}
+ u_{\rm EM}=\frac{\epsilon_0}{2}|\mathbf E|^2+\frac{1}{2\mu_0}|\mathbf B|^2.
+\end{equation}
+Any generator experiment must first close mechanical input, electromagnetic storage, ohmic loss, eddy currents, magnetic hysteresis, switching losses, and measured output before assigning a residual to a new channel.
+
+\subsection{Quantum zero-point scale}
+
+For a quantum harmonic oscillator,
+\begin{equation}
+E_n=\hbar\omega\left(n+\frac12\right),
+\qquad
+\boxed{E_0=\frac12\hbar\omega}.
+\end{equation}
+Status: \status{STANDARD\_EXACT}. This establishes a vacuum-ground-state energy scale in the oscillator model. It does not establish an extractable net-energy source. In this monograph, ``ZPE'' is therefore retained as source genealogy and as a research target, not as a closed energy-balance result.
+
+\subsection{Dynamic phase and proper time}
+
+For a local energy eigencomponent transported along proper time \(\tau\),
+\begin{equation}
+\boxed{d\varphi_{\rm dyn}=-\frac{E_{\rm loc}}{\hbar}\,d\tau.}
+\label{eq:dynphase}
+\end{equation}
+For a worldline,
+\begin{equation}
+ d\tau=\frac1c\sqrt{-g_{\mu\nu}dx^\mu dx^\nu}
+\end{equation}
+for the mostly-plus convention. In a static metric one may write \(d\tau=N_g\,dt\), where \(N_g\) is the gravitational lapse for the chosen observer. The corresponding stationary redshift relation is conventionally represented as
+\begin{equation}
+ E_{\rm loc}=\frac{E_\infty}{N_g}.
+\end{equation}
+The invariant phase accounting prevents a redshift relation from becoming an energy-extraction rule by algebra alone.
+
+PNCS v0.27 already contains a separate computational \emph{phase proper time}. Its current contract explicitly states that laboratory time is not modified. The present monograph preserves that boundary.
+
+\subsection{Acceleration and the Unruh scale}
+
+Uniform proper acceleration \(a\) defines the Unruh temperature
+\begin{equation}
+\boxed{T_U=\frac{\hbar a}{2\pi c k_B}},
+\qquad
+k_BT_U=\frac{\hbar a}{2\pi c}.
+\end{equation}
+Status: \status{STANDARD\_EXACT} in quantum field theory for the idealised uniformly accelerated detector setting \cite{Unruh1976}. The associated angular-frequency scale is
+\begin{equation}
+\omega_U=\frac{k_BT_U}{\hbar}=\frac{a}{2\pi c}.
+\end{equation}
+This provides a precise acceleration--frequency bridge. It is not a free-energy mechanism; the accelerated detector problem includes the work/interaction required to maintain acceleration.
+
+\subsection{Aharonov--Bohm phase}
+
+For a charged particle, the electromagnetic contribution to phase can be written, in a standard non-covariant split,
+\begin{equation}
+\boxed{
+\Delta\varphi_{\rm AB}
+=\frac{q}{\hbar}
+\left(
+\int \mathbf A\cdot d\mathbf l
+-\int V\,dt
+\right).
+}
+\end{equation}
+For a closed magnetic Aharonov--Bohm loop,
+\begin{equation}
+\Delta\varphi_{\rm AB}=\frac{q}{\hbar}\oint\mathbf A\cdot d\mathbf l
+=\frac{q\Phi_B}{\hbar}.
+\end{equation}
+The physical point is that a measurable interference phase can depend on gauge-potential holonomy even when the particle paths lie in a region of vanishing local magnetic field \cite{AharonovBohm1959}.
+
+\subsection{Berry phase and geometric holonomy}
+
+For a non-degenerate instantaneous eigenstate \(|n(\lambda)\rangle\), define the Berry connection
+\begin{equation}
+\mathcal A_a(\lambda)=i\langle n(\lambda)|\partial_{\lambda^a}n(\lambda)\rangle.
+\end{equation}
+For an adiabatically closed parameter loop \(C\),
+\begin{equation}
+\boxed{\gamma_B[C]=\oint_C\mathcal A_a\,d\lambda^a.}
+\end{equation}
+Its curvature is
+\begin{equation}
+\mathcal F=d\mathcal A,
+\end{equation}
+and, when the gauge patch permits,
+\begin{equation}
+\gamma_B=\int_\Sigma\mathcal F.
+\end{equation}
+Status: \status{STANDARD\_EXACT} for the usual adiabatic construction \cite{Berry1984}.
+
+\subsection{Combined phase connection}
+
+A convenient bookkeeping one-form is
+\begin{equation}
+\boxed{
+\Gamma
+= -\frac{E_{\rm loc}}{\hbar}d\tau
++\frac{q}{\hbar}A_\mu dx^\mu
++\mathcal A_a d\lambda^a,
+}
+\label{eq:combined-connection}
+\end{equation}
+with signs dependent on the electromagnetic four-potential convention. The corresponding holonomy is
+\begin{equation}
+\boxed{U[C]=\exp\left(i\oint_C\Gamma\right)}
+\end{equation}
+for an Abelian single-component case; non-Abelian transport requires path ordering.
+
+\INTERP
+Equation~\eqref{eq:combined-connection} motivates a PhaseNav principle: a state may carry physically or mathematically relevant information in the transport history, not only in a local endpoint coordinate. The interpretation is \emph{not} that gravitational, electromagnetic, Berry, and arithmetic connections are the same physical field. They are distinct connections that can share a transport/holonomy representation.
+
+\subsection{Euler closure and the \((1,-1)\) sign pair}
+
+Euler's identity gives
+\begin{equation}
+\boxed{e^{i\pi}=-1},\qquad e^{i2\pi}=+1.
+\end{equation}
+A loop with total phase \(\pi\pmod{2\pi}\) therefore returns the scalar holonomy \(-1\), while a double traversal gives \(+1\). Berry's original analysis includes sign reversal around certain degeneracies and relates geometric phase to familiar spinor sign behaviour \cite{Berry1984}.
+
+\INTERP
+The project uses the pair \((+1,-1)\) as a minimal two-valued holonomy representation. Whenever an arithmetic construction below exhibits one-loop \(-1\) and two-loop \(+1\), that is a representation-theoretic analogy to double-cover closure, not evidence that the arithmetic degree of freedom is physical spin.

@@ -1,0 +1,203 @@
+\section{Collatz prime-flow branch: exact cocycle, prime flux, and holonomy}
+
+\subsection{Shortcut Collatz map}
+
+Define
+\begin{equation}
+C(n)=
+\begin{cases}
+n/2,&n\equiv0\pmod2,\\[2mm]
+(3n+1)/2,&n\equiv1\pmod2,
+\end{cases}
+\qquad n\in\mathbb N_{>0}.
+\end{equation}
+For a valid step \(n_k\to n_{k+1}=C(n_k)\), define
+\begin{equation}
+r_k=\frac{n_{k+1}}{n_k},
+\qquad
+b_k=n_k\bmod2\in\{0,1\}.
+\end{equation}
+The implementation stores \(r_k\) first as an exact reduced rational.
+
+\subsection{The \(\mathbb Z_2\) branch representation}
+
+The non-trivial one-dimensional unitary representation of \(\mathbb Z_2\) is
+\begin{equation}
+\boxed{\rho(b)=(-1)^b=e^{i\pi b}.}
+\end{equation}
+Define the Mellin-sign step cocycle
+\begin{equation}
+\boxed{w_s(n_k)=r_k^{-s}(-1)^{b_k}.}
+\label{eq:step-cocycle}
+\end{equation}
+For \(s=\sigma+i\tau\),
+\begin{equation}
+|w_s|=r_k^{-\sigma},
+\qquad
+\arg w_s=-\tau\log r_k+\pi b_k\pmod{2\pi}.
+\end{equation}
+Status: \status{PROJECT\_EXACT} after definition.
+
+\subsection{Orbit factorisation theorem}
+
+Let
+\begin{equation}
+\mathcal O_m=(n_0,n_1,\ldots,n_m),
+\qquad n_{k+1}=C(n_k),
+\end{equation}
+and
+\begin{equation}
+W_s(\mathcal O_m)=\prod_{k=0}^{m-1}w_s(n_k),
+\qquad
+N_{\rm odd}=\sum_{k=0}^{m-1}b_k.
+\end{equation}
+Then
+\begin{equation}
+\boxed{
+W_s(\mathcal O_m)
+=
+\left(\frac{n_m}{n_0}\right)^{-s}
+(-1)^{N_{\rm odd}}.
+}
+\label{eq:orbit-factor}
+\end{equation}
+Status: \status{PROJECT\_EXACT}. The proof is the telescoping product
+\begin{equation}
+\prod_{k<m}\frac{n_{k+1}}{n_k}=\frac{n_m}{n_0}
+\end{equation}
+combined with multiplication of the parity signs.
+
+\subsection{Complementary defect and the half-axis}
+
+Set
+\begin{equation}
+L=\log\frac{n_m}{n_0}.
+\end{equation}
+From \eqref{eq:orbit-factor},
+\begin{equation}
+\log|W_s|=-\sigma L,
+\qquad
+\log|W_{1-s}|=-(1-\sigma)L.
+\end{equation}
+Define
+\begin{equation}
+\boxed{
+D_C(s;\mathcal O_m)
+=
+\big(\log|W_s|-\log|W_{1-s}|\big)^2
+=(2\sigma-1)^2L^2.
+}
+\label{eq:collatz-defect}
+\end{equation}
+For a non-closed path \(L\neq0\),
+\begin{equation}
+\boxed{D_C=0\iff \RePart(s)=\frac12.}
+\end{equation}
+For a closed path \(L=0\), \(D_C=0\) for every \(s\). Closed paths are therefore degenerate controls and cannot serve as evidence that the half-axis is uniquely selected.
+
+\subsection{Critical-line conjugate pair}
+
+For \(s=\tfrac12+i\tau\),
+\begin{equation}
+\boxed{W_{1-s}=\overline{W_s}.}
+\end{equation}
+This is the exact origin of an 18-pair \(\Tthirtysix\) construction used below.
+
+\subsection{Prime-valuation flux}
+
+Define the stepwise prime flux
+\begin{equation}
+\boxed{\Delta v_{p,k}=v_p(n_{k+1})-v_p(n_k).}
+\label{eq:prime-flux}
+\end{equation}
+By unique factorisation,
+\begin{equation}
+\boxed{r_k=\prod_p p^{\Delta v_{p,k}},}
+\qquad
+\log r_k=\sum_p\Delta v_{p,k}\log p.
+\end{equation}
+Hence the exact step cocycle factorises prime by prime:
+\begin{equation}
+\boxed{
+w_s(n_k)
+=(-1)^{b_k}\prod_p p^{-s\Delta v_{p,k}}.
+}
+\label{eq:prime-cocycle}
+\end{equation}
+For the full orbit define
+\begin{equation}
+\Delta V_p=\sum_{k<m}\Delta v_{p,k}=v_p(n_m)-v_p(n_0).
+\end{equation}
+Then
+\begin{equation}
+\boxed{
+W_s(\mathcal O_m)=(-1)^{N_{\rm odd}}\prod_p p^{-s\Delta V_p}.
+}
+\label{eq:prime-orbit}
+\end{equation}
+Only finitely many \(\Delta V_p\) are non-zero for a finite endpoint pair.
+
+On the critical line, the orbit phase becomes
+\begin{equation}
+\boxed{
+\Theta_{\mathcal O}(\tau)
+=
+\pi N_{\rm odd}
+-	au\sum_p\Delta V_p\log p
+\pmod{2\pi}.
+}
+\label{eq:prime-phase}
+\end{equation}
+Thus
+\begin{equation}
+\Theta_{\mathcal O}=\Theta_{\mathbb Z_2}+\Theta_{\rm prime}.
+\end{equation}
+
+\subsection{Closed-cycle cancellation of prime flux}
+
+If \(n_m=n_0\), then \(\Delta V_p=0\) for every prime, so
+\begin{equation}
+\Theta_{\rm prime}=0,
+\qquad
+\boxed{W_s=(-1)^{N_{\rm odd}}.}
+\end{equation}
+For the control cycle
+\begin{equation}
+1\to2\to1,
+\end{equation}
+there is one odd source state, so
+\begin{equation}
+\boxed{W_s=-1=e^{i\pi}.}
+\end{equation}
+Two traversals give \(+1\). The one-loop/double-loop closure is therefore exact for the defined sign cocycle.
+
+\subsection{Where the non-trivial prime interaction resides}
+
+The even branch \(n\mapsto n/2\) is multiplicative and transparent in valuation coordinates. The odd branch contains
+\begin{equation}
+3n+1,
+\end{equation}
+and addition prevents factorwise separation:
+\begin{equation}
+v_p(3n+1)\neq v_p(3)+v_p(n)
+\end{equation}
+in general. Thus the map
+\begin{equation}
+\mathbf v(n)\mapsto\mathbf v(3n+1)-\mathbf e_2
+\end{equation}
+is an arithmetic coupling of prime channels.
+
+\INTERP
+Zeta's Euler product represents free multiplicative composition of prime powers in its convergence region, whereas the Collatz odd branch deterministically re-couples prime valuations through the additive operation \(3n+1\). This is a useful physical-style analogy (``free modes'' versus ``interaction vertex''), not a theorem identifying a quantum field theory with Collatz arithmetic.
+
+\subsection{Weighted Koopman operator}
+
+Define, on a declared function space of observables,
+\begin{equation}
+\boxed{(U_s f)(n)=w_s(n)f(C(n)).}
+\end{equation}
+Then
+\begin{equation}
+U_s^m f(n_0)=W_s(\mathcal O_m)f(n_m).
+\end{equation}
+Operator approaches to the \(3x+1\) system, including Koopman methods and Fourier analysis of sign sequences, exist independently in the literature \cite{LeventidesPoulios2020}. The specific Mellin-sign cocycle and prime-flux PhaseNav embedding in this monograph are project constructions.

@@ -1,0 +1,59 @@
+\section{Formula and status register}
+
+\begin{longtable}{p{0.08\linewidth}p{0.50\linewidth}p{0.30\linewidth}}
+\toprule
+ID & Formula / object & Status\\
+\midrule
+P1 & \(\mathcal E=-N\,d\Phi_B/dt\) & \status{STANDARD\_EXACT}\\
+P2 & \(E_0=\hbar\omega/2\) & \status{STANDARD\_EXACT}\\
+P3 & \(d\varphi=-E\,d\tau/\hbar\) & \status{STANDARD\_EXACT}\\
+P4 & \(T_U=\hbar a/(2\pi ck_B)\) & \status{STANDARD\_EXACT}\\
+P5 & AB loop phase \(q\Phi_B/\hbar\) & \status{STANDARD\_EXACT}\\
+P6 & Berry phase \(\oint\mathcal A\) & \status{STANDARD\_EXACT}\\
+T1 & \(\vartheta(t)=t^{-1/2}\vartheta(1/t)\) & \status{STANDARD\_EXACT}\\
+T2 & theta Mellin \(\to\Gamma\zeta\) & \status{STANDARD\_EXACT}\\
+Z1 & \(\xi(s)=\xi(1-s)\) & \status{STANDARD\_EXACT}\\
+Z2 & Euler product for \(\Re s>1\) & \status{STANDARD\_EXACT}\\
+C1 & Mellin-sign Collatz step \(w_s\) & \status{PROJECT\_EXACT} definition\\
+C2 & orbit factorisation \(W_s\) & \status{PROJECT\_EXACT} theorem\\
+C3 & defect \(D_C=(2\sigma-1)^2L^2\) & \status{PROJECT\_EXACT} theorem\\
+C4 & prime flux \(\Delta v_{p,k}\) factorisation & \status{PROJECT\_EXACT} theorem\\
+C5 & closed-cycle \(\pm1\) holonomy & \status{PROJECT\_EXACT} under sign representation\\
+S1 & \(\hat H_{ZC}|j\rangle=\hbar\omega_j|j\rangle\) & \status{PROJECT\_EXACT} definition\\
+S2 & \(\mathcal F_Z=1-|A_Z|^2\) & \status{PROJECT\_EXACT} definition\\
+S3 & \(\mathcal F_Z=(\Delta\omega)^2\tau^2+O(\tau^4)\) & \status{PROJECT\_EXACT} expansion\\
+R1 & intrinsic Collatz spectral invariant \(\leftrightarrow\xi\) & \status{OPEN}\\
+R2 & zeta/Collatz fuzziness as ontological origin of time & \status{OPEN}\\
+R3 & ZPE extraction from project phase coupling & \status{OPEN}\\
+\bottomrule
+\end{longtable}
+
+\section{Proposed repository paths}
+
+\begin{lstlisting}[basicstyle=\ttfamily\small,frame=single,breaklines=true]
+docs/monographs/holonomic-temporal-arithmetic-v0.2/
+  README.md
+  main.tex
+  references.bib
+  chapters/
+    01_status_and_genealogy.tex
+    02_physical_phase_branch.tex
+    03_theta_zeta_branch.tex
+    04_collatz_prime_branch.tex
+    05_temporal_fuzziness_branch.tex
+    06_t36_implementation_and_tests.tex
+    07_open_bridges_and_roadmap.tex
+    appendix_formula_register.tex
+\end{lstlisting}
+
+\section{Build contract}
+
+The canonical source is the LaTeX tree. A PDF is a generated artefact. A release build must record:
+\begin{itemize}[leftmargin=2em]
+\item pinned repository commit;
+\item LaTeX engine and version;
+\item SHA-256 for every source file;
+\item generated PDF SHA-256;
+\item reference-validation report SHA-256;
+\item whether all overfull boxes and missing references are closed.
+\end{itemize}

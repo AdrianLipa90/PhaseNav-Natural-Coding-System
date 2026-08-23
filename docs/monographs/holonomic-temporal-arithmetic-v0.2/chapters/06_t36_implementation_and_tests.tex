@@ -1,0 +1,142 @@
+\section{PhaseNav \(T^{36}\) implementation architecture and validation gates}
+
+\subsection{Two distinct 36D embeddings}
+
+The project must distinguish two useful embeddings.
+
+\paragraph{PAIR18 embedding.}
+For a finite Collatz path with
+\begin{equation}
+L=\log(n_m/n_0),
+\end{equation}
+and an explicit registry \(\boldsymbol\tau=(\tau_1,\ldots,\tau_{18})\), define
+\begin{align}
+\theta_{2j-1}&=\pi N_{\rm odd}-\tau_jL\pmod{2\pi},\\
+\theta_{2j}&=\pi N_{\rm odd}+\tau_jL\pmod{2\pi},
+\qquad j=1,\ldots,18.
+\end{align}
+Then
+\begin{equation}
+\boxed{\boldsymbol\theta_{\rm pair}\in T^{36}.}
+\end{equation}
+This is the exact critical-line complementary-pair embedding inherited from v0.1.
+
+For a closed odd-parity cycle \(L=0\),
+\begin{equation}
+\boldsymbol\theta_{\rm pair}=(\pi,\ldots,\pi),
+\end{equation}
+and after double traversal,
+\begin{equation}
+\boldsymbol\theta_{\rm pair}=(0,\ldots,0)\pmod{2\pi}.
+\end{equation}
+
+\paragraph{MODE36 embedding.}
+For a direct temporal registry of 36 modes,
+\begin{equation}
+\theta_j(\tau)=\theta_j(0)-\omega_j\tau\pmod{2\pi},
+\qquad j=1,\ldots,36.
+\end{equation}
+This embedding is appropriate for temporal synthesis and fuzziness. It is not automatically equivalent to PAIR18. A bridge between them requires an explicit registry map.
+
+\subsection{State separation}
+
+The runtime must keep at least three layers separate:
+\begin{enumerate}[leftmargin=2em]
+\item \textbf{exact arithmetic state}: integers, rationals, branch word, prime valuations, endpoint ratio;
+\item \textbf{spectral state}: source-labelled \(\omega_j\), amplitudes/weights, precision and transform policy;
+\item \textbf{phase realisation}: float or high-precision angles on \(T^{36}\), phase proper time, and numerical backend.
+\end{enumerate}
+A float-angle hash may not replace exact arithmetic identity.
+
+\subsection{Proposed experimental native paths}
+
+The monograph recommends the following non-promoting native families:
+\begin{lstlisting}[basicstyle=\ttfamily\small,frame=single,breaklines=true]
+TZC.THETA_MODULAR_INVERSION
+TZC.THETA_MELLIN
+TZC.XI_REFLECTION
+TZC.PRIME_VALUATION
+TZC.COLLATZ_SHORTCUT
+TZC.PRIME_FLUX
+TZC.Z2_SIGN
+TZC.MELLIN_CHARACTER
+TZC.STEP_WEIGHT
+TZC.ORBIT_FACTORIZATION
+TZC.SELF_DUAL_DEFECT
+TZC.CRITICAL_PAIR
+TZC.T36_PAIR_PROJECTION
+
+ZST.SPECTRAL_REGISTRY
+ZST.TEMPORAL_SYNTHESIS
+ZST.SCHRODINGER_PHASE
+ZST.COHERENCE_AMPLITUDE
+ZST.TEMPORAL_FUZZINESS
+ZST.T36_MODE_PROJECTION
+ZST.PHASE_PROPER_TIME_BIND
+\end{lstlisting}
+All remain \texttt{EPISTEMIC CHYBA / MODE READ\_ONLY} until separately admitted.
+
+\subsection{Reference module decomposition}
+
+A future implementation should be split rather than placed in one file:
+\begin{lstlisting}[basicstyle=\ttfamily\small,frame=single,breaklines=true]
+src/phasenav_natural_code/
+  theta_zeta_core.py
+  collatz_prime_flux.py
+  zeta_schrodinger_time.py
+  holonomy_t36.py
+\end{lstlisting}
+The standard theta/zeta numerical functions must not contain Collatz semantics. Exact Collatz arithmetic must not depend on numerical zeta-zero tables. Temporal synthesis must receive its spectral registry as explicit input.
+
+\subsection{Fail-closed input contract}
+
+Reject or quarantine:
+\begin{itemize}[leftmargin=2em]
+\item non-positive Collatz integers;
+\item booleans supplied as integers;
+\item unbounded iteration;
+\item excessive integer bit-length beyond declared bounds;
+\item non-finite complex parameters or frequencies;
+\item implicit zeta-zer downloads;
+\item a prime-log critical-line calculation that silently evaluates the divergent Euler product;
+\item a 36D build with the wrong number of coordinates;
+\item transform results whose grid/interpolation provenance is missing;
+\item any request for external effects from the pure mathematical core.
+\end{itemize}
+
+\subsection{Validation gates}
+
+\begin{longtable}{p{0.13\linewidth}p{0.78\linewidth}}
+\toprule
+Gate & Required evidence\\
+\midrule
+A & Jacobi theta modular inversion and theta--Mellin--zeta controls at declared precision.\\
+B & Exact shortcut Collatz step and rational-ratio controls.\\
+C & Direct vs endpoint-factorised Mellin-sign orbit weights across frozen seeds/probes.\\
+D & Prime-valuation reconstruction: \(n=\prod p^{v_p(n)}\), step ratio from \(\Delta v_p\), and orbit endpoint flux.\\E & Self-dual defect equals \((2\sigma-1)^2L^2\); non-closed half-axis control and closed-path degeneracy control.\\
+F & Critical-line conjugate pair relation and 18-pair \(T^{36}\) geometry.\\
+G & One-loop \(-1\), double-loop \(+1\) control cycle.\\
+H & Temporal synthesis: direct DFT agrees with FFT on uniform grids; non-uniform registry remains on direct/NUFFT path.\\I & Fuzziness invariants: \(\mathcal F_Z(0)=0\), \(0\le\mathcal F_Z\le1\), single-mode zero, two/multi-mode analytic controls, small-time variance law.\\J & Exact arithmetic identities remain unchanged when numerical precision/backend changes; only realisation receipts may differ.\\
+K & If bound to PNCS v0.27, semantic projection remains unchanged and \texttt{laboratory\_time\_modified=false}.\\
+\bottomrule
+\end{longtable}
+
+\subsection{Fresh v0.2 reference validation}
+
+A standalone reference suite accompanies the local build of this monograph. It tests the exact v0.1 identities plus the new prime-flux and temporal-fuzziness layer. Fresh result: \textbf{33/33 checks PASS}. The direct-versus-factorised Collatz weight sweep covered seeds 1--400 with four complex probes; the maximum complex-weight disagreement was approximately \(4.79\times10^{-12}\), consistent with the declared floating realisation. Prime-flux reconstruction was checked exactly with rational arithmetic over 7,500 Collatz steps. The suite also verified uniform FFT/direct-DFT equivalence, fuzziness bounds, the one-mode zero-fuzziness control, a two-mode analytic identity, and the small-time variance law.\par
+\medskip
+Validation report SHA-256: \texttt{79d3aeeeb639fec2de207c769e19fb4a23dcc81613f531919f5de2ae257a4a52}. This report is a \status{NUMERICAL\_CONTROL}, not promotion of the open bridges.
+
+\subsection{Scientific falsification criteria}
+
+The module must retain negative results. A candidate bridge is rejected or downgraded if:
+\begin{enumerate}[leftmargin=2em]
+\item it requires fitting a parameter after inspecting known zeta zeros;
+\item a proposed ``Collatz zeta'' depends materially on an arbitrary truncation boundary with no controlled limit;
+\item the prime-valuation representation fails to reproduce the exact endpoint ratio;
+\item off-axis zeros of the finite-path defect occur for non-closed paths;
+\item a temporal result depends on confusing a non-uniform spectrum with a standard FFT;
+\item fuzziness is reported as monotonic when revivals are present;
+\item a phase-proper-time simulation is promoted to laboratory-time modification;
+\item an energy residual is reported before the conventional electromagnetic/mechanical balance is closed.
+\end{enumerate}

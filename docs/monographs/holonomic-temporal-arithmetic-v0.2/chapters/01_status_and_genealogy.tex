@@ -1,0 +1,103 @@
+\section{Status, epistemic contract, and genealogy}
+
+\subsection{Repository and runtime pin}
+
+\begin{claim}{Repository status -- \status{VERIFIED PROJECT CONTEXT}.}
+The target repository is \texttt{AdrianLipa90/PhaseNav-Natural-Coding-System}. This monograph is prepared against main commit
+\begin{center}
+\texttt{165157ad8edf19f6f4a74f5bca2439a72348ae59}.
+\end{center}
+At that pinned head, PNCS reports v0.27 ORCHORBITAL-coupled hydrodynamic proper-time as release-closed and v0.28 adversarial parsing/equivalence/fuzzing as the next release gate. The present monograph is therefore an \emph{experimental research module}; it must not silently advance the PNCS release ladder.
+\end{claim}
+
+The operational 36-dimensional invariant remains
+\begin{equation}
+\boxed{\text{36D tool}\;\longrightarrow\;/\texttt{dev/shm/ciel\_noema}\;\longrightarrow\;\text{live runtime}.}
+\end{equation}
+Repository and Library artifacts are persistence/provenance inputs, not an operational fallback. This document changes no effect authority and opens no external effect class.
+
+\subsection{Claim taxonomy}
+
+\begin{longtable}{p{0.23\linewidth}p{0.70\linewidth}}
+\toprule
+Label & Meaning\\
+\midrule
+\status{STANDARD\_EXACT} & Established mathematics or physics used in its normal domain.\\
+\status{PROJECT\_SOURCE} & A preserved equation, design choice, or conceptual source from the PhaseNav/CIEL/TIR line whose wider physical status remains separate.\\
+\status{PROJECT\_EXACT} & A theorem that follows exactly from definitions introduced in this monograph.\\
+\status{IMPLEMENTATION\_CONTRACT} & Required software behaviour, data model, bounds, or fail-closed rule.\\
+\status{NUMERICAL\_CONTROL} & Finite-precision verification of an exact relation or implementation formula.\\
+\status{CANDIDATE\_BRIDGE} & A structurally motivated map between domains that is not promoted to an identity of the underlying theories.\\
+\status{OPEN} & A mathematical, physical, spectral, or experimental bridge not established.\\
+\status{FORBIDDEN\_PROMOTION} & A claim explicitly excluded by the evidence currently available.\\
+\bottomrule
+\end{longtable}
+
+The following promotions are forbidden in v0.2: a proof of RH; a proof of Collatz; an identity between the Riemann zero set and Collatz trajectories; a proof that physical time emerges from zeta; a claim of extracted vacuum energy; a claim that Unruh radiation is a free-energy source; or a claim that PNCS v0.27 modifies laboratory time.
+
+\subsection{Source genealogy}
+
+A historical project-source equation motivating the first phase/energy branch is
+\begin{equation}
+\boxed{
+|\Psi\rangle
+=
+\frac{B(t)\,\omega(t)\,N(t)}{AR}
+\left(\phi+\kappa\right),
+\qquad
+\kappa=\frac{\ln2}{24\pi}.
+}
+\label{eq:source-zpe}
+\end{equation}
+Status: \status{PROJECT\_SOURCE}. The symbol \(AR\) is retained as a source parameter. Unless a reference state is specified, the right-hand side is a scalar amplitude-like quantity rather than a complete Hilbert-space ket. A conservative Hilbert-space completion would be
+\begin{equation}
+|\Psi\rangle = a(t)|\chi\rangle,
+\qquad
+a(t)=\frac{B\omega N}{AR}(\phi+\kappa),
+\end{equation}
+with a separately defined \(|\chi\rangle\).
+
+The canonical TIR coefficient is parented independently by
+\begin{equation}
+\Delta I_{\rm cycle}=\frac{\ln2}{12},\qquad
+\frac{d\phi}{dt}=2\pi f,
+\qquad
+\boxed{\kappa=\frac{\ln2}{24\pi}}.
+\end{equation}
+The existence of a binary Collatz branch does \emph{not} by itself authorise insertion of \(\kappa\) into the exact Collatz cocycle.
+
+\subsection{Branch topology of the present monograph}
+
+The current programme is not one linear derivation. It is a set of branches with explicit merge points:
+
+\begin{center}
+\begin{tikzpicture}[node distance=8mm and 10mm,>=Latex,every node/.style={draw,rounded corners,align=center,font=\small,inner sep=5pt}]
+\node (src) {Source equation\\\(B\omega N/AR\)(\(\phi+\kappa\))};
+\node[right=of src] (em) {Faraday/Maxwell\\induction control};
+\node[right=of em] (proper) {proper-time\\dynamic phase};
+\node[right=of proper] (hol) {AB + Berry\\holonomy};
+\node[below=of src] (theta) {Jacobi theta\\modular inversion};
+\node[right=of theta] (zeta) {Mellin\\\(\zeta,\xi\)};
+\node[right=of zeta] (prime) {Euler primes\\valuation lattice};
+\node[right=of prime] (collatz) {Collatz\\prime flux + \(\mathbb Z_2\)};
+\node[below=of zeta] (spec) {spectral registry\\\(\omega_j\)};
+\node[right=of spec] (sch) {Schrödinger\\phase evolution};
+\node[right=of sch] (fuzz) {temporal\\fuzziness};
+\node[right=of fuzz] (t36) {PhaseNav\\\(T^{36}\)};
+\draw[->] (src)--(em); \draw[->] (em)--(proper); \draw[->] (proper)--(hol);
+\draw[->] (theta)--(zeta); \draw[->] (zeta)--(prime); \draw[->] (prime)--(collatz);
+\draw[->] (zeta)--(spec); \draw[->] (collatz)--(spec); \draw[->] (spec)--(sch); \draw[->] (sch)--(fuzz); \draw[->] (fuzz)--(t36);
+\draw[->] (hol) |- (t36);
+\draw[->,dashed] (proper) |- (sch);
+\end{tikzpicture}
+\end{center}
+
+The solid arrows denote defined or standard structural maps. Dashed arrows denote a parameter-binding interface that is permitted only when units and physical semantics are declared. No arrow in this diagram is a proof that the domains are physically identical.
+
+\subsection{Three merge points}
+
+The first merge point is \emph{phase}: electromagnetic potentials, dynamic phase, Berry phase, Mellin characters, and Collatz parity holonomy can all be represented as phases, but they retain distinct provenance.
+
+The second merge point is \emph{holonomy}: closed transport can produce a non-trivial group element even when the local endpoint coordinate returns to its start.
+
+The third merge point is \(\Tthirtysix\): PhaseNav can host multiple phase channels in one explicit torus state while preserving exact arithmetic/provenance outside the float-angle realisation.

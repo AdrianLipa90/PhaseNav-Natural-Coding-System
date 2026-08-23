@@ -1,0 +1,55 @@
+\chapter{v0.28 adversarial release-closure programme}
+
+\begin{statusbox}{Current status}
+\status{CURRENT-MAIN INTEGRATION GATE / RELEASE NOT CLOSED}. The release-closure implementation has been merged to main by PR \#15. Its source branch is now behind current main, but the normative v0.28 specification on main still states \status{RELEASE NOT CLOSED}. Merge status is therefore not release authority.
+\end{statusbox}
+
+v0.28 is decomposed into three fail-closed sub-gates:
+\begin{lstlisting}
+v0.28A semantic / receipt / authority adversarial conformance
+v0.28B ORCHORBITAL x Hydro T^36 adversarial dynamics
+v0.28C branch / session collision safety
+\end{lstlisting}
+
+\section{Pure exact-blob evidence}
+Current main contains the isolated exact-Git-blob evidence receipt introduced by the release-closure work with five PASS groups:
+\begin{longtable}{p{0.63\linewidth}r}
+\toprule
+Gate & Pure pytest result\\\midrule
+Structural receipt adversarial corpus & 26 PASS\\
+Branch/session collision pure core & 25 PASS\\
+ORCHORBITAL hydrodynamic adversarial dynamics & 28 PASS\\
+Cross-layer semantic equivalence & 7 PASS\\
+Deterministic tracked-tree manifest tool & 6 PASS\\\midrule
+Aggregate & 92 PASS / 0 FAIL\\\bottomrule
+\end{longtable}
+That receipt is explicitly not authoritative GitHub CI, uses no live surface, uses no static fallback, and has \texttt{release\_closed=false}.
+
+\section{Observed live snapshot race}
+A live observation on \texttt{/dev/shm/ciel\_noema} read the phase snapshot at 0.1 s intervals and observed three distinct \texttt{phi\_sha256} values across five reads while the tether guard remained ACTIVE. The consequence is a stricter conformance rule: historical v0.20 Sigma identities from one phase snapshot cannot serve as the exact Sigma baseline for a fresh coupled execution under a different snapshot.
+
+The required comparison is therefore same-snapshot:
+\begin{lstlisting}
+capture one coherent live phi/operator snapshot
+-> execute reference v0.20 semantics on that snapshot
+-> execute ORCH-coupled semantics on that same snapshot
+-> compare exact semantic projection
+\end{lstlisting}
+This condition is implemented as a same-live-snapshot conformance gate.
+
+\section{Release-closure conditions}
+The v0.28 spec permits \status{PASS\_RELEASE\_CLOSED} only after:
+\begin{enumerate}
+\item v0.28A pure structural/authority corpus PASS;
+\item v0.28B pure adversarial dynamics corpus PASS;
+\item v0.28C pure collision corpus PASS;
+\item fresh current-main live V56 adversarial witness PASS;
+\item canonical tether guard ACTIVE with no failures;
+\item complete final-tree file-byte SHA-256 manifest regenerated and verified;
+\item foundation receipt bound to the exact source commit/tree and evidence IDs.
+\end{enumerate}
+At this snapshot the pure evidence and release-closure implementation are on main, but the specification still requires a fresh current-main live same-snapshot V56 adversarial witness and the root manifest remains invalidated. Therefore release closure is not claimed.
+
+\begin{boundarybox}
+v0.28 opens no new routing authority, effect authority, Git authority or laboratory-time claim. Hosted pure CI and live NOEMA integration remain separate evidence layers. A pre-step CI infrastructure failure is not a test failure or test pass when no test step executed.
+\end{boundarybox}

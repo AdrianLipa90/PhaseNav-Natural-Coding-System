@@ -1,0 +1,51 @@
+{
+  "schema": "PNCS_FOUNDATION_STATUS_V0_28_ADVERSARIAL",
+  "status": "PASS_V0_28_0_RECEIPT_DIRECT_TRACE_BOUNDARY_RELEASE_OPEN",
+  "gate": "v0.28 Fuzzing / Equivalence / Adversarial Parsing",
+  "subgate": "v0.28.0 Receipt + Direct-Trace Boundary",
+  "base_commit": "8213f0cade4a2f0a1884278b025721f032ab6983",
+  "validation": {
+    "new_adversarial_equivalence": "24/24 PASS",
+    "v027_direct_executor_regression": "9/9 PASS",
+    "combined_exact_byte_harness": "33/33 PASS",
+    "live_v56_resigned_attack_witness": "6/6 PASS_REJECTED",
+    "resigned_before_semantic_validation": true,
+    "sigma_base_equals_sigma_coupled": true,
+    "base_steps_equal_coupled_steps": true,
+    "post_witness_fast_admission": "PASS",
+    "post_witness_fast_admission_ms": 0.607128,
+    "post_witness_tether_guard": "PASS",
+    "post_witness_guard_failures": [],
+    "full_repository_suite": "NOT_REPLAYED",
+    "full_historical_suite": "NOT_REPLAYED"
+  },
+  "source_git_blobs": {
+    "adversarial_v28": "ae23cc19097c60ad52d799649f37a9225afc6f8a",
+    "test_adversarial_v28": "9365f7e9f6992ae6735435fefcca51850eeb193a"
+  },
+  "live_witness": {
+    "path": "provenance/receipts/PNCS_V0_28_LIVE_ADVERSARIAL_WITNESS_20260823.json",
+    "witness_sha256": "ff551685d7a08bf0fa990f316fccf01aaf181cb26b9751dde48d204486e3e460",
+    "v020_receipt_sha256": "6dbce59eef8d740f99264f3a8d3b5a4c66857e4365e2b5610753a4deec29b30f",
+    "direct_trace_id": "pncs:orch-direct-trace:sha256:b705f53d546bd7da535f29f4497d46f4ad31feb66cd67b651ec0379760c71bb2",
+    "bound_trace_id": "pncs:orch-receipt-bound-trace:sha256:8f7b0942838642f494527e0e6d99642fa87a6fe24e63e4dfe1739bbd058823ef",
+    "attack_count": 6
+  },
+  "closed_boundaries": {
+    "routing_authority": true,
+    "effect_authority": true,
+    "persistent_memory_write": true,
+    "external_effects": true,
+    "static_runtime_fallback": true,
+    "manifest_regeneration": true
+  },
+  "not_claimed": {
+    "v028_release_closed": true,
+    "full_repository_suite_replay": true,
+    "full_historical_suite_replay": true,
+    "new_effect_class_opened": true,
+    "manifest_regenerated": true
+  },
+  "next_subgate": "v0.28.1 hierarchy/generation/resident/effect-authority substitution corpus",
+  "release_gate_closed": false
+}

@@ -1,6 +1,6 @@
 # PhaseNav Natural Code System (PNCS)
 
-Status: EFFECT_BOUNDARY_V0_26 / RELEASE GATE CLOSED / NEXT v0.27 FUZZING + ADVERSARIAL PARSING
+Status: ORCHORBITAL_HYDRO_V0_27 / RELEASE GATE CLOSED / NEXT v0.28 FUZZING + EQUIVALENCE + ADVERSARIAL PARSING
 
 PhaseNav Natural Code System is a 36-dimensional relational coding system in which written code is a human-readable projection of a canonical semantic-phase graph.
 
@@ -23,6 +23,7 @@ v0.23 bounded natural program composition
 v0.24 first-class native .pnv program units
 v0.25 persistent resident runtime
 v0.26 explicit bounded effect boundary
+v0.27 ORCHORBITAL × hydrodynamic T^36 direct execution side-car
 ```
 
 Operational 36D runtime remains `/dev/shm/ciel_noema`. Library and repository artifacts are provenance/persistence sources only and never an operational fallback.
@@ -117,6 +118,57 @@ EFFECT -> AUTHORIZATION -> EFFECT_REQUEST -> DISPATCH -> RESULT
 
 The live payload was explicitly a conformance record, not a sensor/risk claim. Replaying the exact request after dirfd/`O_NOFOLLOW` hardening reproduced the same identities. Post-effect tether guard remained `ACTIVE` with `failures=[]`.
 
+## v0.27 ORCHORBITAL × Hydrodynamic T^36
+
+v0.27 couples the frozen v0.20 internal transition chain to an authority-neutral ORCHORBITAL/T^36 side-car:
+
+```text
+original v0.20 KAKU transition
+-> unchanged Sigma + unchanged ExecutionStep
+-> exact live 36D operator-vector revalidation
+-> dynamic ORCH occurrence / process sphere
+-> subjective-time + hydrodynamic T^36 transition
+-> OORP state update
+-> return original v0.20 Sigma
+```
+
+Release-closure invariants:
+
+```text
+Sigma_base == Sigma_coupled
+base v0.20 steps == coupled base steps
+routing_authority_opened       = false
+effect_authority_opened        = false
+persistent_memory_write        = false
+external_effects               = false
+laboratory_time_modified       = false
+static_runtime_fallback        = false
+```
+
+Fresh V56 direct-coupled closure:
+
+```text
+v0.20 receipt:
+1b3ca3c311492e16d447a333e2d1a4f0381c9de77ec7ebfb293637e08021fbf4
+
+direct trace:
+pncs:orch-direct-trace:sha256:bac0af63fe8fe01a7138613555c266129108183e39b09b6a75ebe7a90b13f17b
+
+receipt-bound trace:
+pncs:orch-receipt-bound-trace:sha256:1d98527a6975bf82246e1fcb521c05b082b296c2ce79758f0e0c72184d945907
+
+final Sigma:
+pncs:sigma:sha256:fa551b6d741b73c4eb0988acbbe54e18ed2c0cccda77d78c93007f900a3dbbaf
+
+full live witness SHA-256:
+95072fcf3c10a82fb510cd2857bf497d885b79635536dd069e35394bdda58691
+
+closure receipt SHA-256:
+88710ab288eb759aeed0b151cc03ba85c0529f58fb8eaade65df17d1970d1a07
+```
+
+The inverse-provenance chain preserves evidence classes: the v0.27 trace and fresh v0.20 receipt are current V56 execution evidence; the existing v0.22 lineage and v0.25 dispatch/witness remain repository-verified historical closure evidence and are not relabeled as current live evidence.
+
 ## Validation
 
 Gate-scoped evidence:
@@ -132,32 +184,40 @@ v0.25 isolated persistent-runtime harness: 25/25 PASS
 v0.26 isolated effect-boundary harness: 28/28 PASS
 v0.26 live bounded effect: PASS
 v0.26 post-effect tether guard: PASS
+v0.27 committed compact ORCH conformance: 18/18 PASS
+v0.27 broader ORCH development harness: 33/33 PASS
+v0.27 current-worker ORCH core harness: 51/51 PASS
+v0.27 exact branch direct-executor tests: 9/9 PASS
+v0.27 fresh V56 direct coupling: PASS
+v0.27 post-witness tether guard: PASS / failures=[]
 ```
 
-The complete historical repository suite was not replayed in the v0.26 pass and is not claimed.
+The complete historical repository suite was not replayed in the v0.27 closure and is not claimed. Current-head GitHub Actions CI PASS is also not claimed; a prior Actions run failed without a retrievable artifact/log and remains recorded separately.
 
-## Repository additions for v0.26
+## Repository additions for v0.27
 
 ```text
-src/phasenav_natural_code/effect_v26.py
-src/phasenav_natural_code/effect_v26_core.py
-src/phasenav_natural_code/effect_v26_fs.py
-src/phasenav_natural_code/effect_v26_runtime.py
-tests/test_effect_boundary_v26.py
-spec/PNCS_EFFECT_BOUNDARY_V0_26.md
-registry/effects/PNCS_EFFECT_ADAPTER_REGISTRY_V0_26.jsonl
-native/PNCS_EFFECT_BOUNDARY_V0_26.pnv
-provenance/ledgers/PNCS_EFFECT_BOUNDARY_LEDGER_V0_26.json
-provenance/receipts/FOUNDATION_STATUS_V0_26.json
-provenance/receipts/PNCS_V0_26_LIVE_EFFECT_BOUNDARY_20260823.json
+src/phasenav_natural_code/orchorbital_v27.py
+src/phasenav_natural_code/orchorbital_hydro_v27.py
+src/phasenav_natural_code/orchorbital_executor_v27.py
+src/phasenav_natural_code/hydro_time_v27.py
+src/phasenav_natural_code/hydro_schedule_v27.py
+tests/test_orchorbital_v27.py
+tests/test_orchorbital_foundation_constraints_v27.py
+tests/test_orchorbital_executor_v27.py
+tests/test_hydro_time_v27.py
+tests/test_hydro_schedule_v27.py
+spec/PNCS_ORCHORBITAL_HYDRO_COUPLING_V0_27.md
+provenance/receipts/FOUNDATION_STATUS_V0_27_ORCHORBITAL.json
+provenance/receipts/PNCS_V0_27_LIVE_DIRECT_COUPLED_CLOSURE_20260823.json
 ```
 
 ## Roadmap
 
 The single authoritative roadmap is `spec/ROADMAP.md`.
 
-Next gate: **v0.27 — Fuzzing / Equivalence / Adversarial Parsing**.
+Next gate: **v0.28 — Fuzzing / Equivalence / Adversarial Parsing**.
 
 ## Manifest status
 
-`MANIFEST.sha256.json` remains fail-closed after repository-layout canonicalization and feature-gate construction. A complete SHA-256 manifest must be regenerated from final release-tree bytes before release closure. Git blob SHA-1 values are not substituted for file SHA-256 values.
+`MANIFEST.sha256.json` remains fail-closed. A complete SHA-256 manifest must be regenerated from final release-tree bytes before final release packaging. Git blob SHA-1 values are not substituted for file SHA-256 values.

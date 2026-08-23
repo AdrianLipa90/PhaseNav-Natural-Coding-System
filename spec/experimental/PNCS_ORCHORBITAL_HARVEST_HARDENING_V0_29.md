@@ -98,7 +98,7 @@ Pi_truth_audit =
 S_full = S_online + w_truth_audit * Pi_truth_audit
 ```
 
-All weights are explicit receipt inputs. The coefficient names are independent of the fixed PNCS physical/informational constant `κ = ln(2)/(24π)`.
+All weights are explicit receipt inputs. The coefficient names are independent of the fixed PNCS operator constant `κ = ln(2)/(24π)`.
 
 Authority flags:
 

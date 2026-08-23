@@ -1,0 +1,42 @@
+{
+  "schema": "PNCS_FOUNDATION_STATUS_V0_27_ORCHORBITAL_COUPLING",
+  "status": "PASS_ISOLATED_ORCH_CORE_AND_EXACT_KAKU_REPLAY_LIVE_PENDING",
+  "gate": "v0.27 ORCHORBITAL x Hydrodynamic T^36 Coupling",
+  "base_commit": "0e7784af3a313f335c436d8a759f705109455464",
+  "foundation_pack": {
+    "repository": "AdrianLipa90/CIEL-Omega-ApokalypOS",
+    "commit": "aa0da54ef29a1f80dd0390427935342225388950",
+    "documents": [
+      "02_ONTOLOGY_AND_OBSERVABLES.md",
+      "03_STATE_SPACE_AND_BOUNDARY_CONDITIONS.md",
+      "04_INVARIANTS_POTENTIALS_AND_ATTRACTORS.md",
+      "05_ENTITY_REGISTRY_AND_SPHERE_EMBEDDING.md",
+      "06_SUBJECTIVE_TIME_WINDING_AND_SEMANTIC_MASS.md",
+      "07_OORP_PIPELINE_AND_MEMORY.md"
+    ]
+  },
+  "validation": {
+    "committed_compact_conformance": "16/16 PASS",
+    "broader_development_harness": "33/33 PASS",
+    "exact_kaku_occurrence_identity": "PASS",
+    "receipt_tamper_rejection": "PASS",
+    "operator_vector_byte_tamper_rejection": "PASS",
+    "subjective_time_parameterization": "PASS",
+    "oorp_reduction_formula": "PASS",
+    "no_reduction_no_memory_residue": "PASS",
+    "ambiguous_reduction_selection": "FAIL_CLOSED_PASS",
+    "coupled_t36_phase_flow": "PASS_ISOLATED",
+    "dynamic_winding": "PASS_ISOLATED",
+    "live_v56": "PENDING",
+    "v020_executor_coupling": "PENDING",
+    "full_repository_suite": "NOT_REPLAYED"
+  },
+  "closed_boundaries": {
+    "persistent_memory_write": true,
+    "external_effects": true,
+    "semantic_identity_mutation": true,
+    "laboratory_time_claim": true,
+    "static_runtime_fallback": true
+  },
+  "release_gate_closed": false
+}

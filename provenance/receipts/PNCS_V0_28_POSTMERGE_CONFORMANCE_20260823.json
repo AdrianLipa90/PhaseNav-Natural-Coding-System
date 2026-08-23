@@ -1,0 +1,51 @@
+{
+  "schema": "PNCS_V0_28_POSTMERGE_CONFORMANCE_RECEIPT_V1",
+  "date": "2026-08-23",
+  "repository": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "branch": "fix/pncs-v028-postmerge-conformance",
+  "base_main_sha": "46c704d0be2d3dc2fb58be9bd2bd104169daa664",
+  "status": "PASS_CONFORMANCE_SLICE_RELEASE_STILL_OPEN",
+  "live_surface": "/dev/shm/ciel_noema",
+  "tether_guard": {
+    "status": "ACTIVE",
+    "failures": [],
+    "static_runtime_fallback": false
+  },
+  "tested_artifacts": {
+    "tests/test_hydro_time_v27.py": "6574d71adc4607a1d452caeab21de644d6564247",
+    "tests/test_hydro_schedule_v27.py": "9c2717510c2c81eeaacc41a85d9c0eaf9296e8e5",
+    "tests/fixtures/v020/720598c087b889ec2fca407833241f08903f19d5f1a531c92d6cfb08ca711417.json": "cc83ef3184e768e701bfa244d1858c82b38f885f",
+    "tests/live/test_hydro_schedule_live_v27.py": "501c863661fe0e44405dbaf256183fcff602f90a"
+  },
+  "validation": {
+    "adversarial_authority_v28": "24 passed",
+    "execution_orch_v27": "10 passed",
+    "orch_hydro_v27": "18 passed",
+    "orch_package_v27": "4 passed",
+    "hydro_conformance_split": "58 passed",
+    "integrated_exact_slice": "206 passed in 1.12s",
+    "github_blob_sha_match": true
+  },
+  "changes": [
+    "remove historical absolute /mnt/data hydro-time import",
+    "replace historical schedule receipt path with repo-local content-addressed v0.20 fixture",
+    "separate pure schedule validation from live operator-registry replay",
+    "preserve exact live vector-SHA and semantic-freeze replay checks under tests/live"
+  ],
+  "boundaries": {
+    "new_feature_scope": false,
+    "external_effects_opened": false,
+    "routing_feedback_opened": false,
+    "laboratory_time_claim": false,
+    "main_merge_authorized": false,
+    "release_closed": false,
+    "fail_closed": true
+  },
+  "remaining_release_gates": [
+    "full current-main repository conformance",
+    "current same-snapshot live V56 witness",
+    "complete tests/live",
+    "final manifest regeneration and check",
+    "FOUNDATION_STATUS_V0_28.json"
+  ]
+}

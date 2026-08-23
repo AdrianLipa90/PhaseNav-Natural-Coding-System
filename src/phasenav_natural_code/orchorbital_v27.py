@@ -33,6 +33,7 @@ class AttractorWeights:
     def __post_init__(self):
         x=tuple(_f(v,n) for v,n in ((self.ec,'ec'),(self.zs,'zs'),(self.llm_temp,'llm_temp')))
         if any(v<0 for v in x) or sum(x)<=0: raise OrchV27Error('invalid attractor weights')
+        if self.llm_temp!=0.0: raise OrchV27Error('AttractorLLMTemp requires an explicit decay schedule; closed in v0.27')
     @property
     def payload(self):
         t=self.ec+self.zs+self.llm_temp
@@ -136,6 +137,9 @@ class ReductionLaw:
 @dataclass(frozen=True)
 class SelectionLaw:
     wa:float; wc:float; wt:float; wmem:float; wm:float; wattr:float; tie:float=1e-12
+    def __post_init__(self):
+        for n in ('wa','wc','wt','wmem','wm','wattr','tie'): _f(getattr(self,n),n)
+        if self.tie<0: raise OrchV27Error('tie must be non-negative')
     def score(self,o): return self.wa*o.amplitude+self.wc*o.coherence+self.wt*o.truth_spin+self.wmem*o.memory_affinity+self.wm*o.semantic_mass+self.wattr*o.attractor_influence
     @property
     def law_id(self): return _id('pncs:oorp-selection-law',self.__dict__)

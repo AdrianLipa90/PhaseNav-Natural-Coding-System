@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 from types import SimpleNamespace
 import pytest
-import full_program_executor_v01 as m
+from phasenav_natural_code import full_program_executor_v01 as m
 
 
 def tid(kind: str, label: str) -> str:

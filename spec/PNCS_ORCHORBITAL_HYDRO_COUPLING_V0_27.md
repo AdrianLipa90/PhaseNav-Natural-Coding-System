@@ -56,6 +56,8 @@ Each KAKU occurrence becomes a distinct orbital even when operator names repeat.
 
 Each orbital contains amplitude, phase, coherence, truth-spin, memory affinity, orbital radius, semantic mass, attractor influence, and explicit EC/ZS/LLMTemp attractor weights.
 
+`AttractorLLMTemp` remains closed in this gate unless an explicit decay schedule is present. The Foundation Pack requires its control share to decay; v0.27 therefore fails closed for any non-zero `llm_temp` weight until that schedule is implemented and receipt-bound.
+
 The exact T^36 operator vector is re-hashed as `<36d>` and must match the v0.20 step receipt before projection.
 
 Current projection contract:
@@ -160,7 +162,7 @@ Omega = lambda1*C + lambda2*R(S,I) - lambda3*Delta - lambda4*Xi
 reduce iff Omega >= Omega_crit
 ```
 
-Selection uses a separate explicit content-addressed `SelectionLaw`. Equal top scores inside `tie` fail closed.
+Selection uses a separate explicit content-addressed `SelectionLaw`. Equal top scores inside non-negative `tie` fail closed. Negative tie tolerance is invalid and also fails closed.
 
 Memory rule:
 
@@ -188,13 +190,13 @@ Repeated operators remain distinct occurrence orbitals.
 
 ## Current validation
 
-Isolated compact feature harness:
+Committed compact feature harness:
 
 ```text
-16/16 PASS
+18/18 PASS
 ```
 
-The broader development harness used while constructing this gate reached `33/33 PASS`; the committed compact conformance suite is `16/16 PASS` and covers geometry anchoring, K_ij symmetry, observables, truth scalar, explicit subjective time, reduction/no-reduction behavior, ambiguity fail-closed, exact occurrence identity, vector and receipt tamper rejection, proper-time coupling, dynamic winding, exact replay order and deterministic trace identity.
+The broader development harness used while constructing this gate reached `33/33 PASS`. The committed compact conformance suite covers geometry anchoring, K_ij symmetry, observables, truth scalar, explicit subjective time, reduction/no-reduction behavior, ambiguity fail-closed, exact occurrence identity, vector and receipt tamper rejection, proper-time coupling, dynamic winding, exact replay order, deterministic trace identity, `AttractorLLMTemp` fail-closed without a decay schedule, and invalid negative selection-tie tolerance.
 
 The current worker did not expose `/dev/shm/ciel_noema`. Therefore this document makes no fresh V56 live-runtime claim and does not claim a full historical-suite replay.
 

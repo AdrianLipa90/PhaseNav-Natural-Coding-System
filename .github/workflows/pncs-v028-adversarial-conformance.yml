@@ -118,7 +118,7 @@ jobs:
           tests/test_repository_conformance_v28.py
 
   pure-self-hosted-mirror:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_self_hosted_pure == true }}
+    if: ${{ (github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance') || (github.event_name == 'workflow_dispatch' && inputs.run_self_hosted_pure == true) }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
@@ -147,8 +147,34 @@ jobs:
           tests/test_manifest_tool_v28.py
           tests/test_repository_conformance_v28.py
 
+  manifest-candidate:
+    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance' }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Generate authoritative tracked-tree manifest candidate
+        run: python3 scripts/regenerate_manifest.py --root .
+      - name: Verify generated manifest candidate
+        run: python3 scripts/regenerate_manifest.py --root . --check
+      - name: Record manifest source identity
+        run: |
+          sha256sum MANIFEST.sha256.json > MANIFEST.sha256.json.sha256
+          git rev-parse HEAD > MANIFEST.source_commit.txt
+          git rev-parse 'HEAD^{tree}' > MANIFEST.source_tree.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pncs-v028-manifest-candidate
+          path: |
+            MANIFEST.sha256.json
+            MANIFEST.sha256.json.sha256
+            MANIFEST.source_commit.txt
+            MANIFEST.source_tree.txt
+          if-no-files-found: error
+
   live-dev-shm:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_live == true }}
+    if: ${{ (github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance') || (github.event_name == 'workflow_dispatch' && inputs.run_live == true) }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4

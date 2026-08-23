@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - feat/pncs-v0.28-adversarial-fuzzing
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:

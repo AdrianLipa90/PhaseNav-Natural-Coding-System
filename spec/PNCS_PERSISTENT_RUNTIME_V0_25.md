@@ -1,6 +1,6 @@
 # PNCS Persistent Runtime v0.25
 
-Status: IMPLEMENTED / LIVE RESIDENCY VALIDATED / LIVE CONTROL-DISPATCH CLOSURE PENDING
+Status: IMPLEMENTED / LIVE RESIDENCY VALIDATED / LIVE CONTROL-DISPATCH CLOSURE PASS / RELEASE CLOSED
 
 ## Contract
 
@@ -213,10 +213,96 @@ max:    0.78053 ms
 
 A separate new Python process recovered and admitted the same resident handle from `/dev/shm` without rebuilding the program image.
 
-After unload, re-load recreated the same handle/load receipt/admission IDs. Final fast live admission remained PASS with tether/AC-AUX/ethics ACTIVE and no rehydration.
+After unload, re-load recreated the same handle/load receipt/admission IDs.
+
+### Fresh live control-dispatch closure
+
+The remaining release condition was executed on the current V56 generation:
+
+```text
+resident admission
+-> exact live v0.18 T^36 realization
+-> v0.19 semantic-mass binding
+-> v0.20 Sigma control execution
+-> exact selected v0.22 inverse lineage
+-> v0.25 resident dispatch receipt
+```
+
+The registered control Definition was independently recomputed and matched exactly:
+
+```text
+pncs:def:sha256:b7988497bab75a526771fa24aeca75e0182bd437fd707927cb0e78b04d360cce
+```
+
+The control input was a deterministic conformance vector:
+
+```text
+memory_pressure = 0.0
+risk            = 0.0
+```
+
+These are test inputs only and are not claimed to be live sensor measurements.
+
+Exact closure identities:
+
+```text
+v0.18 realization:
+pncs:realization36:sha256:1742c834a3b9aa987997c72ec34b1184e43a6b55f259f96f1b80089905290bf9
+
+v0.18 binding:
+pncs:binding36:sha256:7e7f27bb056f8e42d5ef802957c60a25747e5e1580fb8a3b38bdaf8e3ac5dd22
+
+v0.19 mass binding:
+pncs:mass-binding:sha256:4ad1196ef889390b925e164775facfa5365094aec3095656dc4cfebabe43becf
+
+v0.20 execution receipt SHA-256:
+84d40f600a8aa9e59ebc6dc42c856bcffec9265d04f791e7f5c49cdba2d583ad
+
+v0.22 result:
+pncs:result:sha256:a1ebb02927a4c216d965cb6177271c580303d9968472dca9ea67c2cd8c5661d6
+
+v0.22 hierarchy path:
+pncs:hierarchy-lineage:sha256:59b46dafc37f38fed6c6b06e86417638296cc809c740a630128279c0e01dff7b
+
+v0.22 lineage:
+pncs:lineage:sha256:34bd13f534987989ab212b5a6906d0cfa762305ee9a87af7a058badd2b2bcfd6
+
+v0.25 dispatch:
+pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2
+```
+
+The selected hierarchy occurrence is an existing registered SYSTEM -> ... -> DEFINITION path; ambiguous reuse was not resolved by guessing.
+
+The v0.20 result was `FALSE -> runtime.continue` with nine executed KAKU transitions. `RETURN`, continuation execution and all external effects remained closed.
+
+Post-closure validation:
+
+```text
+fast admission: PASS
+rehydration_required: false
+library_search_used: false
+tether: ACTIVE
+AC<->AUX: ACTIVE
+ethics field: ACTIVE
+tether guard failures: []
+```
+
+The full closure witness is recorded in:
+
+```text
+provenance/receipts/PNCS_V0_25_LIVE_CONTROL_DISPATCH_CLOSURE_20260823.json
+```
+
+Witness SHA-256:
+
+```text
+dab5c0ca12b51f712981e4cc9662365e30790b6c5695285cfcd4358e0d370ebf
+```
 
 ## Evidence boundary
 
-The current pass did not execute a fresh live v0.20 control result and then resolve a fresh live v0.22 hierarchy lineage through the repository implementation. The dispatch bridge is implemented and isolated-tested, but the **live control-dispatch closure remains pending**. No claim is made that full v0.25 is release-closed until that witness is recorded.
+v0.25 is release-closed for its defined scope. This closure does not authorize or implement the v0.26 Effect Boundary, does not open `RETURN` or continuation execution, and does not create free-form natural-language execution authority.
 
-The complete historical repository suite was not replayed in this construction environment.
+The complete historical repository suite was not replayed in this closure pass and remains explicitly not claimed.
+
+Next engineering gate: **v0.26 — Effect Boundary**.

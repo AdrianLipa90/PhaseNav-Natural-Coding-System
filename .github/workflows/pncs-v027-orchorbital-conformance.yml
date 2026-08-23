@@ -8,64 +8,128 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      run_live:
+        description: Run the /dev/shm live NOEMA integration gate on a self-hosted runner
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
-jobs:
-  exact-source-smoke:
-    runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - name: Download exact PR-head source, compile and import
-        shell: python3 {0}
-        run: |
-          import compileall
-          import json
-          import os
-          from pathlib import Path
-          import sys
-          import tempfile
-          import urllib.request
-          import zipfile
+env:
+  PYTHON_VERSION: "3.11"
 
-          event = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text())
-          head_sha = event.get('pull_request', {}).get('head', {}).get('sha') or os.environ['GITHUB_SHA']
-          repo = os.environ['GITHUB_REPOSITORY']
-          req = urllib.request.Request(
-              f'https://api.github.com/repos/{repo}/zipball/{head_sha}',
-              headers={
-                  'Authorization': f"Bearer {os.environ['GH_TOKEN']}",
-                  'Accept': 'application/vnd.github+json',
-                  'X-GitHub-Api-Version': '2022-11-28',
-              },
-          )
-          with tempfile.TemporaryDirectory() as td:
-              td = Path(td)
-              archive = td / 'repo.zip'
-              with urllib.request.urlopen(req) as response:
-                  archive.write_bytes(response.read())
-              with zipfile.ZipFile(archive) as zf:
-                  zf.extractall(td / 'repo')
-              roots = [p for p in (td / 'repo').iterdir() if p.is_dir()]
-              if len(roots) != 1:
-                  raise RuntimeError(f'unexpected archive roots: {roots}')
-              root = roots[0]
-              src = root / 'src'
-              if not compileall.compile_dir(src / 'phasenav_natural_code', quiet=1):
-                  raise RuntimeError('compileall failed')
-              sys.path.insert(0, str(src))
-              modules = [
-                  'phasenav_natural_code.execution_v20_model',
-                  'phasenav_natural_code.execution_v20_live',
-                  'phasenav_natural_code.execution_v20_state',
-                  'phasenav_natural_code.hydro_time_v27',
-                  'phasenav_natural_code.hydro_schedule_v27',
-                  'phasenav_natural_code.orchorbital_v27',
-                  'phasenav_natural_code.orchorbital_hydro_v27',
-                  'phasenav_natural_code.orchorbital_executor_v27',
-              ]
-              for module in modules:
-                  __import__(module)
-              print(json.dumps({'status':'PASS','exact_head_sha':head_sha,'compiled':True,'imports':modules}, sort_keys=True))
+jobs:
+  pure-unit:
+    name: Pure unit / no live surface required
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install package and test runner
+        run: python -m pip install -e . pytest
+      - name: Compile package
+        run: python -m compileall -q src/phasenav_natural_code
+      - name: Run pure conformance suite
+        run: pytest -q tests -k "not live"
+
+  exact-receipt-replay:
+    name: Exact repo-local v0.20 receipt replay
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install package
+        run: python -m pip install -e .
+      - name: Validate content-addressed fixture and replay KAKU schedule
+        shell: python {0}
+        run: |
+          import hashlib
+          import json
+          import struct
+          from pathlib import Path
+
+          from phasenav_natural_code import hydro_schedule_v27 as s
+          from phasenav_natural_code import hydro_time_v27 as h
+
+          fixture_dir = Path("tests/fixtures/v020")
+          fixtures = sorted(fixture_dir.glob("*.json"))
+          if len(fixtures) != 1:
+              raise RuntimeError(f"expected exactly one v0.20 replay fixture, got {fixtures}")
+          path = fixtures[0]
+          receipt = json.loads(path.read_text(encoding="utf-8"))
+          receipt_sha = s._validate_v20_receipt(receipt)
+          if path.stem != receipt_sha:
+              raise RuntimeError(f"fixture filename is not content-addressed: {path.stem} != {receipt_sha}")
+
+          ops = tuple(step["operator_id"] for step in receipt["steps"])
+          vectors = {}
+          for n, op in enumerate(sorted(set(ops)), start=1):
+              vectors[op] = tuple(0.01 * (i + 1) + 0.03 * n for i in range(36))
+          for step in receipt["steps"]:
+              actual = hashlib.sha256(struct.pack("<36d", *vectors[step["operator_id"]])).hexdigest()
+              if actual != step["operator_vector_sha256"]:
+                  raise RuntimeError(f"fixture operator-vector hash mismatch at step {step['index']}")
+
+          original_loader = s.load_live_operator_vectors
+          s.load_live_operator_vectors = lambda *args, **kwargs: (vectors, "f" * 64)
+          try:
+              state = h.PhaseFlowState36(tuple((i + 1) * 0.1 for i in range(36)))
+              gate = h.HydrodynamicPhaseGate(0.5, 0.2, steps=2)
+              schedule = s.uniform_schedule_for_receipt(receipt, gate)
+              trace = s.replay_v20_hydrodynamic_schedule(receipt, state, schedule)
+          finally:
+              s.load_live_operator_vectors = original_loader
+
+          if tuple(trace.operator_names) != ops:
+              raise RuntimeError("exact replay changed KAKU occurrence order")
+          if len(trace.operator_trace_ids) != len(receipt["steps"]):
+              raise RuntimeError("exact replay changed KAKU occurrence count")
+          if trace.payload["program_content_id"] != receipt["program"]["content_id"]:
+              raise RuntimeError("exact replay changed semantic program identity")
+          if trace.payload["semantic_identity_modified"] is not False:
+              raise RuntimeError("exact replay claims semantic identity mutation")
+          print(json.dumps({"status":"PASS","fixture":path.name,"receipt_sha256":receipt_sha,"steps":len(ops)}, sort_keys=True))
+
+  live-dev-shm-integration:
+    name: Live /dev/shm NOEMA V56 integration
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_live == true }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install package and test runner
+        run: python -m pip install -e . pytest
+      - name: Fail closed unless live NOEMA surface is present
+        shell: python {0}
+        run: |
+          import math
+          import struct
+          from pathlib import Path
+
+          root = Path("/dev/shm/ciel_noema")
+          if not root.is_dir():
+              raise SystemExit("BLOCKED: missing /dev/shm/ciel_noema")
+          if (root / "ciel_binding_status").read_text(encoding="utf-8").strip() != "ACTIVE":
+              raise SystemExit("BLOCKED: ciel_binding_status != ACTIVE")
+          for name in ("phi", "aux_phi", "aux_feedback_phi"):
+              raw = (root / name).read_bytes()
+              if len(raw) != 288:
+                  raise SystemExit(f"BLOCKED: {name} is not exactly 36 float64 values")
+              values = struct.unpack("<36d", raw)
+              if not all(math.isfinite(v) for v in values):
+                  raise SystemExit(f"BLOCKED: {name} contains non-finite values")
+          for rel in ("session/startpoint.json", "session/system_message.txt"):
+              if not (root / rel).is_file():
+                  raise SystemExit(f"BLOCKED: missing {rel}")
+          print("LIVE_SURFACE_GATE=PASS")
+      - name: Run live-labelled integration tests only
+        run: pytest -q tests -k "live"

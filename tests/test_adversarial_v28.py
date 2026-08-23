@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import replace
-
 import pytest
 
 from phasenav_natural_code.adversarial_v28 import (
@@ -80,14 +79,8 @@ def _live():
 
 def _initial(program):
     return SigmaState(
-        program.content_id,
-        program.realization_id,
-        program.mass_binding_id,
-        program.phase36_sha256,
-        program.semantic_mass,
-        "a" * 64,
-        (("memory_pressure", 0.0), ("risk", 0.0)),
-        "pncs.entry",
+        program.content_id, program.realization_id, program.mass_binding_id, program.phase36_sha256,
+        program.semantic_mass, "a" * 64, (("memory_pressure", 0.0), ("risk", 0.0)), "pncs.entry"
     )
 
 
@@ -99,11 +92,7 @@ def _config(step_count=9):
         SelectionLaw(0.1, 0.5, 0.2, 0.1, 0.0, 0.2),
         BridgePolicy(0.01, 8.0),
         {i: HydrodynamicPhaseGate(1.0, 0.1, coordinate_dt=0.01) for i in range(1, step_count + 1)},
-        "pncs.test.relation",
-        "pncs.test.intent",
-        0.8,
-        0.1,
-        Potentials(0, 0, 0, 0, 0, 0),
+        "pncs.test.relation", "pncs.test.intent", 0.8, 0.1, Potentials(0, 0, 0, 0, 0, 0),
     )
 
 
@@ -112,11 +101,8 @@ def _phase():
 
 
 def _run():
-    program = _program()
-    live = _live()
-    initial = _initial(program)
-    base = _Executor(program, live)
-    base_final, base_truth = base.run(initial, "runtime.continue")
+    program = _program(); live = _live(); initial = _initial(program)
+    base = _Executor(program, live); base_final, base_truth = base.run(initial, "runtime.continue")
     coupled = OrchCoupledExecutor(program, live, _phase(), _config())
     trace = coupled.run_coupled(initial, "runtime.continue")
     payload = {
@@ -127,11 +113,7 @@ def _run():
         "canonical_leaf_path": list(program.leaf_path),
         "live_surface": live.receipt_payload,
         "input_values": [[k, v] for k, v in initial.input_values],
-        "admission": {
-            "branch_truth_state": trace.branch_truth_state,
-            "admitted_target": "runtime.continue",
-            "epistemic_operator": None,
-        },
+        "admission": {"branch_truth_state": trace.branch_truth_state, "admitted_target": "runtime.continue", "epistemic_operator": None},
         "initial_sigma_id": trace.initial_sigma_id,
         "final_sigma_id": trace.final_sigma_id,
         "steps": [s.payload for s in trace.base_steps],
@@ -167,10 +149,7 @@ def test_resigned_valid_receipt_preserves_digest():
 
 def test_resigned_confusable_operator_is_rejected_semantically():
     *_, trace, receipt = _run()
-    attacked = mutate_and_resign(
-        receipt,
-        lambda r: r["steps"][7].__setitem__("operator_id", cyrillic_confusable_operator("TRANSFORM")),
-    )
+    attacked = mutate_and_resign(receipt, lambda r: r["steps"][7].__setitem__("operator_id", cyrillic_confusable_operator("TRANSFORM")))
     _must_reject(trace, attacked)
 
 
@@ -212,8 +191,7 @@ def test_resigned_truth_state_substitution_rejected():
 
 def test_resigned_step_truncation_rejected():
     *_, trace, receipt = _run()
-    def mut(r):
-        r["steps"] = r["steps"][:-1]
+    def mut(r): r["steps"] = r["steps"][:-1]
     _must_reject(trace, mutate_and_resign(receipt, mut))
 
 
@@ -238,8 +216,7 @@ def test_direct_trace_transition_count_substitution_rejected():
 
 def test_direct_trace_duplicate_transition_identity_rejected():
     *_, trace, _ = _run()
-    ids = list(trace.transition_ids)
-    ids[1] = ids[0]
+    ids = list(trace.transition_ids); ids[1] = ids[0]
     bad = replace(trace, transition_ids=tuple(ids))
     with pytest.raises(AdversarialV28Error, match="duplicate ORCH transition"):
         validate_direct_trace_structure(bad)
@@ -247,16 +224,8 @@ def test_direct_trace_duplicate_transition_identity_rejected():
 
 def test_direct_trace_sigma_chain_gap_rejected():
     *_, trace, _ = _run()
-    steps = list(trace.base_steps)
-    victim = steps[2]
-    steps[2] = ExecutionStep(
-        victim.index,
-        victim.operator_id,
-        victim.operator_vector_sha256,
-        "pncs:sigma:sha256:" + "0" * 64,
-        victim.after_sigma_id,
-        victim.bindings,
-    )
+    steps = list(trace.base_steps); victim = steps[2]
+    steps[2] = ExecutionStep(victim.index, victim.operator_id, victim.operator_vector_sha256, "pncs:sigma:sha256:" + "0" * 64, victim.after_sigma_id, victim.bindings)
     bad = replace(trace, base_steps=tuple(steps))
     with pytest.raises(AdversarialV28Error, match="Sigma chain discontinuity"):
         validate_direct_trace_structure(bad)
@@ -264,16 +233,8 @@ def test_direct_trace_sigma_chain_gap_rejected():
 
 def test_direct_trace_step_index_substitution_rejected():
     *_, trace, _ = _run()
-    steps = list(trace.base_steps)
-    victim = steps[1]
-    steps[1] = ExecutionStep(
-        7,
-        victim.operator_id,
-        victim.operator_vector_sha256,
-        victim.before_sigma_id,
-        victim.after_sigma_id,
-        victim.bindings,
-    )
+    steps = list(trace.base_steps); victim = steps[1]
+    steps[1] = ExecutionStep(7, victim.operator_id, victim.operator_vector_sha256, victim.before_sigma_id, victim.after_sigma_id, victim.bindings)
     bad = replace(trace, base_steps=tuple(steps))
     with pytest.raises(AdversarialV28Error, match="step index discontinuity"):
         validate_direct_trace_structure(bad)
@@ -287,8 +248,7 @@ def test_receipt_mapping_key_order_is_equivalent():
 
 
 def test_config_gate_mapping_insertion_order_is_equivalent():
-    a = _config()
-    rev = dict(reversed(list(a.gates_by_step.items())))
+    a = _config(); rev = dict(reversed(list(a.gates_by_step.items())))
     b = replace(a, gates_by_step=rev)
     assert a.config_id == b.config_id
 

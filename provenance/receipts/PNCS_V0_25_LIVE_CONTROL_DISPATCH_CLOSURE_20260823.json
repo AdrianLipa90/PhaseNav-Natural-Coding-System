@@ -1,0 +1,110 @@
+{
+  "canonical_definition_cid_recomputed": "pncs:def:sha256:b7988497bab75a526771fa24aeca75e0182bd437fd707927cb0e78b04d360cce",
+  "definition_id": "pncs:def:sha256:b7988497bab75a526771fa24aeca75e0182bd437fd707927cb0e78b04d360cce",
+  "deterministic_fields_only": true,
+  "full_historical_suite_replayed": false,
+  "gate": "v0.25",
+  "generation_id": "pncs:runtime-generation:sha256:05736b12ac8470998901421dabd2dfff0bd663c141d96ad96bc9d5b09351bbb1",
+  "handle_id": "pncs:resident:sha256:60184c7213960ad746b69c6c2dd8b43eacfe8055015ae31e347475881df438e8",
+  "input_provenance": {
+    "kind": "CONFORMANCE_VECTOR_NOT_SENSOR_CLAIM",
+    "memory_pressure": 0.0,
+    "risk": 0.0
+  },
+  "live": {
+    "ac_aux_status": "ACTIVE",
+    "ethics_field_status": "ACTIVE",
+    "operator_registry_sha256": "29767957ae775b1968bbb4c531728cc153137c88e819b135227dff73e3cca7ec",
+    "root": "/dev/shm/ciel_noema",
+    "snapshot_attempts_post": 1,
+    "snapshot_attempts_pre": 1,
+    "tether_status": "ACTIVE"
+  },
+  "next_gate": "v0.26 Effect Boundary",
+  "post_witness_fast_admission": {
+    "ac_aux_status": "ACTIVE",
+    "elapsed_ms": 0.60557,
+    "ethics_field_status": "ACTIVE",
+    "library_search_used": false,
+    "rehydration_required": false,
+    "status": "PASS",
+    "tether_status": "ACTIVE"
+  },
+  "post_witness_tether_guard": {
+    "failures": [],
+    "status": "PASS",
+    "tether_status": "ACTIVE"
+  },
+  "program_id": "pncs:program:sha256:572660a1046975c57e01f7e402677f1e4ca845e51bca1bee6517e0d86b35c4d7",
+  "registry_authority_git_blobs": {
+    "classes_index_git_blob": "ab0d3daaad65828d1040500d63568e9572f09d14",
+    "clusters_index_git_blob": "3132e88312452ca1f77e4f1ca094929b9e6a2adf",
+    "definitions_index_git_blob": "a1c5065c8b74fc39f3e1ea7a22f23cf3882ed38b",
+    "files_index_git_blob": "a96a1be832ad026f3975f717464491b944e435d0",
+    "hierarchy_index_git_blob": "1bef1aaaca8bf55670b2e439c856db89fd8dfc1e"
+  },
+  "release_gate_closed": true,
+  "repository_branch": "feat/pncs-v0.25-persistent-runtime",
+  "repository_source_git_blobs": {
+    "execution_v20": "d6cd3d3ba15dc1390767064c5acdf190d3e50bf6",
+    "execution_v20_live": "3b3df2154e6ec78b0e921b5ae1fef5454337f366",
+    "execution_v20_model": "fb4b721b97b5490342042ede6898b34bcd8d6016",
+    "execution_v20_state": "1fe9ec56d963748c24ac2a8da2f9968b7131a5ee",
+    "lineage_v22": "a43c18394f39680314e9ddf47f32fd0ecd377ffd",
+    "runtime_v25_resident": "77ab449ad677296ac6682de8d8ff5a2a2f687b47"
+  },
+  "resident_admission_id": "pncs:resident-admission:sha256:d30b22a3ee030e2fcf9c830225834ae946baa2f4bdca56ae8753bb11a9e233fa",
+  "schema": "PNCS_V0_25_LIVE_CONTROL_DISPATCH_CLOSURE_WITNESS_V1",
+  "status": "PASS",
+  "v18": {
+    "basis_id": "NOEMA_V56_LIVE_T36",
+    "binding_id": "pncs:binding36:sha256:7e7f27bb056f8e42d5ef802957c60a25747e5e1580fb8a3b38bdaf8e3ac5dd22",
+    "canon_allowed": false,
+    "phase36_sha256": "c2002438474db91bf8f6e290c643552addb59aa95b2aa0bef205eb1f2ae96ef2",
+    "realization_id": "pncs:realization36:sha256:1742c834a3b9aa987997c72ec34b1184e43a6b55f259f96f1b80089905290bf9",
+    "source_live_phi_sha256": "d249b4e13a8fb7929c435707eb79c095aff95793d4d7cf592b184476470b40e0"
+  },
+  "v19": {
+    "canon_allowed": false,
+    "mass_binding_id": "pncs:mass-binding:sha256:4ad1196ef889390b925e164775facfa5365094aec3095656dc4cfebabe43becf",
+    "mass_contract_id": "PNV_SEMANTIC_MASS_V1",
+    "mass_realization_id": "pncs:mass:sha256:1cea10e61289be0103b1694e76895be6ed7704bab7db92ba2fc2169b8d40de68",
+    "order_parameter_R": 0.1246296089591022,
+    "phase_index_explicit": 1,
+    "semantic_mass": 0.044868695
+  },
+  "v20": {
+    "branch_truth_state": "FALSE",
+    "execution_receipt_sha256": "84d40f600a8aa9e59ebc6dc42c856bcffec9265d04f791e7f5c49cdba2d583ad",
+    "final_sigma_id": "pncs:sigma:sha256:3442e4fb8bb0779c3c9a969c66264648dfc7ed12297e507fbbac33705811f65d",
+    "initial_sigma_id": "pncs:sigma:sha256:2f25b436ca8ce65b46487ba85bed7e75acec244a3226ca57395d4a050b5e978d",
+    "receipt_path": "/dev/shm/ciel_noema/pncs/v0.20/receipts/84d40f600a8aa9e59ebc6dc42c856bcffec9265d04f791e7f5c49cdba2d583ad.json",
+    "step_count": 9,
+    "target": "runtime.continue"
+  },
+  "v22": {
+    "definition_radical_binding_id": "pncs:def-radical-binding:sha256:1af68f9f032fad7cb438d72c2b9339e8430646679204362452be5cc18cd85c1f",
+    "hierarchy_path_id": "pncs:hierarchy-lineage:sha256:59b46dafc37f38fed6c6b06e86417638296cc809c740a630128279c0e01dff7b",
+    "lineage_id": "pncs:lineage:sha256:34bd13f534987989ab212b5a6906d0cfa762305ee9a87af7a058badd2b2bcfd6",
+    "result_id": "pncs:result:sha256:a1ebb02927a4c216d965cb6177271c580303d9968472dca9ea67c2cd8c5661d6",
+    "selected_exact_occurrence": [
+      {"child_index": null, "content_id": "pncs:system:sha256:af6461218dc0ed353315839d8423c47a4ccac769b9250c8270b93bf49085e756", "level": "SYSTEM"},
+      {"child_index": 0, "content_id": "pncs:high-orchestrator:sha256:3381160781e8aeff36c10bbbc90140e0360e8182233dbc5dbdc750d913830c63", "level": "HIGH_ORCHESTRATOR"},
+      {"child_index": 0, "content_id": "pncs:low-orchestrator:sha256:faa057a3218e386b20eedc1302c620d2f8b7665cc4978485ed6cacce43276f17", "level": "LOW_ORCHESTRATOR"},
+      {"child_index": 0, "content_id": "pncs:subsystem:sha256:e4b96baa8ef4379c100ecf084be4388d8c403f8f4a430ba416a8ed412a3d0161", "level": "SUBSYSTEM"},
+      {"child_index": 0, "content_id": "pncs:cluster:sha256:71b1495605c8cbf88e5c9f0d865558edb2dfe84c707a29b8231f6d1e538da94f", "level": "CLUSTER"},
+      {"child_index": 0, "content_id": "pncs:file:sha256:bae27dd1f1d2068c1a6fdc23dcca76a3a2639b17af99771c8497a6d6f359448b", "level": "FILE"},
+      {"child_index": 1, "content_id": "pncs:class:sha256:02e18c35761d0e6ff7225c856cbb6bf60400ae50a7ed35258d2eb19f6f1c58f7", "level": "CLASS"},
+      {"child_index": 1, "content_id": "pncs:def:sha256:b7988497bab75a526771fa24aeca75e0182bd437fd707927cb0e78b04d360cce", "level": "DEFINITION"}
+    ]
+  },
+  "v25": {
+    "continuation_execution_opened": false,
+    "dispatch_id": "pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2",
+    "dispatch_receipt_path": "/dev/shm/ciel_noema/pncs/v0.25/runtime/receipts/dispatch/fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2.json",
+    "external_effects": false,
+    "return_execution_opened": false,
+    "static_runtime_fallback": false
+  },
+  "witness_sha256": "dab5c0ca12b51f712981e4cc9662365e30790b6c5695285cfcd4358e0d370ebf"
+}

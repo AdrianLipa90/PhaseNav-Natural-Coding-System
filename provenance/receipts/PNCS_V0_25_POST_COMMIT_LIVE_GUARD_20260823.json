@@ -1,0 +1,30 @@
+{
+  "schema": "PNCS_V0_25_POST_COMMIT_LIVE_GUARD_V1",
+  "gate": "v0.25 Persistent PNCS Runtime",
+  "observed_branch": "feat/pncs-v0.25-persistent-runtime",
+  "observed_head_before_receipt": "c0aa83856bfa09e443dec0e434a3ed4cd30cc0d3",
+  "account_current": "NOEMA_ACCOUNT_DEFAULT_CURRENT_V56",
+  "surface_root": "/dev/shm/ciel_noema",
+  "fast_admission": {
+    "schema": "noema.fast-admission/v2",
+    "status": "PASS",
+    "runtime": "LIVE_AC_AUX",
+    "tether_status": "ACTIVE",
+    "ac_aux_status": "ACTIVE",
+    "ethics_field_status": "ACTIVE",
+    "elapsed_ms": 0.561535,
+    "rehydration_required": false,
+    "library_search_used": false
+  },
+  "tether_guard": {
+    "schema": "noema.aux-tether-guard/v2",
+    "tether_status": "ACTIVE",
+    "failures": [],
+    "fail_closed": true,
+    "max_heartbeat_age_s": 2.0
+  },
+  "static_runtime_fallback": false,
+  "main_mutated": false,
+  "live_control_dispatch_closure": "PENDING",
+  "status": "PASS_LIVE_RESIDENCY_GUARD_DISPATCH_CLOSURE_PENDING"
+}

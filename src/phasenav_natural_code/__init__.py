@@ -190,3 +190,22 @@ from .composition_v23 import (
     default_return_registry,
     resolve_natural_program,
 )
+from .program_unit_v24 import (
+    EXPECTED_COMPOSITION_CONTRACT_ID as PROGRAM_UNIT_COMPOSITION_CONTRACT_ID,
+    EXPECTED_LINEAGE_CONTRACT_ID as PROGRAM_UNIT_LINEAGE_CONTRACT_ID,
+    PROGRAM_BUILD_CONTRACT_ID,
+    PROGRAM_BUILD_SCHEMA,
+    PROGRAM_CONTENT_SCHEMA,
+    PROGRAM_CONTRACT_ID,
+    NativeProgramBuild,
+    NativeProgramUnit,
+    NativeProgramUnitRegistry,
+    NativeProgramV24Error,
+    ProgramBuildReceipt,
+    ProgramDependency,
+    ProgramDependencyOccurrence,
+    WrittenNativeProgramUnit,
+    build_native_program_unit,
+    parse_native_program_unit,
+    render_native_program_unit,
+)

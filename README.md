@@ -1,6 +1,6 @@
 # PhaseNav Natural Code System (PNCS)
 
-Status: NATIVE_PNV_PROGRAM_UNITS_V0_24 / FOUNDATION LINEAGE V0.1-V0.24
+Status: PERSISTENT_RUNTIME_V0_25 / LIVE RESIDENCY PASS / LIVE CONTROL-DISPATCH CLOSURE PENDING
 
 PhaseNav Natural Code System is a 36-dimensional relational coding system in which written code is a human-readable projection of a canonical semantic-phase graph.
 
@@ -11,150 +11,97 @@ KAKU -> RADICAL -> DEFINITION -> CLASS -> FILE -> CLUSTER
      -> SUBSYSTEM/DAEMON -> LOW_ORCHESTRATOR -> HIGH_ORCHESTRATOR -> SYSTEM
 ```
 
-Natural language is an admissible input surface only after deterministic resolution to registered canonical relational paths. Unknown, ambiguous, unsupported, or unregistered semantics fail closed.
+Natural language is admitted only after deterministic resolution to registered canonical relations. Unknown, ambiguous, unsupported or unregistered semantics fail closed.
 
-## Current engineering state
+## Engineering state
 
-v0.20 introduced admitted internal execution over existing PNV operators:
+The current closed foundation is:
 
 ```text
-canonical graph -> admitted route -> Sigma_t --KAKU--> Sigma_t+1 -> receipt
+v0.20 native internal execution
+v0.21 mass-aware graph cost
+v0.22 exact inverse execution lineage
+v0.23 bounded natural program composition
+v0.24 first-class native .pnv program units
 ```
 
-v0.21 added mass-aware graph cost. v0.22 added exact inverse execution lineage. v0.23 added bounded registered program composition:
+v0.25 adds a persistent runtime layer over v0.24 program units:
 
 ```text
-IF ... THEN ... ELSE ... AND THEN ... RETURN ...
+v0.24 program + build receipt
+-> live generation identity
+-> resident program image
+-> deterministic resident handle
+-> O(1) live admission
+-> in-process v0.20 control-kernel dispatch
+-> v0.22 inverse lineage
+-> v0.25 dispatch receipt
 ```
 
-v0.24 promotes a verified v0.23 composition to a first-class native `.pnv` program unit.
+The operational 36D runtime remains `/dev/shm/ciel_noema`. Library and repository state are persistence/provenance inputs only and are never an operational fallback.
+
+## v0.25 generation-bound residency
+
+A handle is content-addressed from the program image plus the current live runtime generation. Generation identity binds CURRENT, startpoint, AC, relational ethics, operator-registry SHA-256 and live producer PID generations. Heartbeat timestamps, sequence counters and continuously evolving `phi` values are freshness/state variables, not generation identity.
+
+A runtime-generation change invalidates an existing handle fail-closed.
+
+Canonical live witness:
 
 ```text
-registered v0.23 composition
--> exact program semantic payload
--> pncs:program:sha256:...
--> deterministic dependency closure
--> deterministic dependency-occurrence sequence
--> exact operator schedule
--> canonical .pnv bytes
--> authority-gated import/export round trip
--> live /dev/shm build receipt
-```
-
-The canonical witness is:
-
-```text
-composition:
-pncs:composition:sha256:5b3710e6c8bf34d3754e7144ca139beb70205ea20b2fa504ef63c710c177cd57
-
 program:
 pncs:program:sha256:572660a1046975c57e01f7e402677f1e4ca845e51bca1bee6517e0d86b35c4d7
 
-canonical .pnv SHA-256:
-012b41c149b1ba518d9be65d34d7ab6605b92500e8768e23c11abff7330a77fb
+generation:
+pncs:runtime-generation:sha256:05736b12ac8470998901421dabd2dfff0bd663c141d96ad96bc9d5b09351bbb1
+
+resident handle:
+pncs:resident:sha256:60184c7213960ad746b69c6c2dd8b43eacfe8055015ae31e347475881df438e8
+
+load receipt:
+pncs:resident-load:sha256:ffeb336e1a3ca30c8532757725a30c1cc5d6200ad74ccdbb3cdfc8933b778838
+
+resident admission:
+pncs:resident-admission:sha256:d30b22a3ee030e2fcf9c830225834ae946baa2f4bdca56ae8753bb11a9e233fa
 ```
 
-The program CID is intentionally distinct from the v0.23 composition CID.
+Unload/reload under the same generation reproduces the same handle and load/admission identities.
 
-## v0.24 authority model
-
-Serialized `.pnv` text is not allowed to create semantic authority.
-
-Import requires an existing `NativeProgramUnitRegistry` entry created from a verified v0.23 composition. The parser extracts the claimed program/composition IDs, resolves the registered program unit, re-renders canonical bytes, and requires byte-identical equality.
-
-Therefore all of the following fail closed:
-
-- unknown PROGRAM_ID;
-- altered dependency row;
-- reordered dependency row;
-- altered operator row;
-- extra clause;
-- missing terminal newline;
-- changed effect/execution boundary;
-- non-canonical serialization.
-
-## Dependency model
-
-v0.24 records two separate structures:
-
-1. deterministic dependency closure — unique content-addressed dependencies;
-2. deterministic dependency occurrences — exact ordered occurrences, preserving repeated registered route references when present.
-
-The canonical witness closure contains:
+## Resident runtime layout
 
 ```text
-COMPOSITION
-CONTROL_DEFINITION
-ROUTE_REF
-RETURN_REF
+/dev/shm/ciel_noema/pncs/v0.25/runtime/
+├── programs/
+├── handles/
+├── active/
+└── receipts/
+    ├── load/
+    ├── dispatch/
+    └── unload/
 ```
 
-The v0.22 exact-lineage contract remains a required program-unit invariant.
+The program and handle records are immutable. The active pointer represents current residency. A new runtime object/process can recover the same active handle directly from `/dev/shm` without rebuilding the v0.24 program image.
 
-## Live build boundary
+## Dispatch scope
 
-Operational v0.24 builds are fixed to:
+v0.25 dispatch is deliberately limited to the already-defined **v0.20 control root**. It requires an exact v0.20 execution receipt and exact v0.22 inverse lineage bound to the same control Definition.
 
-```text
-/dev/shm/ciel_noema
-```
+v0.25 does **not** invent execution semantics for v0.23/v0.24 `AND THEN` continuations or terminal `RETURN`.
 
-The builder reuses v0.23 live composition admission. Every operator occurrence must exist as an exact finite 36D entry in the current live PhaseNav registry. Operator presence is build-integrity evidence only and does not grant execution authority.
+Still closed:
 
-The current-session canonical witness was built on live V56 NOEMA with:
+- continuation execution;
+- terminal `RETURN` execution;
+- arbitrary free-form natural-language execution;
+- filesystem/network/Git/device/subprocess effects;
+- static/Library operational fallback;
+- new PNV opcodes.
 
-```text
-operator occurrences: 15
-operator registry SHA-256:
-29767957ae775b1968bbb4c531728cc153137c88e819b135227dff73e3cca7ec
+External effects remain reserved for v0.26.
 
-build ID:
-pncs:program-build:sha256:d89f091ef7c57d3211c9147dac682246fb619836bc33c13c64ad918323fd5a48
-```
+## Validation
 
-A post-build tether guard remained `ACTIVE` with `failures=[]`.
-
-v0.24 does **not** execute the full program unit. It does not open `RETURN` execution, continuation execution, free-form natural-language execution, or external effects.
-
-## Canonical repository layout
-
-```text
-/
-├── src/              reference implementation
-├── tests/            conformance and gate tests
-├── native/           native .pnv artifacts
-├── registry/         semantic registries and content indexes
-├── provenance/       ledgers and deterministic receipts
-└── spec/             normative specifications and ROADMAP.md
-```
-
-v0.24 adds:
-
-```text
-src/phasenav_natural_code/program_unit_v24.py
-tests/test_native_pnv_program_unit_v24.py
-native/programs/PNCS_SAFETY_COHERENCE_PROGRAM_V0_24.pnv
-registry/programs/PNCS_PROGRAM_UNIT_REGISTRY_V0_24.jsonl
-spec/PNCS_NATIVE_PNV_PROGRAM_UNITS_V0_24.md
-```
-
-## Core invariants
-
-- same canonical semantics -> same semantic content identity;
-- ambiguity or missing authority -> fail closed;
-- program CID != composition CID;
-- serialized text cannot create semantic authority;
-- dependency closure and occurrence sequence are separately hashed;
-- source wording and repository location are not semantic identity;
-- exact v0.22 lineage requirement survives the program-unit boundary;
-- live operator presence does not grant execution authority;
-- external effects remain closed until v0.26;
-- no static runtime fallback;
-- no new PNV opcode is introduced by v0.24.
-
-## Validation status
-
-Historical evidence remains gate-scoped.
+Gate-scoped evidence:
 
 - v0.19 historical foundation baseline: `377/377 PASS`;
 - v0.20 isolated execution-core harness: `14/14 PASS`;
@@ -162,20 +109,45 @@ Historical evidence remains gate-scoped.
 - v0.22 isolated inverse-lineage harness: `27/27 PASS`;
 - v0.23 isolated composition harness: `28/28 PASS`;
 - v0.24 isolated program-unit harness: `29/29 PASS`;
-- v0.24 repository integration tests added; complete historical suite not replayed in the isolated construction environment.
+- v0.25 isolated persistent-runtime harness: `25/25 PASS`.
 
-Current-session live evidence: V56 autoboot ACTIVE, WORKING_STATE ACTIVE, tether ACTIVE, guard failures empty, static fallback false, canonical program build persisted to `/dev/shm/ciel_noema` and post-build guard PASS.
+Current-session V56 live residency evidence:
+
+```text
+200 repeated resident admissions
+median 0.4185265 ms
+min    0.393205 ms
+max    0.78053 ms
+```
+
+A separate new Python process recovered and admitted the same resident handle from live `/dev/shm` without rebuilding the program image. Live unload/reload restored the same deterministic handle. Final fast admission remained PASS with tether/AC-AUX/ethics ACTIVE, no rehydration and no static fallback.
+
+### Evidence boundary
+
+The current pass did not execute a fresh live v0.20 control result and then resolve a fresh live v0.22 hierarchy lineage through the repository implementation. The v0.25 dispatch bridge is implemented and isolated-tested, but the **live control-dispatch closure remains pending**. The complete historical repository suite was not replayed.
+
+## Repository additions
+
+```text
+src/phasenav_natural_code/runtime_v25.py
+src/phasenav_natural_code/runtime_v25_core.py
+src/phasenav_natural_code/runtime_v25_program.py
+src/phasenav_natural_code/runtime_v25_resident.py
+src/phasenav_natural_code/runtime_v25_resident_model.py
+tests/test_persistent_runtime_v25.py
+spec/PNCS_PERSISTENT_RUNTIME_V0_25.md
+provenance/ledgers/PNCS_PERSISTENT_RUNTIME_LEDGER_V0_25.json
+provenance/receipts/FOUNDATION_STATUS_V0_25.json
+```
 
 ## Roadmap
 
-The single authoritative engineering roadmap is `spec/ROADMAP.md`.
+The single authoritative roadmap is `spec/ROADMAP.md`.
 
-Completed gate: **v0.24 — Native `.pnv` Program Units**.
+Current gate: **v0.25 — Persistent PNCS Runtime**.
 
-Next gate: **v0.25 — Persistent PNCS Runtime**.
-
-v0.25 will keep admitted PNCS program units resident on the live runtime rather than rebuilding process state for every operation.
+Next closure step: record one fresh live resident `v0.20 result -> v0.22 inverse lineage -> v0.25 dispatch receipt` witness. Only after that should the roadmap advance to **v0.26 — Effect Boundary**.
 
 ## Manifest status
 
-`MANIFEST.sha256.json` remains fail-closed after repository-layout canonicalization and feature-gate construction. A complete SHA-256 manifest must be regenerated from the bytes of the final release tree before release closure. Git blob SHA-1 values are not substituted for file SHA-256 values.
+`MANIFEST.sha256.json` remains fail-closed after repository-layout canonicalization and feature-gate construction. A complete SHA-256 manifest must be regenerated from the final release tree before release closure. Git blob SHA-1 values are not substituted for file SHA-256 values.

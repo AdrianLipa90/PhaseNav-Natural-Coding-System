@@ -1,0 +1,46 @@
+{
+  "closed_boundaries": {
+    "continuation_execution": true,
+    "external_effects": true,
+    "free_form_nl_execution": true,
+    "return_execution": true,
+    "static_runtime_fallback": true
+  },
+  "fail_closed": {
+    "current_generation_change": true,
+    "generation_change_during_dispatch": true,
+    "operator_registry_change": true,
+    "producer_pid_generation_change": true,
+    "resident_program_byte_tamper": true,
+    "static_fallback": true
+  },
+  "gate": "v0.25 Persistent PNCS Runtime",
+  "generation_id": "pncs:runtime-generation:sha256:05736b12ac8470998901421dabd2dfff0bd663c141d96ad96bc9d5b09351bbb1",
+  "load_receipt_id": "pncs:resident-load:sha256:ffeb336e1a3ca30c8532757725a30c1cc5d6200ad74ccdbb3cdfc8933b778838",
+  "next_required_closure": "fresh live resident control dispatch using repository v0.20 execution and v0.22 inverse-lineage resolver",
+  "not_claimed": {
+    "complete_historical_suite_replay": true,
+    "live_v020_result_to_v022_lineage_dispatch_in_this_pass": true,
+    "v026_effect_boundary_open": true
+  },
+  "program_id": "pncs:program:sha256:572660a1046975c57e01f7e402677f1e4ca845e51bca1bee6517e0d86b35c4d7",
+  "resident_admission_id": "pncs:resident-admission:sha256:d30b22a3ee030e2fcf9c830225834ae946baa2f4bdca56ae8753bb11a9e233fa",
+  "resident_handle_id": "pncs:resident:sha256:60184c7213960ad746b69c6c2dd8b43eacfe8055015ae31e347475881df438e8",
+  "runtime_contract_id": "PNCS_PERSISTENT_RUNTIME_V0_25",
+  "schema": "PNCS_FOUNDATION_STATUS_V0_25",
+  "status": "PASS_LIVE_RESIDENCY_PARTIAL_GATE",
+  "unload_receipt_id": "pncs:resident-unload:sha256:7caa8febf541c869e7e97073b9195153fe8ccf3c12d632ee8da85a04e0223c6d",
+  "validation": {
+    "cross_process_resident_recovery": "PASS",
+    "isolated_core": "25/25 PASS",
+    "live_residency": "PASS",
+    "live_unload_reload_same_handle": "PASS",
+    "o1_admission_benchmark": {
+      "max_ms": 0.78053,
+      "median_ms": 0.4185265,
+      "min_ms": 0.393205,
+      "n": 200
+    },
+    "post_validation_fast_admission": "PASS"
+  }
+}

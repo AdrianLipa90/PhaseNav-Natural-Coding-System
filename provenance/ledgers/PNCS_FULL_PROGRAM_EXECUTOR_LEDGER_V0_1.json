@@ -71,9 +71,9 @@
   },
   "hosted_ci": {
     "classification": "HOSTED_PRE_STEP_INFRA_BLOCKED",
-    "job_id": 97253387528,
-    "run_id": 32663599766,
-    "run_number": 9,
+    "job_id": 97254097494,
+    "run_id": 32663865507,
+    "run_number": 11,
     "steps": [],
     "code_failure_observed": false
   },
@@ -106,7 +106,7 @@
   },
   "schema": "PNCS_FULL_PROGRAM_EXECUTOR_LEDGER_V0_1",
   "status": "DEMO_IMPLEMENTED_REAL_OBJECT_PATH_HOSTED_PRESTEP_BLOCKED",
-  "tested_candidate_head_before_ledger": "9a00ec02629ed6468c60e39dec7576960ec4f455",
+  "tested_candidate_head_before_ledger": "e7eee1480cb963e8f9167c709d4f4715fabddb0b",
   "tests": {
     "focused_native_spec": "39/39 PASS",
     "full_repo_real_object_replay": "IMPLEMENTED_AS_TEST; HOSTED_EXECUTION_BLOCKED_BEFORE_FIRST_STEP",

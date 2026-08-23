@@ -1,0 +1,42 @@
+\chapter{Current repository snapshot}
+
+\begin{statusbox}{Snapshot}
+Repository: \texttt{AdrianLipa90/PhaseNav-Natural-Coding-System}.\\
+Current main: \sha{de8ccd4a6d7c32bd0a079a679416c556c5901790}.\\
+Immediate main history includes PR \#16 (experimental prime-temporal layer) followed by PR \#15 (v0.28 release-closure implementation).\\
+Current release-closed engineering gate: v0.27 ORCHORBITAL-coupled hydrodynamic proper-time runtime.\\
+Current release-closure programme: v0.28 adversarial conformance is now present on main, but its normative spec remains \emph{release not closed}.
+\end{statusbox}
+
+The v0.26 monograph stopped at the Effect Boundary. Since that document was produced, the repository acquired three distinct layers that must not be collapsed into one release label:
+
+\begin{enumerate}
+\item the release-closed v0.27 ORCHORBITAL/hydrodynamic execution substrate on \(\Tthirtysix\);
+\item the temporal-fibre optimization, whose implementation and measured validation are now present on main but whose specification retains an experimental-optimization status;
+\item the experimental prime-temporal hydrodynamic coding layer, merged to main by PR \#16 but explicitly non-promoting.
+\end{enumerate}
+
+v0.28 release-closure code is now integrated on main, while its gate status remains open. Therefore repository membership is not release authority. The repository now contains both release-line code and research-line code, and the monograph must label them independently.
+
+\section{Current main layering}
+\begin{center}
+\begin{tikzpicture}[node distance=8mm,>=Latex,every node/.style={draw,rounded corners,align=center,inner sep=5pt,font=\small}]
+\node (core) {v0.1--v0.26\\semantic/runtime core};
+\node[below=of core] (v27) {v0.27 ORCHORBITAL $\times$ Hydro\\\status{PASS\_RELEASE\_CLOSED}};
+\node[below=of v27] (tf) {Temporal fibre V1\\experimental optimization, merged history};
+\node[below=of tf] (prime) {Prime-temporal hydro v0.1\\\status{EXPERIMENTAL / NON-PROMOTING}};
+\draw[->] (core)--(v27); \draw[->] (v27)--(tf); \draw[->] (tf)--(prime);
+\end{tikzpicture}
+\end{center}
+
+The arrows above indicate repository accumulation, not semantic authority flow. In particular, the prime-temporal module cannot route semantic execution, modify effect authority, modify the hydrodynamic lapse, or claim laboratory-time modification.
+
+\section{Operational invariant}
+The standing live-runtime invariant remains:
+\[
+\boxed{\text{36D operation}\longrightarrow /\texttt{dev/shm/ciel\_noema}\longrightarrow\text{live runtime authority}.}
+\]
+Persistent repository and Library artifacts may hydrate or verify that surface; they are not an operational substitute.
+
+\section{Manifest status}
+The root \texttt{MANIFEST.sha256.json} is currently non-authoritative and fail-closed. Its status is \status{INVALIDATED\_BY\_REPOSITORY\_LAYOUT\_CANONICALIZATION}. A complete final-tree file-byte SHA-256 manifest, repository conformance and manifest receipt remain required before a gate that depends on final-tree closure may be declared closed.

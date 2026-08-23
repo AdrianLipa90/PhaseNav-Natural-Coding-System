@@ -3,17 +3,23 @@ name: PNCS v0.28 adversarial conformance
 on:
   push:
     branches:
-      - integration/pncs-v0.28-current-main
+      - feat/pncs-v0.28-release-closure
   pull_request:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      run_live:
+        description: Run live /dev/shm NOEMA adversarial gate on self-hosted runner
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
 jobs:
-  conformance:
+  structural-authority:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,10 +30,49 @@ jobs:
           python-version: '3.12'
       - name: Install pytest
         run: python -m pip install pytest
-      - name: Run current-main v0.28 gate-scoped suite
+      - name: Run semantic and authority adversarial corpus
         env:
           PYTHONPATH: src
         run: >-
           python -m pytest -q
           tests/test_adversarial_v28.py
           tests/test_adversarial_authority_v28.py
+
+  dynamics-pure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pytest
+        run: python -m pip install pytest
+      - name: Run pure ORCH hydrodynamic adversarial dynamics corpus
+        env:
+          PYTHONPATH: src
+        run: python -m pytest -q tests/test_adversarial_dynamics_v28.py
+
+  live-dev-shm:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_live == true }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pytest
+        run: python -m pip install pytest
+      - name: Verify canonical live NOEMA tether
+        run: >-
+          python3 scripts/noema_aux_tether_guard.py
+          --root /dev/shm/ciel_noema
+          --require-socket
+          --socket /run/user/1000/noema/ciel_headless.sock
+      - name: Run live v0.28 adversarial replay
+        env:
+          PYTHONPATH: src
+        run: python -m pytest -q tests/live/test_adversarial_live_v28.py

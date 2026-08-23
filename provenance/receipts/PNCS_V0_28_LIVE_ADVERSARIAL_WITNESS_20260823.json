@@ -1,0 +1,33 @@
+{
+  "attack_count": 6,
+  "attack_results": {
+    "confusable_operator": "PASS_REJECTED:OrchExecutorV27Error",
+    "final_sigma_substitution": "PASS_REJECTED:OrchHydroV27Error",
+    "program_id_substitution": "PASS_REJECTED:OrchExecutorV27Error",
+    "truth_substitution": "PASS_REJECTED:OrchExecutorV27Error",
+    "valid_operator_substitution": "PASS_REJECTED:OrchExecutorV27Error",
+    "vector_digest_substitution": "PASS_REJECTED:OrchExecutorV27Error"
+  },
+  "base_steps_equal_coupled_steps": true,
+  "bound_trace_id": "pncs:orch-receipt-bound-trace:sha256:8f7b0942838642f494527e0e6d99642fa87a6fe24e63e4dfe1739bbd058823ef",
+  "definition_id": "pncs:def:sha256:b7988497bab75a526771fa24aeca75e0182bd437fd707927cb0e78b04d360cce",
+  "direct_trace_id": "pncs:orch-direct-trace:sha256:b705f53d546bd7da535f29f4497d46f4ad31feb66cd67b651ec0379760c71bb2",
+  "external_effects": false,
+  "final_orch_state_id": "pncs:orch-state:sha256:e5d13c552bf3820e76559bca9fffd8122ec11c9b1ce9b033a9fecf9d4cace6b4",
+  "final_phase_id": "pncs:t36-flow-state:sha256:0298110ebb1c89492314adc748e0090859455d63f3c5f7805ed8e9175b9be749",
+  "final_sigma_id": "pncs:sigma:sha256:f7a632d9af9bef7af114ecae4da11ac39d270b49170a668d1347880a76af76b8",
+  "live_root": "/dev/shm/ciel_noema",
+  "operator_registry_sha256": "29767957ae775b1968bbb4c531728cc153137c88e819b135227dff73e3cca7ec",
+  "order_parameter_R": 0.1434743416846254,
+  "phi_sha256": "f0091d69267bfda72176631d1ac736c6e428a2f7e1d13e256c1d9cb356474756",
+  "resigned_before_validation": true,
+  "schema": "PNCS_V0_28_LIVE_ADVERSARIAL_WITNESS_V1",
+  "semantic_mass": 0.05025290433725847,
+  "sigma_base_equals_sigma_coupled": true,
+  "snapshot_attempts": 1,
+  "static_runtime_fallback": false,
+  "status": "PASS",
+  "tether_receipt_sha256": "3987ce803e15dfd1aed13ce017d540948fb9c984dc8cb88a8e2e8898b25467df",
+  "v020_receipt_sha256": "6dbce59eef8d740f99264f3a8d3b5a4c66857e4365e2b5610753a4deec29b30f",
+  "witness_sha256": "ff551685d7a08bf0fa990f316fccf01aaf181cb26b9751dde48d204486e3e460"
+}

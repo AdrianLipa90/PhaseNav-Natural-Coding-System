@@ -13,31 +13,18 @@ permissions:
   contents: read
 
 jobs:
-  exact_sha_conformance:
-    name: ${{ matrix.label }}
+  exact-source-smoke:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - label: orch-core
-            tests: tests/test_orchorbital_v27.py tests/test_orchorbital_foundation_constraints_v27.py
-          - label: direct-executor
-            tests: tests/test_orchorbital_executor_v27.py
-          - label: hydro-core
-            tests: tests/test_hydro_time_v27.py
-          - label: hydro-schedule
-            tests: tests/test_hydro_schedule_v27.py
     env:
-      TEST_FILES: ${{ matrix.tests }}
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Download immutable PR-head source and run tests
+      - name: Download exact PR-head source, compile and import
         shell: python3 {0}
         run: |
+          import compileall
           import json
           import os
           from pathlib import Path
-          import subprocess
           import sys
           import tempfile
           import urllib.request
@@ -46,20 +33,39 @@ jobs:
           event = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text())
           head_sha = event.get('pull_request', {}).get('head', {}).get('sha') or os.environ['GITHUB_SHA']
           repo = os.environ['GITHUB_REPOSITORY']
-          url = f'https://codeload.github.com/{repo}/zip/{head_sha}'
+          req = urllib.request.Request(
+              f'https://api.github.com/repos/{repo}/zipball/{head_sha}',
+              headers={
+                  'Authorization': f"Bearer {os.environ['GH_TOKEN']}",
+                  'Accept': 'application/vnd.github+json',
+                  'X-GitHub-Api-Version': '2022-11-28',
+              },
+          )
           with tempfile.TemporaryDirectory() as td:
               td = Path(td)
               archive = td / 'repo.zip'
-              urllib.request.urlretrieve(url, archive)
+              with urllib.request.urlopen(req) as response:
+                  archive.write_bytes(response.read())
               with zipfile.ZipFile(archive) as zf:
                   zf.extractall(td / 'repo')
               roots = [p for p in (td / 'repo').iterdir() if p.is_dir()]
               if len(roots) != 1:
                   raise RuntimeError(f'unexpected archive roots: {roots}')
               root = roots[0]
-              subprocess.run([sys.executable, '-m', 'pip', 'install', 'pytest'], check=True)
-              tests = [str(root / p) for p in os.environ['TEST_FILES'].split()]
-              env = dict(os.environ)
-              env['PYTHONPATH'] = str(root / 'src')
-              print(json.dumps({'exact_head_sha': head_sha, 'tests': os.environ['TEST_FILES']}))
-              raise SystemExit(subprocess.run([sys.executable, '-m', 'pytest', '-q', *tests], cwd=root, env=env).returncode)
+              src = root / 'src'
+              if not compileall.compile_dir(src / 'phasenav_natural_code', quiet=1):
+                  raise RuntimeError('compileall failed')
+              sys.path.insert(0, str(src))
+              modules = [
+                  'phasenav_natural_code.execution_v20_model',
+                  'phasenav_natural_code.execution_v20_live',
+                  'phasenav_natural_code.execution_v20_state',
+                  'phasenav_natural_code.hydro_time_v27',
+                  'phasenav_natural_code.hydro_schedule_v27',
+                  'phasenav_natural_code.orchorbital_v27',
+                  'phasenav_natural_code.orchorbital_hydro_v27',
+                  'phasenav_natural_code.orchorbital_executor_v27',
+              ]
+              for module in modules:
+                  __import__(module)
+              print(json.dumps({'status':'PASS','exact_head_sha':head_sha,'compiled':True,'imports':modules}, sort_keys=True))

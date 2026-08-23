@@ -1,0 +1,51 @@
+name: PNCS v0.27 exact source snapshot
+
+on:
+  push:
+    branches:
+      - feat/pncs-v0.27-orchorbital-coupling
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Record exact commit and source hashes
+        shell: python {0}
+        run: |
+          from pathlib import Path
+          import hashlib, json, os
+          roots = [Path('src/phasenav_natural_code'), Path('tests')]
+          files = []
+          for root in roots:
+              if root.exists():
+                  files.extend(p for p in root.rglob('*') if p.is_file())
+          for extra in [Path('pyproject.toml'), Path('native/PNCS_ORCHORBITAL_HYDRO_COUPLING_V0_27.pnv')]:
+              if extra.is_file():
+                  files.append(extra)
+          out = {
+              'commit': os.environ.get('GITHUB_SHA'),
+              'sha256': {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(set(files))},
+          }
+          Path('pncs-v027-exact-tree-sha256.json').write_text(json.dumps(out, indent=2, sort_keys=True) + '\n')
+      - name: Upload exact checked-out tree
+        uses: actions/upload-artifact@v4
+        with:
+          name: pncs-v027-exact-source-snapshot
+          if-no-files-found: error
+          path: |
+            src/phasenav_natural_code/
+            tests/
+            pyproject.toml
+            native/PNCS_ORCHORBITAL_HYDRO_COUPLING_V0_27.pnv
+            pncs-v027-exact-tree-sha256.json
+          retention-days: 7

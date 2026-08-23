@@ -27,10 +27,26 @@
         "src/phasenav_natural_code/branch_session_collision_v28.py": "f7d19dd20028c6475c91b47e467096257561e237",
         "tests/test_branch_session_collision_v28.py": "3968cbca9a392af6aab6e41de8c5e4ab593da51f"
       }
+    },
+    {
+      "gate": "v0.28 ORCHORBITAL hydrodynamic adversarial dynamics",
+      "status": "PASS",
+      "pytest": "28 passed in 0.42s",
+      "blobs": {
+        "src/phasenav_natural_code/adversarial_dynamics_v28.py": "b1133788e04ef15d23a65cdbf2361c73585211c8",
+        "src/phasenav_natural_code/hydro_time_v27.py": "c889ef988844243c9e572dc814e27a30c47116a0",
+        "src/phasenav_natural_code/hydro_schedule_v27.py": "61b5dbe860a2169a638ce9a9d3e55a0674e29835",
+        "src/phasenav_natural_code/orch_hydro_v27.py": "510068ee5df71b9be778fc9d930e885cfb0077aa",
+        "src/phasenav_natural_code/orch_orbital_core_v27.py": "570518307ab8c82e52d1452c771e03016c21c9c2",
+        "src/phasenav_natural_code/orch_orbital_time_v27.py": "437139c01d5a6ed23eaac7a784076fc07bd3903c",
+        "src/phasenav_natural_code/orch_orbital_reduction_v27.py": "10d19f46c88408d4d5b346c1038d373fd9f665f6",
+        "src/phasenav_natural_code/orch_orbital_v27.py": "a6fa1c22604311bbe853547421837a03532e8dd5",
+        "tests/test_adversarial_dynamics_v28.py": "e7683cbd4c1104303d2419e189ef7a74146d4e66"
+      }
     }
   ],
   "aggregate": {
-    "passed": 51,
+    "passed": 79,
     "failed": 0
   },
   "limitations": [

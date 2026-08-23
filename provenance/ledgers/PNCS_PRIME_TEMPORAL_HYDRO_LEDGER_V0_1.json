@@ -1,0 +1,65 @@
+{
+  "schema": "PNCS_PRIME_TEMPORAL_HYDRO_LEDGER_V0_1",
+  "status": "EXPERIMENTAL_PURE_CORE_PASS",
+  "date": "2026-08-23",
+  "repository": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "branch": "feat/experimental-prime-temporal-hydro",
+  "base_main": "165157ad8edf19f6f4a74f5bca2439a72348ae59",
+  "contract_id": "PHASENAV_PRIME_TEMPORAL_HYDRO_V0_1",
+  "epistemic_operator": "CHYBA",
+  "mode": "READ_ONLY",
+  "source_basis": [
+    "PHASENAV_THETA_ZETA_COLLATZ_HOLONOMY_MONOGRAPH_V0_1",
+    "prime-valuation lattice extension",
+    "relative-phase / Fubini-Study temporal continuity extension"
+  ],
+  "artifacts": {
+    "native/experimental/PNCS_PRIME_TEMPORAL_HYDRO_V0_1.pnv": {
+      "git_blob_sha1": "2a694f2df4166d0375800052303d15da9dff3433",
+      "sha256": "bd87e02f5a0519391939670716e879d9d7d457565994c1625b25fd231c803ca2"
+    },
+    "src/phasenav_natural_code/prime_temporal_hydro_v01.py": {
+      "git_blob_sha1": "6ce3f5a83daebe9f912d56fd6c7c286bb9976881",
+      "sha256": "e9c1e30452e87f6161a9502142ba537279987b61c6581ffbd800d5c0175cd47d"
+    },
+    "spec/experimental/PNCS_PRIME_TEMPORAL_HYDRO_V0_1.md": {
+      "git_blob_sha1": "fd9f2dd097f08ca095a38b5a7d1320a0e1307710",
+      "sha256": "a4715a1e9caeb247ddcee8100c71053a193bddcaf53ce450a77b35b50e9c5f41"
+    },
+    "tests/test_prime_temporal_hydro_v01.py": {
+      "git_blob_sha1": "5ae9696055de4426dcfd1bf82722df37274d0b5c",
+      "sha256": "d7cb5e28409da16f3156c60040d2d3898f50a477d7302998240b1dd0b03637c8"
+    },
+    "tests/test_prime_temporal_native_v01.py": {
+      "git_blob_sha1": "af39a1575d32166329fbf6d7272886241e195fe1",
+      "sha256": "8569080165e98d76fc0a6e4a241486a56703d75981bddcf5fa48fbf49ad02b74"
+    }
+  },
+  "validation": {
+    "pytest": "23 passed in 0.04s",
+    "native_pnv_directives": "PASS",
+    "native_pnv_opcode_vocabulary": "PASS",
+    "native_operator_ids_unique": "PASS",
+    "local_git_blob_sha_matches_github_blobs": true
+  },
+  "implemented_observables": [
+    "C_Z",
+    "F_Z",
+    "v_T",
+    "Lambda_T",
+    "T36 complementary temporal pairs"
+  ],
+  "boundaries": {
+    "spectral_lift_requires_explicit_registry_and_weights": true,
+    "prime_log_and_zeta_zero_registries_separate": true,
+    "hydrodynamic_lapse_modified": false,
+    "routing_feedback_opened": false,
+    "external_effects": false,
+    "semantic_identity_modified": false,
+    "laboratory_time_modified": false,
+    "static_runtime_fallback": false,
+    "scientific_promotion": false
+  },
+  "pncs_release_sequence_modified": false,
+  "fail_closed": true
+}

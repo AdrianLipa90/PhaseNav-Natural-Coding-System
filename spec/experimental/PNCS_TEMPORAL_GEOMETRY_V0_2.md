@@ -162,11 +162,11 @@ Local Python validation measurement:
 
 | path | mean time |
 |---|---:|
-| direct 36-point projection | ~68.38 µs/op |
-| 18-pair inversion projection | ~45.65 µs/op |
-| measured ratio | ~1.50× |
+| direct 36-point projection | median ~62.00 µs/op |
+| 18-pair inversion projection | median ~17.94 µs/op |
+| measured ratio | ~3.46× |
 
-Measurement scope: local validation environment for this implementation.
+Measurement scope: local validation environment, 9 repeats × 5000 operations per path, for this implementation.
 
 ## 4. Temporal wave state
 

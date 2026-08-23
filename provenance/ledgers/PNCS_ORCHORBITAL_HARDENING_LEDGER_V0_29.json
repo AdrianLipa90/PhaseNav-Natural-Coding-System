@@ -1,0 +1,88 @@
+{
+  "schema": "PNCS_ORCHORBITAL_HARDENING_LEDGER_V0_29",
+  "status": "EXPERIMENTAL_PURE_CORE_PASS",
+  "date": "2026-08-23",
+  "branch": "feat/pncs-v029-orchorbital-harvest-hardening",
+  "base": "7d2136259d403a4fed85e996249733d941fc8eba",
+  "contract": "PNCS_ORCHORBITAL_HARVEST_HARDENING_V0_29",
+  "epistemic": "CHYBA",
+  "mode": "READ_ONLY",
+  "promotion_allowed": false,
+  "promotion_dependency": "PNCS_V0_28_PASS_RELEASE_CLOSED",
+  "foundation": {
+    "repository": "AdrianLipa90/CIEL-Omega-ApokalypOS",
+    "commit": "aa0da54ef29a1f80dd0390427935342225388950",
+    "documents": [
+      "02_ONTOLOGY_AND_OBSERVABLES.md",
+      "03_STATE_SPACE_AND_BOUNDARY_CONDITIONS.md",
+      "05_ENTITY_REGISTRY_AND_SPHERE_EMBEDDING.md",
+      "07_OORP_PIPELINE_AND_MEMORY.md",
+      "08_GEOMETRY_ENGINE_AND_UI_SURFACE.md",
+      "10_METRICS_VALIDATION_AND_EXPERIMENTS.md",
+      "11_IMPLEMENTATION_PHASES_AND_WORKPACKAGES.md",
+      "13_SPHERE_DYNAMICS_8PLUS1.md",
+      "CIEL_ETHICS_AND_SEMANTIC_ACTION_ALGORITHM.md"
+    ]
+  },
+  "implemented_surfaces": [
+    "EntityRecordProjection",
+    "PackageAdmissionReceipt",
+    "SemanticActionAuditReceipt",
+    "InertLeakReceipt",
+    "OperationalGeometryProjection"
+  ],
+  "validation": {
+    "fresh_noema_tether": "ACTIVE",
+    "guard_failures": [],
+    "python_compile": "PASS",
+    "pytest": "44 passed in 0.07s",
+    "same_bytes_github_blob_audit": true,
+    "package_gate_benchmark": {
+      "iterations": 100000,
+      "seconds": 0.17643940900006783,
+      "microseconds_per_operation": 1.7643940900006783,
+      "operations_per_second": 566766.804347897
+    },
+    "semantic_action_audit_benchmark": {
+      "iterations": 100000,
+      "seconds": 0.33889387000022,
+      "microseconds_per_operation": 3.3889387000021998,
+      "operations_per_second": 295077.63005549525
+    }
+  },
+  "artifacts": {
+    "src/phasenav_natural_code/orch_hardening_v29.py": {
+      "git_blob_sha1": "f2af77a81165658d2535c364eb9a8f2d73a7b0ee",
+      "sha256": "01b01e533ec240fb6e06e8fad9bf868cfb1e1553e11ff73c4662023e61280a81"
+    },
+    "native/experimental/PNCS_ORCHORBITAL_HARVEST_HARDENING_V0_29.pnv": {
+      "git_blob_sha1": "5f44de3fea3362778ff3534c80a02d4d45bc37cb",
+      "sha256": "831b06fa672172591dec656c25139021a5b42980b170576ac1ae77212ab589a6"
+    },
+    "spec/experimental/PNCS_ORCHORBITAL_HARVEST_HARDENING_V0_29.md": {
+      "git_blob_sha1": "22d5c40c048600e3be287fd44c2ea91ec420d0db",
+      "sha256": "e9a0f93954ff42fd144271d6cd5086414783d99df799cd7961d8a18a2c3d80df"
+    },
+    "tests/test_orch_hardening_v29.py": {
+      "git_blob_sha1": "9680ccc055105e6f2a60a2960ebdd18438abdaf6",
+      "sha256": "74a1c278b2a52c5163b428cf0739fe39b0e4b1ff7ed4993ba917b69f40d64dde"
+    },
+    "tests/test_orch_hardening_native_v29.py": {
+      "git_blob_sha1": "dc477d87571d5a4fa3b55920c8ea92bcd653c1fd",
+      "sha256": "12d96612afca5858a76d5ccd63c7c7009521685a5293a85545a5d74a9e60ed19"
+    }
+  },
+  "boundaries": {
+    "identity_authority": false,
+    "routing_feedback_opened": false,
+    "effect_authority": false,
+    "dynamic_leak_propagation_opened": false,
+    "parent_sphere_mutation_opened": false,
+    "sphere_split_merge_elevate_opened": false,
+    "renderer_authority": false,
+    "radical_sphere_dynamic_coupling_opened": false,
+    "ion1024_sphere_dynamic_coupling_opened": false
+  },
+  "fail_closed": true,
+  "tested_candidate_head_before_final_ledger": "4780124c6b289e65cffbff222f75cdb1649cf47a"
+}

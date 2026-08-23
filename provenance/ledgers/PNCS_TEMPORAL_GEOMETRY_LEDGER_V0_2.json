@@ -1,0 +1,96 @@
+{
+  "authority_scope": "PURE_MEASUREMENT_PROJECTION",
+  "base": "28e0850d02230a8afd61674d96d49a67e0d6843c",
+  "branch": "feat/experimental-temporal-geometry-v02",
+  "contract": "PNCS_TEMPORAL_GEOMETRY_V0_2",
+  "epistemic_status": "CHYBA",
+  "fail_closed": true,
+  "files": {
+    "native/experimental/PNCS_TEMPORAL_GEOMETRY_V0_2.pnv": {
+      "git_blob_sha1": "1dccef62521161b1d07a1317dd1a5cffa850c1a8",
+      "sha256": "dfeb71ad16f1e371bdbfeb9771eb840dbc1e39fc0c7c8aed165c806fbfb660ac",
+      "size": 2195
+    },
+    "spec/experimental/PNCS_TEMPORAL_GEOMETRY_V0_2.md": {
+      "git_blob_sha1": "b851c3f2ab92519d9700314a514978061646f33d",
+      "sha256": "2f23ffe3a29006f9ecc40b9954f6a8ac48bd30f16805eddcfbff2e73e0d3ba68",
+      "size": 5691
+    },
+    "src/phasenav_natural_code/temporal_geometry_v02.py": {
+      "git_blob_sha1": "3af1ac72661a979957ddc0f747bb3b45cb3d9cfe",
+      "sha256": "6a3db1936bfb9b7249bb833ce68c6f35e53b145267233e5ee0ddbc79bdd25be5",
+      "size": 24310
+    },
+    "tests/test_temporal_geometry_native_v02.py": {
+      "git_blob_sha1": "f86e9df76a23dea198bb527dbe57c7c51bd918db",
+      "sha256": "fa702a366ffecc3e3a48352b840ed7b70a18628b9a20b22fc8c749d2785e0298",
+      "size": 2814
+    },
+    "tests/test_temporal_geometry_v02.py": {
+      "git_blob_sha1": "4e54b5495032834f670d779c30f0b2d970a58a88",
+      "sha256": "ad6ea8609fe5c6562ca4a9a359d22806445732d17aa4714d45fb2743741dc20a",
+      "size": 10186
+    }
+  },
+  "implementation": {
+    "observation_modes": [
+      "EXACT_NOW_PROJECTOR",
+      "FINITE_GAUSSIAN_NOW_LOCALIZATION"
+    ],
+    "reuse_anchors": [
+      "src/phasenav_natural_code/temporal_fibre_v1.py",
+      "src/phasenav_natural_code/prime_temporal_hydro_v01.py",
+      "src/phasenav_natural_code/hydro_time_v27.py"
+    ],
+    "t36_direct_projection": "36 ordered temporal samples -> temporal Cayley phases",
+    "t36_dual_projection": "18 past offsets + inversion-derived future partners -> 36 phases",
+    "wave_state": "normalized 36-sample complex temporal amplitude state"
+  },
+  "interpretation": {
+    "label": "INTERPRETACJA",
+    "now_fixed_point": "u=0 -> z_T=-1",
+    "qualifier": "The formalism may suggest a wave–corpuscle temporal duality, yet does not state it as an established result.",
+    "temporal_coordinate": "u=(t-NOW)/lambda; w_T=i*u; z_T=(w_T-1)/(w_T+1)",
+    "temporal_duality": "reflection about NOW maps z_T to z_T^-1"
+  },
+  "mode": "READ_ONLY",
+  "noema_live_guard": {
+    "failures": [],
+    "require_socket": true,
+    "root": "/dev/shm/ciel_noema",
+    "socket": "/run/user/1000/noema/ciel_headless.sock",
+    "tether_status": "ACTIVE"
+  },
+  "optimization": {
+    "benchmark_scope": "local validation environment; 9 repeats x 5000 operations per path",
+    "direct_36_projection_median_us_per_op": 62.002875200050774,
+    "dual_18_pair_projection_median_us_per_op": 17.94051520009816,
+    "measured_ratio": 3.45602534311342
+  },
+  "promotion_requirements": [
+    "SCHEMA",
+    "TESTS",
+    "METRICS",
+    "REPLAYABILITY"
+  ],
+  "promotion_track": "POST_V1_EXPERIMENTAL",
+  "schema": "PNCS_TEMPORAL_GEOMETRY_LEDGER_V0_2",
+  "source": {
+    "document": "Riemann_1overz_Baginski_3pager.pdf",
+    "source_derived_identities": [
+      "w=2s-1",
+      "z=(s-1)/s",
+      "z(1-s)=1/z(s)",
+      "Re(s)=1/2 iff |z(s)|=1",
+      "on |z|=1: z^-1=conjugate(z)"
+    ]
+  },
+  "status": "EXPERIMENTAL_PURE_CORE_PASS",
+  "tested_candidate_head_before_ledger": "32fee4da5f738ffcb996fb039d82b08d97f3f749",
+  "tests": {
+    "focused": "61/61 PASS",
+    "phase_flow_adapter": "IMPLEMENTED_IN_SOURCE_INTEGRATION_REPLAY_PENDING_FULL_REPO_CHECKOUT",
+    "py_compile": "PASS",
+    "scope": "PURE_CORE_PLUS_NATIVE_SPEC_CONFORMANCE"
+  }
+}

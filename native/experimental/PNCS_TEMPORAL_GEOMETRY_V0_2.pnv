@@ -1,0 +1,41 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# Temporal Geometry v0.2 — conformal past/future duality and NOW localization.
+# Experimental post-v1 research track.
+
+OP TG.RIEMANN_CENTER TRANSFORM s half_centered w
+OP TG.RIEMANN_CAYLEY TRANSFORM w cayley_chart z
+OP TG.RIEMANN_DUAL CONDITION functional_symmetry inversion_symmetry exact_conjugation
+
+OP TG.TIME_CENTER TRANSFORM time now centered_u
+OP TG.TIME_IMAGINARY_LIFT TRANSFORM centered_u scale temporal_w
+OP TG.TIME_CAYLEY TRANSFORM temporal_w cayley_chart temporal_z
+OP TG.PAST_FUTURE_DUAL CONDITION sign_reflection inversion_partner dual_pair_receipt
+OP TG.NOW_FIXED_POINT CONDITION centered_u equals_zero temporal_z_minus_one
+
+OP TG.T36_PROJECT TRANSFORM thirtysix_time_samples temporal_cayley_phase t36_phase_projection
+OP TG.T36_DUAL_PROJECT TRANSFORM eighteen_past_offsets inversion_partner thirtysix_phase_coordinates
+OP TG.WAVE36_BIND TRANSFORM temporal_samples complex_amplitudes normalized_temporal_wave36
+OP TG.OBSERVE_NOW CONDITION exact_now_sample observation_projector temporal_observation_receipt
+OP TG.LOCALIZE_NOW TRANSFORM temporal_wave36 gaussian_now_kernel temporal_observation_receipt
+OP TG.WAVE_CORPUSCLE_RECEIPT DERIVE temporal_wave36 temporal_observation_receipt wave_corpuscle_receipt
+
+VECTOR V.TG.TIME_CAYLEY "TG.time.center.imaginary_lift.cayley" PRECISE
+VECTOR V.TG.PAST_FUTURE_DUAL "TG.past.future.inversion.dual" PRECISE
+VECTOR V.TG.NOW_FIXED_POINT "TG.now.fixed.minus_one" PRECISE
+VECTOR V.TG.T36_DUAL_PROJECT "TG.temporal.dual.pairs.T36" PRECISE
+VECTOR V.TG.OBSERVE_NOW "TG.wave.observation.now.projector" PRECISE
+
+OP TG.SCOPE CONDITION epistemic_status equals CHYBA
+OP TG.PROMOTION_TRACK CONDITION promotion_track equals POST_V1_EXPERIMENTAL
+OP TG.AUTHORITY_SCOPE CONDITION authority_scope equals PURE_MEASUREMENT_PROJECTION
+
+OP PATH.TG.CONFORMAL_TIME COMPOSITION TG.TIME_CENTER TG.TIME_IMAGINARY_LIFT TG.TIME_CAYLEY TG.PAST_FUTURE_DUAL TG.NOW_FIXED_POINT
+OP PATH.TG.T36 COMPOSITION TG.T36_DUAL_PROJECT TG.SCOPE TG.PROMOTION_TRACK
+OP PATH.TG.OBSERVATION COMPOSITION TG.WAVE36_BIND TG.OBSERVE_NOW TG.WAVE_CORPUSCLE_RECEIPT TG.AUTHORITY_SCOPE
+
+EMIT PATH.TG.CONFORMAL_TIME
+EMIT PATH.TG.T36
+EMIT PATH.TG.OBSERVATION

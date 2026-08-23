@@ -1,0 +1,112 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PhaseNav experimental prime-temporal hydrodynamic substrate.
+# This module does not advance the PNCS release ladder and opens no routing,
+# external effect, semantic mutation, or laboratory-time authority.
+
+# ---------------------------------------------------------------------------
+# Exact prime-valuation layer
+# ---------------------------------------------------------------------------
+OP PTH.PRIME_VALUATION TRANSFORM positive_integer exact_prime_factorization valuation_vector
+OP PTH.PRIME_LOG_COORD DERIVE valuation_vector prime_log_basis log_integer
+OP PTH.PRIME_FLUX DIFFERENCE next_valuation current_valuation delta_valuation
+OP PTH.PRIME_FLUX_LOG DERIVE delta_valuation prime_log_basis delta_log_scale
+OP PTH.COLLATZ_SHORTCUT TRANSFORM positive_integer shortcut_collatz next_integer
+OP PTH.EVEN_PRIME_FLOW TRANSFORM valuation_vector subtract_e2 next_valuation
+OP PTH.ODD_PRIME_SCATTER TRANSFORM valuation_vector three_n_plus_one_then_half next_valuation
+OP PTH.ODD_SUPPORT_DISJOINT CONDITION gcd_source_successor equals one
+OP PTH.CLOSED_PRIME_FLUX CONDITION endpoint_valuation equals startpoint_valuation
+
+VECTOR V.PTH.PRIME_VALUATION "PTH.prime.valuation.exact" PRECISE
+VECTOR V.PTH.PRIME_FLUX "PTH.prime.flux.delta_v" PRECISE
+VECTOR V.PTH.ODD_PRIME_SCATTER "PTH.collatz.odd.prime_support_scatter" PRECISE
+
+# ---------------------------------------------------------------------------
+# Mellin / critical-line prime realization
+# ---------------------------------------------------------------------------
+OP PTH.CRITICAL_PRIME_AMPLITUDE TRANSFORM prime_delta_v p_to_minus_delta_v_over_two amplitude
+OP PTH.CRITICAL_PRIME_PHASE TRANSFORM prime_delta_v_tau minus_tau_delta_v_log_p phase
+OP PTH.CRITICAL_PRIME_FACTOR COMPOSITION PTH.CRITICAL_PRIME_AMPLITUDE PTH.CRITICAL_PRIME_PHASE complex_prime_factor
+OP PTH.PRIME_CONNECTION_FLAT CONDITION closed_prime_flux equals zero
+OP PTH.Z2_HOLONOMY TRANSFORM odd_count parity_sign z2_holonomy
+
+VECTOR V.PTH.CRITICAL_PRIME_FACTOR "PTH.mellin.critical_line.prime_factor" PRECISE
+VECTOR V.PTH.Z2_HOLONOMY "PTH.collatz.z2.holonomy" PRECISE
+
+# ---------------------------------------------------------------------------
+# Explicit spectral lift boundary
+# Prime-product arithmetic is not silently converted into a superposition.
+# A registry and weights must be explicit and receipt-bound.
+# ---------------------------------------------------------------------------
+OP PTH.PRIME_LOG_REGISTRY TRANSFORM prime_registry omega_scale_log_p frequency_registry
+OP PTH.ZETA_ZERO_REGISTRY SOURCE preregistered_zero_ordinate_registry
+OP PTH.EXPLICIT_REGISTRY SOURCE content_addressed_frequency_registry
+OP PTH.SPECTRAL_LIFT COMPOSITION explicit_frequency_registry explicit_mode_weights spectral_state
+OP PTH.SPECTRAL_LIFT_BOUNDARY CONDITION registry_and_weights receipt_bound
+
+VECTOR V.PTH.PRIME_LOG_REGISTRY "PTH.spectrum.prime_log.registry" PRECISE
+VECTOR V.PTH.SPECTRAL_LIFT "PTH.spectrum.explicit_lift" PRECISE
+
+# ---------------------------------------------------------------------------
+# Schrödinger-like relative-phase transport
+# ---------------------------------------------------------------------------
+OP PTH.PHASE_EVOLUTION TRANSFORM spectral_state exp_minus_i_omega_t temporal_phase_state
+OP PTH.RELATIVE_PHASE DIFFERENCE phase_j phase_k delta_phase
+OP PTH.TEMPORAL_COHERENCE DERIVE weighted_phase_state abs_weighted_phase_sum C_Z
+OP PTH.TEMPORAL_FUZZINESS DIFFERENCE one C_Z_squared F_Z
+OP PTH.ENERGY_SPREAD DERIVE spectral_probabilities hbar_times_frequency_std Delta_E
+
+VECTOR V.PTH.RELATIVE_PHASE "PTH.temporal.relative_phase" PRECISE
+VECTOR V.PTH.TEMPORAL_COHERENCE "PTH.temporal.coherence.C_Z" PRECISE
+VECTOR V.PTH.TEMPORAL_FUZZINESS "PTH.temporal.fuzziness.F_Z" PRECISE
+
+# ---------------------------------------------------------------------------
+# Fubini-Study temporal flow and continuity
+# ds_FS^2 = 1/4 sum(dp_j^2/p_j) + Var_p(dphi_j)
+# ---------------------------------------------------------------------------
+OP PTH.FS_POPULATION_FLOW DERIVE probability_rates quarter_sum_dp_squared_over_p structural_speed_squared
+OP PTH.FS_PHASE_FLOW DERIVE phase_rates weighted_phase_rate_variance phase_speed_squared
+OP PTH.FS_TEMPORAL_SPEED COMPOSITION PTH.FS_POPULATION_FLOW PTH.FS_PHASE_FLOW v_T
+OP PTH.CONTINUITY_INCREMENT TRANSFORM v_T_delta_t multiply delta_Lambda_T
+OP PTH.CONTINUITY_ACCUMULATOR COMPOSITION prior_Lambda_T PTH.CONTINUITY_INCREMENT Lambda_T
+OP PTH.REVIVAL_BOUNDARY CONDITION fuzziness_decrease does_not_decrease_continuity
+
+VECTOR V.PTH.FS_TEMPORAL_SPEED "PTH.temporal.fubini_study.speed" PRECISE
+VECTOR V.PTH.CONTINUITY_ACCUMULATOR "PTH.temporal.continuity.path_length" PRECISE
+
+# ---------------------------------------------------------------------------
+# Exact 18-pair -> T^36 temporal projection
+# Each pair is centered on an explicit center phase.
+# ---------------------------------------------------------------------------
+OP PTH.T36_LEFT_PHASE TRANSFORM center_omega_t center_minus_omega_t theta_left
+OP PTH.T36_RIGHT_PHASE TRANSFORM center_omega_t center_plus_omega_t theta_right
+OP PTH.T36_PAIR COMPOSITION PTH.T36_LEFT_PHASE PTH.T36_RIGHT_PHASE complementary_pair
+OP PTH.T36_TEMPORAL_PROJECTION TRANSFORM eighteen_registered_frequencies eighteen_complementary_pairs T36
+
+VECTOR V.PTH.T36_TEMPORAL_PROJECTION "PTH.temporal.T36.complementary_pairs" PRECISE
+
+# ---------------------------------------------------------------------------
+# Typed substrate observable only. No routing/effect authority.
+# ---------------------------------------------------------------------------
+OP PTH.TEMPORAL_HYDRO_OBSERVABLE COMPOSITION PTH.TEMPORAL_COHERENCE PTH.TEMPORAL_FUZZINESS PTH.FS_TEMPORAL_SPEED
+OP PTH.TEMPORAL_CONTINUITY_OBSERVABLE COMPOSITION PTH.TEMPORAL_HYDRO_OBSERVABLE PTH.CONTINUITY_ACCUMULATOR typed_temporal_hydro_observable
+OP PTH.HYDRO_LAPSE_BOUNDARY BOUNDARY typed_temporal_hydro_observable explicit_preregistered_lapse_policy
+OP PTH.ROUTING_BOUNDARY CONDITION routing_feedback_opened equals false
+OP PTH.EFFECT_BOUNDARY CONDITION external_effects equals false
+OP PTH.SEMANTIC_BOUNDARY CONDITION semantic_identity_modified equals false
+OP PTH.LAB_TIME_BOUNDARY CONDITION laboratory_time_modified equals false
+
+VECTOR V.PTH.TEMPORAL_HYDRO_OBSERVABLE "PTH.hydro.typed.temporal_observable" PRECISE
+
+# ---------------------------------------------------------------------------
+# Read-only experimental path
+# ---------------------------------------------------------------------------
+OP PATH.PTH.PRIME_TO_TEMPORAL_HYDRO COMPOSITION PTH.PRIME_VALUATION PTH.PRIME_FLUX PTH.SPECTRAL_LIFT
+OP PATH.PTH.TEMPORAL_HYDRO_CONTINUITY COMPOSITION PTH.PHASE_EVOLUTION PTH.FS_TEMPORAL_SPEED PTH.CONTINUITY_ACCUMULATOR
+OP PATH.PTH.T36_OBSERVABLE COMPOSITION PTH.T36_TEMPORAL_PROJECTION PTH.TEMPORAL_CONTINUITY_OBSERVABLE PTH.HYDRO_LAPSE_BOUNDARY
+
+EMIT PATH.PTH.PRIME_TO_TEMPORAL_HYDRO
+EMIT PATH.PTH.TEMPORAL_HYDRO_CONTINUITY
+EMIT PATH.PTH.T36_OBSERVABLE

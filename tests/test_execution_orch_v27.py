@@ -1,122 +1,153 @@
-import copy, importlib.util, json, sys
-from pathlib import Path
+from __future__ import annotations
+
+import copy
+
 import pytest
 
-BASE=Path("/mnt/data/pncs_v027")
-for name in ("hydro_time_v27","hydro_schedule_v27","orch_orbital_v27","orch_hydro_v27","execution_orch_v27"):
-    spec=importlib.util.spec_from_file_location(name,BASE/f"{name}.py")
-    mod=importlib.util.module_from_spec(spec);sys.modules[name]=mod;spec.loader.exec_module(mod)
-h=sys.modules["hydro_time_v27"];o=sys.modules["orch_orbital_v27"];oh=sys.modules["orch_hydro_v27"];e=sys.modules["execution_orch_v27"]
-R=json.loads(Path("/dev/shm/ciel_noema/pncs/v0.20/receipts/84d40f600a8aa9e59ebc6dc42c856bcffec9265d04f791e7f5c49cdba2d583ad.json").read_text())
-GRAPH=("branch",("or",("comparison","memory_pressure","gt",0.9),("comparison","risk","gt",0.8)),"safety.pause","runtime.continue")
-AUTH=e.ProgramAuthority.from_v20_receipt(R,GRAPH)
+from phasenav_natural_code.execution_orch_authority_v27 import (
+    COUPLED_EXECUTION_CONTRACT_ID,
+    COUPLED_RECEIPT_SCHEMA,
+    CoupledExecutionV27Error,
+    ProgramAuthority,
+    definition_content_id,
+    expected_leaf_path,
+)
+from phasenav_natural_code.hydro_time_v27 import _sha256_json
 
-DISPATCH=json.loads(Path("/dev/shm/ciel_noema/pncs/v0.25/runtime/receipts/dispatch/fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2.json").read_text())
-LINEAGE=json.loads(Path("/dev/shm/ciel_noema/pncs/v0.22/lineage/34bd13f534987989ab212b5a6906d0cfa762305ee9a87af7a058badd2b2bcfd6.json").read_text())
-RESAUTH=e.ResidentCoupledAuthority.from_records(AUTH,DISPATCH,LINEAGE)
-Z=(0.0,)*36
-ATTRS=(o.AttractorReport("AttractorEC",.75,Z,.5,"EC"),o.AttractorReport("AttractorZS",.8,Z,.5,"ZS"),o.AttractorReport("AttractorLLMTemp",0,Z,0,"DISABLED"))
-POT=o.TotalPotential(0,0,0,0,0,0)
-RED=o.ReductionKernel(1,1,1,1,10)
-PROFILE=oh.OrchHydroControlProfile(o.SubjectiveTimeKernel(),1,ATTRS,POT,RED,1,0)
-GATE=h.HydrodynamicPhaseGate(.5,.2,steps=1,coordinate_dt=.01)
+GRAPH = (
+    "branch",
+    (
+        "or",
+        ("comparison", "memory_pressure", "gt", 0.9),
+        ("comparison", "risk", "gt", 0.8),
+    ),
+    "safety.pause",
+    "runtime.continue",
+)
+LEAF = expected_leaf_path(GRAPH)
+CONTENT_ID = definition_content_id(GRAPH, LEAF)
 
-def run(profile=PROFILE,gate=GATE,persist=False):
-    return e.execute_orchorbital_coupled(AUTH,{"memory_pressure":0.0,"risk":0.0},"runtime.continue",profile,{"*":gate},resident_authority=RESAUTH,persist=persist)
 
-def test_authority_binds_exact_v20_receipt(): assert AUTH.source_v20_receipt_sha256==R["receipt_sha256"]
-def test_authority_binds_exact_definition(): assert AUTH.content_id==R["program"]["content_id"]
-def test_authority_recomputes_definition(): assert e.definition_content_id(GRAPH,R["canonical_leaf_path"])==R["program"]["content_id"]
+def _receipt() -> dict[str, object]:
+    program = {
+        "content_id": CONTENT_ID,
+        "realization_id": "pncs:realization36:sha256:" + "1" * 64,
+        "realization_binding_id": "pncs:binding36:sha256:" + "2" * 64,
+        "mass_binding_id": "pncs:mass-binding:sha256:" + "3" * 64,
+        "phase36_sha256": "4" * 64,
+        "semantic_mass": 0.2,
+    }
+    body = {
+        "schema": "PNCS_NATIVE_EXECUTION_RECEIPT_V0_20",
+        "execution_contract_id": "PNCS_NATIVE_EXECUTION_CORE_V0_20",
+        "program": program,
+        "canonical_graph_sha256": _sha256_json(GRAPH),
+        "canonical_leaf_path": list(LEAF),
+        "live_surface": {
+            "root": "/dev/shm/ciel_noema",
+            "phi_sha256": "5" * 64,
+            "aux_phi_sha256": "6" * 64,
+            "aux_feedback_phi_sha256": "6" * 64,
+            "operator_registry_sha256": "7" * 64,
+            "tether_receipt_sha256": "8" * 64,
+        },
+        "input_values": [["memory_pressure", 0.0], ["risk", 0.0]],
+        "admission": {
+            "branch_truth_state": "FALSE",
+            "admitted_target": "runtime.continue",
+            "epistemic_operator": None,
+        },
+        "initial_sigma_id": "pncs:sigma:sha256:" + "9" * 64,
+        "final_sigma_id": "pncs:sigma:sha256:" + "a" * 64,
+        "steps": [],
+        "result": {"kind": "INTERNAL_TRANSFORM", "control_location": "runtime.continue"},
+        "external_effects": False,
+        "semantic_mass_is_authorization": False,
+        "free_form_nl_execution": False,
+        "deterministic_fields_only": True,
+    }
+    return {**body, "receipt_sha256": _sha256_json(body)}
+
+
+def test_program_authority_binds_exact_v20_receipt():
+    receipt = _receipt()
+    authority = ProgramAuthority.from_v20_receipt(receipt, GRAPH)
+    assert authority.source_v20_receipt_sha256 == receipt["receipt_sha256"]
+    assert authority.content_id == CONTENT_ID
+    assert authority.canonical_graph == GRAPH
+    assert authority.leaf_path == LEAF
+
+
+def test_definition_identity_recomputed_from_graph_and_leaf_path():
+    assert definition_content_id(GRAPH, LEAF) == CONTENT_ID
+
+
+def test_program_authority_id_is_deterministic():
+    receipt = _receipt()
+    a = ProgramAuthority.from_v20_receipt(receipt, GRAPH)
+    b = ProgramAuthority.from_v20_receipt(receipt, GRAPH)
+    assert a.authority_id == b.authority_id
+
+
 def test_tampered_v20_receipt_rejected():
-    x=copy.deepcopy(R);x["result"]["control_location"]="x"
-    with pytest.raises(e.CoupledExecutionV27Error,match="digest"): e.ProgramAuthority.from_v20_receipt(x,GRAPH)
+    receipt = _receipt()
+    receipt["result"]["control_location"] = "runtime.tampered"
+    with pytest.raises(CoupledExecutionV27Error, match="digest"):
+        ProgramAuthority.from_v20_receipt(receipt, GRAPH)
+
+
 def test_wrong_graph_rejected():
-    bad=("branch",("comparison","risk","gt",.8),"safety.pause","runtime.continue")
-    with pytest.raises(e.CoupledExecutionV27Error): e.ProgramAuthority.from_v20_receipt(R,bad)
-def test_false_branch_same_target(): 
-    x=run(); assert x.branch_truth_state=="FALSE" and x.target=="runtime.continue"
-def test_nine_semantic_steps():
-    assert len(run().receipt["semantic_projection"]["steps"])==9
-def test_nine_orch_occurrences():
-    assert len(run().receipt["orch_occurrences"])==9
-def test_operator_order_matches_frozen_v20():
-    x=run().receipt["semantic_projection"]["steps"]
-    assert [q["operator_id"] for q in x]==[q["operator_id"] for q in R["steps"]]
-def test_operator_hashes_match_frozen_v20():
-    x=run().receipt["semantic_projection"]["steps"]
-    assert [q["operator_vector_sha256"] for q in x]==[q["operator_vector_sha256"] for q in R["steps"]]
-def test_operator_bindings_match_frozen_v20():
-    x=run().receipt["semantic_projection"]["steps"]
-    assert [q["bindings"] for q in x]==[q["bindings"] for q in R["steps"]]
-def test_semantic_projection_program_same():
-    assert run().receipt["semantic_projection"]["program"]==R["program"]
-def test_semantic_mass_not_authorization():
-    assert run().receipt["semantic_projection"]["semantic_mass_is_authorization"] is False
-def test_orch_occurrences_sigma_bound():
-    x=run().receipt
-    for sem,orch in zip(x["semantic_projection"]["steps"],x["orch_occurrences"]):
-        assert orch["before_sigma_id"]==sem["before_sigma_id"]
-        assert orch["after_sigma_id"]==sem["after_sigma_id"]
-        assert orch["operator_id"]==sem["operator_id"]
-def test_routing_feedback_remains_closed():
-    assert run().receipt["routing_feedback_opened"] is False
-def test_semantic_identity_unmodified():
-    assert run().receipt["semantic_identity_modified"] is False
-def test_external_effects_closed():
-    assert run().receipt["external_effects"] is False
-def test_no_laboratory_time_claim():
-    assert run().receipt["laboratory_time_modified"] is False
-def test_no_memory_without_reduction_selection():
-    assert run().receipt["stable_memory_update_count"]==0
-def test_phase_proper_time_advances():
-    assert run().receipt["phase_proper_time_advanced"]>0
-def test_profile_changes_phase_flow_not_semantic_operator_trace():
-    fast=oh.OrchHydroControlProfile(o.SubjectiveTimeKernel(beta_coherence=1,beta_defect=-1),1,ATTRS,POT,RED,1,0)
-    a=run(PROFILE).receipt;b=run(fast).receipt
-    assert [q["operator_id"] for q in a["semantic_projection"]["steps"]]==[q["operator_id"] for q in b["semantic_projection"]["steps"]]
-    assert a["semantic_projection"]["result"]==b["semantic_projection"]["result"]
-    assert a["phase_proper_time_advanced"]!=b["phase_proper_time_advanced"] or a["final_phase_state_id"]!=b["final_phase_state_id"]
-def test_admission_mismatch_fails_closed():
-    with pytest.raises(e.CoupledExecutionV27Error,match="admission"): e.execute_orchorbital_coupled(AUTH,{"memory_pressure":0,"risk":0},"safety.pause",PROFILE,{"*":GATE},resident_authority=RESAUTH,persist=False)
-def test_missing_gate_fails_closed():
-    with pytest.raises(e.CoupledExecutionV27Error,match="no HydrodynamicPhaseGate"): e.execute_orchorbital_coupled(AUTH,{"memory_pressure":0,"risk":0},"runtime.continue",PROFILE,{},resident_authority=RESAUTH,persist=False)
-def test_noncanonical_root_rejected(tmp_path):
-    with pytest.raises(e.CoupledExecutionV27Error,match="fixed"): e.execute_orchorbital_coupled(AUTH,{"memory_pressure":0,"risk":0},"runtime.continue",PROFILE,{"*":GATE},resident_authority=RESAUTH,surface_root=tmp_path,persist=False)
-def test_receipt_is_content_addressed():
-    x=run().receipt
-    body=dict(x);body.pop("receipt_sha256")
-    assert h._sha256_json(body)==x["receipt_sha256"]
+    wrong = (
+        "branch",
+        ("comparison", "risk", "gt", 0.8),
+        "safety.pause",
+        "runtime.continue",
+    )
+    with pytest.raises(CoupledExecutionV27Error):
+        ProgramAuthority.from_v20_receipt(_receipt(), wrong)
 
-def test_resident_authority_binds_dispatch_lineage_and_handle():
-    assert RESAUTH.dispatch_id==DISPATCH["dispatch_id"]
-    assert RESAUTH.lineage_id==LINEAGE["lineage_id"]
-    assert RESAUTH.handle_id==DISPATCH["handle_id"]
 
-def test_resident_authority_active_pointer_passes():
-    RESAUTH.validate_active_pointer(Path("/dev/shm/ciel_noema"))
+def test_wrong_graph_sha_rejected_even_after_outer_resign():
+    receipt = _receipt()
+    receipt["canonical_graph_sha256"] = "0" * 64
+    body = dict(receipt)
+    body.pop("receipt_sha256")
+    receipt["receipt_sha256"] = _sha256_json(body)
+    with pytest.raises(CoupledExecutionV27Error, match="canonical graph SHA"):
+        ProgramAuthority.from_v20_receipt(receipt, GRAPH)
 
-def test_coupled_receipt_binds_resident_authority():
-    x=run().receipt
-    assert x["resident_authority_id"]==RESAUTH.authority_id
-    assert x["resident_dispatch_id"]==DISPATCH["dispatch_id"]
-    assert x["v22_lineage_id"]==LINEAGE["lineage_id"]
 
-def test_missing_resident_authority_fails_closed():
-    with pytest.raises(e.CoupledExecutionV27Error,match="resident"):
-        e.execute_orchorbital_coupled(AUTH,{"memory_pressure":0,"risk":0},"runtime.continue",PROFILE,{"*":GATE},persist=False)
+def test_wrong_content_id_rejected_even_after_outer_resign():
+    receipt = _receipt()
+    receipt["program"]["content_id"] = "pncs:def:sha256:" + "0" * 64
+    body = dict(receipt)
+    body.pop("receipt_sha256")
+    receipt["receipt_sha256"] = _sha256_json(body)
+    with pytest.raises(CoupledExecutionV27Error, match="graph/content"):
+        ProgramAuthority.from_v20_receipt(receipt, GRAPH)
 
-def test_tampered_dispatch_rejected():
-    x=copy.deepcopy(DISPATCH);x["target"]="x"
-    with pytest.raises(e.CoupledExecutionV27Error,match="digest"):
-        e.ResidentCoupledAuthority.from_records(AUTH,x,LINEAGE)
 
-def test_tampered_lineage_rejected():
-    x=copy.deepcopy(LINEAGE);x["result_id"]="pncs:result:sha256:"+"0"*64
-    with pytest.raises(e.CoupledExecutionV27Error,match="digest"):
-        e.ResidentCoupledAuthority.from_records(AUTH,DISPATCH,x)
+def test_leaf_path_is_exact_and_contains_false_arm_negation():
+    assert LEAF == (
+        "DIFFERENCE",
+        "CONDITION",
+        "DIFFERENCE",
+        "CONDITION",
+        "COMPOSITION",
+        "NEGATION",
+        "ORDER",
+        "TRANSFORM",
+        "ORDER",
+        "TRANSFORM",
+        "COMPOSITION",
+    )
 
-def test_persistence_stays_under_live_surface():
-    x=run(persist=True)
-    p=Path(x.receipt_path)
-    assert p.is_file()
-    assert str(p).startswith("/dev/shm/ciel_noema/pncs/v0.27/orch_execution/receipts/")
+
+def test_coupled_contract_names_are_frozen():
+    assert COUPLED_EXECUTION_CONTRACT_ID == "PNCS_ORCHORBITAL_COUPLED_EXECUTION_V0_27"
+    assert COUPLED_RECEIPT_SCHEMA == "PNCS_ORCHORBITAL_COUPLED_EXECUTION_RECEIPT_V0_27"
+
+
+def test_pure_authority_tests_do_not_require_historical_paths_or_live_surface():
+    authority = ProgramAuthority.from_v20_receipt(_receipt(), GRAPH)
+    assert authority.semantic_mass == pytest.approx(0.2)

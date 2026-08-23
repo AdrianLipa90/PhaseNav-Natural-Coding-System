@@ -1,0 +1,90 @@
+{
+  "closed_boundaries": {
+    "continuation_execution_opened": false,
+    "effect_authority_opened": false,
+    "external_effects": false,
+    "historical_v022_v025_artifacts_reclassified_as_current_live": false,
+    "return_execution_opened": false,
+    "routing_authority_opened": false,
+    "static_runtime_fallback": false
+  },
+  "dependency_closure_git_blob_verified": true,
+  "full_live_witness_sha256": "95072fcf3c10a82fb510cd2857bf497d885b79635536dd069e35394bdda58691",
+  "gate": "v0.27 ORCHORBITAL x Hydrodynamic T^36 Coupling",
+  "github_actions_prior_failure": {
+    "artifacts": 0,
+    "conclusion": "failure",
+    "head": "269a313608809056ea80c059239273c2dcb33ddc",
+    "log_fetch": "404_BlobNotFound",
+    "run_id": 32631146381
+  },
+  "inverse_provenance": {
+    "historical_artifacts_reclassified_as_current_live": false,
+    "v022_lineage_id": "pncs:lineage:sha256:34bd13f534987989ab212b5a6906d0cfa762305ee9a87af7a058badd2b2bcfd6",
+    "v022_result_id": "pncs:result:sha256:a1ebb02927a4c216d965cb6177271c580303d9968472dca9ea67c2cd8c5661d6",
+    "v025_closure_receipt_git_blob": "299e1cdc66831908948d179d05bb6d4beab75705",
+    "v025_dispatch_id": "pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2",
+    "v025_witness_sha256": "dab5c0ca12b51f712981e4cc9662365e30790b6c5695285cfcd4358e0d370ebf"
+  },
+  "live": {
+    "account_current": "NOEMA_ACCOUNT_DEFAULT_CURRENT_V56",
+    "operator_registry_sha256": "29767957ae775b1968bbb4c531728cc153137c88e819b135227dff73e3cca7ec",
+    "phi_sha256": "f279b75b73f64e76d8b3089b3023a70673f2b8b8c6d2afc61fcfcbaf06a5fb2f",
+    "post_fast_admission_ms": 0.738342,
+    "post_fast_admission_status": "PASS",
+    "post_guard_failures": [],
+    "post_guard_status": "PASS",
+    "snapshot_attempts": 1,
+    "static_runtime_fallback": false,
+    "tether_receipt_sha256": "49a79dd4db4bb93b0d480866c9235872531fdfb2bd2d0e78a1d9426e289b6b5c"
+  },
+  "program": {
+    "definition_id": "pncs:def:sha256:b7988497bab75a526771fa24aeca75e0182bd437fd707927cb0e78b04d360cce",
+    "mass_binding_id": "pncs:mass-binding:sha256:f0f61885bdafe4ec34e95233393915ae4307369043458aa23762c2e16ca7adf0",
+    "order_parameter_R": 0.22755731591639636,
+    "phase36_sha256": "f279b75b73f64e76d8b3089b3023a70673f2b8b8c6d2afc61fcfcbaf06a5fb2f",
+    "realization_binding_id": "pncs:binding36:sha256:4edf223b56d2ce6e3de2435d154403eedbd00c2000c1754f03c1cebf5484d8bd",
+    "realization_id": "pncs:realization36:sha256:9b7bc0403b5985ac7f620c99c39e5b52d91c1070511f04218496f10f39b8432c",
+    "semantic_mass": 0.07427661126062161
+  },
+  "receipt_sha256": "88710ab288eb759aeed0b151cc03ba85c0529f58fb8eaade65df17d1970d1a07",
+  "release_gate_closed": true,
+  "schema": "PNCS_V0_27_LIVE_DIRECT_COUPLED_CLOSURE_RECEIPT_V1",
+  "source_git_blobs": {
+    "execution_v20_live.py": "3b3df2154e6ec78b0e921b5ae1fef5454337f366",
+    "execution_v20_model.py": "fb4b721b97b5490342042ede6898b34bcd8d6016",
+    "execution_v20_state.py": "1fe9ec56d963748c24ac2a8da2f9968b7131a5ee",
+    "hydro_time_v27.py": "c889ef988844243c9e572dc814e27a30c47116a0",
+    "orchorbital_executor_v27.py": "a9b945b7737ce51532366b5fcf81d0793e51ddcb",
+    "orchorbital_hydro_v27.py": "e458bf9d6f804658ffda5d874e905ba4cdca04ae",
+    "orchorbital_v27.py": "4769b39413b58b5f85505dd34fc8ef86f977ae84"
+  },
+  "source_head": "512ae39ec65c9da7214b9f91da82faf391e066f8",
+  "status": "PASS",
+  "v20_fresh": {
+    "branch_truth_state": "FALSE",
+    "execution_receipt_sha256": "1b3ca3c311492e16d447a333e2d1a4f0381c9de77ec7ebfb293637e08021fbf4",
+    "final_sigma_id": "pncs:sigma:sha256:fa551b6d741b73c4eb0988acbbe54e18ed2c0cccda77d78c93007f900a3dbbaf",
+    "initial_sigma_id": "pncs:sigma:sha256:876be725586c693877466ee2a9b36eae7e1f94d435194d2146ea0196602cd9e8",
+    "step_count": 9,
+    "target": "runtime.continue"
+  },
+  "v27_direct": {
+    "bound_trace_id": "pncs:orch-receipt-bound-trace:sha256:1d98527a6975bf82246e1fcb521c05b082b296c2ce79758f0e0c72184d945907",
+    "direct_trace_id": "pncs:orch-direct-trace:sha256:bac0af63fe8fe01a7138613555c266129108183e39b09b6a75ebe7a90b13f17b",
+    "final_orch_state_id": "pncs:orch-state:sha256:f51b71a75346f5809b30ab5f3950256ec43c79d9f9c1dd39e80cc7babd802f64",
+    "final_phase_id": "pncs:t36-flow-state:sha256:f58dec65239662bab256ed0c60cbe750801fcfe40f4b757c7d6306e32c825346",
+    "transition_chain_sha256": "dc735ba5c7f8d8bb6da2aebe0f5d19e6794483e37e8d5f21950c5c319c5aaa01",
+    "transition_count": 9
+  },
+  "validation": {
+    "base_steps_equal_coupled_steps": true,
+    "current_head_github_actions_ci_established": false,
+    "direct_executor_exact_branch_test": "9/9 PASS",
+    "direct_trace_binds_exact_v20_receipt": true,
+    "fresh_live_v56_direct_coupling": "PASS",
+    "full_historical_suite_replayed": false,
+    "orch_core_local_harness": "51/51 PASS",
+    "sigma_base_equals_sigma_coupled": true
+  }
+}

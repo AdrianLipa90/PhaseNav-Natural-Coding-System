@@ -1,0 +1,66 @@
+\chapter{Integrated formal summary at the current repository level}
+
+The original PNCS semantic/execution chain remains:
+\[
+x\xrightarrow{R}G\xrightarrow{C}\mathrm{CID}_G
+\xrightarrow{\Phi}\theta\in\Tthirtysix
+\xrightarrow{M}m
+\xrightarrow{E}(Y,P_E)
+\xrightarrow{L}\text{exact inverse lineage}.
+\]
+Program and runtime identity then bind
+\[
+P=\mathrm{CID}_{\rm program},
+\qquad
+H=\operatorname{Resident}(P,\Gamma).
+\]
+External effects remain separate,
+\[
+Q=\operatorname{EffectRequest}(Y),\quad
+A=\operatorname{Authorize}(Q,\Gamma,\ldots),\quad
+F=\operatorname{AdapterApply}(Q,A).
+\]
+
+v0.27 adds a synchronously coupled execution substrate without changing the semantic projection:
+\[
+(\Sigma_t,\Psi_t,\theta_t,u_t,\tau_t)
+\xrightarrow{\mathrm{KAKU}_t}
+(\Sigma_{t+1},\Psi_{t+1},\theta_{t+1},u_{t+1},\tau_{t+1}),
+\]
+subject to
+\[
+\Pi_{\rm semantic}(\text{coupled trace})
+=\Pi_{\rm semantic}(\text{frozen v0.20 authority}).
+\]
+
+The experimental prime-temporal layer adds a read-only observable pipeline,
+\[
+n\to \{v_p(n)\}\to\{\Delta v_p\}
+\to\{\omega_j,p_j\}
+\to(C_Z,F_Z,v_T,\Lambda_T)
+\to\theta^{(T)}\in\Tthirtysix,
+\]
+with
+\[
+C_Z(t)=\left|\sum_jp_je^{-i\omega_jt}\right|,
+\qquad
+F_Z=1-C_Z^2,
+\]
+and
+\[
+v_T^2=\frac14\sum_j\frac{\dot p_j^2}{p_j}+\operatorname{Var}_p(\omega_j).
+\]
+This pipeline has no implicit arrow back into \(R(x)\), route selection, authorization or the v0.27 lapse.
+
+\section{Current system invariant}
+The repository now carries multiple mathematically related phase layers. Their shared representation does not collapse provenance:
+\begin{lstlisting}
+semantic phase realization       != semantic identity
+hydrodynamic phase flow          != laboratory time
+ORCH reduction readiness         != route selection
+prime-temporal observable        != hydrodynamic lapse policy
+branch PASS                      != current-main release PASS
+merged experimental module       != release promotion
+\end{lstlisting}
+
+This is the current architectural principle that replaces any version-number-only reading of the repository.

@@ -1,9 +1,8 @@
-import importlib.util, math, sys
+import math
 from pathlib import Path
 import pytest
 
-spec=importlib.util.spec_from_file_location("hydro_time_v27", "/mnt/data/pncs_v027/hydro_time_v27.py")
-m=importlib.util.module_from_spec(spec); sys.modules[spec.name]=m; spec.loader.exec_module(m)
+from phasenav_natural_code import hydro_time_v27 as m
 
 THETA=tuple((i+1)*0.1 for i in range(36))
 DRIVE=tuple(1.0 if i==0 else 0.0 for i in range(36))

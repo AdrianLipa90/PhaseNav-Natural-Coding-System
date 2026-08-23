@@ -1,0 +1,50 @@
+{
+  "schema": "PNCS_V0_28_LIVE_GATE_RECEIPT_V1",
+  "status": "PASS_LIVE_GATE",
+  "date": "2026-08-23",
+  "base_clean_main_sha": "46c704d0be2d3dc2fb58be9bd2bd104169daa664",
+  "branch": "fix/pncs-v028-postmerge-conformance",
+  "surface_root": "/dev/shm/ciel_noema",
+  "same_snapshot_witness": {
+    "status": "PASS_LIVE_V56_ADVERSARIAL_WITNESS",
+    "witness_sha256": "ad9144e47a527d2c644ce4277d8f78ba01c6455b36acc7b5f90414bb0744cfde",
+    "live_phi_sha256": "b4222d64f550407bf04429c8014dc91612eb8732d99127d570e79db5f84a7327",
+    "operator_registry_sha256": "29767957ae775b1968bbb4c531728cc153137c88e819b135227dff73e3cca7ec",
+    "active_source_v20_receipt_sha256": "720598c087b889ec2fca407833241f08903f19d5f1a531c92d6cfb08ca711417",
+    "paired_source_v20_receipt_sha256": "643ab0357d9bd94dc352a1cb3e5eedfac4ceaa446b125b19f9f3d60a5ec2ea40",
+    "paired_coupled_receipt_sha256": "21118434783f4d7a8d08736c2db6f4b7b1121f609ed856dbc796c48cfddca4c4",
+    "semantic_projection_equal": true,
+    "adversarial_rejects": 4,
+    "guard_before_active": true,
+    "guard_after_active": true
+  },
+  "tests_live": {
+    "pytest": "24 passed in 1.05s",
+    "test_adversarial_live_v28_blob_sha": "8f29247f300bfb07079c06ccd7e673241132f252",
+    "test_orch_hydro_live_v27_blob_sha": "2fa36a593038ec699e17e57cbd0126c6762aa864",
+    "test_hydro_schedule_live_v27_blob_sha": "501c863661fe0e44405dbaf256183fcff602f90a",
+    "fixture_v020_blob_sha": "cc83ef3184e768e701bfa244d1858c82b38f885f"
+  },
+  "exact_runtime_bytes": {
+    "execution_v20_model_blob_sha": "fb4b721b97b5490342042ede6898b34bcd8d6016",
+    "execution_v20_live_blob_sha": "3b3df2154e6ec78b0e921b5ae1fef5454337f366",
+    "execution_v20_state_blob_sha": "1fe9ec56d963748c24ac2a8da2f9968b7131a5ee",
+    "execution_orch_executor_v27_blob_sha": "63963289e02111262c38026075f5d2371b44cc79",
+    "execution_orch_state_v27_blob_sha": "0cbb54d0fb68780f4d67049cf12d53a8b9310081",
+    "paired_snapshot_v28_blob_sha": "19da6c95d1e53bb0b18efd2e2343349c4c9daa81",
+    "definition_registry_blob_sha": "0bf45b3453f13d011913a2e9f9c38e2473431db1",
+    "repo_tether_guard_blob_sha": "3f599836c7b0b2d9f731d90aa9641337a530dd8a",
+    "live_witness_runner_blob_sha": "c39e0eb27c98291d94e42869e308cdc47f78e983"
+  },
+  "routing_feedback_opened": false,
+  "external_effects": false,
+  "laboratory_time_modified": false,
+  "static_runtime_fallback": false,
+  "release_closed": false,
+  "remaining": [
+    "final authoritative manifest regeneration/check",
+    "final FOUNDATION_STATUS_V0_28.json",
+    "merge decisions remain explicit-user-authority only"
+  ],
+  "fail_closed": true
+}

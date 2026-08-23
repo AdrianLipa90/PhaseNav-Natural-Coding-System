@@ -117,13 +117,68 @@ jobs:
           tests/test_manifest_tool_v28.py
           tests/test_repository_conformance_v28.py
 
+  closure-macos-fallback:
+    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance' }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pytest
+        run: python -m pip install pytest
+      - name: Run complete v0.28 pure release gate mirror
+        env:
+          PYTHONPATH: src
+        run: >-
+          python -m pytest -q
+          tests/test_adversarial_v28.py
+          tests/test_adversarial_authority_v28.py
+          tests/test_execution_orch_v27.py
+          tests/test_semantic_equivalence_v28.py
+          tests/test_adversarial_dynamics_v28.py
+          tests/test_orch_hydro_v27.py
+          tests/test_orch_package_v27.py
+          tests/test_hydro_time_v27.py
+          tests/test_hydro_schedule_v27.py
+          tests/test_branch_session_collision_v28.py
+          tests/test_manifest_tool_v28.py
+          tests/test_repository_conformance_v28.py
+      - name: Generate authoritative tracked-tree manifest candidate
+        run: python scripts/regenerate_manifest.py --root .
+      - name: Verify generated manifest candidate
+        run: python scripts/regenerate_manifest.py --root . --check
+      - name: Record manifest source identity
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          raw = Path('MANIFEST.sha256.json').read_bytes()
+          Path('MANIFEST.sha256.json.sha256').write_text(hashlib.sha256(raw).hexdigest() + '\n', encoding='utf-8')
+          PY
+          git rev-parse HEAD > MANIFEST.source_commit.txt
+          git rev-parse 'HEAD^{tree}' > MANIFEST.source_tree.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pncs-v028-macos-closure
+          path: |
+            MANIFEST.sha256.json
+            MANIFEST.sha256.json.sha256
+            MANIFEST.source_commit.txt
+            MANIFEST.source_tree.txt
+          if-no-files-found: error
+
   pure-self-hosted-mirror:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_self_hosted_pure == true }}
+    if: ${{ (github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance') || (github.event_name == 'workflow_dispatch' && inputs.run_self_hosted_pure == true) }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -147,13 +202,41 @@ jobs:
           tests/test_manifest_tool_v28.py
           tests/test_repository_conformance_v28.py
 
-  live-dev-shm:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_live == true }}
+  manifest-candidate:
+    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance' }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Generate authoritative tracked-tree manifest candidate
+        run: python3 scripts/regenerate_manifest.py --root .
+      - name: Verify generated manifest candidate
+        run: python3 scripts/regenerate_manifest.py --root . --check
+      - name: Record manifest source identity
+        run: |
+          sha256sum MANIFEST.sha256.json > MANIFEST.sha256.json.sha256
+          git rev-parse HEAD > MANIFEST.source_commit.txt
+          git rev-parse 'HEAD^{tree}' > MANIFEST.source_tree.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pncs-v028-manifest-candidate
+          path: |
+            MANIFEST.sha256.json
+            MANIFEST.sha256.json.sha256
+            MANIFEST.source_commit.txt
+            MANIFEST.source_tree.txt
+          if-no-files-found: error
+
+  live-dev-shm:
+    if: ${{ (github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance') || (github.event_name == 'workflow_dispatch' && inputs.run_live == true) }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'

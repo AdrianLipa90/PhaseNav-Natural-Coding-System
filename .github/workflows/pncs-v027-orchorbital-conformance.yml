@@ -30,7 +30,8 @@ jobs:
       - name: Run ORCHORBITAL v0.27 conformance
         shell: python {0}
         run: |
-          import subprocess, sys
+          from pathlib import Path
+          import json, subprocess, sys
           tests = [
               'tests/test_orchorbital_v27.py',
               'tests/test_orchorbital_foundation_constraints_v27.py',
@@ -38,7 +39,10 @@ jobs:
               'tests/test_hydro_time_v27.py',
               'tests/test_hydro_schedule_v27.py',
           ]
-          subprocess.run([sys.executable, '-m', 'pytest', '-q', *tests, '--junitxml=pncs-v027-orch-junit.xml'], check=True)
+          p = subprocess.run([sys.executable, '-m', 'pytest', '-q', *tests, '--junitxml=pncs-v027-orch-junit.xml'], capture_output=True, text=True)
+          Path('pncs-v027-orch-pytest-stdout.txt').write_text(p.stdout)
+          Path('pncs-v027-orch-pytest-stderr.txt').write_text(p.stderr)
+          Path('pncs-v027-orch-pytest-result.json').write_text(json.dumps({'returncode': p.returncode, 'tests': tests}, indent=2) + '\n')
       - name: Record exact commit and source hashes
         shell: python {0}
         run: |
@@ -60,7 +64,8 @@ jobs:
               raw = Path(name).read_bytes()
               out['sha256'][name] = hashlib.sha256(raw).hexdigest()
           Path('pncs-v027-orch-source-hashes.json').write_text(json.dumps(out, indent=2, sort_keys=True) + '\n')
-      - name: Upload exact tested snapshot
+      - name: Upload exact tested snapshot and diagnostics
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pncs-v027-orchorbital-tested-snapshot
@@ -77,4 +82,15 @@ jobs:
             provenance/receipts/FOUNDATION_STATUS_V0_27_ORCHORBITAL.json
             pncs-v027-orch-junit.xml
             pncs-v027-orch-source-hashes.json
+            pncs-v027-orch-pytest-stdout.txt
+            pncs-v027-orch-pytest-stderr.txt
+            pncs-v027-orch-pytest-result.json
           retention-days: 7
+      - name: Enforce conformance result
+        if: always()
+        shell: python {0}
+        run: |
+          from pathlib import Path
+          import json, sys
+          result = json.loads(Path('pncs-v027-orch-pytest-result.json').read_text())
+          raise SystemExit(int(result['returncode']))

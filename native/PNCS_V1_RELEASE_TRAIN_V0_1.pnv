@@ -1,0 +1,44 @@
+PNV 1
+EPISTEMIC PRECISE
+MODE READ_ONLY
+
+# PNCS v1.0 release train. This is a scope-control program, not a new feature layer.
+# New research is preserved, receipt-bound, and quarantined from the active release train.
+
+OP V1.SCOPE_FREEZE BOUNDARY active_release_scope post_v1_research release_boundary
+OP V1.CHANGE_CLASSIFY TRANSFORM proposed_change release_relevance change_class
+OP V1.IDEA_QUARANTINE TRANSFORM experimental_idea post_v1_registry quarantined_idea
+OP V1.RELEASE_ADMISSION CONDITION change_class allowed_in_current_stage
+OP V1.GATE_STATUS DIFFERENCE required_gates passed_gates missing_gates
+OP V1.ADVANCE CONDITION missing_gates equals none
+OP V1.FAIL_CLOSED CONDITION missing_gate blocks_stage_transition
+
+OP V1.V028_CLOSURE SCOPE exact_authority_execution_hydro_live_manifest foundation_closure
+OP V1.V029_HARDENING SCOPE clean_install_replay_api_docs_soak provenance_hardening
+OP V1.V030_RC SCOPE rc_build_clean_room_zero_critical_regressions final_release_candidate
+OP V1.V1_RELEASE SCOPE closed_release_train stable_v1
+
+OP V1.POSTV1.PRIME_TEMPORAL SOURCE prime_temporal_hydro
+OP V1.POSTV1.RADICAL_ENGINE SOURCE radical_engine
+OP V1.POSTV1.ION1024 SOURCE 1024ion_embedding
+OP V1.POSTV1.PRIMEFLOW SOURCE primeflow_v02
+OP V1.POSTV1.TEMPORAL_GEOMETRY SOURCE temporal_geometry_v02
+OP V1.POSTV1.NONCOBOUNDARY SOURCE non_coboundary_prime_interaction
+OP V1.POSTV1.REGISTRY COMPOSITION V1.POSTV1.PRIME_TEMPORAL V1.POSTV1.RADICAL_ENGINE V1.POSTV1.ION1024
+
+OP PATH.V1.CLOSE_028 COMPOSITION V1.SCOPE_FREEZE V1.V028_CLOSURE V1.ADVANCE
+OP PATH.V1.HARDEN_029 COMPOSITION V1.V029_HARDENING V1.GATE_STATUS V1.ADVANCE
+OP PATH.V1.RC_030 COMPOSITION V1.V030_RC V1.GATE_STATUS V1.ADVANCE
+OP PATH.V1.RELEASE COMPOSITION PATH.V1.CLOSE_028 PATH.V1.HARDEN_029 PATH.V1.RC_030
+OP PATH.V1.NEW_IDEA COMPOSITION V1.CHANGE_CLASSIFY V1.IDEA_QUARANTINE V1.POSTV1.REGISTRY
+
+VECTOR V.V1.SCOPE_FREEZE "PNCS.v1.release.scope.freeze" PRECISE
+VECTOR V.V1.IDEA_QUARANTINE "PNCS.v1.idea.post_release.quarantine" PRECISE
+VECTOR V.V1.GATE_STATUS "PNCS.v1.release.gate.status" PRECISE
+VECTOR V.V1.RELEASE "PNCS.v1.release.train" PRECISE
+
+EMIT PATH.V1.CLOSE_028
+EMIT PATH.V1.HARDEN_029
+EMIT PATH.V1.RC_030
+EMIT PATH.V1.RELEASE
+EMIT PATH.V1.NEW_IDEA

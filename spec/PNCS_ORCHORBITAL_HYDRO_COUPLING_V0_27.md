@@ -1,6 +1,6 @@
 # PNCS v0.27 ORCHORBITAL × Hydrodynamic T^36 Coupling
 
-Status: IMPLEMENTED ON FEATURE BRANCH / ISOLATED CONFORMANCE PASS / LIVE V56 COUPLING PENDING
+Status: ORCH/OORP CORE + EXACT-KAKU REPLAY PASS / DIRECT v0.20 EXECUTOR COUPLING IMPLEMENTED / LIVE V56 VALIDATION PENDING
 
 ## Authority
 
@@ -31,7 +31,7 @@ v0.20 exact KAKU occurrence
 -> optional memory residue receipt
 ```
 
-No persistent memory write, external effect, semantic identity mutation, or laboratory-time claim is opened by this gate.
+No persistent memory write, external effect, semantic identity mutation, routing authority, or laboratory-time claim is opened by this gate.
 
 ## Formal space and charts
 
@@ -48,17 +48,26 @@ Each process sphere declares `sphere_id`, exact internal mode order, leak mode, 
 
 ## Orbital state
 
-Each KAKU occurrence becomes a distinct orbital even when operator names repeat. The orbital binds:
+Each KAKU occurrence becomes a distinct orbital even when operator names repeat. Receipt-bound replay binds the orbital to:
 
 ```text
 (receipt_sha256, step_index, operator_id, operator_vector_sha256)
 ```
 
+Direct in-executor coupling creates a pre-receipt occurrence identity from:
+
+```text
+(program_content_id, step_index, operator_id, operator_vector_sha256,
+ before_sigma_id, after_sigma_id, projection_policy_id)
+```
+
+The resulting direct trace can only be promoted to receipt-bound evidence after the completed v0.20 receipt is revalidated and every KAKU occurrence matches exactly.
+
 Each orbital contains amplitude, phase, coherence, truth-spin, memory affinity, orbital radius, semantic mass, attractor influence, and explicit EC/ZS/LLMTemp attractor weights.
 
 `AttractorLLMTemp` remains closed in this gate unless an explicit decay schedule is present. The Foundation Pack requires its control share to decay; v0.27 therefore fails closed for any non-zero `llm_temp` weight until that schedule is implemented and receipt-bound.
 
-The exact T^36 operator vector is re-hashed as `<36d>` and must match the v0.20 step receipt before projection.
+The exact T^36 operator vector is re-hashed as `<36d>` and must match the v0.20 step before projection.
 
 Current projection contract:
 
@@ -96,7 +105,7 @@ Theta      truth scalar
 V_tot      = V_EC + V_ZS + V_rel + V_mem + V_def + V_ext
 ```
 
-Coupling alignment and effective sphere attractor weight are receipt-bound diagnostics.
+Coupling alignment and effective sphere attractor weight are content-addressed diagnostics.
 
 ## Subjective time
 
@@ -136,7 +145,7 @@ This is a phase-runtime proper-time variable. `laboratory_time_modified=false` i
 
 ## T^36 hydrodynamic coupling
 
-The old v0.27 hydro gate identity is not mutated. The ORCH bridge creates a separate coupled-transition identity.
+The original v0.27 hydro gate identity is not mutated. The ORCH bridge creates a separate coupled-transition identity.
 
 For normalized exact operator drive `d`:
 
@@ -147,7 +156,7 @@ du/dtau = drive_gain * force - nu_eff * u
 dtheta/dtau = u
 ```
 
-The active orbital phase update is an explicit bridge projection from the T^36 dynamic displacement along `d`. Winding is then computed from dynamics using the Foundation Pack form:
+The active orbital phase update is an explicit bridge projection from the T^36 dynamic displacement along `d`. Winding is computed from dynamics using the Foundation Pack form:
 
 ```text
 Delta w = (Delta phi / 2pi) * (Delta t / Delta tau)
@@ -188,26 +197,69 @@ The replay validator requires:
 
 Repeated operators remain distinct occurrence orbitals.
 
+## Direct v0.20 executor coupling
+
+`src/phasenav_natural_code/orchorbital_executor_v27.py` implements `OrchCoupledExecutor`, an authority-neutral subclass of the frozen v0.20 `_Executor`.
+
+For every call to `_transition()`:
+
+```text
+1. execute the original v0.20 `_Executor._transition()` first;
+2. preserve the returned Sigma state and exact ExecutionStep unchanged;
+3. revalidate the exact live 36D operator vector against that ExecutionStep;
+4. append the exact KAKU occurrence to the dynamic ORCH process sphere;
+5. run the ORCH × hydrodynamic T^36 side-car transition;
+6. return the original v0.20 Sigma state.
+```
+
+The direct-coupling contract explicitly records:
+
+```text
+v020_sigma_semantics_modified = false
+routing_authority_opened       = false
+effect_authority_opened        = false
+persistent_memory_write        = false
+external_effects               = false
+laboratory_time_modified       = false
+```
+
+Missing per-step hydrodynamic gate authority fails the coupled execution closed. The executor is single-run to prevent reuse of stale side-car state.
+
+After v0.20 receipt construction, `bind_direct_trace_to_receipt()` requires exact equality of:
+
+- program content ID;
+- initial and final Sigma IDs;
+- branch truth state;
+- KAKU step count;
+- every full KAKU step payload.
+
+Only then is the direct trace bound to the final v0.20 receipt SHA-256. This binding does not modify the v0.20 receipt.
+
 ## Current validation
 
-Committed compact feature harness:
+Committed ORCH core/replay feature harness:
 
 ```text
 18/18 PASS
 ```
 
-The broader development harness used while constructing this gate reached `33/33 PASS`. The committed compact conformance suite covers geometry anchoring, K_ij symmetry, observables, truth scalar, explicit subjective time, reduction/no-reduction behavior, ambiguity fail-closed, exact occurrence identity, vector and receipt tamper rejection, proper-time coupling, dynamic winding, exact replay order, deterministic trace identity, `AttractorLLMTemp` fail-closed without a decay schedule, and invalid negative selection-tie tolerance.
+The broader development harness used while constructing the ORCH core reached `33/33 PASS`. The committed 18-test suite covers geometry anchoring, K_ij symmetry, observables, truth scalar, explicit subjective time, reduction/no-reduction behavior, ambiguity fail-closed, exact occurrence identity, vector and receipt tamper rejection, proper-time coupling, dynamic winding, exact replay order, deterministic trace identity, `AttractorLLMTemp` fail-closed without a decay schedule, and invalid negative selection-tie tolerance.
 
-The current worker did not expose `/dev/shm/ciel_noema`. Therefore this document makes no fresh V56 live-runtime claim and does not claim a full historical-suite replay.
+A separate direct-executor test module is now committed. It tests base-v0.20 vs coupled Sigma/step equality, one ORCH transition per actual KAKU transition, authority closure, phase-sidecar evolution, adjacency coupling, missing-gate fail-closed, exact receipt binding, receipt tamper rejection and deterministic configuration identity.
+
+Those direct-executor tests were not run in the current worker because this worker exposes neither the repository source tree through a runnable checkout nor `/dev/shm/ciel_noema`. They remain `COMMITTED_NOT_RUN_IN_CURRENT_WORKER`, not PASS.
+
+No fresh V56 live-runtime claim and no full historical-suite replay are made in this pass.
 
 ## Closure still required
 
 Before v0.27 ORCH coupling may be release-closed:
 
-1. run against current tethered `/dev/shm/ciel_noema`;
-2. revalidate all nine canonical v0.20 operator-vector byte hashes;
-3. execute the exact nine-occurrence ORCH × hydro replay;
-4. couple the same transition object into current-generation `_Executor._transition()` without bypassing v0.20/v0.22/v0.25 authority;
-5. record inverse provenance from ORCH transition to KAKU occurrence, v0.20 receipt, lineage, resident program and generation;
-6. run the repository conformance suite;
-7. keep manifest fail-closed until final-tree file-byte SHA-256 regeneration.
+1. execute the committed direct-executor conformance suite on the repository branch;
+2. run against current tethered `/dev/shm/ciel_noema`;
+3. revalidate all nine canonical v0.20 operator-vector byte hashes;
+4. execute a fresh current-generation direct ORCH × hydro run inside `_Executor._transition()`;
+5. construct the normal v0.20 receipt and bind the direct ORCH trace to it without changing receipt bytes;
+6. extend inverse provenance from the receipt-bound ORCH trace through v0.22 lineage and v0.25 resident program/generation;
+7. run the repository conformance suite;
+8. keep manifest fail-closed until final-tree file-byte SHA-256 regeneration.

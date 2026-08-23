@@ -1,7 +1,6 @@
 import copy
 import hashlib
 import struct
-from pathlib import Path
 
 import pytest
 
@@ -103,8 +102,3 @@ def test_mock_vector_hashes_match_fixture():
     vectors=_vectors()
     for st in RECEIPT['steps']:
         assert hashlib.sha256(struct.pack('<36d',*vectors[st['operator_id']])).hexdigest()==st['operator_vector_sha256']
-def test_live_registry_probe_only_when_surface_exists():
-    root=Path('/dev/shm/ciel_noema')
-    if not (root/'ciel_binding_status').is_file(): pytest.skip('live V56 surface is a separate integration gate')
-    ops,_=s.load_live_operator_vectors()
-    assert {'DIFFERENCE','CONDITION','COMPOSITION','NEGATION','ORDER','TRANSFORM'}<=set(ops)

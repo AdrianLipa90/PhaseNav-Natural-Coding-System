@@ -1,6 +1,6 @@
 # PNCS Engineering Roadmap
 
-Status: v0.25 PERSISTENT RUNTIME IMPLEMENTED / LIVE RESIDENCY VALIDATED / LIVE CONTROL-DISPATCH CLOSURE PENDING
+Status: v0.25 PERSISTENT RUNTIME RELEASE CLOSED / NEXT v0.26 EFFECT BOUNDARY
 
 Current v0.25 base: `b1974315dfd9903a81f43b6b53a13b72cb1f010d` (v0.24 Native `.pnv` Program Units feature head).
 
@@ -48,20 +48,18 @@ pncs:program:sha256:572660a1046975c57e01f7e402677f1e4ca845e51bca1bee6517e0d86b35
 
 Isolated validation: `29/29 PASS`.
 
-## Current gate
-
 ### v0.25 — Persistent PNCS Runtime
 
-Implemented runtime lifecycle:
+Release-closed runtime lifecycle:
 
 ```text
 v0.24 program image
 -> current live generation
 -> resident handle
 -> O(1) admission
--> in-process v0.20 control dispatch bridge
--> exact v0.22 lineage requirement
--> deterministic v0.25 receipt
+-> in-process v0.20 control dispatch
+-> exact v0.22 lineage
+-> deterministic v0.25 dispatch receipt
 ```
 
 Implemented invariants:
@@ -92,10 +90,12 @@ cross-process resident recovery: PASS
 live unload/reload same handle: PASS
 200 live admissions median: 0.4185265 ms
 200 live admissions max: 0.78053 ms
-post-validation fast admission: PASS
+fresh live v0.20 -> v0.22 -> v0.25 dispatch closure: PASS
+post-closure fast admission: PASS
+post-closure tether guard: PASS
 ```
 
-Canonical live witness:
+Canonical resident witness:
 
 ```text
 generation:
@@ -111,31 +111,80 @@ unload receipt:
 pncs:resident-unload:sha256:7caa8febf541c869e7e97073b9195153fe8ccf3c12d632ee8da85a04e0223c6d
 ```
 
-### Remaining v0.25 closure
-
-Before declaring v0.25 release-closed, record one fresh current-generation witness through the existing repository implementations:
+Fresh live closure witness:
 
 ```text
-resident handle
--> v0.20 control execution
--> NativeExecutionResult
--> v0.22 exact inverse lineage
--> v0.25 resident dispatch receipt
+control Definition:
+pncs:def:sha256:b7988497bab75a526771fa24aeca75e0182bd437fd707927cb0e78b04d360cce
+
+v0.20 execution receipt SHA-256:
+84d40f600a8aa9e59ebc6dc42c856bcffec9265d04f791e7f5c49cdba2d583ad
+
+v0.22 result:
+pncs:result:sha256:a1ebb02927a4c216d965cb6177271c580303d9968472dca9ea67c2cd8c5661d6
+
+v0.22 lineage:
+pncs:lineage:sha256:34bd13f534987989ab212b5a6906d0cfa762305ee9a87af7a058badd2b2bcfd6
+
+v0.25 dispatch:
+pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2
 ```
 
-No claim is made that this fresh live dispatch witness was completed in the current pass. The isolated dispatch bridge is PASS; live dispatch closure remains pending.
+Closure receipt:
 
-## Planned gates
+```text
+provenance/receipts/PNCS_V0_25_LIVE_CONTROL_DISPATCH_CLOSURE_20260823.json
+```
+
+The dispatch conformance vector is explicitly test input, not a live sensor claim. The exact reused hierarchy occurrence was selected from existing registered authority rather than guessed.
+
+v0.25 is release-closed for its defined scope. The complete historical repository suite was not replayed in the closure pass and remains explicitly not claimed.
+
+## Current gate
 
 ### v0.26 — Effect Boundary
 
-Only after v0.25 live dispatch closure:
+v0.26 starts from a closed v0.25 execution/provenance boundary. No effect authority is inherited implicitly.
+
+Required model:
 
 ```text
-semantic program -> EffectRequest -> authorization -> bounded adapter -> effect -> receipt
+semantic program
+-> explicit EffectRequest
+-> authorization decision
+-> bounded adapter
+-> effect
+-> deterministic effect receipt
+-> inverse provenance
 ```
 
-Filesystem, Git, network, subprocess/device and external-tool effects remain closed until this gate.
+Required invariants before any effect class can open:
+
+- effects are explicit objects, never an implicit consequence of semantic resolution;
+- authorization is separate from semantic mass, graph cost, route admission and program identity;
+- each adapter has a bounded declared capability set;
+- denied or ambiguous authorization fails closed before adapter invocation;
+- effect input/output is receipt-bound;
+- effect provenance binds back to the exact resident program, generation and admitted execution result;
+- retries and partial failures are explicit, never quiet;
+- no unrestricted shell/subprocess escape;
+- no static/Library operational fallback;
+- effect classes remain individually closed until their own conformance tests pass.
+
+Initially closed effect classes:
+
+```text
+filesystem
+Git
+network
+subprocess
+device
+external tool / connector
+```
+
+The v0.25 closure does not itself authorize any of these effects.
+
+## Planned gates
 
 ### v0.27 — Fuzzing / Equivalence / Adversarial Parsing
 Paraphrase fuzzing, ambiguity fuzzing, malformed PNV, CID-collision checks, Unicode/confusable attacks, route/effect injection and property-based tests.

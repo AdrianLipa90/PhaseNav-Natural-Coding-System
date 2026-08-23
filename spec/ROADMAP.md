@@ -1,6 +1,6 @@
 # PNCS Engineering Roadmap
 
-Status: v0.27 HYDRODYNAMIC PROPER-TIME + ORCHORBITAL OORP + DIRECT v0.20 SIDE-CAR IMPLEMENTED / CONFORMANCE + LIVE CLOSURE PENDING
+Status: v0.27 ORCHORBITAL × HYDRODYNAMIC T^36 RELEASE GATE CLOSED / CURRENT GATE v0.28 FUZZING + EQUIVALENCE + ADVERSARIAL PARSING
 
 ## Completed foundation sequence
 
@@ -32,9 +32,7 @@ Generation-bound residency, O(1) admission and exact live v0.20 -> v0.22 -> v0.2
 ### v0.26 — Effect Boundary
 Explicit `EffectRequest -> AuthorizationGrant -> bounded adapter -> EffectReceipt -> inverse provenance`. Isolated validation: `28/28 PASS`; first bounded `NOEMA_RUNTIME_RECORD_WRITE` effect class release-closed. Arbitrary filesystem, Git, network, subprocess/shell, device and external connectors remain closed.
 
-## Current gate
-
-### v0.27 — Hydrodynamic Proper-Time Runtime on T^36
+### v0.27 — Hydrodynamic Proper-Time Runtime + ORCHORBITAL OORP
 
 Base substrate:
 
@@ -49,31 +47,21 @@ flow:       du/dtau = gamma (G_eff @ normalized_drive) - nu_eff u
 phase:      dtheta/dtau = u
 ```
 
-Base hydrodynamic validation already recorded:
-
-```text
-pure-core harness: 36/36 PASS
-exact-KAKU schedule harness: 21/21 PASS
-combined hydro harness: 57/57 PASS
-previous live T^36 phase-flow witness: PASS
-previous exact 9-occurrence v0.20 KAKU schedule witness: PASS
-```
-
-### v0.27 ORCHORBITAL × Hydrodynamic T^36 subgate
-
-The existing ORCHORBITAL Foundation Pack is the formal authority above the hydrodynamic substrate:
+ORCHORBITAL direct-coupling chain:
 
 ```text
 exact v0.20 KAKU occurrence
--> ORCHORBITAL orbital mode
--> explicit K_ij process sphere in M_rel
+-> unchanged v0.20 Sigma + ExecutionStep
+-> exact live operator-vector byte revalidation
+-> ORCHORBITAL occurrence / K_ij process sphere
 -> C / Delta / Delta_H / R_H / Theta / attractor observables
 -> subjective-time g(r,C,Delta,m,A)
 -> N_combined = N_substrate * g
 -> hydrodynamic T^36 transition
 -> orbital phase/winding update
 -> OORP Omega reduction
--> optional memory residue
+-> optional evidence-only memory residue
+-> return unchanged v0.20 Sigma
 ```
 
 Foundation authority:
@@ -89,105 +77,104 @@ contracts: 02_ONTOLOGY_AND_OBSERVABLES.md
            07_OORP_PIPELINE_AND_MEMORY.md
 ```
 
-ORCH invariants implemented:
-
-- formal space is `M_rel` with projective Hilbert / Kähler / Fubini–Study anchor;
-- Poincaré disk is operational chart, not ontology;
-- Bloch is restricted to local reduced charts;
-- every exact KAKU occurrence has a distinct orbital identity even when operator names repeat;
-- exact operator-vector bytes are re-hashed as `<36d>` before orbital projection;
-- `K_ij` is explicit, symmetric, bounded and currently adjacency-only for execution occurrences;
-- `V_tot = V_EC + V_ZS + V_rel + V_mem + V_def + V_ext`;
-- subjective time uses an explicit content-addressed parameterization of `g(r,C,Delta,m,A)`;
-- reduction uses exactly `Omega=lambda1*C+lambda2*R-lambda3*Delta-lambda4*Xi` and `Omega>=Omega_crit`;
-- no reduction means no memory residue;
-- reduction produces evidence-only content-addressed residue, never a persistent memory write;
-- ambiguous reduction selection fails closed;
-- `AttractorLLMTemp` remains closed until an explicit decay schedule is implemented and receipt-bound;
-- persistent memory writes, external effects, semantic identity mutation and laboratory-time claims remain closed.
-
-Current validated ORCH core/replay evidence:
+Release-closure evidence:
 
 ```text
-committed compact conformance: 18/18 PASS
-broader development harness: 33/33 PASS
-exact occurrence identity: PASS
-receipt tamper: FAIL-CLOSED PASS
-operator-vector byte tamper: FAIL-CLOSED PASS
-subjective-time parameterization: PASS
-OORP reduction formula: PASS
-no-reduction/no-memory-residue: PASS
-ambiguous selection: FAIL-CLOSED PASS
-AttractorLLMTemp without decay schedule: FAIL-CLOSED PASS
-negative tie tolerance: FAIL-CLOSED PASS
-T^36 coupled phase flow: PASS_ISOLATED
-dynamic winding: PASS_ISOLATED
+committed compact ORCH conformance: 18/18 PASS
+broader ORCH development harness:    33/33 PASS
+current-worker ORCH core harness:     51/51 PASS
+exact branch direct-executor tests:   9/9 PASS
+fresh live V56 direct coupling:       PASS
+Sigma_base == Sigma_coupled:          PASS
+base steps == coupled base steps:     PASS
+fresh direct trace -> v0.20 receipt:  PASS
+post-witness fast admission:          PASS
+post-witness tether guard:            PASS / failures=[]
 ```
 
-### Direct v0.20 transition coupling
-
-`OrchCoupledExecutor` is now implemented as an authority-neutral subclass of the frozen v0.20 `_Executor`.
-
-Each coupled transition executes in this order:
+Fresh closure identities:
 
 ```text
-original v0.20 `_Executor._transition()`
--> unchanged Sigma + unchanged ExecutionStep
--> exact live vector byte revalidation
--> dynamic ORCH occurrence/sphere append
--> ORCH × T^36 side-car transition
--> return original v0.20 Sigma
+v0.20 receipt:
+1b3ca3c311492e16d447a333e2d1a4f0381c9de77ec7ebfb293637e08021fbf4
+
+v0.27 direct trace:
+pncs:orch-direct-trace:sha256:bac0af63fe8fe01a7138613555c266129108183e39b09b6a75ebe7a90b13f17b
+
+v0.27 receipt-bound trace:
+pncs:orch-receipt-bound-trace:sha256:1d98527a6975bf82246e1fcb521c05b082b296c2ce79758f0e0c72184d945907
+
+full live witness SHA-256:
+95072fcf3c10a82fb510cd2857bf497d885b79635536dd069e35394bdda58691
+
+closure receipt SHA-256:
+88710ab288eb759aeed0b151cc03ba85c0529f58fb8eaade65df17d1970d1a07
 ```
 
-Direct-coupling invariants:
+v0.27 keeps all of these boundaries closed:
 
 ```text
-v020_sigma_semantics_modified = false
-routing_authority_opened       = false
-effect_authority_opened        = false
-persistent_memory_write        = false
-external_effects               = false
-laboratory_time_modified       = false
+routing authority from ORCHORBITAL
+new effect authority
+persistent memory write from ORCHORBITAL
+external effects from the side-car
+semantic identity mutation
+laboratory-time modification
+continuation execution opening
+RETURN execution opening
+static/Library operational fallback
 ```
 
-The executor requires an explicit hydrodynamic gate for every actual v0.20 step and fails closed if one is missing. It is single-run to prevent stale ORCH/T^36 state reuse.
+`AttractorLLMTemp` remains closed until an explicit decay schedule is implemented and receipt-bound.
 
-A receipt-binding layer is also implemented. After normal v0.20 receipt construction it requires exact equality of program ID, Sigma endpoints, truth state, step count and every full KAKU step payload before binding the ORCH direct trace to the receipt SHA-256. The v0.20 receipt itself is never modified.
+The complete historical repository suite was not replayed and current-head GitHub Actions CI PASS is not claimed. A prior Actions failure without retrievable artifact/log remains recorded separately.
 
-Direct-executor tests are committed for:
-
-```text
-base-v0.20 vs coupled Sigma/step equality
-one ORCH transition per actual KAKU transition
-authority closure
-phase-sidecar evolution
-adjacency-only dynamic sphere coupling
-missing-gate fail-closed
-exact v0.20 receipt binding
-receipt tamper rejection
-deterministic coupling configuration identity
-```
-
-These direct-executor tests are `COMMITTED_NOT_RUN_IN_CURRENT_WORKER`; the current worker has no runnable repository checkout and no `/dev/shm/ciel_noema` live surface. They are not reported as PASS.
-
-### Remaining v0.27 release closure
-
-1. run the committed direct-executor conformance tests on the real branch source tree;
-2. run ORCHORBITAL × T^36 against a current tethered `/dev/shm/ciel_noema` generation;
-3. revalidate all nine canonical v0.20 KAKU occurrence vector hashes against live operator bytes;
-4. execute a fresh current-generation direct ORCH × hydro run inside `_Executor._transition()`;
-5. construct the normal v0.20 receipt and bind the direct ORCH trace to it byte-exactly;
-6. ensure ORCH state may affect admitted runtime conditions only through a separately specified authority rule, never by semantic/routing/effect-authority bypass;
-7. bind inverse provenance `ORCH direct trace -> KAKU occurrence -> v0.20 receipt -> v0.22 lineage -> v0.25 resident program/generation`;
-8. run the repository conformance suite;
-9. keep `MANIFEST.sha256.json` fail-closed until final-tree file-byte SHA-256 regeneration.
-
-No additional effect class opens in v0.27.
-
-## Planned gates
+## Current gate
 
 ### v0.28 — Fuzzing / Equivalence / Adversarial Parsing
-Paraphrase/alias equivalence, ambiguity, malformed `.pnv`, typed-ID substitution, Unicode/confusable injection, hierarchy ambiguity, generation substitution, effect-request/authorization/adapter substitution, path traversal, tamper/replay, hydrodynamic-profile attacks, ORCH sphere/coupling substitution, reduction-law substitution, subjective-time-law adversarial cases and direct-executor side-car desynchronization.
+
+Required attack and equivalence classes:
+
+```text
+paraphrase / alias equivalence
+ambiguity collisions
+malformed .pnv
+canonical typed-ID substitution
+Unicode / confusable injection
+hierarchy occurrence ambiguity
+generation substitution
+effect-request substitution
+authorization substitution
+adapter substitution
+path traversal
+tamper / replay
+hydrodynamic-profile substitution
+ORCH process-sphere / K_ij substitution
+reduction-law substitution
+subjective-time-law substitution
+direct-executor side-car desynchronization
+operator-vector byte substitution
+Sigma endpoint substitution
+receipt-bound trace substitution
+```
+
+Required invariants:
+
+```text
+same admitted semantics -> same canonical identity
+ambiguous semantics -> fail closed
+wrong typed identity -> fail closed
+wrong generation -> fail closed
+wrong exact KAKU occurrence -> fail closed
+side-car desynchronization -> fail closed
+ORCH/T^36 state must not acquire routing or effect authority
+Effect Boundary authorization remains separate
+no static runtime fallback
+```
+
+No new effect class opens automatically in v0.28.
+
+## Planned gates
 
 ### v0.29 — Performance Benchmark
 Measure parsing, canonicalization, CID, realization, mass, resident admission, dispatch, ORCH observables/reduction, hydrodynamic integration, direct side-car overhead, effect authorization and bounded effect latency separately. Speedup claims require measured evidence.
@@ -230,3 +217,7 @@ result/effect  -> full provenance
 ```
 
 Deliverables: full PNCS monograph, formal specification, reference implementation, native examples, benchmark corpus and conformance suite.
+
+## Manifest status
+
+`MANIFEST.sha256.json` remains fail-closed. Complete final-tree file-byte SHA-256 regeneration is required before final release packaging. Git blob SHA-1 values are not substitutes for file SHA-256 values.

@@ -32,7 +32,7 @@ jobs:
       TEST_FILES: ${{ matrix.tests }}
     steps:
       - name: Download immutable PR-head source and run tests
-        shell: python {0}
+        shell: python3 {0}
         run: |
           import json
           import os

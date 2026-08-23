@@ -1,0 +1,20 @@
+\chapter{Extended evidence-status discipline}
+The v0.26 discipline remains in force and is extended for branch-aware repository work.
+
+\begin{longtable}{p{0.34\linewidth}p{0.58\linewidth}}
+\toprule
+Label & Meaning\\\midrule
+\status{IMPLEMENTED} & code/spec exists; says nothing by itself about test or release state\\
+\status{ISOLATED\_HARNESS\_PASS} & pure/local harness passed\\
+\status{LIVE\_RUNTIME\_PASS} & exact live runtime gate passed\\
+\status{PASS\_RELEASE\_CLOSED} & all conditions of the defined gate are closed by bound evidence\\
+\status{EXACT\_BLOB\_PURE\_PASS} & exact Git blob set executed successfully outside authoritative hosted CI\\
+\status{BRANCH\_ONLY} & evidence exists only on a non-main branch\\
+\status{MERGED\_EXPERIMENTAL} & implementation is on main but its contract explicitly forbids release/scientific promotion\\
+\status{RELEASE\_NOT\_CLOSED} & one or more required gates/evidence layers remain open\\
+\status{SUPERSEDED\_DOCUMENTATION} & branch/document remains in Git history but is not the current synthesis\\
+\status{FULL\_HISTORICAL\_SUITE\_REPLAYED} & reserved for an actual complete replay; never inferred from a smaller harness\\
+\bottomrule
+\end{longtable}
+
+No branch name, PR title, commit count or merged status may substitute for these evidence labels.

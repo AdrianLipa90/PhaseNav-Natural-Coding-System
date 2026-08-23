@@ -4,7 +4,6 @@
   "date": "2026-08-23",
   "branch": "feat/pncs-v029-orchorbital-harvest-hardening",
   "base": "7d2136259d403a4fed85e996249733d941fc8eba",
-  "tested_code_head_before_ledger": "4b7ff0b431842815c2605d914fda440ae60929db",
   "contract": "PNCS_ORCHORBITAL_HARVEST_HARDENING_V0_29",
   "epistemic": "CHYBA",
   "mode": "READ_ONLY",
@@ -61,8 +60,8 @@
       "sha256": "831b06fa672172591dec656c25139021a5b42980b170576ac1ae77212ab589a6"
     },
     "spec/experimental/PNCS_ORCHORBITAL_HARVEST_HARDENING_V0_29.md": {
-      "git_blob_sha1": "5c40dd36e8ea7b4b72a6293bcc1c63f8de25b13a",
-      "sha256": "9f347b65822040318a16334139d4595c2173d9d66223692f6e37b2d3a40ad535"
+      "git_blob_sha1": "22d5c40c048600e3be287fd44c2ea91ec420d0db",
+      "sha256": "e9a0f93954ff42fd144271d6cd5086414783d99df799cd7961d8a18a2c3d80df"
     },
     "tests/test_orch_hardening_v29.py": {
       "git_blob_sha1": "9680ccc055105e6f2a60a2960ebdd18438abdaf6",
@@ -84,5 +83,6 @@
     "radical_sphere_dynamic_coupling_opened": false,
     "ion1024_sphere_dynamic_coupling_opened": false
   },
-  "fail_closed": true
+  "fail_closed": true,
+  "tested_candidate_head_before_final_ledger": "4780124c6b289e65cffbff222f75cdb1649cf47a"
 }

@@ -37,6 +37,7 @@ jobs:
           python -m pytest -q
           tests/test_adversarial_v28.py
           tests/test_adversarial_authority_v28.py
+          tests/test_execution_orch_v27.py
 
   semantic-equivalence:
     runs-on: ubuntu-latest
@@ -65,10 +66,16 @@ jobs:
           python-version: '3.12'
       - name: Install pytest
         run: python -m pip install pytest
-      - name: Run pure ORCH hydrodynamic adversarial dynamics corpus
+      - name: Run pure ORCH hydrodynamic dynamics and v0.27 regression corpus
         env:
           PYTHONPATH: src
-        run: python -m pytest -q tests/test_adversarial_dynamics_v28.py
+        run: >-
+          python -m pytest -q
+          tests/test_adversarial_dynamics_v28.py
+          tests/test_orch_hydro_v27.py
+          tests/test_orch_package_v27.py
+          tests/test_hydro_time_v27.py
+          tests/test_hydro_schedule_v27.py
 
   concurrency-pure:
     runs-on: ubuntu-latest
@@ -97,10 +104,13 @@ jobs:
           python-version: '3.12'
       - name: Install pytest
         run: python -m pip install pytest
-      - name: Test deterministic fail-closed manifest tool
+      - name: Test manifest and pure/live repository separation
         env:
           PYTHONPATH: src
-        run: python -m pytest -q tests/test_manifest_tool_v28.py
+        run: >-
+          python -m pytest -q
+          tests/test_manifest_tool_v28.py
+          tests/test_repository_conformance_v28.py
 
   live-dev-shm:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_live == true }}
@@ -120,6 +130,15 @@ jobs:
           --root /dev/shm/ciel_noema
           --require-socket
           --socket /run/user/1000/noema/ciel_headless.sock
+      - name: Produce current-session same-snapshot adversarial witness
+        env:
+          PYTHONPATH: src
+        run: >-
+          python3 scripts/run_v028_live_witness.py
+          --repo-root .
+          --root /dev/shm/ciel_noema
+          --socket /run/user/1000/noema/ciel_headless.sock
+          --persist
       - name: Run all live conformance tests
         env:
           PYTHONPATH: src

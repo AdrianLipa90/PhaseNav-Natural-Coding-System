@@ -1,6 +1,6 @@
 # PNCS Engineering Roadmap
 
-Status: v0.27 HYDRODYNAMIC PROPER-TIME CORE IMPLEMENTED / LIVE T^36 PHASE-FLOW PASS / ROUTING INTEGRATION PENDING
+Status: v0.27 HYDRODYNAMIC PROPER-TIME CORE + EXACT KAKU SCHEDULE PASS / EXECUTOR COUPLING PENDING
 
 ## Completed foundation sequence
 
@@ -64,7 +64,10 @@ Validation:
 
 ```text
 pure-core v0.27 harness: 36/36 PASS
+exact-KAKU schedule harness: 21/21 PASS
+combined v0.27 harness: 57/57 PASS
 live current-session T^36 phase-flow witness: PASS
+exact 9-occurrence v0.20 KAKU schedule witness: PASS
 live operator: TRANSFORM
 post-witness fast admission: PASS
 post-witness tether guard: ACTIVE / failures=[]
@@ -79,15 +82,22 @@ fast: rho=4.0, nu_eff=.1, N=1.818,  Delta tau=3.63636, phase displacement=1.2047
 
 Current evidence status:
 
-`IMPLEMENTED_CORE_AND_LIVE_T36_VALIDATED_ROUTING_INTEGRATION_PENDING`
+`IMPLEMENTED_CORE_LIVE_T36_AND_EXACT_KAKU_SCHEDULE_VALIDATED_EXECUTOR_COUPLING_PENDING`
 
 Remaining v0.27 closure:
 
-1. bind hydrodynamic profiles to exact program/KAKU occurrences;
-2. run a current-generation v0.20 control path with the hydrodynamic schedule active;
-3. preserve exact semantic/program identity while producing different hydrodynamic traces;
-4. define an admitted rule for hydrodynamic state to influence routing/effect conditions without bypassing authority;
-5. record complete inverse provenance for schedule + trace + result.
+Completed in the exact-KAKU schedule witness:
+
+- hydrodynamic profiles bind to all 9 exact v0.20 KAKU occurrences;
+- each occurrence revalidates the exact live operator-vector byte SHA-256;
+- slow/fast schedules bind the same v0.20 execution receipt and the same Definition CID;
+- semantic identity remains unchanged while hydrodynamic trace identities and phase proper time differ.
+
+Still required for release closure:
+
+1. couple hydrodynamic state into a fresh current-generation v0.20 execution rather than receipt-bound replay;
+2. define and test an admitted rule for hydrodynamic state to influence routing/effect conditions without bypassing existing authority;
+3. record complete inverse provenance from the coupled hydrodynamic trace through the fresh execution result.
 
 No additional effect class opens in v0.27.
 

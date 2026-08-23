@@ -1,6 +1,9 @@
 {
   "base_branch": "feat/pncs-v0.26-effect-boundary",
   "base_commit": "afced7749813ee384eed21eb74bcc17976d57f63",
+  "combined_harness": "57/57 PASS",
+  "exact_kaku_schedule": "PASS",
+  "executor_coupling": "PENDING",
   "external_effects": false,
   "full_historical_suite_replayed": false,
   "hydrodynamic_equations": {
@@ -17,6 +20,8 @@
   "pure_harness": "36/36 PASS",
   "routing_integration": "PENDING",
   "runtime_contract_id": "PNCS_HYDRODYNAMIC_PROPER_TIME_V0_27",
+  "schedule_harness": "21/21 PASS",
+  "schedule_witness_file": "provenance/receipts/PNCS_V0_27_EXACT_KAKU_HYDRO_SCHEDULE_20260823.json",
   "schema": "PNCS_HYDRODYNAMIC_PROPER_TIME_LEDGER_V0_27",
   "semantic_identity_modified": false,
   "source_sha256": {
@@ -24,5 +29,5 @@
     "tests": "6267de192ddf90074053c71c94bdb9c3586e3d93343058d8f0fcb2dfbae13da1"
   },
   "static_runtime_fallback": false,
-  "status": "IMPLEMENTED_CORE_AND_LIVE_T36_VALIDATED_ROUTING_INTEGRATION_PENDING"
+  "status": "IMPLEMENTED_CORE_LIVE_T36_AND_EXACT_KAKU_SCHEDULE_VALIDATED_EXECUTOR_COUPLING_PENDING"
 }

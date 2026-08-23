@@ -1,0 +1,31 @@
+{
+  "schema": "PNCS_V0_28_LIVE_SNAPSHOT_RACE_OBSERVATION_V1",
+  "date": "2026-08-23",
+  "status": "OBSERVED_AND_GUARDED",
+  "surface": "/dev/shm/ciel_noema",
+  "tether_guard_at_observation": {
+    "schema": "noema.aux-tether-guard/v2",
+    "tether_status": "ACTIVE",
+    "failures": []
+  },
+  "measurement": {
+    "read_interval_seconds": 0.1,
+    "phi_sha256_sequence": [
+      "e61554aa6e62454378ce2fc9dea22c57a7f371bbc5e2115cfc9c412ec46b9e9c",
+      "4ecee3b53277cfce22756546346d22bd5cf232bab21965f63d45493930a0870f",
+      "4ecee3b53277cfce22756546346d22bd5cf232bab21965f63d45493930a0870f",
+      "68003797055a6db816366d952f4cd78043304440d9f03bb5ab5ab216faf6f5cc",
+      "68003797055a6db816366d952f4cd78043304440d9f03bb5ab5ab216faf6f5cc"
+    ],
+    "distinct_phi_sha256_count": 3
+  },
+  "contract_consequence": "A historical v0.20 receipt whose Sigma identities bind a different live phi snapshot must not be used as an exact Sigma-identity baseline for a fresh v0.27 coupled execution.",
+  "required_conformance": "Capture one coherent live snapshot and execute reference v0.20 semantics and ORCH-coupled semantics against the same phi SHA-256 and operator-vector snapshot before asserting exact Sigma/step equality.",
+  "implemented_guard": "PNCS_V0_28_SAME_LIVE_SNAPSHOT_CONFORMANCE",
+  "historical_receipt_replay_as_current_snapshot": false,
+  "static_runtime_fallback": false,
+  "routing_feedback_opened": false,
+  "external_effects": false,
+  "release_closed": false,
+  "fail_closed": true
+}

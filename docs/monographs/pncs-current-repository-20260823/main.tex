@@ -1,0 +1,104 @@
+\documentclass[11pt,a4paper,openany]{report}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[margin=25mm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,longtable,tabularx,array}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,shapes.geometric}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+\usepackage{pdfpages}
+\usepackage{ragged2e}
+\usepackage{lastpage}
+\usepackage{seqsplit}
+\definecolor{PNCSNavy}{HTML}{182A4A}
+\definecolor{PNCSBlue}{HTML}{2E5B93}
+\definecolor{PNCSLight}{HTML}{F3F6FA}
+\definecolor{PNCSGray}{HTML}{606A78}
+\hypersetup{colorlinks=true,linkcolor=PNCSBlue,urlcolor=PNCSBlue,citecolor=PNCSBlue,pdftitle={PhaseNav Natural Coding System - Current Repository Monograph},pdfauthor={Adrian Lipa}}
+\titleformat{\chapter}[display]{\bfseries\color{PNCSNavy}}{\Large CHAPTER \thechapter}{8pt}{\Huge}
+\titleformat{\section}{\Large\bfseries\color{PNCSNavy}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\large\bfseries\color{PNCSBlue}}{\thesubsection}{0.7em}{}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\setlength{\emergencystretch}{3em}
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{PNCS Current Repository Monograph}
+\rhead{23 August 2026}
+\cfoot{\thepage}
+\newcommand{\Tthirtysix}{T^{36}}
+\newcommand{\kappaTIR}{\kappa=\frac{\ln2}{24\pi}}
+\newcommand{\sha}[1]{\texttt{\small\seqsplit{#1}}}
+\newcommand{\status}[1]{\texttt{#1}}
+\newtcolorbox{statusbox}[1]{colback=PNCSLight,colframe=PNCSBlue,title={#1},fonttitle=\bfseries,breakable}
+\newtcolorbox{boundarybox}{colback=white,colframe=PNCSNavy,title={Boundary},fonttitle=\bfseries,breakable}
+\newtcolorbox{interpbox}{colback=PNCSLight,colframe=PNCSGray,title={INTERPRETACJA},fonttitle=\bfseries,breakable}
+\lstset{basicstyle=\ttfamily\small,backgroundcolor=\color{PNCSLight},frame=single,rulecolor=\color{PNCSGray},breaklines=true,columns=fullflexible}
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{20mm}
+{\Huge\bfseries\color{PNCSNavy} PhaseNav Natural\\[2mm] Coding System\\[4mm] (PNCS)\par}
+\vspace{10mm}
+{\LARGE A Content-Addressed 36-Dimensional\\Relational Programming and Runtime Architecture\par}
+\vspace{14mm}
+{\Large\bfseries Current Repository Monograph\par}
+\vspace{3mm}
+{\large v0.1--v0.27 release line + current v0.28 closure gate and experimental modules\par}
+\vfill
+{\Large Adrian Lipa\par}
+\vspace{6mm}
+{\large 23 August 2026\par}
+\vspace{13mm}
+\begin{minipage}{0.88\textwidth}
+\small
+\textbf{Status:} NON-NORMATIVE REPOSITORY-WIDE SYNTHESIS. The v0.26 monograph is preserved verbatim as Part I. Part II updates the document to the repository snapshot at main commit \sha{de8ccd4a6d7c32bd0a079a679416c556c5901790} and records active branch state separately from main authority. Normative authority remains with versioned specifications, registries, receipts and ledgers in the repository.
+\end{minipage}
+\vspace{10mm}
+\href{https://github.com/AdrianLipa90/PhaseNav-Natural-Coding-System}{github.com/AdrianLipa90/PhaseNav-Natural-Coding-System}
+\end{titlepage}
+\pagenumbering{roman}
+\chapter*{How to read this edition}
+\addcontentsline{toc}{chapter}{How to read this edition}
+This edition deliberately does not rewrite the previously published v0.26 core. Part I reproduces the complete 55-page v0.26 monograph exactly. Its statements about the ``current engineering frontier'' are therefore historical statements made at the v0.26 boundary. Part II is the authoritative update layer for this repository snapshot.
+
+The update distinguishes four statuses throughout:
+\begin{description}[leftmargin=35mm,style=nextline]
+\item[\status{MAIN}] present on the current main tree;
+\item[\status{RELEASE\_CLOSED}] a gate whose defined release scope is closed by its own receipt;
+\item[\status{BRANCH}] present on a non-main Git branch and not silently promoted;
+\item[\status{EXPERIMENTAL}] implemented or validated research material that explicitly does not advance the PNCS release sequence.
+\end{description}
+\begin{statusbox}{Current repository anchor}
+Main: \sha{de8ccd4a6d7c32bd0a079a679416c556c5901790}. Current main contains both the merged PR \#16 experimental prime-temporal layer and the merged PR \#15 v0.28 release-closure implementation. The v0.28 specification still states \status{RELEASE NOT CLOSED}. The prime-temporal ledger remains \status{EXPERIMENTAL\_PURE\_CORE\_PASS}, \status{READ\_ONLY}, \status{NON\_PROMOTING}; its presence on main is not equivalent to a new PNCS release gate.
+\end{statusbox}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+\part{Preserved PNCS core: project monograph v0.26}
+\includepdf[pages=-,pagecommand={}]{PNCS_MONOGRAPH_V0_26_BASE.pdf}
+\part{Current repository update}
+\input{chapters/31_current_snapshot}
+\input{chapters/32_v027}
+\input{chapters/33_temporal_fibre}
+\input{chapters/34_prime_temporal}
+\input{chapters/35_v028}
+\input{chapters/36_branch_topology}
+\input{chapters/37_evidence}
+\input{chapters/38_frontier}
+\input{chapters/39_formal_summary}
+\appendix
+\input{chapters/E_formula_update}
+\input{chapters/F_source_map}
+\input{chapters/G_status_discipline}
+\end{document}

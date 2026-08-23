@@ -1,0 +1,37 @@
+name: PNCS v0.28 adversarial conformance
+
+on:
+  push:
+    branches:
+      - feat/pncs-v0.28-adversarial-fuzzing
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pytest
+        shell: python {0}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-m', 'pip', 'install', 'pytest'], check=True)
+      - name: Run v0.28 gate-scoped suite
+        shell: python {0}
+        run: |
+          import subprocess, sys
+          tests = [
+              'tests/test_orchorbital_executor_v27.py',
+              'tests/test_effect_boundary_v26.py',
+              'tests/test_adversarial_v28.py',
+              'tests/test_adversarial_authority_v28.py',
+          ]
+          raise SystemExit(subprocess.run([sys.executable, '-m', 'pytest', '-q', *tests]).returncode)

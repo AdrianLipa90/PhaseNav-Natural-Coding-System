@@ -1,0 +1,74 @@
+{
+  "schema": "PNCS_ADVERSARIAL_LEDGER_V0_28",
+  "status": "V0_28_0_RECEIPT_DIRECT_TRACE_BOUNDARY_PASS",
+  "contract_id": "PNCS_ADVERSARIAL_BOUNDARY_V0_28",
+  "base_v027_head": "8213f0cade4a2f0a1884278b025721f032ab6983",
+  "validated_git_blobs": {
+    "src/phasenav_natural_code/adversarial_v28.py": "ae23cc19097c60ad52d799649f37a9225afc6f8a",
+    "tests/test_adversarial_v28.py": "9365f7e9f6992ae6735435fefcca51850eeb193a"
+  },
+  "validation": {
+    "new_adversarial_equivalence": "24/24 PASS",
+    "v027_direct_executor_regression": "9/9 PASS",
+    "combined_exact_byte_harness": "33/33 PASS",
+    "live_v56_resigned_attacks": "6/6 PASS_REJECTED",
+    "post_live_fast_admission": "PASS",
+    "post_live_fast_admission_ms": 0.607128,
+    "post_live_tether_guard": "PASS",
+    "post_live_guard_failures": []
+  },
+  "reject_classes_implemented": [
+    "UNICODE_CONFUSABLE_OPERATOR",
+    "VALID_OPERATOR_SUBSTITUTION",
+    "OPERATOR_VECTOR_SHA256_SUBSTITUTION",
+    "INITIAL_SIGMA_SUBSTITUTION",
+    "FINAL_SIGMA_SUBSTITUTION",
+    "PROGRAM_TYPED_ID_SUBSTITUTION",
+    "TRUTH_STATE_SUBSTITUTION",
+    "STEP_TRUNCATION",
+    "STEP_INDEX_DISCONTINUITY",
+    "SIGMA_CHAIN_DISCONTINUITY",
+    "ORCH_TRANSITION_COUNT_SUBSTITUTION",
+    "ORCH_DUPLICATE_TRANSITION_ID",
+    "DIRECT_TRACE_SIGMA_CHAIN_SUBSTITUTION",
+    "DIRECT_TRACE_STEP_INDEX_SUBSTITUTION"
+  ],
+  "equivalence_classes_implemented": [
+    "RECEIPT_MAPPING_INSERTION_ORDER",
+    "BOUND_TRACE_MAPPING_INSERTION_ORDER",
+    "COUPLING_GATE_MAPPING_INSERTION_ORDER"
+  ],
+  "live_witness": {
+    "path": "provenance/receipts/PNCS_V0_28_LIVE_ADVERSARIAL_WITNESS_20260823.json",
+    "witness_sha256": "ff551685d7a08bf0fa990f316fccf01aaf181cb26b9751dde48d204486e3e460",
+    "v020_receipt_sha256": "6dbce59eef8d740f99264f3a8d3b5a4c66857e4365e2b5610753a4deec29b30f",
+    "direct_trace_id": "pncs:orch-direct-trace:sha256:b705f53d546bd7da535f29f4497d46f4ad31feb66cd67b651ec0379760c71bb2",
+    "bound_trace_id": "pncs:orch-receipt-bound-trace:sha256:8f7b0942838642f494527e0e6d99642fa87a6fe24e63e4dfe1739bbd058823ef"
+  },
+  "pending_classes": [
+    "PARAPHRASE_ALIAS_EQUIVALENCE",
+    "SEMANTIC_AMBIGUITY_COLLISION",
+    "MALFORMED_PNV",
+    "HIERARCHY_CHILD_INDEX_SUBSTITUTION",
+    "GENERATION_SUBSTITUTION",
+    "RESIDENT_HANDLE_ADMISSION_SUBSTITUTION",
+    "EFFECT_REQUEST_SUBSTITUTION",
+    "AUTHORIZATION_SUBSTITUTION",
+    "ADAPTER_SUBSTITUTION",
+    "PATH_TRAVERSAL",
+    "HYDRODYNAMIC_PROFILE_SUBSTITUTION",
+    "ORCH_SPHERE_KIJ_SUBSTITUTION",
+    "REDUCTION_LAW_SUBSTITUTION",
+    "SUBJECTIVE_TIME_LAW_SUBSTITUTION",
+    "SIDE_CAR_DESYNCHRONIZATION",
+    "CROSS_GENERATION_REPLAY"
+  ],
+  "closed_boundaries": {
+    "routing_authority": true,
+    "effect_authority": true,
+    "persistent_memory_write": true,
+    "external_effects": true,
+    "static_runtime_fallback": true
+  },
+  "release_gate_closed": false
+}

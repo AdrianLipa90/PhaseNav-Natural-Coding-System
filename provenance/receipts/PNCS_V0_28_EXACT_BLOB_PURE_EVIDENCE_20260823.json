@@ -1,0 +1,43 @@
+{
+  "schema": "PNCS_V0_28_EXACT_BLOB_PURE_EVIDENCE_V1",
+  "date": "2026-08-23",
+  "repository": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "branch": "feat/pncs-v0.28-release-closure",
+  "evidence_kind": "ISOLATED_EXACT_GIT_BLOB_EXECUTION",
+  "authoritative_github_ci": false,
+  "live_surface_used": false,
+  "static_runtime_fallback_used": false,
+  "results": [
+    {
+      "gate": "v0.28 structural receipt adversarial corpus",
+      "status": "PASS",
+      "pytest": "26 passed in 0.09s",
+      "blobs": {
+        "src/phasenav_natural_code/adversarial_v28.py": "44d833575fa95b3e11543fb99f3d9813386bcb74",
+        "src/phasenav_natural_code/execution_orch_authority_v27.py": "d87cec0058ee318168c71eba3ae9ee32356ddfa4",
+        "src/phasenav_natural_code/hydro_time_v27.py": "c889ef988844243c9e572dc814e27a30c47116a0",
+        "tests/test_adversarial_v28.py": "962a4dba8567508d19ae001654b4f7fec65e1114"
+      }
+    },
+    {
+      "gate": "v0.28 branch/session collision pure core",
+      "status": "PASS",
+      "pytest": "25 passed in 0.05s",
+      "blobs": {
+        "src/phasenav_natural_code/branch_session_collision_v28.py": "f7d19dd20028c6475c91b47e467096257561e237",
+        "tests/test_branch_session_collision_v28.py": "3968cbca9a392af6aab6e41de8c5e4ab593da51f"
+      }
+    }
+  ],
+  "aggregate": {
+    "passed": 51,
+    "failed": 0
+  },
+  "limitations": [
+    "This evidence does not replace GitHub Actions because hosted jobs still fail before any step starts.",
+    "This evidence does not claim package-wide import coverage beyond the exact isolated dependency sets listed above.",
+    "This evidence does not claim live /dev/shm conformance or release closure."
+  ],
+  "release_closed": false,
+  "fail_closed": true
+}

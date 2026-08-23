@@ -9,6 +9,11 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      run_self_hosted_pure:
+        description: Run pure v0.28 mirror on self-hosted runner
+        required: false
+        default: false
+        type: boolean
       run_live:
         description: Run live /dev/shm NOEMA adversarial gate on self-hosted runner
         required: false
@@ -113,6 +118,7 @@ jobs:
           tests/test_repository_conformance_v28.py
 
   pure-self-hosted-mirror:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_self_hosted_pure == true }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4

@@ -1,0 +1,34 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# OrchORbital architecture harvest for PNCS hardening-prep.
+# Promotion remains blocked behind v0.28 release closure.
+
+OP ORH.ENTITY_PROJECT TRANSFORM exact_v22_lineage explicit_orbital_metadata entity_projection_receipt
+OP ORH.PACKAGE_ADMISSION CONDITION schema_tests_metrics_replayability all_receipt_bound
+OP ORH.SEMANTIC_ACTION_AUDIT DERIVE explicit_measurements explicit_weights semantic_action_audit_receipt
+OP ORH.LEAK_RECEIPT DERIVE holonomic_defect negative_defect inert_leak_receipt
+OP ORH.GEOMETRY_PROJECT TRANSFORM formal_state explicit_chart_coordinates operational_geometry_projection
+
+VECTOR V.ORH.ENTITY_PROJECT "ORH.lineage.entity.projection" PRECISE
+VECTOR V.ORH.PACKAGE_ADMISSION "ORH.package.schema.tests.metrics.replay" PRECISE
+VECTOR V.ORH.SEMANTIC_ACTION_AUDIT "ORH.semantic.action.measurement" PRECISE
+VECTOR V.ORH.LEAK_RECEIPT "ORH.sphere.defect.inert_leak" PRECISE
+VECTOR V.ORH.GEOMETRY_PROJECT "ORH.formal_state.operational_chart" PRECISE
+
+OP ORH.IDENTITY_BOUNDARY CONDITION identity_authority equals false
+OP ORH.ROUTING_BOUNDARY CONDITION routing_feedback_opened equals false
+OP ORH.EFFECT_BOUNDARY CONDITION effect_authority equals false
+OP ORH.LEAK_PROPAGATION_BOUNDARY CONDITION propagation_opened equals false
+OP ORH.SPHERE_LIFECYCLE_BOUNDARY CONDITION split_merge_elevate_opened equals false
+OP ORH.RENDERER_BOUNDARY CONDITION renderer_authority equals false
+OP ORH.V028_PROMOTION_BOUNDARY CONDITION v028_release_closed equals true_before_promotion
+
+OP PATH.ORH.LINEAGE_TO_ENTITY COMPOSITION ORH.ENTITY_PROJECT ORH.IDENTITY_BOUNDARY
+OP PATH.ORH.PACKAGE_HARDENING COMPOSITION ORH.PACKAGE_ADMISSION ORH.SEMANTIC_ACTION_AUDIT
+OP PATH.ORH.STATE_TO_OPERATIONAL_GEOMETRY COMPOSITION ORH.LEAK_RECEIPT ORH.GEOMETRY_PROJECT ORH.LEAK_PROPAGATION_BOUNDARY
+
+EMIT PATH.ORH.LINEAGE_TO_ENTITY
+EMIT PATH.ORH.PACKAGE_HARDENING
+EMIT PATH.ORH.STATE_TO_OPERATIONAL_GEOMETRY

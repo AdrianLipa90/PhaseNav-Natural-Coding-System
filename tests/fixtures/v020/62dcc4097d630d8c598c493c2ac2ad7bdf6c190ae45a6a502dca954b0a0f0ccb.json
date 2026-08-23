@@ -1,0 +1,99 @@
+{
+  "execution_contract_id": "PNCS_NATIVE_EXECUTION_CORE_V0_20",
+  "external_effects": false,
+  "final_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000009",
+  "free_form_nl_execution": false,
+  "initial_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "program": {
+    "content_id": "pncs:def:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "receipt_sha256": "62dcc4097d630d8c598c493c2ac2ad7bdf6c190ae45a6a502dca954b0a0f0ccb",
+  "result": {
+    "control_location": "runtime.continue",
+    "kind": "INTERNAL_TRANSFORM"
+  },
+  "schema": "PNCS_NATIVE_EXECUTION_RECEIPT_V0_20",
+  "steps": [
+    {
+      "after_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000001",
+      "before_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "bindings": {},
+      "index": 1,
+      "operator_id": "DIFFERENCE",
+      "operator_vector_sha256": "6341c76d665c6588c8b64b617e7462d7246c778d1f5e0aa5e3363fc9b37bb878",
+      "schema": "PNCS_KAKU_TRANSITION_V0_20"
+    },
+    {
+      "after_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000002",
+      "before_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000001",
+      "bindings": {},
+      "index": 2,
+      "operator_id": "CONDITION",
+      "operator_vector_sha256": "c3566ea51b9cabb3a719864161bee0742bbeb1d9d37af07c14e478c06ba8d6ad",
+      "schema": "PNCS_KAKU_TRANSITION_V0_20"
+    },
+    {
+      "after_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000003",
+      "before_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000002",
+      "bindings": {},
+      "index": 3,
+      "operator_id": "DIFFERENCE",
+      "operator_vector_sha256": "6341c76d665c6588c8b64b617e7462d7246c778d1f5e0aa5e3363fc9b37bb878",
+      "schema": "PNCS_KAKU_TRANSITION_V0_20"
+    },
+    {
+      "after_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000004",
+      "before_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000003",
+      "bindings": {},
+      "index": 4,
+      "operator_id": "CONDITION",
+      "operator_vector_sha256": "c3566ea51b9cabb3a719864161bee0742bbeb1d9d37af07c14e478c06ba8d6ad",
+      "schema": "PNCS_KAKU_TRANSITION_V0_20"
+    },
+    {
+      "after_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000005",
+      "before_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000004",
+      "bindings": {},
+      "index": 5,
+      "operator_id": "COMPOSITION",
+      "operator_vector_sha256": "4975040d3078b8e695dc7c76fbc7a1674a920f3fdf9f675c2ee6da642812cc69",
+      "schema": "PNCS_KAKU_TRANSITION_V0_20"
+    },
+    {
+      "after_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000006",
+      "before_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000005",
+      "bindings": {},
+      "index": 6,
+      "operator_id": "NEGATION",
+      "operator_vector_sha256": "944529c591216450c6c19640982349456d7a904fe6dd1500ee94740d250f948f",
+      "schema": "PNCS_KAKU_TRANSITION_V0_20"
+    },
+    {
+      "after_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000007",
+      "before_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000006",
+      "bindings": {},
+      "index": 7,
+      "operator_id": "ORDER",
+      "operator_vector_sha256": "9db15ddb23189392483a7c64673f1e592f544200d9a05c1d45e786ec4a116358",
+      "schema": "PNCS_KAKU_TRANSITION_V0_20"
+    },
+    {
+      "after_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000008",
+      "before_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000007",
+      "bindings": {},
+      "index": 8,
+      "operator_id": "TRANSFORM",
+      "operator_vector_sha256": "a7b7c64b958b9471c32e9be0387290d0438fe6cab0f533bc2ff90c81143b40c7",
+      "schema": "PNCS_KAKU_TRANSITION_V0_20"
+    },
+    {
+      "after_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000009",
+      "before_sigma_id": "pncs:sigma:sha256:0000000000000000000000000000000000000000000000000000000000000008",
+      "bindings": {},
+      "index": 9,
+      "operator_id": "COMPOSITION",
+      "operator_vector_sha256": "4975040d3078b8e695dc7c76fbc7a1674a920f3fdf9f675c2ee6da642812cc69",
+      "schema": "PNCS_KAKU_TRANSITION_V0_20"
+    }
+  ]
+}

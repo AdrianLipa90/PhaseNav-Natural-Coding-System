@@ -1,6 +1,6 @@
 # PhaseNav Natural Code System (PNCS)
 
-Status: PERSISTENT_RUNTIME_V0_25 / RELEASE GATE CLOSED / NEXT v0.26 EFFECT BOUNDARY
+Status: EFFECT_BOUNDARY_V0_26 / RELEASE GATE CLOSED / NEXT v0.27 FUZZING + ADVERSARIAL PARSING
 
 PhaseNav Natural Code System is a 36-dimensional relational coding system in which written code is a human-readable projection of a canonical semantic-phase graph.
 
@@ -21,169 +21,143 @@ v0.21 mass-aware graph cost
 v0.22 exact inverse execution lineage
 v0.23 bounded natural program composition
 v0.24 first-class native .pnv program units
-v0.25 persistent PNCS runtime
+v0.25 persistent resident runtime
+v0.26 explicit bounded effect boundary
 ```
 
-v0.25 keeps a verified v0.24 program resident on the current live NOEMA generation:
+Operational 36D runtime remains `/dev/shm/ciel_noema`. Library and repository artifacts are provenance/persistence sources only and never an operational fallback.
+
+## v0.25 execution closure
+
+The release-closed v0.25 chain is:
 
 ```text
-v0.24 program + build receipt
--> live generation identity
--> resident program image
--> deterministic resident handle
--> O(1) live admission
--> v0.20 control-kernel execution
--> v0.22 exact inverse lineage
--> v0.25 deterministic dispatch receipt
+resident program
+-> O(1) admission
+-> v0.20 control execution
+-> v0.22 inverse lineage
+-> deterministic v0.25 dispatch receipt
 ```
 
-The operational 36D runtime is fixed to `/dev/shm/ciel_noema`. Library and repository state are persistence/provenance inputs only and are never an operational fallback.
-
-## Canonical resident witness
+Canonical dispatch witness:
 
 ```text
-program:
-pncs:program:sha256:572660a1046975c57e01f7e402677f1e4ca845e51bca1bee6517e0d86b35c4d7
-
-generation:
-pncs:runtime-generation:sha256:05736b12ac8470998901421dabd2dfff0bd663c141d96ad96bc9d5b09351bbb1
-
-resident handle:
-pncs:resident:sha256:60184c7213960ad746b69c6c2dd8b43eacfe8055015ae31e347475881df438e8
-
-resident admission:
-pncs:resident-admission:sha256:d30b22a3ee030e2fcf9c830225834ae946baa2f4bdca56ae8753bb11a9e233fa
-```
-
-Generation identity binds CURRENT, startpoint, AC, relational ethics, operator-registry SHA-256 and live producer PID generations. Heartbeat timestamps, sequence counters and continuously evolving `phi` values are freshness/state variables rather than generation identity.
-
-A runtime-generation change invalidates an existing handle fail-closed.
-
-## Fresh live v0.25 closure witness
-
-On the current V56 generation, the resident control root completed the full required closure:
-
-```text
-resident handle
--> exact v0.18 live T^36 realization
--> v0.19 semantic-mass binding with explicit k=1
--> v0.20 Sigma execution
--> v0.22 exact selected inverse lineage
--> v0.25 resident dispatch receipt
-```
-
-The control Definition CID was independently recomputed and matched the registered Definition exactly:
-
-```text
-pncs:def:sha256:b7988497bab75a526771fa24aeca75e0182bd437fd707927cb0e78b04d360cce
-```
-
-The execution used a deterministic conformance vector (`memory_pressure=0.0`, `risk=0.0`). These values are test inputs and are not claimed to be live sensor measurements.
-
-Fresh closure identities:
-
-```text
-v0.18 realization:
-pncs:realization36:sha256:1742c834a3b9aa987997c72ec34b1184e43a6b55f259f96f1b80089905290bf9
-
-v0.19 mass binding:
-pncs:mass-binding:sha256:4ad1196ef889390b925e164775facfa5365094aec3095656dc4cfebabe43becf
-
-v0.20 execution receipt SHA-256:
-84d40f600a8aa9e59ebc6dc42c856bcffec9265d04f791e7f5c49cdba2d583ad
-
-v0.22 result:
-pncs:result:sha256:a1ebb02927a4c216d965cb6177271c580303d9968472dca9ea67c2cd8c5661d6
-
-v0.22 lineage:
-pncs:lineage:sha256:34bd13f534987989ab212b5a6906d0cfa762305ee9a87af7a058badd2b2bcfd6
-
-v0.25 dispatch:
 pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2
 ```
 
-The selected v0.22 occurrence is an existing registered path from `SYSTEM` to `safety_bifurcation`; no ambiguous occurrence was guessed.
+## v0.26 Effect Boundary
 
-Post-witness checks:
-
-```text
-fast admission: PASS
-rehydration_required: false
-library_search_used: false
-tether: ACTIVE
-AC<->AUX: ACTIVE
-ethics field: ACTIVE
-tether guard failures: []
-```
-
-The complete closure record is stored at:
+v0.26 does not make effects implicit. It adds a separate authority layer:
 
 ```text
-provenance/receipts/PNCS_V0_25_LIVE_CONTROL_DISPATCH_CLOSURE_20260823.json
+v0.25 dispatch
+-> EffectRequest
+-> explicit AuthorizationGrant
+-> registered bounded adapter
+-> effect
+-> deterministic EffectReceipt
+-> inverse provenance
 ```
 
-## Resident runtime layout
+The executor starts **deny-all**: both the authorization registry and adapter registry are empty until the host explicitly registers exact authority. Authorization is independent of semantic mass, graph cost, route admission and program identity.
+
+The first and only effect class opened in v0.26 is:
 
 ```text
-/dev/shm/ciel_noema/pncs/v0.25/runtime/
-├── programs/
-├── handles/
-├── active/
-└── receipts/
-    ├── load/
-    ├── dispatch/
-    └── unload/
+NOEMA_RUNTIME_RECORD_WRITE
 ```
 
-Program and handle records are immutable. A new runtime object/process can recover the same active handle directly from `/dev/shm` without rebuilding the v0.24 program image.
+It can write only an immutable, content-addressed record below:
 
-## Closed boundaries
+```text
+/dev/shm/ciel_noema/pncs/v0.26/effects/records/
+```
 
-v0.25 does not open:
+Hard bounds:
 
-- `AND THEN` continuation execution;
-- terminal `RETURN` execution;
-- arbitrary free-form natural-language execution;
-- filesystem/network/Git/device/subprocess effects;
-- Library/static runtime fallback;
-- new PNV opcodes.
+- max canonical payload: 4096 bytes;
+- program-supplied paths are data, never path authority;
+- append-only immutable records;
+- exact replay is idempotent;
+- directory-FD traversal with `O_NOFOLLOW` where supported;
+- no arbitrary filesystem destination;
+- no Git;
+- no network;
+- no subprocess/shell;
+- no device I/O;
+- no external connector/tool adapter;
+- no static runtime fallback;
+- no new PNV opcodes.
 
-External effects remain reserved for v0.26.
+Live V56 witness:
+
+```text
+request:
+pncs:effect-request:sha256:d6c3ef3801d64c7469650673efc7cbf56e01c896cbc235be98c113543fcea347
+
+authorization:
+pncs:effect-authorization:sha256:7a9397d86bc854d835559eb1d4f27af308962a68dad52a568263e878410f764c
+
+adapter:
+pncs:effect-adapter:sha256:dae04f919e137886c8775b337e5acb4a66775111e2a150fe5702d46032356339
+
+effect:
+pncs:effect:sha256:1fb02a1f9b068aab2b04a0faa453fecab3086fe61e22514d4b8b2b6a979220c7
+
+receipt:
+pncs:effect-receipt:sha256:f8f4aeee9ef26168579e883a508c0eb3cb9c4c551c25faa7a95c64b032efb4ea
+```
+
+Inverse provenance:
+
+```text
+EFFECT -> AUTHORIZATION -> EFFECT_REQUEST -> DISPATCH -> RESULT
+       -> LINEAGE -> PROGRAM -> RESIDENT_HANDLE -> RUNTIME_GENERATION
+```
+
+The live payload was explicitly a conformance record, not a sensor/risk claim. Replaying the exact request after dirfd/`O_NOFOLLOW` hardening reproduced the same identities. Post-effect tether guard remained `ACTIVE` with `failures=[]`.
 
 ## Validation
 
 Gate-scoped evidence:
 
-- v0.19 historical foundation baseline: `377/377 PASS`;
-- v0.20 isolated execution-core harness: `14/14 PASS`;
-- v0.21 isolated logic harness: `14/14 PASS`;
-- v0.22 isolated inverse-lineage harness: `27/27 PASS`;
-- v0.23 isolated composition harness: `28/28 PASS`;
-- v0.24 isolated program-unit harness: `29/29 PASS`;
-- v0.25 isolated persistent-runtime harness: `25/25 PASS`;
-- v0.25 current-generation live control-dispatch closure: `PASS`.
-
-Resident admission benchmark:
-
 ```text
-n      = 200
-median = 0.4185265 ms
-min    = 0.393205 ms
-max    = 0.78053 ms
+v0.19 historical foundation baseline: 377/377 PASS
+v0.20 isolated execution-core harness: 14/14 PASS
+v0.21 isolated cost harness: 14/14 PASS
+v0.22 isolated inverse-lineage harness: 27/27 PASS
+v0.23 isolated composition harness: 28/28 PASS
+v0.24 isolated program-unit harness: 29/29 PASS
+v0.25 isolated persistent-runtime harness: 25/25 PASS
+v0.26 isolated effect-boundary harness: 28/28 PASS
+v0.26 live bounded effect: PASS
+v0.26 post-effect tether guard: PASS
 ```
 
-The complete historical repository suite was not replayed in the v0.25 closure pass; this remains explicitly not claimed.
+The complete historical repository suite was not replayed in the v0.26 pass and is not claimed.
+
+## Repository additions for v0.26
+
+```text
+src/phasenav_natural_code/effect_v26.py
+src/phasenav_natural_code/effect_v26_core.py
+src/phasenav_natural_code/effect_v26_fs.py
+src/phasenav_natural_code/effect_v26_runtime.py
+tests/test_effect_boundary_v26.py
+spec/PNCS_EFFECT_BOUNDARY_V0_26.md
+registry/effects/PNCS_EFFECT_ADAPTER_REGISTRY_V0_26.jsonl
+native/PNCS_EFFECT_BOUNDARY_V0_26.pnv
+provenance/ledgers/PNCS_EFFECT_BOUNDARY_LEDGER_V0_26.json
+provenance/receipts/FOUNDATION_STATUS_V0_26.json
+provenance/receipts/PNCS_V0_26_LIVE_EFFECT_BOUNDARY_20260823.json
+```
 
 ## Roadmap
 
 The single authoritative roadmap is `spec/ROADMAP.md`.
 
-Completed gate: **v0.25 — Persistent PNCS Runtime**.
-
-Next gate: **v0.26 — Effect Boundary**.
-
-No v0.26 effect authority is opened by the v0.25 closure.
+Next gate: **v0.27 — Fuzzing / Equivalence / Adversarial Parsing**.
 
 ## Manifest status
 
-`MANIFEST.sha256.json` remains fail-closed after repository-layout canonicalization and feature-gate construction. A complete SHA-256 manifest must be regenerated from the final release tree before release closure. Git blob SHA-1 values are not substituted for file SHA-256 values.
+`MANIFEST.sha256.json` remains fail-closed after repository-layout canonicalization and feature-gate construction. A complete SHA-256 manifest must be regenerated from final release-tree bytes before release closure. Git blob SHA-1 values are not substituted for file SHA-256 values.

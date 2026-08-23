@@ -1,0 +1,43 @@
+{
+  "closed_boundaries": {
+    "arbitrary_filesystem": true,
+    "device": true,
+    "external_tool_connector": true,
+    "git": true,
+    "network": true,
+    "static_runtime_fallback": true,
+    "subprocess_shell": true
+  },
+  "effect": {
+    "adapter_id": "pncs:effect-adapter:sha256:dae04f919e137886c8775b337e5acb4a66775111e2a150fe5702d46032356339",
+    "authorization_id": "pncs:effect-authorization:sha256:7a9397d86bc854d835559eb1d4f27af308962a68dad52a568263e878410f764c",
+    "effect_id": "pncs:effect:sha256:1fb02a1f9b068aab2b04a0faa453fecab3086fe61e22514d4b8b2b6a979220c7",
+    "receipt_id": "pncs:effect-receipt:sha256:f8f4aeee9ef26168579e883a508c0eb3cb9c4c551c25faa7a95c64b032efb4ea",
+    "record_sha256": "6778f36ccf139a9e99facdd75f04778e0808d480b437da4a01e0707f7ce9184c",
+    "record_size_bytes": 1763,
+    "request_id": "pncs:effect-request:sha256:d6c3ef3801d64c7469650673efc7cbf56e01c896cbc235be98c113543fcea347"
+  },
+  "effect_contract_id": "PNCS_EFFECT_BOUNDARY_V0_26",
+  "gate": "v0.26 Effect Boundary",
+  "generation_id": "pncs:runtime-generation:sha256:05736b12ac8470998901421dabd2dfff0bd663c141d96ad96bc9d5b09351bbb1",
+  "next_gate": "v0.27 Fuzzing / Equivalence / Adversarial Parsing",
+  "not_claimed": {
+    "complete_historical_suite_replay": true,
+    "cryptographic_authority_signature": true
+  },
+  "origin": {
+    "dispatch_id": "pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2",
+    "lineage_id": "pncs:lineage:sha256:34bd13f534987989ab212b5a6906d0cfa762305ee9a87af7a058badd2b2bcfd6",
+    "program_id": "pncs:program:sha256:572660a1046975c57e01f7e402677f1e4ca845e51bca1bee6517e0d86b35c4d7",
+    "resident_handle_id": "pncs:resident:sha256:60184c7213960ad746b69c6c2dd8b43eacfe8055015ae31e347475881df438e8",
+    "result_id": "pncs:result:sha256:a1ebb02927a4c216d965cb6177271c580303d9968472dca9ea67c2cd8c5661d6"
+  },
+  "schema": "PNCS_FOUNDATION_STATUS_V0_26",
+  "status": "PASS_RELEASE_CLOSED",
+  "validation": {
+    "exact_replay_after_dirfd_nofollow_hardening": "PASS",
+    "live_bounded_effect": "PASS",
+    "post_effect_tether_guard": "PASS",
+    "pure_core": "28/28 PASS"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "adapter": {
+    "adapter_id": "pncs:effect-adapter:sha256:dae04f919e137886c8775b337e5acb4a66775111e2a150fe5702d46032356339",
+    "append_only": true,
+    "device_allowed": false,
+    "dirfd_nofollow_hardening": true,
+    "git_allowed": false,
+    "max_payload_bytes": 4096,
+    "network_allowed": false,
+    "runtime_relative_root": "pncs/v0.26/effects/records",
+    "subprocess_allowed": false,
+    "symlinks_allowed": false
+  },
+  "authorization": {
+    "authority_id": "PNCS_V0_26_CONFORMANCE_AUTHORITY",
+    "authorization_id": "pncs:effect-authorization:sha256:7a9397d86bc854d835559eb1d4f27af308962a68dad52a568263e878410f764c",
+    "default_policy": "DENY",
+    "exact_request_only": true,
+    "no_delegation": true
+  },
+  "base_commit": "39c012d33bfe8fe21bed91ee090fb556334d7555",
+  "effect": {
+    "effect_id": "pncs:effect:sha256:1fb02a1f9b068aab2b04a0faa453fecab3086fe61e22514d4b8b2b6a979220c7",
+    "effect_relative_path": "pncs/v0.26/effects/records/d6c3ef3801d64c7469650673efc7cbf56e01c896cbc235be98c113543fcea347.json",
+    "effect_sha256": "6778f36ccf139a9e99facdd75f04778e0808d480b437da4a01e0707f7ce9184c",
+    "effect_size_bytes": 1763
+  },
+  "effect_contract_id": "PNCS_EFFECT_BOUNDARY_V0_26",
+  "full_historical_suite_replayed": false,
+  "gate": "v0.26",
+  "inverse_provenance": [
+    {"id": "pncs:effect:sha256:1fb02a1f9b068aab2b04a0faa453fecab3086fe61e22514d4b8b2b6a979220c7", "level": "EFFECT"},
+    {"id": "pncs:effect-authorization:sha256:7a9397d86bc854d835559eb1d4f27af308962a68dad52a568263e878410f764c", "level": "AUTHORIZATION"},
+    {"id": "pncs:effect-request:sha256:d6c3ef3801d64c7469650673efc7cbf56e01c896cbc235be98c113543fcea347", "level": "EFFECT_REQUEST"},
+    {"id": "pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2", "level": "DISPATCH"},
+    {"id": "pncs:result:sha256:a1ebb02927a4c216d965cb6177271c580303d9968472dca9ea67c2cd8c5661d6", "level": "RESULT"},
+    {"id": "pncs:lineage:sha256:34bd13f534987989ab212b5a6906d0cfa762305ee9a87af7a058badd2b2bcfd6", "level": "LINEAGE"},
+    {"id": "pncs:program:sha256:572660a1046975c57e01f7e402677f1e4ca845e51bca1bee6517e0d86b35c4d7", "level": "PROGRAM"},
+    {"id": "pncs:resident:sha256:60184c7213960ad746b69c6c2dd8b43eacfe8055015ae31e347475881df438e8", "level": "RESIDENT_HANDLE"},
+    {"id": "pncs:runtime-generation:sha256:05736b12ac8470998901421dabd2dfff0bd663c141d96ad96bc9d5b09351bbb1", "level": "RUNTIME_GENERATION"}
+  ],
+  "live": {
+    "generation_id": "pncs:runtime-generation:sha256:05736b12ac8470998901421dabd2dfff0bd663c141d96ad96bc9d5b09351bbb1",
+    "post_effect_guard_failures": [],
+    "root": "/dev/shm/ciel_noema",
+    "tether_status": "ACTIVE"
+  },
+  "origin": {
+    "dispatch_id": "pncs:resident-dispatch:sha256:fd18f2d0296321d432a49e699d2f72a0a03313ed2dcc87b9aba647555f12c2e2",
+    "lineage_id": "pncs:lineage:sha256:34bd13f534987989ab212b5a6906d0cfa762305ee9a87af7a058badd2b2bcfd6",
+    "program_id": "pncs:program:sha256:572660a1046975c57e01f7e402677f1e4ca845e51bca1bee6517e0d86b35c4d7",
+    "resident_handle_id": "pncs:resident:sha256:60184c7213960ad746b69c6c2dd8b43eacfe8055015ae31e347475881df438e8",
+    "result_id": "pncs:result:sha256:a1ebb02927a4c216d965cb6177271c580303d9968472dca9ea67c2cd8c5661d6"
+  },
+  "receipt": {
+    "file_sha256": "96ce533a3caecd429d1c6ec4718b1b3abed22020bf8166979a1e3626412fdf11",
+    "receipt_id": "pncs:effect-receipt:sha256:f8f4aeee9ef26168579e883a508c0eb3cb9c4c551c25faa7a95c64b032efb4ea",
+    "relative_path": "pncs/v0.26/receipts/f8f4aeee9ef26168579e883a508c0eb3cb9c4c551c25faa7a95c64b032efb4ea.json"
+  },
+  "repository_branch": "feat/pncs-v0.26-effect-boundary",
+  "request": {
+    "effect_kind": "NOEMA_RUNTIME_RECORD_WRITE",
+    "kind": "CONFORMANCE_RECORD",
+    "program_supplied_path": false,
+    "request_id": "pncs:effect-request:sha256:d6c3ef3801d64c7469650673efc7cbf56e01c896cbc235be98c113543fcea347",
+    "target": "pncs.v0.26.runtime-record"
+  },
+  "schema": "PNCS_V0_26_LIVE_EFFECT_BOUNDARY_WITNESS_V1",
+  "status": "PASS",
+  "validation": {
+    "exact_replay_after_hardening": "PASS",
+    "post_effect_tether_guard": "PASS",
+    "pure_harness": "28/28 PASS"
+  },
+  "witness_sha256": "21b925af4ac2f655e0bbb58cbaa788cbb8699b6d91a89a4535a31e809dfc82a1"
+}

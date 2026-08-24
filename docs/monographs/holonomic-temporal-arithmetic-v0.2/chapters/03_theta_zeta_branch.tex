@@ -1,0 +1,93 @@
+\section{Theta--zeta branch: modular inversion, Mellin scale, completion, and primes}
+
+\subsection{Jacobi theta modular inversion}
+
+Define
+\begin{equation}
+\vartheta(t)=\sum_{n\in\mathbb Z}e^{-\pi n^2t},\qquad t>0.
+\end{equation}
+The modular inversion is
+\begin{equation}
+\boxed{\vartheta(t)=t^{-1/2}\vartheta(1/t).}
+\label{eq:theta-modular}
+\end{equation}
+Status: \status{STANDARD\_EXACT} \cite{DLMFTheta}. Introduce \(u=\log t\). Then multiplicative inversion becomes additive reflection \(u\mapsto-u\). A symmetrised profile can therefore be chosen even in log-scale.
+
+\subsection{Mellin transform to zeta}
+
+A standard theta Mellin relation yields the gamma--zeta factor; one convenient normalisation is
+\begin{equation}
+\boxed{
+\int_0^\infty[\vartheta(t)-1]t^{s/2-1}\,dt
+=2\pi^{-s/2}\Gamma(s/2)\zeta(s),
+\qquad \RePart(s)>1.
+}
+\label{eq:theta-mellin}
+\end{equation}
+Equivalent theta-function Mellin formulae are tabulated by DLMF \cite{DLMFThetaMellin}.
+
+For \(t=e^u\), Mellin kernels take the form
+\begin{equation}
+ t^{-s}=e^{-su}=e^{-\sigma u}e^{-i\tau u},
+\qquad s=\sigma+i\tau.
+\end{equation}
+Thus the imaginary part of \(s\) is a Fourier-like phase frequency conjugate to logarithmic scale.
+
+\subsection{Completed zeta and the half-axis}
+
+Define
+\begin{equation}
+\xi(s)=\frac12s(s-1)\pi^{-s/2}\Gamma(s/2)\zeta(s).
+\end{equation}
+Then
+\begin{equation}
+\boxed{\xi(s)=\xi(1-s).}
+\label{eq:xi-reflection}
+\end{equation}
+Status: \status{STANDARD\_EXACT} \cite{DLMFZetaReflection}. Because \(\xi(\bar s)=\overline{\xi(s)}\), the anti-linear involution
+\begin{equation}
+J(s)=1-\bar s
+\end{equation}
+has fixed set
+\begin{equation}
+\boxed{J(s)=s\iff \RePart(s)=\frac12.}
+\end{equation}
+This fixed-set statement does not prove that all non-trivial zeros lie on that set.
+
+\subsection{Euler product and the prime alphabet}
+
+For \(\RePart(s)>1\),
+\begin{equation}
+\boxed{\zeta(s)=\prod_{p\in\mathbb P}(1-p^{-s})^{-1}.}
+\label{eq:euler-product}
+\end{equation}
+Status: \status{STANDARD\_EXACT} \cite{DLMFZetaEuler}. Every positive integer has a unique prime-valuation vector
+\begin{equation}
+\mathbf v(n)=\{v_p(n)\}_{p\in\mathbb P},
+\qquad
+n=\prod_p p^{v_p(n)},
+\end{equation}
+and therefore
+\begin{equation}
+\boxed{\log n=\sum_p v_p(n)\log p.}
+\label{eq:prime-log}
+\end{equation}
+Only finitely many terms are non-zero for any fixed integer.
+
+This identifies a common multiplicative coordinate system. Zeta packages independent prime powers through the Euler product in its convergence half-plane; Collatz, developed in the next branch, generates a deterministic trajectory through the same integer valuation lattice.
+
+\subsection{Critical-line prime characters}
+
+For a single prime and \(s=\tfrac12+i\tau\),
+\begin{equation}
+\boxed{p^{-s}=p^{-1/2}e^{-i\tau\log p}.}
+\label{eq:prime-critical-character}
+\end{equation}
+Thus a finite prime character has amplitude \(p^{-1/2}\) and phase \(-\tau\log p\). This identity is valid for an individual finite factor for any complex \(s\).
+
+\begin{claim}{Convergence boundary -- \status{MANDATORY}.}
+Equation~\eqref{eq:euler-product} is a directly convergent infinite product only for \(\RePart(s)>1\). The project must not numerically multiply an unregularised infinite Euler product on \(\RePart(s)=1/2\) and call the result \(\zeta(s)\). Critical-line work must use the analytically continued \(\zeta/\xi\) or explicitly finite, receipt-bound prime-mode truncations.
+\end{claim}
+
+\INTERP
+The prime representation supplies the missing multiplicative ``alphabet'' between zeta and Collatz. It closes a representation bridge: both systems can be expressed using \(\log p\) and \(v_p\). It does not yet close a spectral identity between the Riemann operator sought by Hilbert--P\'olya-type programmes and a Collatz transfer/Koopman operator.

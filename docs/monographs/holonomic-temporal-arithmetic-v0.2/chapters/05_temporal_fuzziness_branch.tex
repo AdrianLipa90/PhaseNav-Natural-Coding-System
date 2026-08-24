@@ -1,0 +1,165 @@
+\section{Zeta--Schrödinger temporal branch: spectral synthesis, phase dispersion, and fuzziness}
+
+\subsection{Why the transform must be specified}
+
+A discrete Fourier transform/FFT assumes samples on a uniform frequency or time grid according to the chosen convention. Prime logarithms \(\log p\) and non-trivial zeta-zero ordinates are not uniformly spaced. Therefore the canonical project language is:
+\begin{itemize}[leftmargin=2em]
+\item uniform registry \(\Rightarrow\) DFT/FFT may be used;
+\item non-uniform registry \(\Rightarrow\) direct Fourier synthesis or a declared NUFFT implementation;
+\item gridding/interpolation \(\Rightarrow\) a separate approximation receipt is mandatory.
+\end{itemize}
+The phrase ``temporal FFT'' is therefore an implementation shortcut, not a mathematical identity between zeta and time.
+
+\subsection{Spectral registries}
+
+A temporal synthesis experiment begins with a content-addressed registry
+\begin{equation}
+\Omega=\{(\omega_j,c_j,\mathsf{source}_j)\}_{j=1}^{M}.
+\end{equation}
+Allowed source classes include:
+\begin{enumerate}[leftmargin=2em]
+\item \status{UNIFORM\_CONTROL}: a preregistered uniform frequency grid;
+\item \status{PRIME\_LOG}: \(\omega_j=\Omega_0\log p_j\) for a finite prime set;
+\item \status{ZETA\_ZERO\_ORDINATE}: \(\omega_j=\Omega_0\gamma_j\) for declared non-trivial zero ordinates \(\gamma_j\), used only as a diagnostic registry;
+\item \status{COLLATZ\_OPERATOR\_SPECTRUM}: eigenfrequencies of a fully specified finite or mathematically controlled operator;
+\item \status{EXTERNAL\_MEASUREMENT}: an experimental spectrum with provenance.
+\end{enumerate}
+No registry is canonical merely because it produces an attractive waveform.
+
+\subsection{Schrödinger phase evolution}
+
+Define a diagonal project Hamiltonian on the declared modes,
+\begin{equation}
+\boxed{\hat H_{ZC}|j\rangle=E_j|j\rangle,
+\qquad E_j=\hbar\omega_j.}
+\end{equation}
+For
+\begin{equation}
+|\Psi(0)\rangle=\sum_j c_j|j\rangle,
+\qquad\sum_j|c_j|^2=1,
+\end{equation}
+unitary evolution is
+\begin{equation}
+\boxed{
+|\Psi(\tau)\rangle
+=\sum_j c_j e^{-i\omega_j\tau}|j\rangle.
+}
+\label{eq:sch-evolution}
+\end{equation}
+The parameter is written \(\tau\) deliberately. It may be ordinary laboratory time in a standard Hamiltonian simulation, proper time for a physical local clock, or PNCS phase proper time in the computational substrate. Those meanings must never be silently exchanged.
+
+A single eigenmode acquires only a global phase and has no internal relative-phase clock. At least two distinct \(\omega_j\) are required for non-trivial internal phase relations.
+
+\subsection{Temporal synthesis}
+
+Define the coherent temporal amplitude
+\begin{equation}
+\boxed{x(\tau)=\sum_{j=1}^{M}c_j e^{-i\omega_j\tau}.}
+\label{eq:temporal-synthesis}
+\end{equation}
+For uniformly spaced frequencies this can be sampled efficiently by inverse FFT under a declared convention. For non-uniform \(\omega_j\), equation~\eqref{eq:temporal-synthesis} itself is the authority and may be evaluated directly or via NUFFT.
+
+For finite prime-log modes,
+\begin{equation}
+\omega_p=\Omega_0\log p
+\end{equation}
+gives
+\begin{equation}
+\boxed{x(\tau)=\sum_{p\in P}c_p\,p^{-i\Omega_0\tau}.}
+\label{eq:prime-time}
+\end{equation}
+Combining this with a critical-line finite prime character gives
+\begin{equation}
+p^{-1/2-i\Omega_0\tau}=p^{-1/2}e^{-i\Omega_0\tau\log p}.
+\end{equation}
+This is a finite-mode amplitude/phase identity, not use of the divergent critical-line Euler product.
+
+\subsection{Definition of Zeta--Schrödinger fuzziness}
+
+Let
+\begin{equation}
+p_j=|c_j|^2,
+\qquad \sum_jp_j=1.
+\end{equation}
+Define the survival/coherence amplitude
+\begin{equation}
+\boxed{
+A_Z(\tau)
+=\langle\Psi(0)|\Psi(\tau)\rangle
+=\sum_jp_j e^{-i\omega_j\tau}.
+}
+\label{eq:az}
+\end{equation}
+The project-defined \emph{Zeta--Schrödinger temporal fuzziness} is
+\begin{equation}
+\boxed{
+\mathcal F_Z(\tau)=1-|A_Z(\tau)|^2.
+}
+\label{eq:fuzziness}
+\end{equation}
+Status: \status{PROJECT\_EXACT} as a definition. It satisfies
+\begin{equation}
+0\le \mathcal F_Z\le1,
+\qquad
+\mathcal F_Z(0)=0.
+\end{equation}
+For a one-mode state, \(\mathcal F_Z(\tau)=0\) for all \(\tau\).
+
+\subsection{Small-time expansion}
+
+Let
+\begin{equation}
+\bar\omega=\sum_jp_j\omega_j,
+\qquad
+(\Delta\omega)^2=\sum_jp_j(\omega_j-\bar\omega)^2.
+\end{equation}
+Expanding equation~\eqref{eq:az} gives
+\begin{equation}
+\boxed{
+|A_Z(\tau)|^2
+=1-(\Delta\omega)^2\tau^2+O(\tau^4),
+}
+\end{equation}
+and hence
+\begin{equation}
+\boxed{
+\mathcal F_Z(\tau)
+=(\Delta\omega)^2\tau^2+O(\tau^4).
+}
+\label{eq:fuzz-small}
+\end{equation}
+Equivalently \(\Delta E=\hbar\Delta\omega\) controls the initial rate at which the state becomes distinguishable from its initial ray.
+
+\subsection{Relative phase as an operational clock}
+
+For two modes,
+\begin{equation}
+\Delta\varphi_{12}(\tau)
+=(\omega_2-\omega_1)\tau.
+\end{equation}
+The measurable internal change is relative phase, not the common global phase. A project clock observable may therefore be built from a vector of pairwise phase differences or from \(\mathcal F_Z\), with revivals explicitly allowed.
+
+\INTERP
+The phrase ``fuzziness makes time flow'' is sharpened here to the following candidate statement: \emph{operational temporal change is available when a spectral superposition develops non-trivial relative phases, and \(\mathcal F_Z\) measures loss of initial phase coherence}. This is compatible with standard unitary quantum dynamics. The stronger ontological claim that physical time itself is generated by zeta/Collatz spectral fuzziness remains \status{OPEN}.
+
+\subsection{Local proper-time binding}
+
+A physically local form replaces the evolution parameter by proper time,
+\begin{equation}
+|\Psi(\tau_{\rm phys})\rangle
+=\sum_jc_j e^{-i\omega_j\tau_{\rm phys}}|j\rangle.
+\end{equation}
+A PNCS runtime form may instead use the v0.27 content-addressed phase proper time,
+\begin{equation}
+|\Psi(\tau_{\rm PNCS})\rangle
+=\sum_jc_j e^{-i\omega_j\tau_{\rm PNCS}}|j\rangle,
+\end{equation}
+with the mandatory receipt field
+\begin{center}
+\texttt{laboratory\_time\_modified = false}.
+\end{center}
+The two equations have the same numerical form but different semantics and provenance.
+
+\subsection{Revivals are features, not failures}
+
+Because equation~\eqref{eq:fuzziness} is generated by coherent phases, \(\mathcal F_Z\) need not increase monotonically. Finite commensurate spectra can exhibit exact revivals; generic incommensurate finite spectra can exhibit approximate recurrences. Therefore the project must not equate ``time arrow'' with monotonic fuzziness without an additional open-system/decoherence model.

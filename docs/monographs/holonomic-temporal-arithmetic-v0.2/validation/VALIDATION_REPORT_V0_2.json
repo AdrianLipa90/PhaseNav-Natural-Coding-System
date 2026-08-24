@@ -1,0 +1,196 @@
+{
+  "schema": "PHASENAV_HOLONOMIC_TEMPORAL_ARITHMETIC_VALIDATION_V0_2",
+  "checks": [
+    {
+      "name": "theta_modular_0.13",
+      "status": "PASS",
+      "detail": "2.05052186054056001549166359459466145672405181396697051885969e-61"
+    },
+    {
+      "name": "theta_modular_0.7",
+      "status": "PASS",
+      "detail": "6.77808462516937184280182960142378692226346011462906702857061e-62"
+    },
+    {
+      "name": "theta_modular_2.3",
+      "status": "PASS",
+      "detail": "1.13916842563420030604882194813830180923383580080026976644058e-61"
+    },
+    {
+      "name": "theta_modular_9.1",
+      "status": "PASS",
+      "detail": "2.84021333370437230348250432447225852817581170239041572639834e-63"
+    },
+    {
+      "name": "theta_mellin_zeta",
+      "status": "PASS",
+      "detail": "4.58260516044942167465118952386975173405076814992698569590092e-49"
+    },
+    {
+      "name": "xi_reflection_(0.2 + 3.1j)",
+      "status": "PASS",
+      "detail": "4.58654755592515582529757881777710480169430230939153866184406e-62"
+    },
+    {
+      "name": "xi_reflection_(0.5 + 14.134725j)",
+      "status": "PASS",
+      "detail": "6.94066604073121436464200492508792215390732025668204452434113e-70"
+    },
+    {
+      "name": "xi_reflection_(1.7 + 2.2j)",
+      "status": "PASS",
+      "detail": "8.69692824144828433779738955758388759223266889697601346189823e-62"
+    },
+    {
+      "name": "collatz_orbit_factorization_400x4",
+      "status": "PASS",
+      "detail": 4.787012419780535e-12
+    },
+    {
+      "name": "defect_sigma_0.2",
+      "status": "PASS",
+      "detail": [
+        2.363161460917873,
+        2.3631614609178726
+      ]
+    },
+    {
+      "name": "defect_sigma_0.5",
+      "status": "PASS",
+      "detail": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "defect_sigma_0.8",
+      "status": "PASS",
+      "detail": [
+        2.363161460917873,
+        2.363161460917873
+      ]
+    },
+    {
+      "name": "defect_sigma_1.3",
+      "status": "PASS",
+      "detail": [
+        16.80470372208265,
+        16.804703722082653
+      ]
+    },
+    {
+      "name": "half_axis_nonclosed_unique_control",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "closed_defect_degenerate_0.1",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "closed_defect_degenerate_0.5",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "closed_defect_degenerate_1.4",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "one_loop_minus_one",
+      "status": "PASS",
+      "detail": "(-1+0j)"
+    },
+    {
+      "name": "double_loop_plus_one",
+      "status": "PASS",
+      "detail": "(1+0j)"
+    },
+    {
+      "name": "critical_conjugate_0.0",
+      "status": "PASS",
+      "detail": 0.0
+    },
+    {
+      "name": "critical_conjugate_0.3",
+      "status": "PASS",
+      "detail": 0.0
+    },
+    {
+      "name": "critical_conjugate_7.1",
+      "status": "PASS",
+      "detail": 0.0
+    },
+    {
+      "name": "critical_conjugate_14.134725",
+      "status": "PASS",
+      "detail": 0.0
+    },
+    {
+      "name": "prime_flux_exact_steps",
+      "status": "PASS",
+      "detail": {
+        "steps": 7500
+      }
+    },
+    {
+      "name": "prime_flux_telescopes_endpoint",
+      "status": "PASS",
+      "detail": {
+        "67": -1,
+        "13": -1,
+        "2": 1,
+        "7": 1,
+        "5": 2
+      }
+    },
+    {
+      "name": "t36_pair_len",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "t36_pair_finite",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "uniform_fft_direct_equivalence",
+      "status": "PASS",
+      "detail": 2.7048516914496868e-15
+    },
+    {
+      "name": "fuzz_zero_time",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "fuzz_bounds",
+      "status": "PASS",
+      "detail": [
+        0.0,
+        0.930247635511082
+      ]
+    },
+    {
+      "name": "single_mode_fuzz_zero",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "two_mode_exact_fuzz",
+      "status": "PASS",
+      "detail": 3.0371552169929095e-16
+    },
+    {
+      "name": "small_time_variance_law",
+      "status": "PASS",
+      "detail": 1.000000000907454
+    }
+  ],
+  "passed": 33,
+  "failed": 0,
+  "status": "PASS"
+}

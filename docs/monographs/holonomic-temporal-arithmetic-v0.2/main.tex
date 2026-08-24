@@ -1,0 +1,57 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[margin=24mm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,longtable,tabularx,array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\setlength{\emergencystretch}{3em}
+\setlength{\headheight}{14pt}
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black,pdftitle={PhaseNav Holonomic Temporal Arithmetic},pdfauthor={Adrian Lipa}}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{PhaseNav Holonomic Temporal Arithmetic v0.2}
+\rhead{Adrian Lipa}
+\cfoot{\thepage}
+\newcommand{\status}[1]{\texttt{#1}}
+\newcommand{\Tthirtysix}{T^{36}}
+\newcommand{\kappaTIR}{\kappa=\dfrac{\ln 2}{24\pi}}
+\newcommand{\RePart}{\operatorname{Re}}
+\newcommand{\ImPart}{\operatorname{Im}}
+\newcommand{\Hol}{\operatorname{Hol}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\INTERP}{\paragraph{INTERPRETACJA.}}
+\newenvironment{claim}[1]{\par\medskip\noindent\textbf{#1}\quad}{\par\medskip}
+\title{\textbf{PhaseNav Holonomic Temporal Arithmetic}\\[0.5em]
+\large Phase, Proper Time, Theta/Zeta, Prime-Valuation Collatz Flow, and Zeta--Schrödinger Temporal Fuzziness}
+\author{Adrian Lipa\\\small Formalisation and implementation monograph prepared with ChatGPT}
+\date{23 August 2026\\\small Version 0.2 -- experimental, non-promoting}
+\begin{document}
+\maketitle
+\begin{abstract}
+This monograph consolidates the current PhaseNav research line that begins with an electromagnetic/phase source equation, separates classical induction and quantum phase from speculative energy claims, and develops a controlled mathematical architecture joining proper-time phase evolution, Aharonov--Bohm and Berry holonomy, Jacobi theta modularity, Mellin analysis, the Riemann zeta function, Euler prime modes, shortcut-Collatz prime-valuation flow, and a project-defined Zeta--Schrödinger temporal-fuzziness operator. The exact project results are finite-path identities, prime-valuation factorisations, complementary Mellin defects, critical-line conjugate phase pairs, and deterministic \(\Tthirtysix\) embeddings. The document does not claim a proof of the Riemann Hypothesis, the Collatz conjecture, physical zero-point-energy extraction, or laboratory-time modification. Physical emergence of time remains an open interpretation; the implemented target is an operational phase-dispersion clock model compatible with the existing PNCS v0.27 local phase-proper-time substrate.
+\end{abstract}
+\tableofcontents
+\clearpage
+\input{chapters/01_status_and_genealogy}
+\input{chapters/02_physical_phase_branch}
+\input{chapters/03_theta_zeta_branch}
+\input{chapters/04_collatz_prime_branch}
+\input{chapters/05_temporal_fuzziness_branch}
+\input{chapters/06_t36_implementation_and_tests}
+\input{chapters/07_open_bridges_and_roadmap}
+\appendix
+\input{chapters/appendix_formula_register}
+\input{chapters/references}
+\end{document}

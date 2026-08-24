@@ -1,0 +1,39 @@
+\chapter{Current source map}
+
+The following paths are the principal repository anchors used by this update. The list is intentionally presented as records rather than a dense path table so that long content-addressed names remain readable.
+
+\begin{statusbox}{Preserved core}
+\texttt{spec/PNCS\_MONOGRAPH\_V0\_26.md}\\
+Role: source of the v0.26 core monograph preserved in Part I.
+\end{statusbox}
+
+\begin{statusbox}{v0.27 release authority}
+\texttt{spec/PNCS\_HYDRODYNAMIC\_PROPER\_TIME\_V0\_27.md}\\
+\texttt{spec/PNCS\_ORCHORBITAL\_HYDRO\_RUNTIME\_V0\_27.md}\\
+\texttt{provenance/receipts/FOUNDATION\_STATUS\_V0\_27.json}\\
+Role: hydrodynamic and ORCHORBITAL contracts plus release-closure receipt.
+\end{statusbox}
+
+\begin{statusbox}{Temporal-fibre optimization}
+\texttt{spec/PNCS\_T36\_TEMPORAL\_FIBRE\_OPTIMIZATION\_V1.md}\\
+\texttt{provenance/receipts/PNCS\_T36\_TEMPORAL\_FIBRE\_OPTIMIZATION\_V1.json}\\
+Role: experimental fixed-H temporal-fibre implementation and evidence.
+\end{statusbox}
+
+\begin{statusbox}{Prime-temporal experimental layer on main}
+\texttt{spec/experimental/PNCS\_PRIME\_TEMPORAL\_HYDRO\_V0\_1.md}\\
+\texttt{provenance/ledgers/PNCS\_PRIME\_TEMPORAL\_HYDRO\_LEDGER\_V0\_1.json}\\
+Role: merged experimental contract and pure-core evidence ledger.
+\end{statusbox}
+
+\begin{statusbox}{v0.28 release-closure sources now on main}
+\texttt{spec/PNCS\_ADVERSARIAL\_FUZZING\_V0\_28.md}\\
+\texttt{provenance/receipts/PNCS\_V0\_28\_EXACT\_BLOB\_PURE\_EVIDENCE\_20260823.json}\\
+\texttt{provenance/receipts/PNCS\_V0\_28\_LIVE\_PHI\_SNAPSHOT\_RACE\_20260823.json}\\
+Role: current main contract, isolated 92-PASS pure evidence and same-snapshot live-conformance observation. The specification still states RELEASE NOT CLOSED.
+\end{statusbox}
+
+\begin{statusbox}{Root manifest}
+\texttt{MANIFEST.sha256.json}\\
+Role: current fail-closed manifest-status marker. It is explicitly non-authoritative and must be regenerated from final file bytes before release closure that depends on final-tree identity.
+\end{statusbox}

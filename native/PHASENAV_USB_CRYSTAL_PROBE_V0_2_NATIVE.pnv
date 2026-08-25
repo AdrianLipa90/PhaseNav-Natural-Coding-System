@@ -1,0 +1,25 @@
+PNV 1
+EPISTEMIC PRECISE
+MODE READ_ONLY
+
+# Native PhaseNav USB crystal probe.
+# Input authority: PNCS_USB_SYSFS_READ_EFFECT_V0_1 reported snapshot.
+# USB bus speed is preserved as bus metadata and never substituted for oscillator frequency.
+# Clock topology/frequency requires a controller-registry evidence match.
+
+OP USB.PROBE.IDENTITY IDENTITY usb_device_snapshot usb_probe_identity
+OP USB.PROBE.MATCH CONDITION usb_probe_identity controller_registry matched_controller
+OP USB.PROBE.ORDER ORDER matched_controller confidence evidence_rank
+OP USB.PROBE.CLOCK TRANSFORM matched_controller documented_clock_topology clock_candidate
+OP USB.PROBE.CLASSIFY CONDITION clock_candidate documented_reference inferred_clock_evidence
+OP USB.PROBE.UNKNOWN CONDITION matched_controller equals none unknown_clock_state
+OP USB.PROBE.RECEIPT COMPOSITION usb_probe_identity inferred_clock_evidence probe_receipt
+
+VECTOR V.USB.PROBE.IDENTITY "PhaseNav.usb.crystal.identity" PRECISE
+VECTOR V.USB.PROBE.CLOCK "PhaseNav.usb.crystal.clock.candidate" PRECISE
+VECTOR V.USB.PROBE.RECEIPT "PhaseNav.usb.crystal.receipt" PRECISE
+
+EMIT USB.PROBE.IDENTITY
+EMIT USB.PROBE.MATCH
+EMIT USB.PROBE.CLOCK
+EMIT USB.PROBE.RECEIPT

@@ -1,0 +1,109 @@
+{
+  "schema": "PNCS_V0_30_ORDERED_SEMANTIC_PATH_BRIDGE_VALIDATION_20260825",
+  "status": "PASS_IMPLEMENTATION_AND_LIVE_BRIDGE_ADMISSION",
+  "evidence_level": "REFERENCE_MECHANICS_WITH_EXPLICIT_TEST_ONLY_TYPED_BINDINGS",
+  "repository": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "base_main_commit": "5b866572f842407302acbb742df8a3955a0b8325",
+  "branch": "feat/pncs-v0.30-ordered-semantic-path-bridge",
+  "contract_id": "PNCS_ORDERED_SEMANTIC_PATH_BRIDGE_V0_30",
+  "implementation": {
+    "core_path": "src/phasenav_natural_code/ordered_semantic_path_v30.py",
+    "core_sha256": "39da8ff35182b05f6054ad4d039959472909d1e9a28117ef618e1962c7d55a32",
+    "live_path": "src/phasenav_natural_code/ordered_semantic_path_live_v30.py",
+    "live_sha256": "f61c4d8a93867fdf5b2422b12c854752195ff2529334b0e1952a10d461064907",
+    "test_path": "tests/test_ordered_semantic_path_v30.py",
+    "test_sha256": "1b2bf9f7a9589b4845cb4e1ed2c9692c58a47b7b9790b56d2cf4b76b7775985d",
+    "unit_tests": {
+      "passed": 9,
+      "failed": 0
+    },
+    "new_pnv_opcodes": 0
+  },
+  "native_library_v2": {
+    "source_file_sha256": "2e1fd4d0e6e9988be585b9655d9ea23366065453a90ca3f577450acdd01b5c03",
+    "schema": "PNV_NATIVE_FUNCTION_DB_V2",
+    "status": "IMPLEMENTED_READ_MODEL_CANON_PLUS_QUARANTINED_LEGACY",
+    "dimension": 36,
+    "canonical_vector_count": 19,
+    "canonical_path_count": 12,
+    "required_geometry_operators": [
+      "pnv.orbit.arc_sample",
+      "pnv.path.compose",
+      "pnv.path.length_l2",
+      "pnv.torus.delta",
+      "pnv.torus.geodesic",
+      "pnv.torus.normalize"
+    ]
+  },
+  "reference_binding_policy": {
+    "status": "TEST_ONLY_EXPLICIT_BINDINGS",
+    "semantic_promotion_authority": false,
+    "nisaba_semantic_promotion_used": false
+  },
+  "original": {
+    "ordered_semantic_id": "pncs:ordered-semantic:sha256:21fd11f231b0c020d00edc38e1a40b4af182a567196ce6d6140a39da41dd9e4b",
+    "trajectory_id": "pncs:trajectory36:sha256:52ac93af5483226a67709eeffc8a7f69bb5e40026b7d44a980db6c9f5be23ad7",
+    "compile_id": "pncs:semantic-path-compile:sha256:2b3cba32af224814efdd930151ba5855edb454459d774e0c5c75d786a028f48b"
+  },
+  "reverse": {
+    "ordered_semantic_id": "pncs:ordered-semantic:sha256:a0af7e6c9b4b8b73caf10bfb337a19b07c6c353bc0da0c22b403242d1bb98cde",
+    "trajectory_id": "pncs:trajectory36:sha256:2dbcb1b62ae1163e58b1f3d3b45e39c5305f48a2e115bc29e3a1c19a3ea2d612",
+    "compile_id": "pncs:semantic-path-compile:sha256:55eec5c06c5e189d7500ff7e6970aab4c888b3c3854d9f6caa21282e60a2df47"
+  },
+  "paraphrase_alias_control": {
+    "ordered_semantic_id": "pncs:ordered-semantic:sha256:21fd11f231b0c020d00edc38e1a40b4af182a567196ce6d6140a39da41dd9e4b",
+    "trajectory_id": "pncs:trajectory36:sha256:52ac93af5483226a67709eeffc8a7f69bb5e40026b7d44a980db6c9f5be23ad7"
+  },
+  "gates": {
+    "G1_original_reverse_semantic_id_distinct": true,
+    "G2_original_reverse_trajectory_distinct": true,
+    "G3_surface_alias_paraphrase_semantic_id_same": true,
+    "G4_surface_alias_paraphrase_trajectory_same": true,
+    "G5_compile_requires_live_admission": true,
+    "G6_live_devshm_admission": true,
+    "G7_static_runtime_fallback": false,
+    "G8_new_pnv_opcodes_zero": true
+  },
+  "live_admission": {
+    "htri_admission_id": "pncs:htri-admission:sha256:2a5c886e0e7fef237fd84d1ea7a7ecbab32c2e26d6c3d5ac4aabcd15b28010ad",
+    "live_surface_root": "/dev/shm/ciel_noema",
+    "live_surface_snapshot_sha256": "2453d41b2ed85987cf253ec9f19636a4327eeb7e3ad3da00796913333d52de27",
+    "required_operator_vectors": [
+      "ORDER",
+      "TRANSFORM",
+      "COMPOSITION",
+      "IDENTITY"
+    ],
+    "operator_vector_sha256": [
+      "c8036301a7a7e6a380e867140b0b13931f1eaccedc08c709844c73dd0665b33b",
+      "0b5d29b0f5c21d0efaa9baad7dcc4c2cb405ccafdc9f21bc984db4c43ebae7f6",
+      "a55a3374088fac9ef3a5db30968adb52d12e6c21519b38cc0f34731c7e223d5b",
+      "84bdcb7e8af3d7a30238003102be832fe4d80592d431487bf0cc4fb4f5227fb2"
+    ],
+    "receipt_sha256": "9a7e7493f15ca0e7f0b521d51bb9cf31c49a51fbb9189b151aecc7ba75616c44",
+    "htri_execution_performed": false
+  },
+  "nisaba_acceptance": {
+    "status": "BLOCKED_TYPED_SEMANTIC_PROMOTION_PENDING",
+    "frozen_sequence": [
+      "ADDRESS",
+      "WRITING",
+      "WISDOM",
+      "JUDGMENT",
+      "RECEPTION",
+      "AGREEMENT",
+      "HOPE"
+    ],
+    "legacy_labels": [
+      "Awe",
+      "Logos",
+      "Gnosis",
+      "Justice",
+      "Reception",
+      "Agreement",
+      "Hope"
+    ],
+    "v6_expected_fail_preserved": true
+  },
+  "receipt_sha256": "e07e406e3487a5c9fae9203c7bef1439ad701f6458f3261dd70fba5c41c629d5"
+}

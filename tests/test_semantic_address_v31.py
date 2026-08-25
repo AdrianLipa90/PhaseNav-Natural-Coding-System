@@ -52,11 +52,11 @@ def test_original_reverse_and_shuffle_have_distinct_trajectory_identities():
     assert a.trajectory_id != b.trajectory_id
     assert a.trajectory_id != c.trajectory_id
     assert b.trajectory_id != c.trajectory_id
-    assert a.payload["htri_admitted"] is False
-    assert a.payload["blocked_next_gate"] == "MISSING_NATIVE_ORDERED_T36_TO_HTRI_DRIVE_PRIMITIVE"
+    assert a.payload["htri_drive_status"] == "BLOCKED_MISSING_NATIVE_ORDERED_T36_TO_HTRI_DRIVE_PRIMITIVE"
+    assert a.payload["htri_admission_status"] == "BLOCKED_UPSTREAM_DRIVE"
 
 
-def test_reverse_reuses_same_addresses_but_reverses_order():
+def test_reverse_reuses_same_addresses_in_reverse_order():
     original = compiled_original()
     a = build_semantic_trajectory(original.ordered_semantic_id, original.content_ids)
     reverse_ids = tuple(reversed(original.content_ids))
@@ -74,18 +74,21 @@ def test_transition_geometry_is_exact_wrapped_shortest_torus_delta():
         assert all(-0.5 <= x < 0.5 for x in t.tangent36_turns)
         expected = math.sqrt(sum(x * x for x in t.tangent36_turns))
         assert abs(t.length_turns_l2 - expected) < 1e-15
+        assert t.payload["relation_authority"] == "TYPED_ORDERED_SEMANTIC_EDGE"
+        assert t.payload["geometry_role"] == "SHORTEST_WRAPPED_T36_REALIZATION"
 
 
-def test_generator_never_promotes_semantics_or_htri_authority():
+def test_generator_exposes_typed_authority_and_computational_geometry_role():
     original = compiled_original()
     traj = build_semantic_trajectory(original.ordered_semantic_id, original.content_ids)
     for address in traj.addresses:
-        assert address.payload["semantic_authority"] is False
-        assert address.payload["semantic_similarity_from_geometry"] is False
-        assert address.payload["canon_allowed"] is False
-    assert traj.payload["geometry_creates_semantics"] is False
-    assert traj.payload["htri_drive_defined"] is False
-    assert traj.payload["htri_admitted"] is False
+        assert address.payload["semantic_authority"] == "TYPED_CONTENT_ID"
+        assert address.payload["geometry_role"] == "COMPUTATIONAL_ADDRESS"
+        assert address.payload["promotion_status"] == "CANDIDATE_CHYBA"
+    assert traj.payload["semantic_authority"] == "TYPED_CONTENT_AND_ORDER"
+    assert traj.payload["geometry_role"] == "ORDERED_SHORTEST_WRAPPED_T36_REALIZATION"
+    assert traj.payload["htri_drive_status"] == "BLOCKED_MISSING_NATIVE_ORDERED_T36_TO_HTRI_DRIVE_PRIMITIVE"
+    assert traj.payload["htri_admission_status"] == "BLOCKED_UPSTREAM_DRIVE"
     assert traj.payload["new_pnv_opcodes"] == 0
 
 

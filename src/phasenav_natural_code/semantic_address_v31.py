@@ -75,9 +75,9 @@ class SemanticAddress36:
             "coordinate_range": "[0,2pi)",
             "phase36": list(self.phase36),
             "phase36_sha256": self.phase36_sha256,
-            "semantic_authority": False,
-            "semantic_similarity_from_geometry": False,
-            "canon_allowed": False,
+            "semantic_authority": "TYPED_CONTENT_ID",
+            "geometry_role": "COMPUTATIONAL_ADDRESS",
+            "promotion_status": "CANDIDATE_CHYBA",
         }
 
     @property
@@ -108,8 +108,8 @@ class SemanticTransition36:
             "tangent36_turns": list(self.tangent36_turns),
             "tangent36_sha256": self.tangent36_sha256,
             "length_turns_l2": self.length_turns_l2,
-            "relation_authority_required_before_geometry": True,
-            "geometry_creates_semantics": False,
+            "relation_authority": "TYPED_ORDERED_SEMANTIC_EDGE",
+            "geometry_role": "SHORTEST_WRAPPED_T36_REALIZATION",
         }
 
     @property
@@ -132,11 +132,10 @@ class SemanticTrajectory36:
             "address_ids": [x.address_id for x in self.addresses],
             "phase36_sha256_sequence": [x.phase36_sha256 for x in self.addresses],
             "transition_ids": [x.transition_id for x in self.transitions],
-            "semantic_authority": "TYPED_CONTENT_AND_ORDER_ONLY",
-            "geometry_creates_semantics": False,
-            "htri_drive_defined": False,
-            "htri_admitted": False,
-            "blocked_next_gate": "MISSING_NATIVE_ORDERED_T36_TO_HTRI_DRIVE_PRIMITIVE",
+            "semantic_authority": "TYPED_CONTENT_AND_ORDER",
+            "geometry_role": "ORDERED_SHORTEST_WRAPPED_T36_REALIZATION",
+            "htri_drive_status": "BLOCKED_MISSING_NATIVE_ORDERED_T36_TO_HTRI_DRIVE_PRIMITIVE",
+            "htri_admission_status": "BLOCKED_UPSTREAM_DRIVE",
             "new_pnv_opcodes": 0,
         }
 

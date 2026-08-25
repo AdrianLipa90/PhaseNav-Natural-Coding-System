@@ -35,7 +35,7 @@ def test_original_reverse_and_shuffle_have_distinct_ordered_semantic_ids():
     assert reverse.ordered_semantic_id != shuffle.ordered_semantic_id
 
 
-def test_surface_paraphrase_does_not_change_semantic_identity():
+def test_surface_paraphrase_preserves_semantic_identity():
     roles = fixture()
     paraphrased = tuple(
         SemanticRoleRecord(
@@ -54,7 +54,7 @@ def test_surface_paraphrase_does_not_change_semantic_identity():
     assert a.content_ids == b.content_ids
 
 
-def test_legacy_hook_is_provenance_not_semantic_authority():
+def test_legacy_hook_remains_provenance_role():
     roles = fixture()
     changed = tuple(
         SemanticRoleRecord(
@@ -70,7 +70,7 @@ def test_legacy_hook_is_provenance_not_semantic_authority():
     assert compile_semantic_sequence(roles).ordered_semantic_id == compile_semantic_sequence(changed).ordered_semantic_id
 
 
-def test_lowering_uses_only_existing_admitted_sequence_primitives():
+def test_lowering_uses_existing_admitted_sequence_primitives():
     compiled = compile_semantic_sequence(fixture())
     schedule = compiled.operator_schedule
     assert len(schedule) == 25
@@ -82,15 +82,16 @@ def test_lowering_uses_only_existing_admitted_sequence_primitives():
     assert schedule.count("COMPOSITION") == 6
 
 
-def test_receipt_stays_fail_closed_before_t36_and_htri():
+def test_receipt_exposes_authority_and_next_gate():
     receipt = compile_semantic_sequence(fixture()).receipt
     assert receipt["new_pnv_opcodes"] == 0
-    assert receipt["semantic_identity_from_surface_label"] is False
-    assert receipt["semantic_identity_from_legacy_vector"] is False
-    assert receipt["legacy_hook_execution"] is False
-    assert receipt["t36_realization_present"] is False
-    assert receipt["htri_admitted"] is False
-    assert receipt["blocked_next_gate"] == "MISSING_TYPED_SEMANTIC_ROLE_TO_T36_REALIZATION_CONTRACT"
+    assert receipt["semantic_identity_authority"] == "TYPED_CONTENT_AND_ORDER"
+    assert receipt["surface_label_role"] == "PRESENTATION_AND_PROVENANCE"
+    assert receipt["legacy_vector_role"] == "PROVENANCE_ONLY"
+    assert receipt["legacy_hook_role"] == "PROVENANCE_ONLY"
+    assert receipt["t36_realization_status"] == "PENDING_V2_ADDRESS_BINDING"
+    assert receipt["htri_admission_status"] == "BLOCKED_UPSTREAM_T36_REALIZATION"
+    assert receipt["next_gate"] == "TYPED_SEMANTIC_ROLE_TO_T36_REALIZATION_CONTRACT"
 
 
 def test_duplicate_typed_role_fails_closed():
@@ -99,7 +100,7 @@ def test_duplicate_typed_role_fails_closed():
         compile_semantic_sequence((roles[0], roles[1], roles[0]))
 
 
-def test_content_identity_excludes_surface_and_provenance_record_fields():
+def test_content_identity_is_surface_and_provenance_invariant():
     roles = fixture()
     r = roles[0]
     variant = SemanticRoleRecord(

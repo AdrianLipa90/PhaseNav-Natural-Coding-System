@@ -1,0 +1,26 @@
+PNV 1
+EPISTEMIC PRECISE
+MODE READ_ONLY
+
+# PNCS USB sysfs read effect v0.1.
+# Operational reads are fixed to /sys/bus/usb/devices and resolve inside /sys/devices.
+# Every execution is bound to an exact v0.25 dispatch origin and live runtime generation.
+# No block-device writes, raw USB writes, vendor commands, firmware commands,
+# subprocesses, network access or static runtime fallback are admitted.
+
+OP USB.DEVICE.IDENTITY IDENTITY usb_sysfs_snapshot usb_device_identity
+OP USB.DEVICE.MATCH CONDITION usb_device_identity requested_vid_pid matched_usb_device
+OP USB.DEVICE.ORDER ORDER usb_sysfs_node stable_device_order
+OP USB.DEVICE.SNAPSHOT COMPOSITION usb_device_identity whitelisted_attributes reported_snapshot
+OP USB.CLOCK.CANDIDATE TRANSFORM reported_snapshot controller_clock_candidate
+OP USB.CLOCK.EVIDENCE CONDITION controller_clock_candidate evidence_class admitted_clock_evidence
+OP USB.CLOCK.RECEIPT COMPOSITION reported_snapshot admitted_clock_evidence usb_probe_receipt
+
+VECTOR V.USB.IDENTITY "PNCS.usb.device.identity" PRECISE
+VECTOR V.USB.SNAPSHOT "PNCS.usb.sysfs.reported.snapshot" PRECISE
+VECTOR V.USB.CLOCK "PNCS.usb.clock.candidate" PRECISE
+
+EMIT USB.DEVICE.IDENTITY
+EMIT USB.DEVICE.MATCH
+EMIT USB.DEVICE.SNAPSHOT
+EMIT USB.CLOCK.RECEIPT

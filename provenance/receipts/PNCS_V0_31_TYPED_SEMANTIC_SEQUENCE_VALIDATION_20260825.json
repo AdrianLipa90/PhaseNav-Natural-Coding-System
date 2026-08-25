@@ -1,0 +1,63 @@
+{
+  "schema": "PNCS_V0_31_TYPED_SEMANTIC_SEQUENCE_VALIDATION_V1",
+  "date": "2026-08-25",
+  "status": "PASS_UPSTREAM_V31_BLOCKED_HTRI_DRIVE",
+  "branch": "feat/pncs-v0.30-ordered-semantic-path-bridge",
+  "semantic_sequence_contract": "PNCS_TYPED_SEMANTIC_SEQUENCE_COMPILER_V0_31",
+  "address_generator_contract": "PNCS_SEMANTIC_CONTENT_ADDRESS_GENERATOR_V2",
+  "semantic_authority": "TYPED_CONTENT_AND_ORDER",
+  "geometry_role": "COMPUTATIONAL_ADDRESS_AND_TYPED_EDGE_REALIZATION",
+  "legacy_card_role": "PROVENANCE_ONLY",
+  "new_pnv_opcodes": 0,
+  "source_blobs": {
+    "semantic_sequence_v31.py": "a3efdeaee7b32eacc08eac6792feb2467344febd",
+    "semantic_address_v31.py": "6f59272b590383f491b7cfb5bfa993f9f3904389",
+    "test_semantic_sequence_v31.py": "1cd657a2a32476a63cbfed4b4cb535a494e39147",
+    "test_semantic_address_v31.py": "2444fb82de67ece32ca6681273029493eed8dbb6",
+    "PNCS_TYPED_SEMANTIC_SEQUENCE_COMPILER_V0_31.md": "633fdff26cd8e9a4132df687cfdececd2fefea52",
+    "PNCS_TYPED_SEMANTIC_SEQUENCE_COMPILER_V0_31.pnv": "a4c911b84808d736c33e92d71a3d8659595d08cf"
+  },
+  "frozen_roles": [
+    "pncs:semantic-role:sha256:651945000e748c725aef49f1a869e299c1f301e3c231fa8a01dd31c2f6d171b4",
+    "pncs:semantic-role:sha256:ada3492e6d5ab952f572866756b0e0ab1f802294f049856fd1b260bc5d78dd6a",
+    "pncs:semantic-role:sha256:71e0615ef090462209284a684fb8f8240bf0733d539632b800a8f7ccac7a32e9",
+    "pncs:semantic-role:sha256:0f06b487e433aebecd0f71ffd6daba56f861bba981dd1f4323b0dd9fc23c0ff3",
+    "pncs:semantic-role:sha256:6bb1382805d48c43546e03ea86945bcb220d5368122882de81fe06c607ef8220",
+    "pncs:semantic-role:sha256:8f6ab58accf18ae69865533a470277180e2796ad57f4e481a6aaf38c145e92f7",
+    "pncs:semantic-role:sha256:fa503ecd6cd15ae946c0c274d29d69b533ef6df99d236c10deb3895b432ef729"
+  ],
+  "lowering_id": "pncs:semantic-lowering:sha256:92b6b1605a3b31f696da9ee0d93c4aef28792f06ad1f8817c32278b2df7bfd7b",
+  "control_results": {
+    "original_semantic_id": "pncs:semantic-sequence:sha256:10bfff43632c51df63e8a9e0f0d414ddba13b3e5acb476d4be1eca5c86f17e0d",
+    "reverse_semantic_id": "pncs:semantic-sequence:sha256:6710d44c3b522a35c2e8c88c1d35eec58aa410c5998d58fa58429b8aaa816e02",
+    "shuffle_semantic_id": "pncs:semantic-sequence:sha256:8f3fb35a3cdab26ebbef81fa595e84189a1ec9f3eaa551677694bd2410265878",
+    "original_trajectory_id": "pncs:semantic-trajectory36:sha256:72a6f4a94fa21ca8d646b856cb1ade22ffcd52d1fa1f28b870204222f36e585f",
+    "reverse_trajectory_id": "pncs:semantic-trajectory36:sha256:eaacd5a31daf821f11b8542a0b0cf87df615d116da86b5266f464bb722ce0bf6",
+    "shuffle_trajectory_id": "pncs:semantic-trajectory36:sha256:e045801ca49cb638aae9de625f93c46dfddbbee348f3a911e1429d2d11ad54f8",
+    "semantic_ids_distinct": true,
+    "trajectory_ids_distinct": true,
+    "unique_t36_address_hashes": 7
+  },
+  "representation_diagnostic": {
+    "pairwise_projective_fidelity_min": 0.0007772637034345703,
+    "pairwise_projective_fidelity_mean": 0.03459159363431424,
+    "pairwise_projective_fidelity_max": 0.09215980533908529,
+    "evidence_role": "REPRESENTATION_SEPARATION_CHECK"
+  },
+  "reference_validation": {
+    "status": "PASS",
+    "receipt_sha256": "9244c2aaf877fa2c2be892e85d75481d700fee15ef8b459be74c1b6435ae8bd5",
+    "test_modules_added": 2,
+    "test_cases_added": 16
+  },
+  "hosted_ci": {
+    "status": "BLOCKED_INFRASTRUCTURE",
+    "known_classification": "HOSTED_RUNNER_PRE_STEP_FAILURE",
+    "authority_receipt": "provenance/receipts/PNCS_V0_28_CI_PRE_STEP_BLOCKER_20260823.json"
+  },
+  "htri": {
+    "drive_status": "BLOCKED_MISSING_NATIVE_ORDERED_T36_TO_HTRI_DRIVE_PRIMITIVE",
+    "admission_status": "BLOCKED_UPSTREAM_DRIVE",
+    "next_contract": "ORDERED_T36_TO_HTRI_DRIVE"
+  }
+}

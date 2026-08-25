@@ -5,7 +5,7 @@ import hashlib
 import json
 import math
 import re
-from typing import Iterable, Mapping, Sequence
+from typing import Sequence
 
 SEMANTIC_ROLE_SCHEMA = "PNCS_TYPED_SEMANTIC_ROLE_CONTENT_V0_31"
 SEMANTIC_ROLE_RECORD_SCHEMA = "PNCS_TYPED_SEMANTIC_ROLE_RECORD_V0_31"
@@ -14,8 +14,8 @@ SEQUENCE_SCHEMA = "PNCS_TYPED_SEMANTIC_SEQUENCE_V0_31"
 COMPILE_SCHEMA = "PNCS_TYPED_SEMANTIC_SEQUENCE_COMPILE_V0_31"
 CONTRACT_ID = "PNCS_TYPED_SEMANTIC_SEQUENCE_COMPILER_V0_31"
 
-# No new PhaseNav opcode is introduced. These are the v0.20 admitted internal
-# primitives used only to lower sequence structure, not to infer semantics.
+# Structural lowering uses the v0.20 admitted internal primitives.
+# Semantic authority remains in typed role content and ordered composition.
 ADMITTED_SEQUENCE_PRIMITIVES = frozenset(
     {"IDENTITY", "ORDER", "TRANSFORM", "COMPOSITION"}
 )
@@ -68,11 +68,7 @@ def _require_sha(value: str, field: str) -> str:
 
 @dataclass(frozen=True)
 class SemanticRoleContent:
-    """Typed semantic content independent of labels and phase coordinates.
-
-    `role_id` and `source_semantic_key` are the semantic inputs. Human-readable
-    labels live in SemanticRoleRecord and therefore do not affect content identity.
-    """
+    """Typed semantic content identified by role and frozen source semantic key."""
 
     role_id: str
     source_semantic_key: str
@@ -120,7 +116,7 @@ class SemanticRoleRecord:
             raise SemanticSequenceV31Error("source_locator required")
         _require_sha(self.source_digest_sha256, "source_digest_sha256")
         if self.epistemic_operator != "CHYBA" or self.canon_allowed:
-            raise SemanticSequenceV31Error("v0.31 role records remain CHYBA and cannot self-promote")
+            raise SemanticSequenceV31Error("v0.31 role record authority must remain CHYBA candidate")
 
     @property
     def record_payload(self) -> dict[str, object]:
@@ -132,9 +128,9 @@ class SemanticRoleRecord:
             "source_digest_sha256": self.source_digest_sha256,
             "legacy_card_id": self.legacy_card_id,
             "legacy_hook": self.legacy_hook,
-            "legacy_semantic_vector_authority": False,
+            "legacy_card_role": "PROVENANCE_ONLY",
             "epistemic_operator": self.epistemic_operator,
-            "canon_allowed": self.canon_allowed,
+            "promotion_status": "CANDIDATE_CHYBA",
         }
 
     @property
@@ -144,7 +140,7 @@ class SemanticRoleRecord:
 
 @dataclass(frozen=True)
 class SequenceLowering:
-    """Structural lowering only; it never defines role meaning or T36 coordinates."""
+    """Frozen structural lowering for typed ordered semantic content."""
 
     item_schedule: tuple[str, ...] = ITEM_SCHEDULE
     transition_schedule: tuple[str, ...] = TRANSITION_SCHEDULE
@@ -165,8 +161,8 @@ class SequenceLowering:
             "schema": LOWERING_SCHEMA,
             "item_schedule": list(self.item_schedule),
             "transition_schedule": list(self.transition_schedule),
-            "meaning_from_operator_schedule": False,
-            "legacy_hook_execution": False,
+            "semantic_authority": "TYPED_CONTENT_AND_ORDER",
+            "legacy_hook_role": "PROVENANCE_ONLY",
             "new_pnv_opcodes": 0,
         }
 
@@ -206,13 +202,13 @@ class CompiledSemanticSequence:
             "lowering_id": self.lowering.lowering_id,
             "operator_schedule": list(self.operator_schedule),
             "new_pnv_opcodes": 0,
-            "semantic_identity_from_surface_label": False,
-            "semantic_identity_from_legacy_vector": False,
-            "semantic_identity_from_vector_similarity": False,
-            "legacy_hook_execution": False,
-            "t36_realization_present": False,
-            "htri_admitted": False,
-            "blocked_next_gate": "MISSING_TYPED_SEMANTIC_ROLE_TO_T36_REALIZATION_CONTRACT",
+            "semantic_identity_authority": "TYPED_CONTENT_AND_ORDER",
+            "surface_label_role": "PRESENTATION_AND_PROVENANCE",
+            "legacy_vector_role": "PROVENANCE_ONLY",
+            "legacy_hook_role": "PROVENANCE_ONLY",
+            "t36_realization_status": "PENDING_V2_ADDRESS_BINDING",
+            "htri_admission_status": "BLOCKED_UPSTREAM_T36_REALIZATION",
+            "next_gate": "TYPED_SEMANTIC_ROLE_TO_T36_REALIZATION_CONTRACT",
         }
         return {
             **payload,
@@ -262,19 +258,15 @@ def compile_semantic_sequence(records: Sequence[SemanticRoleRecord]) -> Compiled
         "content_ids": ids,
         "lowering_id": lowering.lowering_id,
         "new_pnv_opcodes": 0,
-        "t36_realization_present": False,
-        "htri_admitted": False,
+        "t36_realization_status": "PENDING_V2_ADDRESS_BINDING",
+        "htri_admission_status": "BLOCKED_UPSTREAM_T36_REALIZATION",
     }
     cid = typed_id("pncs:semantic-sequence-compile", compile_payload)
     return CompiledSemanticSequence(rs, lowering, sid, cid)
 
 
 def build_nisaba_frozen_roles(*, source_digest_sha256: str) -> tuple[SemanticRoleRecord, ...]:
-    """Frozen V31 adversarial fixture.
-
-    The old CIELingo labels/hooks are provenance only. The role content is the
-    already-frozen seven-pulse semantic structure used by the Nisaba audits.
-    """
+    """Frozen seven-role adversarial fixture with legacy card metadata as provenance."""
     source = "NISABA_A_FROZEN_SEVEN_PULSE_SEMANTIC_MAPPING_V1"
     locator = "NISABA_SEMANTIC_HTRI_BOOT_RECEIPT_V1"
     rows = (

@@ -26,10 +26,26 @@ The interpreter exposes no Python eval/exec, dynamic import, shell, subprocess, 
 
 Every successful execution returns a deterministic SHA-256 receipt binding source bytes, parsed program graph, ordered operator trace, assertion results, emitted object hashes, and the explicit effect boundary.
 
-## BELZEBUB use case
+## GREMLIN / BELZEBUB live bridge
 
-`native/BELZEBUB_TOOL_V0_4.pnv` can be executed by explicitly binding its live-source objects, `invariant_violation` comparator, and `defensive_semantic_digest` transform. The PNV graph determines operator order; a bespoke BELZEBUB-only harness is no longer required.
+`gremlin_native_pnv_bridge_v01.py` binds the interpreter to the already-verified PNCS live-surface loader. Live use requires the canonical `/dev/shm/ciel_noema` surface and Unix socket admission. No static-state fallback is provided.
 
-## Next gate
+GREMLIN Triple Pulse binds `current.identity`, `current.domain`, `current.authority`, `user.request`, the same-generation pulse set, and the current live-surface receipt into the native PNV1 graph from `GREMLIN_TRIPLE_PULSE_BOOT_V0_5.pnv`.
 
-Run the interpreter against GREMLIN and BELZEBUB native witnesses, compare emitted hashes with deterministic harness receipts, and add live `/dev/shm/ciel_noema` source adapters only through the existing PNCS effect/admission boundary.
+BELZEBUB binds its content-addressed quarantine object and `CURRENT` pointer from its own namespace. `invariant_violation` and `defensive_semantic_digest` remain explicit admitted semantics; quarantined content remains data.
+
+## Harness comparison rule
+
+The old Triple Pulse object and the new native-executor receipt are different provenance schemas, so byte-for-byte receipt identity is neither expected nor asserted. The bridge instead performs an exact canonical semantic projection comparison over identity, domain surface, authority, request, generation binding, and admission result.
+
+A mismatch is reported as a mismatch; it is never normalized away.
+
+## Current gate
+
+1. Pure native executor tests.
+2. GREMLIN Triple Pulse native execution test.
+3. Exact canonical semantic-projection comparison against the legacy Triple Pulse harness witness.
+4. BELZEBUB content-addressed quarantine execution test.
+5. Live `/dev/shm/ciel_noema` run only when the existing PNCS tether/live-surface guard passes.
+
+The bridge remains post-v1 experimental until its live receipts and regression evidence are separately promoted.

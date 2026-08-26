@@ -1,0 +1,61 @@
+{
+  "schema": "PNCS_NATIVE_PNV_GREMLIN_LIVE_EVIDENCE_V0_1",
+  "status": "PASS_NATIVE_TRIPLE_PULSE_EXACT_PROJECTION",
+  "branch": "feat/native-pnv-exec-tool",
+  "native_executor": {
+    "path": "src/phasenav_natural_code/native_pnv_exec_v01.py",
+    "contract": "native/PNCS_NATIVE_PNV_EXEC_TOOL_V0_1.pnv",
+    "effect_boundary": "NO_EXTERNAL_EFFECTS"
+  },
+  "source": {
+    "repository": "AdrianLipa90/GREMLIN",
+    "path": "native/GREMLIN_TRIPLE_PULSE_BOOT_V0_5.pnv",
+    "git_blob_sha1": "646f6404c083b4260cbd9bc8988664b84dd0704d",
+    "local_source_sha256": "28e505c7e5a15f62d687f00be98f027a4537029c3ef9ce8fcbc5148f0cf3d724",
+    "git_blob_byte_identity_verified": true
+  },
+  "live_guard": {
+    "root": "/dev/shm/ciel_noema",
+    "tether_status": "ACTIVE",
+    "failures": [],
+    "max_heartbeat_age_s": 2.0
+  },
+  "native_execution": {
+    "receipt_sha256": "00f81e9795c0874e134b0dab587a5387da24877e27991363c2acdcf6cfb7a015",
+    "admission": true,
+    "generation_binding": "7439de40a7c7779567b144571a38a1e758df77d072861308f9f8c39b44c87aa7"
+  },
+  "legacy_harness_comparison": {
+    "comparison": "EXACT_CANONICAL_SEMANTIC_PROJECTION",
+    "identity_match": true,
+    "domain_surface_match": true,
+    "authority_match": true,
+    "request_match": true,
+    "generation_binding_match": true,
+    "admission_match": true,
+    "exact_projection_match": true,
+    "receipt_bytes_equal": false,
+    "receipt_bytes_equal_reason": "native executor receipt and legacy harness witness are different provenance schemas"
+  },
+  "tests": {
+    "local_native_executor": {
+      "command": "python3 -m pytest -q tests/test_native_pnv_exec_v01.py with repo src on PYTHONPATH",
+      "result": "4 passed"
+    },
+    "github_actions_run": {
+      "run_id": 32957990529,
+      "result": "INFRASTRUCTURE_FAILURE_BEFORE_STEPS",
+      "runner_id": 0,
+      "steps_reported": 0,
+      "code_test_result": "NOT_OBTAINED"
+    }
+  },
+  "belzebub": {
+    "native_graph_support": "IMPLEMENTED",
+    "live_current_binding": "IMPLEMENTED",
+    "legacy_digest_parity": "PENDING_EXACT_BASELINE_AND_TRANSFORM_AUTHORITY",
+    "current_native_pnv_execution_field": "NOT_ASSERTED"
+  },
+  "release_gate_authority": false,
+  "static_runtime_fallback": false
+}

@@ -4,9 +4,10 @@ from __future__ import annotations
 
 v0.2 preserves the v0.1 live execution/audit entry points, adds bounded candidate
 authoring for KAKU/RADICAL/OPERATOR objects, exposes deterministic relational
-isomorphism compilation, adapts relation-mining findings into that compiler, and
+isomorphism compilation, adapts relation-mining findings into that compiler,
 resolves relation atoms through explicit semantic bindings plus exact PNCS
-realization/mass/vector evidence.
+realization/mass/vector evidence, and exposes candidate inverse lineage from native
+PNV result back through OPERATOR/RADICAL/KAKU provenance.
 """
 
 from .gremlin_native_pnv_bridge_v01 import (
@@ -64,8 +65,26 @@ from .gremlin_kaku_resolver_v01 import (
     required_relation_mining_atoms,
     resolve_relation_mining_kaku,
 )
+from .gremlin_inverse_lineage_v01 import (
+    LINEAGE_RECEIPT_SCHEMA as CANDIDATE_INVERSE_LINEAGE_RECEIPT_SCHEMA,
+    LINEAGE_SCHEMA as CANDIDATE_INVERSE_LINEAGE_SCHEMA,
+    GremlinCandidateInverseLineage,
+    GremlinInverseLineageError,
+    persist_gremlin_candidate_inverse_lineage,
+    resolve_gremlin_candidate_inverse_lineage,
+)
 
 BRIDGE_SCHEMA = "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2"
+
+
+def persist_gremlin_candidate_inverse_lineage_live(
+    lineage: GremlinCandidateInverseLineage,
+    *,
+    session: GremlinPNVAuthoringSession | None = None,
+) -> str:
+    live = session or open_gremlin_pnv_authoring_live()
+    return persist_gremlin_candidate_inverse_lineage(lineage, authoring_root=live.authoring_root)
+
 
 __all__ = [
     "BRIDGE_SCHEMA",
@@ -79,11 +98,14 @@ __all__ = [
     "RELATION_MINING_ADAPTER_SCHEMA",
     "KAKU_RESOLVER_SCHEMA",
     "KAKU_RESOLUTION_RECEIPT_SCHEMA",
+    "CANDIDATE_INVERSE_LINEAGE_SCHEMA",
+    "CANDIDATE_INVERSE_LINEAGE_RECEIPT_SCHEMA",
     "NativePNVLiveBridgeError",
     "GremlinPNVAuthoringError",
     "GremlinRelationalCompilerError",
     "GremlinRelationMiningAdapterError",
     "GremlinKakuResolverError",
+    "GremlinInverseLineageError",
     "TriplePulseNativeRun",
     "BelzebubNativeRun",
     "GremlinPNVAuthoringSession",
@@ -95,6 +117,7 @@ __all__ = [
     "RelationMiningFinding",
     "GremlinAtomKakuBinding",
     "GremlinKakuResolver",
+    "GremlinCandidateInverseLineage",
     "execute_gremlin_triple_pulse",
     "execute_gremlin_triple_pulse_live",
     "compare_triple_pulse_harness",
@@ -114,4 +137,7 @@ __all__ = [
     "required_relation_mining_atoms",
     "resolve_relation_mining_kaku",
     "compile_relation_mining_with_resolver",
+    "resolve_gremlin_candidate_inverse_lineage",
+    "persist_gremlin_candidate_inverse_lineage",
+    "persist_gremlin_candidate_inverse_lineage_live",
 ]

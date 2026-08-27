@@ -12,6 +12,7 @@ from .realization_v18 import RealizationRegistry
 
 RESOLVER_SCHEMA = "PNCS_GREMLIN_KAKU_RESOLVER_V0_1"
 RESOLUTION_RECEIPT_SCHEMA = "PNCS_GREMLIN_KAKU_RESOLUTION_RECEIPT_V0_1"
+EXPECTED_LEDGER_SCHEMA = "PNCS_RELATION_MINING_LEDGER_V0_3"
 
 
 class GremlinKakuResolverError(RuntimeError):
@@ -196,6 +197,8 @@ class GremlinKakuResolver:
 def required_relation_mining_atoms(ledger: Mapping[str, Any], chain_ids: Iterable[str]) -> tuple[str, ...]:
     if not isinstance(ledger, Mapping):
         raise GremlinKakuResolverError("relation-mining ledger mapping required")
+    if ledger.get("schema") != EXPECTED_LEDGER_SCHEMA:
+        raise GremlinKakuResolverError("relation-mining ledger schema mismatch")
     chains = ledger.get("chains")
     if not isinstance(chains, list):
         raise GremlinKakuResolverError("relation-mining ledger chains required")

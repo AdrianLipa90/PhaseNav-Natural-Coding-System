@@ -33,12 +33,7 @@
     "automatic_runtime_execution_authority": false
   },
   "historical_grammar_compatibility": {
-    "semantic_atoms_may_include": [
-      "DERIVE",
-      "RESOLVE",
-      "BOUNDARY",
-      "NEGATION"
-    ],
+    "semantic_atoms_may_include": ["DERIVE", "RESOLVE", "BOUNDARY", "NEGATION"],
     "representation": "KAKU_SEMANTIC_ATOMS",
     "native_executor_opcode_expansion": false
   },
@@ -76,8 +71,9 @@
     "code_test_failure_observed": false
   },
   "noema": {
-    "tether_status_at_implementation": "ACTIVE",
-    "tether_failures": [],
+    "final_guard_schema": "noema.aux-tether-guard/v2",
+    "tether_status": "ACTIVE",
+    "failures": [],
     "guard_sha256": "de7481a0d71fe2033a66ed09de145570dace4b263167247d2f757aee60fcaefc",
     "canonical_surface": "/dev/shm/ciel_noema",
     "live_gremlin_directory_observed": false,

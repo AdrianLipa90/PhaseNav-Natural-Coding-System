@@ -16,11 +16,7 @@ The executable semantic loop is
 SOURCE.PHASE_NOETHER.COLLECTIVE_CARRIER.ROUNDTRIP
 ```
 
-with internal loop ID
-
-```text
-PNV_SOURCE_NOETHER_COLLECTIVE_CARRIER_LOOP_V0_1
-```
+and is used directly as the law-frame loop ID.
 
 ## 1. Source current
 
@@ -83,7 +79,7 @@ The normalization defect is therefore
 
 for nonzero common phase rate.
 
-Exact candidate binding requires \(\Delta_I\) within the declared tolerance.
+Exact candidate binding is \(I_A=I_\phi\). Numerical candidate work may declare a nonzero tolerance, but that tolerance is carried explicitly by the transform gate.
 
 ## 3. Euler-closed energy per Noether carrier
 
@@ -105,20 +101,41 @@ and
 H_\Phi^{EB}=\frac{(P_\Phi^{EB})^2}{2I_\phi}.
 \]
 
-On the positive sector,
+The finite Noether carrier is
+
+\[
+Q_\vartheta=\frac{I_A}{I_\phi}P_\Phi^{EB}.
+\]
+
+Therefore its correctly typed energy-per-carrier coordinate is
+
+\[
+\boxed{
+\epsilon_N^{EB}
+=\frac{H_\Phi^{EB}}{Q_\vartheta}.
+}
+\]
+
+On the exact collective inertia-binding sector \(I_A=I_\phi\),
+
+\[
+Q_\vartheta=P_\Phi^{EB}
+\]
+
+and the expression reduces to
 
 \[
 \boxed{
 \epsilon_N^{EB}
 =\frac{H_\Phi^{EB}}{P_\Phi^{EB}}
 =\frac{P_\Phi^{EB}}{2I_\phi}
-=\frac12D_\tau\chi
+=\frac12D_\tau\chi.
 }
 \]
 
-under the collective inertia binding.
+Thus `epsilon_N_EB` remains typed by the actual finite Noether charge even when a small explicit numerical binding tolerance is being audited. The exact half-phase-rate identity is recovered precisely at zero inertia defect.
 
-`epsilon_N^EB` is typed separately from the intention-charge ratio `epsilon_I^EB=H_Phi^EB/J_I^EB`.
+`epsilon_N_EB` remains distinct from the intention-charge ratio `epsilon_I_EB=H_Phi_EB/J_I_EB`.
 
 ## 4. Executable state
 
@@ -148,15 +165,15 @@ P_Phi_EB
 phase_rate
 Q_theta
 H_Phi_EB
-epsilon_N_EB
+epsilon_N_EB = H_Phi_EB / Q_theta
 Delta_I
 ```
 
 RFC-bound candidate fields:
 
 ```text
-Q_RFC
-epsilon_Q_candidate
+Q_RFC = Q_theta
+epsilon_Q_candidate = epsilon_N_EB
 ```
 
 ## 5. Transport chain
@@ -168,10 +185,10 @@ noether.resolve_rotor_carrier
 noether.bind_rfc_carrier
   -> require Delta_I <= binding_tolerance
   -> Q_RFC=Q_theta
-  -> epsilon_Q_candidate=epsilon_N_EB
+  -> epsilon_Q_candidate=H_Phi_EB/Q_theta
 
 noether.reconstruct_rotor_input
-  -> verify candidate charge and epsilon
+  -> verify the same Q_theta and epsilon_N_EB
   -> reconstruct exact initial state
 ```
 
@@ -224,11 +241,13 @@ hbar > 0
 I_phi > 0
 I_A > 0
 P_Phi_EB > 0
+Q_theta > 0
 finite Euler/rotor inputs
 Delta_I <= binding_tolerance before RFC candidate binding
+reverse RFC candidate must preserve Q_theta and epsilon_N_EB
 ```
 
-A mismatch is surfaced as `PNVNoetherCollectiveError` with the measured `Delta_I`.
+A mismatch is surfaced as `PNVNoetherCollectiveError` with the measured `Delta_I` where applicable.
 
 ## 10. Authority boundary
 

@@ -1,6 +1,6 @@
 {
   "schema": "PNCS_PNV_SOURCE_HOLONOMY_LOOPS_IMPLEMENTATION_RECEIPT_V0_1",
-  "status": "IMPLEMENTED_REFERENCE_SOURCE_LOOPS__IDT_RFC_PINNED__CI_PENDING",
+  "status": "IMPLEMENTED_REFERENCE_SOURCE_LOOPS__IDT_RFC_PINNED__CI_EXECUTION_UNRESOLVED_PRE_TEST",
   "branch": "feat/gremlin-pnv-authoring-v0.2",
   "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
   "code_head_sha": "5f3bf90998b8c3547d51e7c47bddaf0d6be25d60",
@@ -57,8 +57,12 @@
   "ci": {
     "workflow": "PNCS GREMLIN PNV authoring",
     "run_id": 33119164722,
+    "job_id": 98681411714,
     "head_sha": "5f3bf90998b8c3547d51e7c47bddaf0d6be25d60",
-    "status": "PENDING"
+    "conclusion": "failure",
+    "steps": null,
+    "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
+    "code_test_failure_observed": false
   },
   "epistemic_state": "CHYBA",
   "promotion_state": "CANDIDATE_ONLY",

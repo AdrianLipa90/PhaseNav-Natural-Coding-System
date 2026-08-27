@@ -1,15 +1,7 @@
 from __future__ import annotations
 
-"""Reference source-law loops for PNCS information-holonomy audits.
-
-These builders instantiate the generic PNV law-frame engine with the source
-factorizations used at the IDT <-> RFC interface.  OPEN physical normalizations
-(q0, epsilon_Q) enter only as explicit parameters to conditional loop builders.
-"""
-
-from dataclasses import dataclass
 import math
-from typing import Any, Callable, Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 from .gremlin_pnv_holonomy_v01 import (
     HolonomyInvariant,
@@ -17,8 +9,9 @@ from .gremlin_pnv_holonomy_v01 import (
     LawFrameNode,
     LawTransport,
     PNVInformationHolonomyError,
+    information_transport_connection,
 )
-from .model import Kaku
+from .model import Kaku, Vector36
 
 SOURCE_HOLONOMY_CONTRACT = "PNCS_PNV_SOURCE_HOLONOMY_LOOPS_V0_1"
 C_LIGHT_EXACT = 299_792_458.0
@@ -41,338 +34,346 @@ def _finite(value: Any, field: str) -> float:
 def _positive(value: Any, field: str) -> float:
     out = _finite(value, field)
     if out <= 0.0:
-        raise PNVSourceHolonomyError(f"{field} must be strictly positive")
+        raise PNVSourceHolonomyError(f"{field} must be positive")
     return out
 
 
-def _finite_vector(values: Sequence[Any], field: str, *, nonnegative: bool = False) -> list[float]:
-    if isinstance(values, (str, bytes, bytearray)) or not isinstance(values, Sequence) or not values:
-        raise PNVSourceHolonomyError(f"{field} must be a non-empty numeric sequence")
-    out = [_finite(value, field) for value in values]
-    if nonnegative and any(value < 0.0 for value in out):
+def _nonnegative(value: Any, field: str) -> float:
+    out = _finite(value, field)
+    if out < 0.0:
         raise PNVSourceHolonomyError(f"{field} must be non-negative")
     return out
 
 
-def _same_basis(left: Kaku, right: Kaku) -> None:
-    if not isinstance(left, Kaku) or not isinstance(right, Kaku):
-        raise PNVSourceHolonomyError("source holonomy loop requires Kaku law gates")
-    if left.vector.basis_id != right.vector.basis_id:
-        raise PNVSourceHolonomyError("source holonomy law gates must share one exact PNCS basis")
+def _vector36(seed: float, basis_id: str) -> Vector36:
+    offset = _finite(seed, "seed")
+    return Vector36(tuple(offset + i / 1000.0 for i in range(36)), basis_id)
 
 
-def make_extensive_carrier_state(q_cells: Sequence[Any]) -> dict[str, Any]:
-    cells = _finite_vector(q_cells, "Q cells", nonnegative=True)
-    total = math.fsum(cells)
-    if total <= 0.0:
-        raise PNVSourceHolonomyError("positive-source normalization requires Q_total > 0")
+def _phase36(seed: float) -> tuple[float, ...]:
+    offset = _finite(seed, "phase seed")
+    return tuple((offset + i / 360.0) % (2.0 * math.pi) for i in range(36))
+
+
+def _law_kaku(kaku_id: str, basis_id: str, seed: float, role: str) -> Kaku:
+    return Kaku(
+        kaku_id=kaku_id,
+        vector=_vector36(seed, basis_id),
+        semantic_mass=abs(seed) + 1.0,
+        direction="FORWARD",
+        polarity=1.0,
+        role=role,
+        phase=_phase36(seed),
+    )
+
+
+def _refs(values: Sequence[str]) -> tuple[str, ...]:
+    out = tuple(str(value) for value in values if str(value))
+    if not out:
+        raise PNVSourceHolonomyError("source holonomy loop requires evidence_refs")
+    return out
+
+
+def _source_connection(state_space_id: str, refs: Sequence[str]):
+    evidence = _refs(refs)
+    return information_transport_connection(
+        state_space_id,
+        evidence_refs=tuple(
+            sorted(
+                set(
+                    (
+                        *evidence,
+                        f"source_holonomy_contract:{SOURCE_HOLONOMY_CONTRACT}",
+                    )
+                )
+            )
+        ),
+    )
+
+
+def make_extensive_carrier_state(
+    charges: Sequence[float],
+    *,
+    q_total: float | None = None,
+) -> dict[str, Any]:
+    q = [_nonnegative(value, "carrier charge") for value in charges]
+    if not q:
+        raise PNVSourceHolonomyError("carrier state requires at least one charge")
+    total = sum(q) if q_total is None else _positive(q_total, "q_total")
+    if abs(sum(q) - total) > 1e-12 * max(1.0, total):
+        raise PNVSourceHolonomyError("q_total must equal the extensive carrier sum")
     return {
-        "schema": "PNCS_EXTENSIVE_CARRIER_STATE_V0_1",
-        "representation": "EXTENSIVE_CARRIER",
-        "Q_cells": cells,
-        "Q_total": total,
+        "state_schema": "PNCS_EXTENSIVE_CARRIER_STATE_V0_1",
+        "q": q,
+        "q_total": total,
     }
 
 
-def _normalize_carrier(state: Any) -> dict[str, Any]:
-    if not isinstance(state, Mapping) or state.get("representation") != "EXTENSIVE_CARRIER":
-        raise PNVSourceHolonomyError("carrier.normalize_profile requires EXTENSIVE_CARRIER state")
-    cells = _finite_vector(state.get("Q_cells"), "Q cells", nonnegative=True)
-    total = _positive(state.get("Q_total"), "Q_total")
-    if math.fsum(cells) != total:
-        raise PNVSourceHolonomyError("Q_total must equal the extensive carrier sum")
+def carrier_normalize(state: Mapping[str, Any]) -> dict[str, Any]:
+    q = [_nonnegative(value, "carrier charge") for value in state.get("q", [])]
+    total = _positive(state.get("q_total"), "q_total")
+    if abs(sum(q) - total) > 1e-12 * max(1.0, total):
+        raise PNVSourceHolonomyError("carrier normalization requires conserved extensive total")
     return {
-        "schema": "PNCS_NORMALIZED_CARRIER_STATE_V0_1",
-        "representation": "NORMALIZED_PROFILE",
-        "p_cells": [value / total for value in cells],
-        "Q_total": total,
+        **dict(state),
+        "p": [value / total for value in q],
     }
 
 
-def _reconstruct_carrier(state: Any) -> dict[str, Any]:
-    if not isinstance(state, Mapping) or state.get("representation") != "NORMALIZED_PROFILE":
-        raise PNVSourceHolonomyError("carrier.reconstruct_extensive requires NORMALIZED_PROFILE state")
-    p_cells = _finite_vector(state.get("p_cells"), "p cells", nonnegative=True)
-    total = _positive(state.get("Q_total"), "Q_total")
-    norm = math.fsum(p_cells)
-    if abs(norm - 1.0) > 1e-15:
+def carrier_reconstruct(state: Mapping[str, Any]) -> dict[str, Any]:
+    p = [_nonnegative(value, "carrier probability") for value in state.get("p", [])]
+    total = _positive(state.get("q_total"), "q_total")
+    if abs(sum(p) - 1.0) > 1e-12:
         raise PNVSourceHolonomyError("normalized carrier profile must sum to one")
+    return make_extensive_carrier_state([total * value for value in p], q_total=total)
+
+
+def carrier_normalization_transforms() -> dict[str, Any]:
     return {
-        "schema": "PNCS_EXTENSIVE_CARRIER_STATE_V0_1",
-        "representation": "EXTENSIVE_CARRIER",
-        "Q_cells": [total * value for value in p_cells],
-        "Q_total": total,
+        "carrier_normalize": carrier_normalize,
+        "carrier_reconstruct": carrier_reconstruct,
     }
 
 
-def carrier_total_invariant(state: Any) -> float:
-    if not isinstance(state, Mapping):
-        raise PNVSourceHolonomyError("carrier state mapping required")
-    representation = state.get("representation")
-    if representation in {"EXTENSIVE_CARRIER", "NORMALIZED_PROFILE"}:
-        return _positive(state.get("Q_total"), "Q_total")
-    if representation == "OCCUPATION_PROFILE":
-        q0 = _positive(state.get("q0"), "q0")
-        n_cells = _finite_vector(state.get("n_cells"), "occupation cells", nonnegative=True)
-        return q0 * math.fsum(n_cells)
-    raise PNVSourceHolonomyError(f"unsupported carrier representation: {representation}")
-
-
-def carrier_profile_norm_invariant(state: Any) -> float:
-    if not isinstance(state, Mapping):
-        raise PNVSourceHolonomyError("carrier state mapping required")
-    representation = state.get("representation")
-    if representation == "NORMALIZED_PROFILE":
-        return math.fsum(_finite_vector(state.get("p_cells"), "p cells", nonnegative=True))
-    if representation == "EXTENSIVE_CARRIER":
-        cells = _finite_vector(state.get("Q_cells"), "Q cells", nonnegative=True)
-        total = _positive(state.get("Q_total"), "Q_total")
-        return math.fsum(value / total for value in cells)
-    if representation == "OCCUPATION_PROFILE":
-        n_cells = _finite_vector(state.get("n_cells"), "occupation cells", nonnegative=True)
-        total_n = math.fsum(n_cells)
-        if total_n <= 0.0:
-            raise PNVSourceHolonomyError("occupation profile requires positive total occupation")
-        return math.fsum(value / total_n for value in n_cells)
-    raise PNVSourceHolonomyError(f"unsupported carrier representation: {representation}")
+def carrier_normalization_invariants() -> dict[str, Any]:
+    return {
+        "CARRIER_TOTAL": lambda state: _positive(state.get("q_total"), "q_total"),
+    }
 
 
 def build_carrier_normalization_loop(
-    extensive_gate: Kaku,
-    normalized_gate: Kaku,
     *,
-    evidence_refs: Sequence[str] = (),
+    basis_id: str,
+    evidence_refs: Sequence[str],
+    tolerance: float = 1e-12,
 ) -> InformationHolonomyLoop:
-    _same_basis(extensive_gate, normalized_gate)
-    refs = tuple(str(ref) for ref in evidence_refs)
+    refs = _refs(evidence_refs)
+    eps = _nonnegative(tolerance, "tolerance")
+    node_extensive = LawFrameNode(
+        "LAW.CARRIER.EXTENSIVE",
+        "RFC_SOURCE_CARRIER",
+        _law_kaku("LAW.CARRIER.EXTENSIVE", basis_id, 0.11, "law_gate:carrier_extensive"),
+        refs,
+    )
+    node_normalized = LawFrameNode(
+        "LAW.IDT.NORMALIZED_PROFILE",
+        "IDT",
+        _law_kaku("LAW.IDT.NORMALIZED_PROFILE", basis_id, 0.12, "law_gate:idt_normalized_profile"),
+        refs,
+    )
     return InformationHolonomyLoop(
-        loop_id="SOURCE.CARRIER.NORMALIZATION.ROUNDTRIP",
-        nodes=(
-            LawFrameNode(
-                "LAW.RFC.CARRIER_EXTENSIVE",
-                "RFC",
-                extensive_gate,
-                (*refs, "interface:Q_a,Q_total"),
-            ),
-            LawFrameNode(
-                "LAW.IDT.NORMALIZED_PROFILE",
-                "IDT",
-                normalized_gate,
-                (*refs, "interface:p_Q=Q_a/Q_total"),
-            ),
-        ),
+        loop_id="PNV_SOURCE_CARRIER_NORMALIZATION_LOOP_V0_1",
+        connection=_source_connection("PNCS_EXTENSIVE_NORMALIZED_CARRIER_STATE_V0_1", (*refs, "connection:source-carrier-normalization")),
+        nodes=(node_extensive, node_normalized),
         transports=(
             LawTransport(
-                "EDGE.RFC_TO_IDT.NORMALIZE",
-                extensive_gate.kaku_id,
-                normalized_gate.kaku_id,
-                "carrier.normalize_profile",
-                ("equation:p_a=Q_a/Q_total",),
+                "EDGE.CARRIER.NORMALIZE",
+                node_extensive.node_id,
+                node_normalized.node_id,
+                "carrier_normalize",
+                refs,
             ),
             LawTransport(
-                "EDGE.IDT_TO_RFC.RECONSTRUCT",
-                normalized_gate.kaku_id,
-                extensive_gate.kaku_id,
-                "carrier.reconstruct_extensive",
-                ("equation:Q_a=Q_total*p_a",),
+                "EDGE.CARRIER.RECONSTRUCT",
+                node_normalized.node_id,
+                node_extensive.node_id,
+                "carrier_reconstruct",
+                refs,
             ),
         ),
-        invariants=(
-            HolonomyInvariant("SOURCE.TOTAL_Q", "ABS", 0.0),
-            HolonomyInvariant("SOURCE.PROFILE_NORM", "ABS", 1e-15),
-        ),
+        invariants=(HolonomyInvariant("CARRIER_TOTAL", "ABS", eps),),
         evidence_refs=refs,
     )
 
 
-def carrier_normalization_transforms() -> Mapping[str, Callable[[Any], Any]]:
+def q0_to_occupation(state: Mapping[str, Any]) -> dict[str, Any]:
+    q0 = _positive(state.get("q0"), "q0")
+    q = [_nonnegative(value, "carrier charge") for value in state.get("q", [])]
     return {
-        "carrier.normalize_profile": _normalize_carrier,
-        "carrier.reconstruct_extensive": _reconstruct_carrier,
+        **dict(state),
+        "n": [value / q0 for value in q],
     }
 
 
-def carrier_normalization_invariants() -> Mapping[str, Callable[[Any], Any]]:
+def q0_from_occupation(state: Mapping[str, Any]) -> dict[str, Any]:
+    q0 = _positive(state.get("q0"), "q0")
+    n = [_nonnegative(value, "occupation") for value in state.get("n", [])]
     return {
-        "SOURCE.TOTAL_Q": carrier_total_invariant,
-        "SOURCE.PROFILE_NORM": carrier_profile_norm_invariant,
+        "state_schema": "PNCS_EXTENSIVE_CARRIER_STATE_V0_1",
+        "q": [q0 * value for value in n],
+        "q_total": _positive(state.get("q_total"), "q_total"),
+        "q0": q0,
     }
 
 
-def _to_occupation(q0: float) -> Callable[[Any], dict[str, Any]]:
-    q0_exact = _positive(q0, "q0")
-
-    def transform(state: Any) -> dict[str, Any]:
-        if not isinstance(state, Mapping) or state.get("representation") != "EXTENSIVE_CARRIER":
-            raise PNVSourceHolonomyError("carrier.to_occupation requires EXTENSIVE_CARRIER state")
-        cells = _finite_vector(state.get("Q_cells"), "Q cells", nonnegative=True)
-        total = _positive(state.get("Q_total"), "Q_total")
-        if math.fsum(cells) != total:
-            raise PNVSourceHolonomyError("Q_total must equal the extensive carrier sum")
-        return {
-            "schema": "PNCS_CARRIER_OCCUPATION_STATE_V0_1",
-            "representation": "OCCUPATION_PROFILE",
-            "n_cells": [value / q0_exact for value in cells],
-            "q0": q0_exact,
-        }
-
-    return transform
+def q0_occupation_transforms() -> dict[str, Any]:
+    return {
+        "carrier_to_occupation_q0": q0_to_occupation,
+        "occupation_to_carrier_q0": q0_from_occupation,
+    }
 
 
-def _from_occupation(q0: float) -> Callable[[Any], dict[str, Any]]:
-    q0_exact = _positive(q0, "q0")
-
-    def transform(state: Any) -> dict[str, Any]:
-        if not isinstance(state, Mapping) or state.get("representation") != "OCCUPATION_PROFILE":
-            raise PNVSourceHolonomyError("carrier.from_occupation requires OCCUPATION_PROFILE state")
-        state_q0 = _positive(state.get("q0"), "q0")
-        if state_q0 != q0_exact:
-            raise PNVSourceHolonomyError("occupation state q0 mismatches admitted loop q0")
-        n_cells = _finite_vector(state.get("n_cells"), "occupation cells", nonnegative=True)
-        cells = [q0_exact * value for value in n_cells]
-        return {
-            "schema": "PNCS_EXTENSIVE_CARRIER_STATE_V0_1",
-            "representation": "EXTENSIVE_CARRIER",
-            "Q_cells": cells,
-            "Q_total": math.fsum(cells),
-        }
-
-    return transform
+def q0_occupation_invariants() -> dict[str, Any]:
+    return {
+        "CARRIER_TOTAL": lambda state: _positive(state.get("q_total"), "q_total"),
+        "CARRIER_QUANTUM_Q0": lambda state: _positive(state.get("q0"), "q0"),
+    }
 
 
 def build_q0_occupation_loop(
-    extensive_gate: Kaku,
-    occupation_gate: Kaku,
     *,
-    evidence_refs: Sequence[str] = (),
+    basis_id: str,
+    evidence_refs: Sequence[str],
+    tolerance: float = 1e-12,
 ) -> InformationHolonomyLoop:
-    _same_basis(extensive_gate, occupation_gate)
-    refs = tuple(str(ref) for ref in evidence_refs)
+    refs = _refs(evidence_refs)
+    eps = _nonnegative(tolerance, "tolerance")
+    node_carrier = LawFrameNode(
+        "LAW.CARRIER.Q",
+        "RFC_SOURCE_CARRIER",
+        _law_kaku("LAW.CARRIER.Q", basis_id, 0.21, "law_gate:carrier_q"),
+        (*refs, "gate:q0:CONDITIONAL"),
+    )
+    node_occupation = LawFrameNode(
+        "LAW.CARRIER.OCCUPATION_Q0",
+        "PHASE_TIME_HAMILTONIAN",
+        _law_kaku("LAW.CARRIER.OCCUPATION_Q0", basis_id, 0.22, "law_gate:occupation_q0"),
+        (*refs, "gate:q0:CONDITIONAL"),
+    )
     return InformationHolonomyLoop(
-        loop_id="SOURCE.CARRIER.Q0_OCCUPATION.ROUNDTRIP",
-        nodes=(
-            LawFrameNode("LAW.RFC.CARRIER_EXTENSIVE", "RFC", extensive_gate, refs),
-            LawFrameNode("LAW.CARRIER.QUANTIZED_OCCUPATION", "CARRIER_QUANTIZATION", occupation_gate, refs),
-        ),
+        loop_id="PNV_SOURCE_Q0_OCCUPATION_LOOP_V0_1",
+        connection=_source_connection("PNCS_CARRIER_OCCUPATION_STATE_SPACE_V0_1", (*refs, "gate:q0:CONDITIONAL")),
+        nodes=(node_carrier, node_occupation),
         transports=(
-            LawTransport("EDGE.Q_TO_N", extensive_gate.kaku_id, occupation_gate.kaku_id, "carrier.to_occupation"),
-            LawTransport("EDGE.N_TO_Q", occupation_gate.kaku_id, extensive_gate.kaku_id, "carrier.from_occupation"),
+            LawTransport(
+                "EDGE.Q.Q0_TO_N",
+                node_carrier.node_id,
+                node_occupation.node_id,
+                "carrier_to_occupation_q0",
+                (*refs, "gate:q0:CONDITIONAL"),
+            ),
+            LawTransport(
+                "EDGE.N.Q0_TO_Q",
+                node_occupation.node_id,
+                node_carrier.node_id,
+                "occupation_to_carrier_q0",
+                (*refs, "gate:q0:CONDITIONAL"),
+            ),
         ),
-        invariants=(HolonomyInvariant("SOURCE.TOTAL_Q", "ABS", 0.0),),
+        invariants=(
+            HolonomyInvariant("CARRIER_TOTAL", "ABS", eps),
+            HolonomyInvariant("CARRIER_QUANTUM_Q0", "ABS", eps),
+        ),
         evidence_refs=(*refs, "gate:q0:CONDITIONAL"),
     )
 
 
-def q0_occupation_transforms(q0: float) -> Mapping[str, Callable[[Any], Any]]:
-    q0_exact = _positive(q0, "q0")
-    return {
-        "carrier.to_occupation": _to_occupation(q0_exact),
-        "carrier.from_occupation": _from_occupation(q0_exact),
-    }
-
-
-def q0_occupation_invariants() -> Mapping[str, Callable[[Any], Any]]:
-    return {"SOURCE.TOTAL_Q": carrier_total_invariant}
-
-
-def make_current_density_state(j_q: Sequence[Any]) -> dict[str, Any]:
-    values = _finite_vector(j_q, "j_Q")
-    return {
-        "schema": "PNCS_CARRIER_CURRENT_DENSITY_STATE_V0_1",
-        "representation": "CARRIER_CURRENT_DENSITY",
-        "j_Q": values,
-    }
-
-
-def _to_mass_density(epsilon_q: float, c_light: float) -> Callable[[Any], dict[str, Any]]:
-    epsilon = _positive(epsilon_q, "epsilon_Q")
-    c = _positive(c_light, "c")
-    factor = epsilon / (c * c)
-
-    def transform(state: Any) -> dict[str, Any]:
-        if not isinstance(state, Mapping) or state.get("representation") != "CARRIER_CURRENT_DENSITY":
-            raise PNVSourceHolonomyError("source.to_mass_density requires CARRIER_CURRENT_DENSITY state")
-        j = _finite_vector(state.get("j_Q"), "j_Q")
-        return {
-            "schema": "PNCS_PHYSICAL_SOURCE_DENSITY_STATE_V0_1",
-            "representation": "PHYSICAL_SOURCE_DENSITY",
-            "rho_Q": [factor * value for value in j],
-            "epsilon_Q": epsilon,
-            "c": c,
-        }
-
-    return transform
-
-
-def _from_mass_density(epsilon_q: float, c_light: float) -> Callable[[Any], dict[str, Any]]:
-    epsilon = _positive(epsilon_q, "epsilon_Q")
-    c = _positive(c_light, "c")
-    factor = (c * c) / epsilon
-
-    def transform(state: Any) -> dict[str, Any]:
-        if not isinstance(state, Mapping) or state.get("representation") != "PHYSICAL_SOURCE_DENSITY":
-            raise PNVSourceHolonomyError("source.from_mass_density requires PHYSICAL_SOURCE_DENSITY state")
-        if _positive(state.get("epsilon_Q"), "epsilon_Q") != epsilon or _positive(state.get("c"), "c") != c:
-            raise PNVSourceHolonomyError("mass-density state normalization mismatches admitted epsilon_Q/c")
-        rho = _finite_vector(state.get("rho_Q"), "rho_Q")
-        return {
-            "schema": "PNCS_CARRIER_CURRENT_DENSITY_STATE_V0_1",
-            "representation": "CARRIER_CURRENT_DENSITY",
-            "j_Q": [factor * value for value in rho],
-        }
-
-    return transform
-
-
-def equivalent_current_norm(state: Any) -> float:
-    if not isinstance(state, Mapping):
-        raise PNVSourceHolonomyError("source state mapping required")
-    representation = state.get("representation")
-    if representation == "CARRIER_CURRENT_DENSITY":
-        return math.fsum(abs(value) for value in _finite_vector(state.get("j_Q"), "j_Q"))
-    if representation == "PHYSICAL_SOURCE_DENSITY":
-        epsilon = _positive(state.get("epsilon_Q"), "epsilon_Q")
-        c = _positive(state.get("c"), "c")
-        rho = _finite_vector(state.get("rho_Q"), "rho_Q")
-        return math.fsum(abs((c * c / epsilon) * value) for value in rho)
-    raise PNVSourceHolonomyError(f"unsupported source representation: {representation}")
-
-
-def build_epsilon_source_loop(
-    current_gate: Kaku,
-    mass_density_gate: Kaku,
+def make_current_density_state(
+    j_q: Sequence[float],
     *,
-    evidence_refs: Sequence[str] = (),
-) -> InformationHolonomyLoop:
-    _same_basis(current_gate, mass_density_gate)
-    refs = tuple(str(ref) for ref in evidence_refs)
-    return InformationHolonomyLoop(
-        loop_id="SOURCE.CARRIER.EPSILON_MASS_DENSITY.ROUNDTRIP",
-        nodes=(
-            LawFrameNode("LAW.CARRIER.CURRENT_DENSITY", "IDT_RFC_INTERFACE", current_gate, refs),
-            LawFrameNode("LAW.RFC.PHYSICAL_SOURCE_DENSITY", "RFC", mass_density_gate, refs),
-        ),
-        transports=(
-            LawTransport("EDGE.J_TO_RHO", current_gate.kaku_id, mass_density_gate.kaku_id, "source.to_mass_density"),
-            LawTransport("EDGE.RHO_TO_J", mass_density_gate.kaku_id, current_gate.kaku_id, "source.from_mass_density"),
-        ),
-        invariants=(HolonomyInvariant("SOURCE.EQUIVALENT_CURRENT_NORM", "ABS", 1e-12),),
-        evidence_refs=(*refs, "gate:epsilon_Q:CONDITIONAL"),
+    epsilon_q: float,
+    c: float = C_LIGHT_EXACT,
+) -> dict[str, Any]:
+    current = [_finite(value, "j_q") for value in j_q]
+    if not current:
+        raise PNVSourceHolonomyError("current-density state requires at least one j_q value")
+    return {
+        "state_schema": "PNCS_CARRIER_CURRENT_DENSITY_STATE_V0_1",
+        "j_q": current,
+        "epsilon_q": _positive(epsilon_q, "epsilon_q"),
+        "c": _positive(c, "c"),
+    }
+
+
+def epsilon_to_mass_density(state: Mapping[str, Any]) -> dict[str, Any]:
+    epsilon_q = _positive(state.get("epsilon_q"), "epsilon_q")
+    c = _positive(state.get("c"), "c")
+    current = [_finite(value, "j_q") for value in state.get("j_q", [])]
+    return {
+        **dict(state),
+        "rho_q": [(epsilon_q / (c * c)) * value for value in current],
+    }
+
+
+def epsilon_from_mass_density(state: Mapping[str, Any]) -> dict[str, Any]:
+    epsilon_q = _positive(state.get("epsilon_q"), "epsilon_q")
+    c = _positive(state.get("c"), "c")
+    rho_q = [_finite(value, "rho_q") for value in state.get("rho_q", [])]
+    return make_current_density_state(
+        [(c * c / epsilon_q) * value for value in rho_q],
+        epsilon_q=epsilon_q,
+        c=c,
     )
 
 
-def epsilon_source_transforms(
-    epsilon_q: float,
-    *,
-    c_light: float = C_LIGHT_EXACT,
-) -> Mapping[str, Callable[[Any], Any]]:
-    epsilon = _positive(epsilon_q, "epsilon_Q")
-    c = _positive(c_light, "c")
+def epsilon_source_transforms() -> dict[str, Any]:
     return {
-        "source.to_mass_density": _to_mass_density(epsilon, c),
-        "source.from_mass_density": _from_mass_density(epsilon, c),
+        "carrier_current_to_mass_density": epsilon_to_mass_density,
+        "mass_density_to_carrier_current": epsilon_from_mass_density,
     }
 
 
-def epsilon_source_invariants() -> Mapping[str, Callable[[Any], Any]]:
-    return {"SOURCE.EQUIVALENT_CURRENT_NORM": equivalent_current_norm}
+def epsilon_source_invariants() -> dict[str, Any]:
+    return {
+        "SOURCE_MASS_DENSITY": lambda state: sum(
+            (state.get("rho_q") or [
+                (_positive(state.get("epsilon_q"), "epsilon_q") / (_positive(state.get("c"), "c") ** 2))
+                * _finite(value, "j_q")
+                for value in state.get("j_q", [])
+            ])
+        ),
+        "SOURCE_ENERGY_PER_CHARGE": lambda state: _positive(state.get("epsilon_q"), "epsilon_q"),
+    }
+
+
+def build_epsilon_source_loop(
+    *,
+    basis_id: str,
+    evidence_refs: Sequence[str],
+    tolerance: float = 1e-12,
+) -> InformationHolonomyLoop:
+    refs = _refs(evidence_refs)
+    eps = _nonnegative(tolerance, "tolerance")
+    node_current = LawFrameNode(
+        "LAW.CARRIER.CURRENT_DENSITY",
+        "RFC_SOURCE_CARRIER",
+        _law_kaku("LAW.CARRIER.CURRENT_DENSITY", basis_id, 0.31, "law_gate:carrier_current_density"),
+        (*refs, "gate:epsilon_Q:CONDITIONAL"),
+    )
+    node_mass_density = LawFrameNode(
+        "LAW.RFC.MASS_DENSITY_FROM_EPSILON_Q",
+        "RFC_SOURCE_TYPE",
+        _law_kaku(
+            "LAW.RFC.MASS_DENSITY_FROM_EPSILON_Q",
+            basis_id,
+            0.32,
+            "law_gate:mass_density_epsilon_q",
+        ),
+        (*refs, "gate:epsilon_Q:CONDITIONAL"),
+    )
+    return InformationHolonomyLoop(
+        loop_id="PNV_SOURCE_EPSILON_Q_LOOP_V0_1",
+        connection=_source_connection("PNCS_CARRIER_SOURCE_DENSITY_STATE_SPACE_V0_1", (*refs, "gate:epsilon_Q:CONDITIONAL")),
+        nodes=(node_current, node_mass_density),
+        transports=(
+            LawTransport(
+                "EDGE.JQ.EPSILON_TO_RHO",
+                node_current.node_id,
+                node_mass_density.node_id,
+                "carrier_current_to_mass_density",
+                (*refs, "gate:epsilon_Q:CONDITIONAL"),
+            ),
+            LawTransport(
+                "EDGE.RHO.EPSILON_TO_JQ",
+                node_mass_density.node_id,
+                node_current.node_id,
+                "mass_density_to_carrier_current",
+                (*refs, "gate:epsilon_Q:CONDITIONAL"),
+            ),
+        ),
+        invariants=(
+            HolonomyInvariant("SOURCE_MASS_DENSITY", "ABS", eps),
+            HolonomyInvariant("SOURCE_ENERGY_PER_CHARGE", "ABS", eps),
+        ),
+        evidence_refs=(*refs, "gate:epsilon_Q:CONDITIONAL"),
+    )

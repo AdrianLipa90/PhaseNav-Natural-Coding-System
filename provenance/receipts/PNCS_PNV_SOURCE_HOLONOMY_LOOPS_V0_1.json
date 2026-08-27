@@ -1,15 +1,26 @@
 {
   "schema": "PNCS_PNV_SOURCE_HOLONOMY_LOOPS_IMPLEMENTATION_RECEIPT_V0_1",
-  "status": "IMPLEMENTED_REFERENCE_SOURCE_LOOPS__IDT_RFC_PINNED__CI_EXECUTION_UNRESOLVED_PRE_TEST",
+  "status": "IMPLEMENTED_EULER_CLOSED_SOURCE_LOOPS__IDT_RFC_REFERENCE_PASS__PNCS_CI_EXECUTION_UNRESOLVED_PRE_TEST",
   "branch": "feat/gremlin-pnv-authoring-v0.2",
   "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
-  "code_head_sha": "5f3bf90998b8c3547d51e7c47bddaf0d6be25d60",
+  "code_head_sha": "e6d5e217aeed2906372fdd0aa41845f0df32bbae",
   "source_holonomy_contract": "PNCS_PNV_SOURCE_HOLONOMY_LOOPS_V0_1",
   "information_holonomy_contract": "PNCS_PNV_INFORMATION_HOLONOMY_V0_1",
   "bridge_contract": "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2",
+  "normalization_order": [
+    "Euler/Berry closure",
+    "theta_I^EB",
+    "J_I^EB=hbar*theta_I^EB",
+    "H_Phi^EB=(J-J_I^EB)^2/(2 I_phi)",
+    "epsilon_I^EB=H_Phi^EB/J_I^EB",
+    "Delta_tau_eff=J_I^EB/H_Phi^EB",
+    "Q_Sigma <-> J_I^EB OPEN",
+    "epsilon_Q binding OPEN"
+  ],
   "loops": [
     {
       "loop_id": "SOURCE.CARRIER.NORMALIZATION.ROUNDTRIP",
+      "internal_loop_id": "PNV_SOURCE_CARRIER_NORMALIZATION_LOOP_V0_1",
       "equations": ["p_a=Q_a/Q_Sigma", "Q_a'=Q_Sigma*p_a"],
       "domains": ["RFC", "IDT"],
       "invariants": ["SOURCE.TOTAL_Q", "SOURCE.PROFILE_NORM"],
@@ -17,54 +28,90 @@
     },
     {
       "loop_id": "SOURCE.CARRIER.Q0_OCCUPATION.ROUNDTRIP",
+      "internal_loop_id": "PNV_SOURCE_Q0_OCCUPATION_LOOP_V0_1",
       "equations": ["n_a=Q_a/q0", "Q_a'=q0*n_a"],
-      "domains": ["RFC", "CARRIER_QUANTIZATION"],
+      "domains": ["RFC", "PHASE_TIME_HAMILTONIAN"],
       "invariants": ["SOURCE.TOTAL_Q"],
       "gate_state": "Q0_CONDITIONAL"
     },
     {
       "loop_id": "SOURCE.CARRIER.EPSILON_MASS_DENSITY.ROUNDTRIP",
+      "internal_loop_id": "PNV_SOURCE_EPSILON_Q_LOOP_V0_1",
       "equations": ["rho_Q=(epsilon_Q/c^2)j_Q", "j_Q'=(c^2/epsilon_Q)rho_Q"],
-      "domains": ["IDT_RFC_INTERFACE", "RFC"],
+      "domains": ["RFC_SOURCE_CARRIER", "RFC_SOURCE_TYPE"],
       "invariants": ["SOURCE.EQUIVALENT_CURRENT_NORM"],
-      "gate_state": "EPSILON_Q_CONDITIONAL"
+      "gate_state": "EPSILON_Q_DOWNSTREAM_CONDITIONAL_CONSUMER"
+    },
+    {
+      "loop_id": "SOURCE.PHASE_INTENTION.EULER_CHARGE_ENERGY.ROUNDTRIP",
+      "internal_loop_id": "PNV_SOURCE_EULER_PHASE_INTENTION_ENERGY_LOOP_V0_1",
+      "equations": [
+        "theta_I^EB=2*pi*(D+epsilon_EB)-phi_AB-phi_Berry-phi_Euler-theta_prior",
+        "J_I^EB=hbar*theta_I^EB",
+        "H_Phi^EB=(J-J_I^EB)^2/(2*I_phi)",
+        "epsilon_I^EB=H_Phi^EB/J_I^EB",
+        "Delta_tau_eff^EB=J_I^EB/H_Phi^EB"
+      ],
+      "domains": ["PHASE_TOPOLOGY", "PHASE_TIME_HAMILTONIAN"],
+      "invariants": [
+        "SOURCE.EULER_CLOSURE_SECTOR",
+        "SOURCE.INTENTION_ACTION_CHARGE",
+        "SOURCE.ROTOR_PHASE_ENERGY",
+        "SOURCE.ENERGY_PER_ACTION_CHARGE"
+      ],
+      "gate_state": "EULER_CLOSED_NORMALIZATION_PASS_CONDITIONAL_RFC_BINDING"
     }
   ],
-  "paired_repository_pins": {
+  "tests_authored": {
+    "source_loop_unit_and_roundtrip": 15,
+    "unified_bridge_export": 1,
+    "total": 16
+  },
+  "cross_repository_reference_execution": {
     "idt": {
       "repository": "AdrianLipa90/Informational-Dynamics-of-Time",
       "branch": "feat/idt-rfc-normalized-shape-holonomy-v0.1",
-      "cross_reference_update_commit": "8dc616fbcdd14a08ff8ef9d7dabad6ee7330ccc8"
+      "tested_commit": "04de014d908060ab329e53bffdab74dfc5599af4",
+      "workflow_run_id": 33121699876,
+      "workflow_job_id": 98689879614,
+      "passed": 348,
+      "failed": 0,
+      "status": "PASS"
     },
     "rfc": {
       "repository": "AdrianLipa90/Relational-Field-Closure",
       "branch": "feat/rfc-gremlin-pnv-holonomy-v0.1",
-      "cross_reference_update_commit": "a934a408c89630b88026ae0c3839b65c22341368"
+      "tested_commit": "ec5176222af50c4f5ebfd455645f889849c5ca3e",
+      "workflow_run_id": 33121748877,
+      "workflow_job_id": 98690039397,
+      "passed": 40,
+      "failed": 0,
+      "status": "PASS"
     }
-  },
-  "tests_authored": {
-    "source_loop_unit_and_roundtrip": 9,
-    "unified_bridge_export": 1,
-    "total": 10
   },
   "noema": {
     "guard_schema": "noema.aux-tether-guard/v2",
     "surface_root": "/dev/shm/ciel_noema",
     "socket": "/run/user/1000/noema/ciel_headless.sock",
     "tether_status": "ACTIVE",
-    "failures": []
+    "failures": [],
+    "note": "one transient phi/status race was observed and cleared on immediate fresh guard without changing guard policy"
   },
   "ci": {
     "workflow": "PNCS GREMLIN PNV authoring",
-    "run_id": 33119164722,
-    "job_id": 98681411714,
-    "head_sha": "5f3bf90998b8c3547d51e7c47bddaf0d6be25d60",
+    "run_id": 33121573174,
+    "job_id": 98689454717,
+    "head_sha": "e6d5e217aeed2906372fdd0aa41845f0df32bbae",
     "conclusion": "failure",
     "steps": null,
     "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
     "code_test_failure_observed": false
   },
-  "epistemic_state": "CHYBA",
-  "promotion_state": "CANDIDATE_ONLY",
+  "authority": {
+    "epistemic_state": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false
+  },
   "main_mutated": false
 }

@@ -18,12 +18,7 @@ from .gremlin_pnv_authoring_v02 import (
     persist_candidate,
     render_operator_program,
 )
-from .gremlin_relational_compiler_v01 import (
-    RelationalCompilation,
-    RelationalEdge,
-    RelationalIsomorphism,
-    RelationalNode,
-)
+from .gremlin_relational_compiler_v01 import RelationalCompilation
 from .model import Kaku, RadicalGraph, Relation
 from .native_pnv_exec_v01 import NativePNVExecutionResult, execute_pnv, parse_pnv
 
@@ -157,13 +152,11 @@ class InformationHolonomyLoop:
     def __post_init__(self) -> None:
         if not self.loop_id:
             raise PNVInformationHolonomyError("loop_id is required")
-        if len(self.nodes) < 2:
-            raise PNVInformationHolonomyError("information-holonomy loop requires at least two law nodes")
+        if not self.nodes:
+            raise PNVInformationHolonomyError("information-holonomy loop requires at least one law node")
         node_ids = [node.node_id for node in self.nodes]
         if len(node_ids) != len(set(node_ids)):
             raise PNVInformationHolonomyError("law-frame node ids must be unique")
-        if len({node.domain for node in self.nodes}) < 2:
-            raise PNVInformationHolonomyError("law-frame loop requires at least two source domains")
         basis_ids = {node.kaku.vector.basis_id for node in self.nodes}
         if len(basis_ids) != 1:
             raise PNVInformationHolonomyError("law-frame KAKU nodes must share one exact PNCS basis")
@@ -210,21 +203,6 @@ def compile_information_holonomy_loop(
     if not generation_binding or not identity or not authority:
         raise PNVInformationHolonomyError("generation_binding, identity and authority are required")
 
-    spec = RelationalIsomorphism(
-        isomorphism_id=f"HOL.{loop.loop_id}",
-        invariant_id=f"HOLONOMY.{loop.loop_id}",
-        invariant_description="information transport around an admitted closed physical-law frame",
-        nodes=tuple(
-            RelationalNode(node.kaku, node.domain, f"law:{node.law_id}")
-            for node in loop.nodes
-        ),
-        edges=tuple(
-            RelationalEdge(edge.edge_id, edge.source_node_id, edge.target_node_id, "FLOWS_TO")
-            for edge in loop.transports
-        ),
-        evidence_refs=_loop_evidence(loop),
-    )
-
     basis_id = loop.nodes[0].kaku.vector.basis_id
     radical = RadicalGraph(f"HOLONOMY.{_safe_token(loop.loop_id)}", basis_id)
     kaku_candidates: dict[str, Mapping[str, Any]] = {}
@@ -236,7 +214,18 @@ def compile_information_holonomy_loop(
             generation_binding=generation_binding,
             identity=identity,
             authority=authority,
-            evidence_refs=tuple(sorted(set((*_loop_evidence(loop), *node.evidence_refs, f"law_id:{node.law_id}", f"domain:{node.domain}")))),
+            evidence_refs=tuple(
+                sorted(
+                    set(
+                        (
+                            *_loop_evidence(loop),
+                            *node.evidence_refs,
+                            f"law_id:{node.law_id}",
+                            f"domain:{node.domain}",
+                        )
+                    )
+                )
+            ),
         )
         kaku_candidates[node.node_id] = candidate
         kaku_refs[node.node_id] = str(candidate["candidate_id"])
@@ -244,7 +233,14 @@ def compile_information_holonomy_loop(
             persist_candidate(candidate, authoring_root=authoring_root)
 
     for edge in loop.transports:
-        radical.add_relation(Relation(edge.edge_id, edge.source_node_id, edge.target_node_id, f"LAW_TRANSPORT:{edge.transform_name}"))
+        radical.add_relation(
+            Relation(
+                edge.edge_id,
+                edge.source_node_id,
+                edge.target_node_id,
+                f"LAW_TRANSPORT:{edge.transform_name}",
+            )
+        )
 
     radical_candidate = build_radical_candidate(
         radical,
@@ -285,7 +281,18 @@ def compile_information_holonomy_loop(
             identity=identity,
             authority=authority,
             radical_candidate_id=radical_id,
-            evidence_refs=tuple(sorted(set((*_loop_evidence(loop), *edge.evidence_refs, f"transport:{edge.edge_id}", f"transform:{edge.transform_name}")))),
+            evidence_refs=tuple(
+                sorted(
+                    set(
+                        (
+                            *_loop_evidence(loop),
+                            *edge.evidence_refs,
+                            f"transport:{edge.edge_id}",
+                            f"transform:{edge.transform_name}",
+                        )
+                    )
+                )
+            ),
         )
         operators.append(candidate)
         if authoring_root is not None:
@@ -322,6 +329,15 @@ def compile_information_holonomy_loop(
         "schema": HOLONOMY_COMPILATION_RECEIPT_SCHEMA,
         "holonomy_contract": HOLONOMY_CONTRACT,
         "loop_id": loop.loop_id,
+        "law_frame": [
+            {
+                "node_id": node.node_id,
+                "law_id": node.law_id,
+                "domain": node.domain,
+                "kaku_candidate_id": kaku_refs[node.node_id],
+            }
+            for node in loop.nodes
+        ],
         "node_candidate_ids": {k: str(v["candidate_id"]) for k, v in sorted(kaku_candidates.items())},
         "radical_candidate_id": radical_id,
         "operator_candidate_ids": [str(candidate["candidate_id"]) for candidate in operators],
@@ -340,7 +356,7 @@ def compile_information_holonomy_loop(
     }
     receipt = {**body, "receipt_sha256": _sha256(body)}
     return RelationalCompilation(
-        spec=spec,
+        spec=loop,
         kaku_candidates=kaku_candidates,
         radical_candidate=radical_candidate,
         operator_candidates=tuple(operators),
@@ -392,7 +408,11 @@ def audit_information_holonomy(
         raise PNVInformationHolonomyError(f"missing admitted holonomy transform(s): {sorted(set(missing))}")
 
     evaluators = dict(invariant_evaluators or {})
-    missing_invariants = [item.invariant_id for item in loop.invariants if item.invariant_id not in evaluators or not callable(evaluators[item.invariant_id])]
+    missing_invariants = [
+        item.invariant_id
+        for item in loop.invariants
+        if item.invariant_id not in evaluators or not callable(evaluators[item.invariant_id])
+    ]
     if missing_invariants:
         raise PNVInformationHolonomyError(f"missing invariant evaluator(s): {sorted(set(missing_invariants))}")
 

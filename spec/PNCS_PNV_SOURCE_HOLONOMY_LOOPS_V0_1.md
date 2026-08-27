@@ -1,12 +1,26 @@
 # PNCS PNV Source Holonomy Loops v0.1
 
-Status: `REFERENCE_SOURCE_LOOPS_IMPLEMENTED / IDT_RFC_INTERFACE_EXPLICIT / Q0_CONDITIONAL / EPSILON_Q_CONDITIONAL`
+Status: `REFERENCE_SOURCE_LOOPS_IMPLEMENTED / EULER_CHARGE_ENERGY_LOOP_IMPLEMENTED / IDT_RFC_INTERFACE_EXPLICIT / Q0_CONDITIONAL / EPSILON_Q_DOWNSTREAM_CONDITIONAL`
 
 ## Purpose
 
-This contract instantiates `PNCS_PNV_INFORMATION_HOLONOMY_V0_1` for the first source-factorization loops at the IDT ↔ RFC interface.
+This contract instantiates `PNCS_PNV_INFORMATION_HOLONOMY_V0_1` for source-factorization and source-normalization loops at the IDT ↔ RFC interface.
 
-The reference loops are executable PNV law-frame objects. Each loop compiles into KAKU candidates, one RADICAL, native PNV OPERATOR candidates, a pure execution trace, an information-holonomy audit receipt, and inverse lineage back to explicit content/evidence.
+Each reference loop compiles into KAKU candidates, one RADICAL, native PNV OPERATOR candidates, a pure execution trace, an information-holonomy audit receipt, and inverse lineage back to explicit content/evidence.
+
+The normalization order is now explicit:
+
+```text
+Euler/Berry closure
+  -> intention phase residual
+  -> action charge J_I
+  -> canonical rotor energy H_Phi
+  -> energy per action-charge epsilon_I
+  -> effective Floquet step
+  -> later RFC epsilon_Q binding
+```
+
+The downstream `epsilon_Q` source-density loop therefore consumes an admitted normalization; it does not derive that normalization itself.
 
 ## 1. Extensive carrier ↔ normalized profile
 
@@ -28,38 +42,32 @@ Q_\Sigma=\sum_a Q_a,
 \sum_a p_a=1.
 ```
 
-The PNV law nodes are:
+Law nodes:
 
 ```text
 LAW.RFC.CARRIER_EXTENSIVE
 LAW.IDT.NORMALIZED_PROFILE
 ```
 
-and the admitted transport names are:
+Transport names:
 
 ```text
 carrier.normalize_profile
 carrier.reconstruct_extensive
 ```
 
-The declared audit invariants are:
+Invariants:
 
 ```text
 SOURCE.TOTAL_Q
 SOURCE.PROFILE_NORM
 ```
 
-This loop supplies the executable form of the factorization
-
-```math
-Q_a=Q_\Sigma p_a.
-```
-
-It is the first exact bridge between extensive carrier amount and normalized IDT distributional shape.
+This is the executable form of `Q_a = Q_Sigma p_a`.
 
 ## 2. Conditional q0 occupation loop
 
-For an explicitly supplied positive carrier quantum `q0`, the second loop implements
+For explicitly supplied positive `q0`,
 
 ```math
 Q_a
@@ -69,37 +77,37 @@ n_a
 Q'_a.
 ```
 
-The law nodes are:
+Law nodes:
 
 ```text
 LAW.RFC.CARRIER_EXTENSIVE
 LAW.CARRIER.QUANTIZED_OCCUPATION
 ```
 
-and the transport names are:
+Transport names:
 
 ```text
 carrier.to_occupation
 carrier.from_occupation
 ```
 
-The loop records the explicit gate:
+The loop records
 
 ```text
 gate:q0:CONDITIONAL
 ```
 
-and audits preservation of:
+and preserves
 
 ```text
 SOURCE.TOTAL_Q
 ```
 
-The physical derivation/admission of `q0` remains a separate source-normalization gate. Once an admitted value is supplied, the round-trip itself is executable and auditable.
+The derivation/admission of `q0` remains a separate gate.
 
-## 3. Conditional epsilon_Q source-density loop
+## 3. Conditional epsilon_Q source-density consumer
 
-For an explicitly supplied positive energy-per-carrier-charge `epsilon_Q`, the third loop implements
+For an explicitly supplied positive energy-per-carrier-charge `epsilon_Q`,
 
 ```math
 j_Q
@@ -109,35 +117,154 @@ j_Q
 j'_Q.
 ```
 
-The law nodes are:
+Law nodes:
 
 ```text
 LAW.CARRIER.CURRENT_DENSITY
 LAW.RFC.PHYSICAL_SOURCE_DENSITY
 ```
 
-and the transport names are:
+Transport names:
 
 ```text
 source.to_mass_density
 source.from_mass_density
 ```
 
-The loop records:
+The loop records
 
 ```text
 gate:epsilon_Q:CONDITIONAL
 ```
 
-and audits the representation-independent equivalent current norm:
+and audits
 
 ```text
 SOURCE.EQUIVALENT_CURRENT_NORM
 ```
 
-The supplied `epsilon_Q` and `c` values are carried explicitly through the transformed state so the inverse transport can verify that the same normalization is used on both sides of the loop.
+This loop is a downstream consumer. The candidate source of `epsilon_Q` is the Euler-closed phase-intention loop below, followed by the still-open physical carrier/current binding.
 
-## State contracts
+## 4. Euler/Berry → action charge → rotor energy → epsilon loop
+
+The fourth loop implements the normalization sequence demanded by IDT 01Y and RFC RF-N1B2I.
+
+### 4.1 Closure residual
+
+The input closure law is
+
+```math
+\Phi_{tot}
+=\Phi_{AB}+\Phi_B+\Phi_E+\Theta_I
+=2\pi(D+\epsilon_{EB}).
+```
+
+For the next intention step,
+
+```math
+\theta_{I,k}^{EB}
+=2\pi(D+\epsilon_{EB})
+-\Phi_{AB}-\Phi_B-\Phi_E-\Theta_I^{<k}.
+```
+
+The first transport is
+
+```text
+euler.resolve_intention_charge
+```
+
+and produces
+
+```math
+J_{I,k}^{EB}=\hbar\theta_{I,k}^{EB}.
+```
+
+### 4.2 Rotor energy
+
+The second transport is
+
+```text
+rotor.derive_energy_per_charge
+```
+
+and uses
+
+```math
+H_{\Phi,k}^{EB}
+=\frac{(J_k-J_{I,k}^{EB})^2}{2I_\phi}.
+```
+
+On the positive non-degenerate sector it then derives
+
+```math
+\epsilon_{I,k}^{EB}
+=\frac{H_{\Phi,k}^{EB}}{J_{I,k}^{EB}},
+\qquad
+\Delta\tau_{k,eff}^{EB}
+=\frac{J_{I,k}^{EB}}{H_{\Phi,k}^{EB}}
+=\frac1{\epsilon_{I,k}^{EB}}.
+```
+
+The effective Floquet step is therefore an output of the Euler-closed rotor sector rather than the primary normalization input.
+
+### 4.3 Reverse transport
+
+The third transport
+
+```text
+rotor.reconstruct_euler_input
+```
+
+verifies the same Euler action charge, rotor energy, energy-per-charge and Floquet relation, then reconstructs the exact initial closure state.
+
+The loop ID is
+
+```text
+PNV_SOURCE_EULER_PHASE_INTENTION_ENERGY_LOOP_V0_1
+```
+
+and the cross-repository semantic alias is
+
+```text
+SOURCE.PHASE_INTENTION.EULER_CHARGE_ENERGY.ROUNDTRIP
+```
+
+Law nodes:
+
+```text
+LAW.EULER.BERRY_CLOSURE
+LAW.PHASE.INTENTION_ACTION_CHARGE
+LAW.PHASE.ROTOR_ENERGY_PER_CHARGE
+```
+
+Required invariants:
+
+```text
+SOURCE.EULER_CLOSURE_SECTOR
+SOURCE.INTENTION_ACTION_CHARGE
+SOURCE.ROTOR_PHASE_ENERGY
+SOURCE.ENERGY_PER_ACTION_CHARGE
+```
+
+Explicit evidence gates include
+
+```text
+gate:epsilon_Q:AFTER_EULER
+gate:Q_Sigma_to_J_I:OPEN
+```
+
+Ratio evaluation fails closed unless
+
+```text
+I_phi > 0
+J_I^EB > 0
+H_Phi^EB > 0
+all closure data finite
+```
+
+Zero/degenerate sectors retain their lower-level closure/action-charge equations without forcing a finite ratio.
+
+## 5. State contracts
 
 ### Extensive carrier
 
@@ -148,8 +275,6 @@ Q_cells
 Q_total
 ```
 
-The positive-source sector requires finite non-negative `Q_cells` and `Q_total > 0`.
-
 ### Normalized carrier profile
 
 ```text
@@ -159,8 +284,6 @@ p_cells
 Q_total
 ```
 
-with normalized profile tolerance controlled at the reference level.
-
 ### Occupation profile
 
 ```text
@@ -168,6 +291,7 @@ schema         = PNCS_CARRIER_OCCUPATION_STATE_V0_1
 representation = OCCUPATION_PROFILE
 n_cells
 q0
+Q_total
 ```
 
 ### Carrier current density
@@ -188,15 +312,43 @@ epsilon_Q
 c
 ```
 
-## Holonomy audit
+### Euler-closed phase-intention state
 
-Every reference loop is compiled and audited through the generic law-frame contract:
+```text
+schema         = PNCS_EULER_PHASE_INTENTION_STATE_V0_1
+representation = EULER_BERRY_CLOSURE_INPUT
+D
+epsilon_EB
+phi_AB
+phi_Berry
+phi_Euler
+theta_prior
+hbar
+J_total
+I_phi
+```
+
+Intermediate representations add
+
+```text
+theta_I_EB
+J_I_EB
+H_Phi_EB
+epsilon_I_EB
+Delta_tau_eff_EB
+```
+
+and are removed by exact reverse reconstruction.
+
+## 6. Holonomy audit
+
+All loops are compiled and audited through
 
 ```text
 PNCS_PNV_INFORMATION_HOLONOMY_V0_1
 ```
 
-so the final receipt contains:
+so receipts contain
 
 ```text
 state_defect = Delta_gamma
@@ -206,48 +358,45 @@ inverse-lineage receipt
 KAKU/RADICAL/OPERATOR provenance
 ```
 
-The intended control condition is
+Exact round-trip controls target
 
 ```math
-\Delta_\gamma=0
+\Delta_\gamma=0.
 ```
 
-for exact round-trip fixtures, or an explicitly declared tolerance for numerical/instrumental states.
+## 7. GREMLIN integration
 
-## GREMLIN integration
+The unified GREMLIN ↔ PNV bridge exports builders, state constructors, transforms and invariant evaluators for all four source loops.
 
-The unified GREMLIN ↔ PNV bridge exports the builders, state constructors, transform registries and invariant evaluators for all three loops.
-
-The coding path is therefore:
+The coding path is
 
 ```text
-GREMLIN relation / physical-law candidate
-  -> admitted law-gate KAKU
+GREMLIN law/isomorphism candidate
+  -> explicit KAKU law gates
   -> source-loop template
   -> RADICAL
   -> TRANSFORM operators
-  -> PNV execution
+  -> native PNV execution
   -> holonomy receipt
   -> inverse lineage
 ```
 
-GREMLIN can propose which admitted law gates should be connected. PNV executes the resulting connection and measures its information-holonomy defect before any later promotion gate.
+GREMLIN remains candidate-only; admission and canon promotion are separate gates.
 
-## Next source-loop frontier
+## 8. Coupled frontier
 
-The next larger loop is the multi-law source frame:
+The next source law frame is
 
 ```text
-J_Q^mu
-  -> continuity
-  -> Q_Sigma
-  -> normalization
-  -> p_Q
-  -> IDT transport
-  -> phase/energy normalization
+Euler/Berry closure
+  -> J_I^EB
+  -> H_Phi^EB
+  -> epsilon_I^EB
+  -> [J_I^EB <-> Q_Sigma] OPEN
+  -> [J_I^EB <-> integral j_I dV_h] OPEN
+  -> epsilon_Q
   -> RFC source density
-  -> relational field dynamics
-  -> reconstructed J_Q^mu
+  -> RF-N1C coupling/universality audit
 ```
 
-Its edges should be added incrementally as their individual transport contracts become admitted, with OPEN edges represented as explicit gates rather than filled by an implicit normalization.
+OPEN transport edges remain explicit gates rather than implicit normalizations.

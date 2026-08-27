@@ -3,13 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 import json
-from typing import Any, Mapping, Sequence
+from pathlib import Path
+from typing import Any, Mapping
 
 from .gremlin_relational_compiler_v01 import (
+    RelationalCompilation,
     RelationalEdge,
     RelationalIsomorphism,
     RelationalNode,
-    RelationalCompilation,
     compile_relational_isomorphism,
 )
 from .model import Kaku
@@ -137,13 +138,19 @@ def relation_mining_finding_to_isomorphism(
     if len(domains) < 2:
         raise GremlinRelationMiningAdapterError("finding must span at least two source domains")
 
-    missing_atoms = sorted({str(atom) for row in selected.values() for atom in row["atoms"] if str(atom) not in kaku_by_atom})
+    atoms_required = sorted({str(atom) for row in selected.values() for atom in row["atoms"]})
+    missing_atoms = [atom for atom in atoms_required if atom not in kaku_by_atom]
     if missing_atoms:
         raise GremlinRelationMiningAdapterError(
             "canonical KAKU mapping required before relation-mining compilation: " + ", ".join(missing_atoms)
         )
+    invalid_atoms = [atom for atom in atoms_required if not isinstance(kaku_by_atom[atom], Kaku)]
+    if invalid_atoms:
+        raise GremlinRelationMiningAdapterError(
+            "KAKU resolver returned invalid value for atom(s): " + ", ".join(invalid_atoms)
+        )
 
-    basis_ids = {kaku_by_atom[str(atom)].vector.basis_id for row in selected.values() for atom in row["atoms"]}
+    basis_ids = {kaku_by_atom[atom].vector.basis_id for atom in atoms_required}
     if len(basis_ids) != 1:
         raise GremlinRelationMiningAdapterError("resolved relation-mining KAKU atoms must share one exact PNCS basis")
 
@@ -220,7 +227,7 @@ def compile_relation_mining_finding(
     generation_binding: str,
     identity: str,
     authority: str,
-    authoring_root: str | None = None,
+    authoring_root: Path | str | None = None,
 ) -> RelationalCompilation:
     isomorphism = relation_mining_finding_to_isomorphism(ledger, finding, kaku_by_atom=kaku_by_atom)
     return compile_relational_isomorphism(

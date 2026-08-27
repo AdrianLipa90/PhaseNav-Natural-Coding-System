@@ -5,6 +5,9 @@ import pytest
 from phasenav_natural_code.gremlin_pnv_holonomy_v01 import (
     HOLONOMY_AUDIT_RECEIPT_SCHEMA,
     HOLONOMY_CONTRACT,
+    INFORMATION_TRANSPORT_CONNECTION_ID,
+    LEGACY_TYPED_CONNECTION_CONTRACT_SHA256,
+    HolonomyConnection,
     HolonomyInvariant,
     InformationHolonomyLoop,
     LawFrameNode,
@@ -12,6 +15,7 @@ from phasenav_natural_code.gremlin_pnv_holonomy_v01 import (
     PNVInformationHolonomyError,
     audit_information_holonomy,
     compile_information_holonomy_loop,
+    information_transport_connection,
     numeric_linf_metric,
     persist_information_holonomy_audit,
 )
@@ -36,7 +40,14 @@ def _kaku(kaku_id: str, seed: float, role: str, basis: str = BASIS) -> Kaku:
     )
 
 
-def _loop(*, invariants=()):
+def _connection():
+    return information_transport_connection(
+        "pncs:test:information-state:v1",
+        evidence_refs=("evidence:typed-information-connection",),
+    )
+
+
+def _loop(*, invariants=(), connection=None):
     left = LawFrameNode(
         "LAW.IDT.NORMALIZATION",
         "IDT",
@@ -51,6 +62,7 @@ def _loop(*, invariants=()):
     )
     return InformationHolonomyLoop(
         "IDT_RFC_TEST_LOOP",
+        connection or _connection(),
         (left, right),
         (
             LawTransport("EDGE.IDT.RFC", "LAW.IDT", "LAW.RFC", "scale2"),
@@ -80,8 +92,56 @@ def test_closed_law_frame_compiles_to_source_transforms_return():
     assert compiled.receipt["loop_id"] == loop.loop_id
 
 
+def test_connection_is_explicit_and_bound_into_compilation_receipt():
+    loop = _loop()
+    compiled = _compile(loop)
+    connection = compiled.receipt["connection"]
+    assert connection["connection_id"] == INFORMATION_TRANSPORT_CONNECTION_ID
+    assert connection["connection_sha256"] == loop.connection.connection_sha256
+    assert connection["state_space_id"] == "pncs:test:information-state:v1"
+    assert compiled.receipt["legacy_connection_firewall"]["contract_sha256"] == LEGACY_TYPED_CONNECTION_CONTRACT_SHA256
+    assert all(row["connection_id"] == INFORMATION_TRANSPORT_CONNECTION_ID for row in compiled.receipt["transport_plan"])
+
+
+def test_same_cycle_under_different_connection_gets_distinct_provenance():
+    a = _compile(_loop())
+    other_connection = HolonomyConnection(
+        connection_id="PNCS_SECOND_TEST_CONNECTION_V0_1",
+        connection_kind="INFORMATION_TRANSPORT",
+        state_space_id="pncs:test:information-state:v1",
+        contract_ref="test:second-connection",
+        execution_state="READY_CANDIDATE",
+    )
+    b = _compile(_loop(connection=other_connection))
+    assert a.receipt["connection"]["connection_sha256"] != b.receipt["connection"]["connection_sha256"]
+    assert a.receipt["receipt_sha256"] != b.receipt["receipt_sha256"]
+    assert a.radical_candidate["candidate_id"] != b.radical_candidate["candidate_id"]
+
+
+def test_open_connection_blocks_holonomy_execution_gate():
+    open_connection = HolonomyConnection(
+        connection_id="BERRY_CP1",
+        connection_kind="BERRY",
+        state_space_id="CP1",
+        contract_ref="PNV_CONNECTION_TYPED_HOLONOMY_CONTRACT_V1_CANDIDATE",
+        execution_state="OPEN",
+        evidence_refs=("gate:berry-pullback-open",),
+    )
+    loop = _loop(connection=open_connection)
+    compiled = _compile(loop)
+    with pytest.raises(PNVInformationHolonomyError, match="connection execution gate OPEN"):
+        audit_information_holonomy(
+            loop,
+            compiled,
+            initial_state=[1.0, 2.0],
+            transforms={"scale2": lambda x: x, "scale_half": lambda x: x},
+            state_metric=numeric_linf_metric,
+            metric_id="L_INF",
+        )
+
+
 def test_zero_defect_loop_passes_and_binds_inverse_lineage():
-    loop = _loop((HolonomyInvariant("RATIO", "ABS", 0.0),))
+    loop = _loop(invariants=(HolonomyInvariant("RATIO", "ABS", 0.0),))
     compiled = _compile(loop)
     audit = audit_information_holonomy(
         loop,
@@ -98,6 +158,7 @@ def test_zero_defect_loop_passes_and_binds_inverse_lineage():
     assert audit.state_defect == 0.0
     assert audit.receipt["status"] == "PASS"
     assert audit.receipt["schema"] == HOLONOMY_AUDIT_RECEIPT_SCHEMA
+    assert audit.receipt["connection_id"] == INFORMATION_TRANSPORT_CONNECTION_ID
     assert audit.invariant_results[0]["passed"] is True
     assert audit.inverse_lineage.operator_rows[0]["name"] == "HOL.RETURN"
     assert CONTENT in audit.inverse_lineage.payload["explicit_content_ids"]
@@ -125,7 +186,7 @@ def test_positive_holonomy_defect_fails_audit_without_promotion():
 
 
 def test_invariant_drift_can_fail_even_when_loop_final_state_closes():
-    loop = _loop((HolonomyInvariant("FIRST", "ABS", 0.0),))
+    loop = _loop(invariants=(HolonomyInvariant("FIRST", "ABS", 0.0),))
     compiled = _compile(loop)
     audit = audit_information_holonomy(
         loop,
@@ -165,6 +226,7 @@ def test_transport_order_must_close_declared_cycle():
     with pytest.raises(PNVInformationHolonomyError, match="does not close loop"):
         InformationHolonomyLoop(
             "BROKEN",
+            _connection(),
             (left, right),
             (
                 LawTransport("E0", "A", "A", "identity"),
@@ -177,6 +239,7 @@ def test_local_single_node_self_loop_is_admitted_and_can_close_exactly():
     node = LawFrameNode("LAW.LOCAL.IDENTITY", "IDT", _kaku("LAW.LOCAL", 0.1, f"local:{CONTENT}"))
     loop = InformationHolonomyLoop(
         "LOCAL_SELF_LOOP",
+        information_transport_connection("pncs:test:local-state:v1"),
         (node,),
         (LawTransport("E0", "LAW.LOCAL", "LAW.LOCAL", "identity"),),
     )
@@ -200,6 +263,7 @@ def test_law_frame_requires_exact_shared_basis():
     with pytest.raises(PNVInformationHolonomyError, match="share one exact PNCS basis"):
         InformationHolonomyLoop(
             "MIXED_BASIS",
+            _connection(),
             (left, right),
             (LawTransport("E0", "A", "B", "identity"), LawTransport("E1", "B", "A", "identity")),
         )

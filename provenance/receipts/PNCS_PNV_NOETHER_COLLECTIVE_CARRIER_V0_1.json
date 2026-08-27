@@ -3,18 +3,20 @@
   "status": "IMPLEMENTED_CONDITIONAL_NOETHER_BINDING__IDT_RFC_REFERENCE_PASS__PNCS_CI_EXECUTION_UNRESOLVED_PRE_TEST",
   "branch": "feat/gremlin-pnv-authoring-v0.2",
   "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
-  "code_snapshot": "5276133cf2ab6e47b6a4737d9671a1a8f0386a11",
+  "code_snapshot": "fa517208e40873523d1c2a5b7fdb852092421afa",
+  "test_snapshot": "589e200adb09ee176fcb343a08003e5ddac295c3",
+  "spec_snapshot": "b8d8ef24b68f12f0fb2aba61bad18df97d9964e8",
   "contract": "PNCS_PNV_NOETHER_COLLECTIVE_CARRIER_V0_1",
   "semantic_loop": "SOURCE.PHASE_NOETHER.COLLECTIVE_CARRIER.ROUNDTRIP",
-  "internal_loop_id": "PNV_SOURCE_NOETHER_COLLECTIVE_CARRIER_LOOP_V0_1",
   "equations": [
     "J_I^EB=hbar*theta_I^EB",
     "P_Phi^EB=J-J_I^EB",
     "phase_rate=P_Phi^EB/I_phi",
-    "Q_theta=I_A*phase_rate",
+    "Q_theta=I_A*phase_rate=(I_A/I_phi)*P_Phi^EB",
     "Delta_I=abs(Q_theta-P_Phi^EB)/abs(P_Phi^EB)=abs(I_A/I_phi-1)",
     "H_Phi^EB=(P_Phi^EB)^2/(2*I_phi)",
-    "epsilon_N^EB=H_Phi^EB/P_Phi^EB=P_Phi^EB/(2*I_phi)"
+    "epsilon_N^EB=H_Phi^EB/Q_theta",
+    "I_A=I_phi => Q_theta=P_Phi^EB and epsilon_N^EB=P_Phi^EB/(2*I_phi)=(1/2)*D_tau_chi"
   ],
   "law_nodes": [
     "LAW.PHASE.ROTOR_KINETIC_CHARGE",
@@ -36,28 +38,28 @@
     "rfc_epsilon_binding": "OPEN"
   },
   "tests_authored": {
-    "noether_collective_unit_and_roundtrip": 7,
+    "noether_collective_unit_and_roundtrip": 9,
     "unified_bridge_export": 1,
-    "total": 8
+    "total": 10
   },
   "cross_repository_reference_execution": {
     "idt": {
       "repository": "AdrianLipa90/Informational-Dynamics-of-Time",
       "branch": "feat/idt-rfc-normalized-shape-holonomy-v0.1",
-      "tested_commit": "43bf6eb99fe126c98e15519c4f0c2b7ef36a4167",
-      "workflow_run_id": 33122254433,
-      "workflow_job_id": 98691757651,
-      "passed": 355,
+      "tested_commit": "f2bee87cfe0ca5cfac242896f49ca0ed1e7943dc",
+      "workflow_run_id": 33123309882,
+      "workflow_job_id": 98695327591,
+      "passed": 356,
       "failed": 0,
       "status": "PASS"
     },
     "rfc": {
       "repository": "AdrianLipa90/Relational-Field-Closure",
       "branch": "feat/rfc-gremlin-pnv-holonomy-v0.1",
-      "tested_commit": "4f7ec9331fae477377fa4eda27462c28b992bbed",
-      "workflow_run_id": 33122296015,
-      "workflow_job_id": 98691904795,
-      "passed": 47,
+      "tested_commit": "c46b8d99ad9267cb28947adeb73cfeade77bfc08",
+      "workflow_run_id": 33123345500,
+      "workflow_job_id": 98695448966,
+      "passed": 48,
       "failed": 0,
       "status": "PASS"
     }
@@ -71,9 +73,10 @@
   },
   "ci": {
     "workflow": "PNCS GREMLIN PNV authoring",
-    "run_id": 33122515234,
-    "job_id": 98692654992,
-    "head_sha": "5276133cf2ab6e47b6a4737d9671a1a8f0386a11",
+    "run_id": 33123177831,
+    "job_id": 98694885913,
+    "head_sha": "589e200adb09ee176fcb343a08003e5ddac295c3",
+    "code_snapshot": "fa517208e40873523d1c2a5b7fdb852092421afa",
     "conclusion": "failure",
     "steps": null,
     "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",

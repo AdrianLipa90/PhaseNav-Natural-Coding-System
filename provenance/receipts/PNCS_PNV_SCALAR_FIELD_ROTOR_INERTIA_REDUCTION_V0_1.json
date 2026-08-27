@@ -15,11 +15,11 @@
     "P_Phi=I_phi D_tau_chi",
     "H_Phi=P_Phi^2/(2 I_phi)",
     "epsilon_N=H_Phi/Q_theta",
-    "Delta_I=abs(I_phi-I_A)/I_A",
+    "Delta_I_reduction=abs(I_phi-I_A)/I_A",
     "Delta_coefficient=abs(I_phi/2-C_A)/C_A",
-    "Delta_Q=abs(P_Phi-Q_theta)/Q_theta",
-    "Delta_epsilon=abs(epsilon_N-(D_tau_chi)/2)/((D_tau_chi)/2)",
-    "Delta_I=Delta_coefficient=Delta_Q=Delta_epsilon for one common positive D_tau_chi"
+    "Delta_Q_reduction=abs(P_Phi-Q_theta)/Q_theta",
+    "Delta_epsilon_reduction=abs(epsilon_N-(D_tau_chi)/2)/((D_tau_chi)/2)",
+    "Delta_I_reduction=Delta_coefficient=Delta_Q_reduction=Delta_epsilon_reduction for one common positive D_tau_chi"
   ],
   "semantic_gates": {
     "phase_mode_id_equality": "FAIL_CLOSED_EXACT",
@@ -49,9 +49,9 @@
     "idt": {
       "repository": "AdrianLipa90/Informational-Dynamics-of-Time",
       "branch": "feat/idt-rfc-normalized-shape-holonomy-v0.1",
-      "tested_commit": "64126c9a88d564ed3d5200a6f226b64cca349571",
-      "workflow_run_id": 33125075845,
-      "workflow_job_id": 98701129577,
+      "tested_commit": "84664b5907c090e8c238106aab0ea3537ca34929",
+      "workflow_run_id": 33125737598,
+      "workflow_job_id": 98703331402,
       "passed": 373,
       "failed": 0,
       "status": "PASS"
@@ -59,9 +59,9 @@
     "rfc": {
       "repository": "AdrianLipa90/Relational-Field-Closure",
       "branch": "feat/rfc-gremlin-pnv-holonomy-v0.1",
-      "tested_commit": "c868b3d7838ac9f9c824add487ecdf23b75ec85e",
-      "workflow_run_id": 33125109859,
-      "workflow_job_id": 98701242932,
+      "tested_commit": "c3e9fdd8df2b8dd926f3b7050a805bfb126b12cb",
+      "workflow_run_id": 33125790662,
+      "workflow_job_id": 98703505138,
       "passed": 65,
       "failed": 0,
       "status": "PASS"

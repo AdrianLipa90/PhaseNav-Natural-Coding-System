@@ -1,6 +1,6 @@
 {
   "schema": "PNCS_GREMLIN_PNV_AUTHORING_IMPLEMENTATION_RECEIPT_V0_2",
-  "status": "IMPLEMENTED_CANDIDATE_AUTHORING__RELATIONAL_COMPILER__KAKU_RESOLVER__INVERSE_LINEAGE__INFORMATION_HOLONOMY__SOURCE_HOLONOMY_LOOPS__CI_PENDING",
+  "status": "IMPLEMENTED_CANDIDATE_AUTHORING__RELATIONAL_COMPILER__KAKU_RESOLVER__INVERSE_LINEAGE__INFORMATION_HOLONOMY__SOURCE_HOLONOMY_LOOPS__CI_EXECUTION_UNRESOLVED_PRE_TEST",
   "branch": "feat/gremlin-pnv-authoring-v0.2",
   "base_main_sha256_git": "83a06b9398bab09052c2c2124974897cc31a461f",
   "code_head_sha": "5f3bf90998b8c3547d51e7c47bddaf0d6be25d60",
@@ -83,8 +83,11 @@
   "ci": {
     "workflow": "PNCS GREMLIN PNV authoring",
     "latest_observed_run_id": 33119164722,
+    "latest_observed_job_id": 98681411714,
     "latest_observed_head_sha": "5f3bf90998b8c3547d51e7c47bddaf0d6be25d60",
-    "status": "PENDING",
+    "conclusion": "failure",
+    "steps": null,
+    "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
     "code_test_failure_observed": false
   },
   "epistemic_state": "CHYBA",

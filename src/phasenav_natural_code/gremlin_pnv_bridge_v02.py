@@ -8,8 +8,8 @@ isomorphism compilation, adapts relation-mining findings into that compiler,
 resolves relation atoms through explicit semantic bindings plus exact PNCS
 realization/mass/vector evidence, exposes candidate inverse lineage, and provides
 an executable physical-law frame with information-holonomy receipts and source-law
-round-trip templates including Euler-closed, collective Noether, and Noether↔RFC
-conserved-current gates.
+round-trip templates including Euler-closed, collective Noether, Noether↔RFC
+conserved-current, and scalar-field↔rotor collective-reduction gates.
 """
 
 from .gremlin_native_pnv_bridge_v01 import (
@@ -129,6 +129,16 @@ from .pnv_noether_rfc_current_holonomy_v01 import (
     noether_rfc_current_invariants,
     noether_rfc_current_transforms,
 )
+from .pnv_scalar_field_rotor_reduction_v01 import (
+    SCALAR_FIELD_ROTOR_CONTRACT,
+    SCALAR_FIELD_ROTOR_LOOP_ID,
+    PNVScalarFieldRotorReductionError,
+    build_scalar_field_rotor_reduction_loop,
+    make_scalar_field_rotor_state,
+    scalar_field_rotor_reduction_defects,
+    scalar_field_rotor_reduction_invariants,
+    scalar_field_rotor_reduction_transforms,
+)
 
 BRIDGE_SCHEMA = "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2"
 
@@ -187,6 +197,8 @@ __all__ = [
     "NOETHER_COLLECTIVE_CONTRACT",
     "NOETHER_RFC_CURRENT_CONTRACT",
     "NOETHER_RFC_CURRENT_LOOP_ID",
+    "SCALAR_FIELD_ROTOR_CONTRACT",
+    "SCALAR_FIELD_ROTOR_LOOP_ID",
     "C_LIGHT_EXACT",
     "NativePNVLiveBridgeError",
     "GremlinPNVAuthoringError",
@@ -198,6 +210,7 @@ __all__ = [
     "PNVSourceHolonomyError",
     "PNVNoetherCollectiveError",
     "PNVNoetherRFCCurrentError",
+    "PNVScalarFieldRotorReductionError",
     "TriplePulseNativeRun",
     "BelzebubNativeRun",
     "GremlinPNVAuthoringSession",
@@ -268,4 +281,9 @@ __all__ = [
     "build_noether_rfc_current_loop",
     "noether_rfc_current_transforms",
     "noether_rfc_current_invariants",
+    "make_scalar_field_rotor_state",
+    "build_scalar_field_rotor_reduction_loop",
+    "scalar_field_rotor_reduction_transforms",
+    "scalar_field_rotor_reduction_invariants",
+    "scalar_field_rotor_reduction_defects",
 ]

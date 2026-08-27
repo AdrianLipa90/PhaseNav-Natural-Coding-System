@@ -96,9 +96,13 @@
     "total": 115
   },
   "paired_repository_pins": {
-    "idt_tested_commit": "84664b5907c090e8c238106aab0ea3537ca34929",
+    "idt_tested_commit": "f1bbb6698234c38dd2c643c646ff00f72964fe41",
+    "idt_reference_run_id": 33126056152,
+    "idt_reference_job_id": 98704363770,
     "idt_reference": "373/373 PASS",
-    "rfc_tested_commit": "c3e9fdd8df2b8dd926f3b7050a805bfb126b12cb",
+    "rfc_tested_commit": "98fe8c186a420ba8f59fc6b218de4ac86e7ef12c",
+    "rfc_reference_run_id": 33126145853,
+    "rfc_reference_job_id": 98704659073,
     "rfc_reference": "65/65 PASS"
   },
   "ci": {

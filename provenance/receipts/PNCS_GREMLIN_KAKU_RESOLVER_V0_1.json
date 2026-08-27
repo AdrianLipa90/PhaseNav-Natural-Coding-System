@@ -5,6 +5,7 @@
   "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
   "resolver_contract": "PNCS_GREMLIN_KAKU_RESOLVER_V0_1",
   "resolution_receipt_schema": "PNCS_GREMLIN_KAKU_RESOLUTION_RECEIPT_V0_1",
+  "relation_mining_ledger_schema": "PNCS_RELATION_MINING_LEDGER_V0_3",
   "relation_mining_adapter_contract": "PNCS_GREMLIN_RELATION_MINING_ADAPTER_V0_1",
   "relational_compiler_contract": "PNCS_GREMLIN_RELATIONAL_ISOMORPHISM_COMPILER_V0_1",
   "semantic_authority": "EXPLICIT_ATOM_CONTENT_BINDING",
@@ -28,6 +29,7 @@
     "automatic_runtime_execution_authority": false
   },
   "fail_closed_gates": [
+    "relation_mining_ledger_schema_mismatch",
     "duplicate_atom_binding",
     "unbound_atom",
     "missing_realization_binding",
@@ -39,14 +41,16 @@
     "invalid_relation_mining_chain_selection"
   ],
   "tests_authored": {
-    "resolver_unit_tests": 9,
+    "resolver_unit_tests": 10,
     "resolver_to_compiler_pipeline_tests": 1,
-    "total": 10
+    "unified_bridge_export_tests": 1,
+    "total": 12
   },
   "ci_observation": {
     "workflow": "PNCS GREMLIN PNV authoring",
-    "run_id": 33115859734,
-    "head_sha": "204754bcc79d8308ad3f472212db92ddd55c8ecb",
+    "run_id": 33116110328,
+    "job_id": 98671055969,
+    "head_sha": "64eae3033381874f885b1645f50047b3a87a2cb4",
     "conclusion": "failure",
     "runner_id": 0,
     "runner_name": "",

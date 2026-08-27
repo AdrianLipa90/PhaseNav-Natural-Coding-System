@@ -25,6 +25,10 @@ from .native_pnv_exec_v01 import NativePNVExecutionResult, execute_pnv, parse_pn
 HOLONOMY_CONTRACT = "PNCS_PNV_INFORMATION_HOLONOMY_V0_1"
 HOLONOMY_COMPILATION_RECEIPT_SCHEMA = "PNCS_PNV_INFORMATION_HOLONOMY_COMPILATION_RECEIPT_V0_1"
 HOLONOMY_AUDIT_RECEIPT_SCHEMA = "PNCS_PNV_INFORMATION_HOLONOMY_AUDIT_RECEIPT_V0_1"
+INFORMATION_TRANSPORT_CONNECTION_ID = "PNCS_INFORMATION_TRANSPORT_CONNECTION_V0_1"
+LEGACY_TYPED_CONNECTION_CONTRACT = "PNV_CONNECTION_TYPED_HOLONOMY_CONTRACT_V1_CANDIDATE"
+LEGACY_TYPED_CONNECTION_CONTRACT_SHA256 = "bb243b1d2b8f96df28bbe011b50032214aff981cf0ff35384b1b1251df7af997"
+CONNECTION_STATES = frozenset({"READY_CANDIDATE", "OPEN"})
 
 
 class PNVInformationHolonomyError(RuntimeError):
@@ -53,6 +57,12 @@ def _finite_nonnegative(value: Any, field: str) -> float:
     if not math.isfinite(out) or out < 0.0:
         raise PNVInformationHolonomyError(f"{field} must be finite non-negative")
     return out
+
+
+def _nonempty(value: str, field: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise PNVInformationHolonomyError(f"{field} must be a non-empty string")
+    return value.strip()
 
 
 def _safe_token(value: str) -> str:
@@ -92,6 +102,58 @@ def numeric_linf_metric(left: Any, right: Any) -> float:
             defects.append(abs(a - b))
         return max(defects)
     raise PNVInformationHolonomyError("numeric L-inf metric supports finite scalar or flat numeric sequence")
+
+
+@dataclass(frozen=True)
+class HolonomyConnection:
+    connection_id: str
+    connection_kind: str
+    state_space_id: str
+    contract_ref: str
+    execution_state: str = "READY_CANDIDATE"
+    evidence_refs: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "connection_id", _nonempty(self.connection_id, "connection_id"))
+        object.__setattr__(self, "connection_kind", _nonempty(self.connection_kind, "connection_kind"))
+        object.__setattr__(self, "state_space_id", _nonempty(self.state_space_id, "state_space_id"))
+        object.__setattr__(self, "contract_ref", _nonempty(self.contract_ref, "contract_ref"))
+        state = _nonempty(self.execution_state, "execution_state").upper()
+        if state not in CONNECTION_STATES:
+            raise PNVInformationHolonomyError(f"connection execution_state must be one of {sorted(CONNECTION_STATES)}")
+        object.__setattr__(self, "execution_state", state)
+        for ref in self.evidence_refs:
+            _nonempty(ref, "connection evidence_ref")
+
+    @property
+    def payload(self) -> dict[str, Any]:
+        return {
+            "connection_id": self.connection_id,
+            "connection_kind": self.connection_kind,
+            "state_space_id": self.state_space_id,
+            "contract_ref": self.contract_ref,
+            "execution_state": self.execution_state,
+            "evidence_refs": list(self.evidence_refs),
+        }
+
+    @property
+    def connection_sha256(self) -> str:
+        return _sha256(self.payload)
+
+
+def information_transport_connection(
+    state_space_id: str,
+    *,
+    evidence_refs: Sequence[str] = (),
+) -> HolonomyConnection:
+    return HolonomyConnection(
+        connection_id=INFORMATION_TRANSPORT_CONNECTION_ID,
+        connection_kind="INFORMATION_TRANSPORT",
+        state_space_id=state_space_id,
+        contract_ref=HOLONOMY_CONTRACT,
+        execution_state="READY_CANDIDATE",
+        evidence_refs=tuple(evidence_refs),
+    )
 
 
 @dataclass(frozen=True)
@@ -144,6 +206,7 @@ class HolonomyInvariant:
 @dataclass(frozen=True)
 class InformationHolonomyLoop:
     loop_id: str
+    connection: HolonomyConnection
     nodes: tuple[LawFrameNode, ...]
     transports: tuple[LawTransport, ...]
     invariants: tuple[HolonomyInvariant, ...] = ()
@@ -152,6 +215,8 @@ class InformationHolonomyLoop:
     def __post_init__(self) -> None:
         if not self.loop_id:
             raise PNVInformationHolonomyError("loop_id is required")
+        if not isinstance(self.connection, HolonomyConnection):
+            raise PNVInformationHolonomyError("information-holonomy loop requires explicit HolonomyConnection")
         if not self.nodes:
             raise PNVInformationHolonomyError("information-holonomy loop requires at least one law node")
         node_ids = [node.node_id for node in self.nodes]
@@ -187,7 +252,20 @@ class InformationHolonomyAudit:
 
 
 def _loop_evidence(loop: InformationHolonomyLoop) -> tuple[str, ...]:
-    return tuple(sorted(set((*loop.evidence_refs, f"holonomy_loop:{loop.loop_id}"))))
+    return tuple(
+        sorted(
+            set(
+                (
+                    *loop.evidence_refs,
+                    *loop.connection.evidence_refs,
+                    f"holonomy_loop:{loop.loop_id}",
+                    f"connection_id:{loop.connection.connection_id}",
+                    f"connection_contract:{loop.connection.contract_ref}",
+                    f"connection_sha256:{loop.connection.connection_sha256}",
+                )
+            )
+        )
+    )
 
 
 def compile_information_holonomy_loop(
@@ -238,7 +316,7 @@ def compile_information_holonomy_loop(
                 edge.edge_id,
                 edge.source_node_id,
                 edge.target_node_id,
-                f"LAW_TRANSPORT:{edge.transform_name}",
+                f"LAW_TRANSPORT:{loop.connection.connection_id}:{edge.transform_name}",
             )
         )
 
@@ -303,6 +381,7 @@ def compile_information_holonomy_loop(
                 "edge_id": edge.edge_id,
                 "source_node_id": edge.source_node_id,
                 "target_node_id": edge.target_node_id,
+                "connection_id": loop.connection.connection_id,
                 "transform_name": edge.transform_name,
                 "operator_name": name,
             }
@@ -329,6 +408,12 @@ def compile_information_holonomy_loop(
         "schema": HOLONOMY_COMPILATION_RECEIPT_SCHEMA,
         "holonomy_contract": HOLONOMY_CONTRACT,
         "loop_id": loop.loop_id,
+        "connection": {**loop.connection.payload, "connection_sha256": loop.connection.connection_sha256},
+        "legacy_connection_firewall": {
+            "contract": LEGACY_TYPED_CONNECTION_CONTRACT,
+            "contract_sha256": LEGACY_TYPED_CONNECTION_CONTRACT_SHA256,
+            "principle": "EXPLICIT_CONNECTION_TYPE_REQUIRED",
+        },
         "law_frame": [
             {
                 "node_id": node.node_id,
@@ -397,8 +482,19 @@ def audit_information_holonomy(
         raise PNVInformationHolonomyError("InformationHolonomyLoop required")
     if not isinstance(compilation, RelationalCompilation):
         raise PNVInformationHolonomyError("RelationalCompilation required")
-    if compilation.receipt.get("loop_id") != loop.loop_id or compilation.receipt.get("holonomy_contract") != HOLONOMY_CONTRACT:
-        raise PNVInformationHolonomyError("holonomy loop/compilation receipt mismatch")
+    receipt_connection = compilation.receipt.get("connection")
+    if (
+        compilation.receipt.get("loop_id") != loop.loop_id
+        or compilation.receipt.get("holonomy_contract") != HOLONOMY_CONTRACT
+        or not isinstance(receipt_connection, Mapping)
+        or receipt_connection.get("connection_sha256") != loop.connection.connection_sha256
+        or receipt_connection.get("connection_id") != loop.connection.connection_id
+    ):
+        raise PNVInformationHolonomyError("holonomy loop/connection/compilation receipt mismatch")
+    if loop.connection.execution_state != "READY_CANDIDATE":
+        raise PNVInformationHolonomyError(
+            f"holonomy connection execution gate OPEN: {loop.connection.connection_id}"
+        )
     if not callable(state_metric) or not metric_id:
         raise PNVInformationHolonomyError("explicit state metric and metric_id are required")
     tolerance = _finite_nonnegative(state_tolerance, "state_tolerance")
@@ -472,6 +568,10 @@ def audit_information_holonomy(
         "schema": HOLONOMY_AUDIT_RECEIPT_SCHEMA,
         "holonomy_contract": HOLONOMY_CONTRACT,
         "loop_id": loop.loop_id,
+        "connection_id": loop.connection.connection_id,
+        "connection_sha256": loop.connection.connection_sha256,
+        "connection_contract_ref": loop.connection.contract_ref,
+        "state_space_id": loop.connection.state_space_id,
         "compilation_receipt_sha256": compilation.receipt["receipt_sha256"],
         "native_execution_receipt_sha256": execution.receipt["receipt_sha256"],
         "inverse_lineage_id": inverse.lineage_id,

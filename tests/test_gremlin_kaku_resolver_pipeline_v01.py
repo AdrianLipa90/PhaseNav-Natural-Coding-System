@@ -1,3 +1,4 @@
+from phasenav_natural_code.gremlin_inverse_lineage_v01 import resolve_gremlin_candidate_inverse_lineage
 from phasenav_natural_code.gremlin_kaku_resolver_v01 import (
     GremlinAtomKakuBinding,
     GremlinKakuResolver,
@@ -58,7 +59,7 @@ def _resolver() -> GremlinKakuResolver:
     return GremlinKakuResolver([binding], realization_registry=rr, mass_registry=mr)
 
 
-def test_resolver_adapter_compiler_pipeline_executes_purely():
+def test_resolver_adapter_compiler_pipeline_executes_purely_and_round_trips_lineage():
     compiled = compile_relation_mining_with_resolver(
         LEDGER,
         FINDING,
@@ -76,3 +77,12 @@ def test_resolver_adapter_compiler_pipeline_executes_purely():
     assert execution.receipt["effect_boundary"]["external_effects"] is False
     assert execution.receipt["unknown_semantics_fail_closed"] is True
     assert "ISO.RETURN" in execution.emitted
+
+    lineage = resolve_gremlin_candidate_inverse_lineage(compiled, execution)
+    assert lineage.operator_rows[0]["name"] == "ISO.RETURN"
+    assert lineage.payload["explicit_content_ids"] == [CONTENT]
+    assert lineage.payload["v22_join_state"] == "CONTENT_ID_AVAILABLE"
+    assert {row["node_id"] for row in lineage.kaku_rows} == {
+        "RM.DOMAIN_A_IDENTITY.000.IDENTITY",
+        "RM.DOMAIN_B_IDENTITY.000.IDENTITY",
+    }

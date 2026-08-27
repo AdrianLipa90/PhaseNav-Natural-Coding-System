@@ -7,8 +7,8 @@ authoring for KAKU/RADICAL/OPERATOR objects, exposes deterministic relational
 isomorphism compilation, adapts relation-mining findings into that compiler,
 resolves relation atoms through explicit semantic bindings plus exact PNCS
 realization/mass/vector evidence, exposes candidate inverse lineage, and provides
-an executable physical-law frame with information-holonomy receipts and canonical
-source-law round-trip templates.
+an executable physical-law frame with information-holonomy receipts and source-law
+round-trip templates including Euler-closed and collective Noether carrier gates.
 """
 
 from .gremlin_native_pnv_bridge_v01 import (
@@ -110,6 +110,15 @@ from .pnv_source_holonomy_v01 import (
     q0_occupation_invariants,
     q0_occupation_transforms,
 )
+from .pnv_noether_collective_holonomy_v01 import (
+    NOETHER_COLLECTIVE_CONTRACT,
+    PNVNoetherCollectiveError,
+    build_noether_collective_loop,
+    collective_noether_binding_defect,
+    make_noether_collective_state,
+    noether_collective_invariants,
+    noether_collective_transforms,
+)
 
 BRIDGE_SCHEMA = "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2"
 
@@ -165,6 +174,7 @@ __all__ = [
     "HOLONOMY_COMPILATION_RECEIPT_SCHEMA",
     "HOLONOMY_AUDIT_RECEIPT_SCHEMA",
     "SOURCE_HOLONOMY_CONTRACT",
+    "NOETHER_COLLECTIVE_CONTRACT",
     "C_LIGHT_EXACT",
     "NativePNVLiveBridgeError",
     "GremlinPNVAuthoringError",
@@ -174,6 +184,7 @@ __all__ = [
     "GremlinInverseLineageError",
     "PNVInformationHolonomyError",
     "PNVSourceHolonomyError",
+    "PNVNoetherCollectiveError",
     "TriplePulseNativeRun",
     "BelzebubNativeRun",
     "GremlinPNVAuthoringSession",
@@ -235,4 +246,9 @@ __all__ = [
     "build_euler_phase_intention_loop",
     "euler_phase_intention_transforms",
     "euler_phase_intention_invariants",
+    "make_noether_collective_state",
+    "build_noether_collective_loop",
+    "noether_collective_transforms",
+    "noether_collective_invariants",
+    "collective_noether_binding_defect",
 ]

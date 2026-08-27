@@ -38,7 +38,7 @@
     "OPERATOR",
     "PNV_CANDIDATE_PROGRAM"
   ],
-  "new_tests_authored": 27,
+  "new_tests_authored": 28,
   "ci": {
     "workflow": "PNCS GREMLIN PNV authoring",
     "latest_observed_run_id": 33114434779,

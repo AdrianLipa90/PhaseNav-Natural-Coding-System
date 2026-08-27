@@ -1,6 +1,6 @@
 {
   "schema": "PNCS_PNV_NOETHER_RFC_CURRENT_BINDING_IMPLEMENTATION_RECEIPT_V0_1",
-  "status": "IMPLEMENTED_CANDIDATE_CURRENT_BINDING__PNCS_CI_EXECUTION_UNRESOLVED_PRE_TEST__PEER_REFERENCE_EXECUTION_PENDING",
+  "status": "IMPLEMENTED_CANDIDATE_CURRENT_BINDING__IDT_RFC_REFERENCE_PASS__PNCS_CI_EXECUTION_UNRESOLVED_PRE_TEST",
   "branch": "feat/gremlin-pnv-authoring-v0.2",
   "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
   "code_snapshot": "f7b428f4dc30ddeb1280c9213c5788f576a54db4",
@@ -62,8 +62,26 @@
     "code_test_failure_observed": false
   },
   "peer_reference_execution": {
-    "idt": "PENDING",
-    "rfc": "PENDING"
+    "idt": {
+      "repository": "AdrianLipa90/Informational-Dynamics-of-Time",
+      "branch": "feat/idt-rfc-normalized-shape-holonomy-v0.1",
+      "tested_commit": "c65cbce1ff7e7200ee73af396805f59d0eaa5a90",
+      "workflow_run_id": 33124048723,
+      "workflow_job_id": 98697764076,
+      "passed": 370,
+      "failed": 0,
+      "status": "PASS"
+    },
+    "rfc": {
+      "repository": "AdrianLipa90/Relational-Field-Closure",
+      "branch": "feat/rfc-gremlin-pnv-holonomy-v0.1",
+      "tested_commit": "020f84b55326d68ee159bb4cd82a03943b90df22",
+      "workflow_run_id": 33124064073,
+      "workflow_job_id": 98697813131,
+      "passed": 62,
+      "failed": 0,
+      "status": "PASS"
+    }
   },
   "authority": {
     "epistemic_state": "CHYBA",

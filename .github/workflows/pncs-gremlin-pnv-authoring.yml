@@ -1,0 +1,28 @@
+name: PNCS GREMLIN PNV authoring
+
+on:
+  push:
+    branches:
+      - feat/gremlin-pnv-authoring-v0.2
+  pull_request:
+    paths:
+      - 'src/phasenav_natural_code/gremlin_pnv_authoring_v02.py'
+      - 'src/phasenav_natural_code/gremlin_native_pnv_bridge_v01.py'
+      - 'tests/test_gremlin_pnv_authoring_v02.py'
+      - 'spec/PNCS_GREMLIN_PNV_AUTHORING_V0_2.md'
+      - '.github/workflows/pncs-gremlin-pnv-authoring.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  candidate-authoring:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e . pytest
+      - run: python -m pytest -q tests/test_gremlin_pnv_authoring_v02.py tests/test_gremlin_native_pnv_bridge_v01.py tests/test_native_pnv_exec_v01.py

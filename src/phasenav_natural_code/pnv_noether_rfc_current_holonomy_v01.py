@@ -180,6 +180,24 @@ def noether_rfc_current_transforms(
     total_tol = _nonnegative(total_charge_tolerance, "total_charge_tolerance")
     flux_tol = _nonnegative(side_flux_tolerance, "side_flux_tolerance")
 
+    def enforce(values: Mapping[str, float]) -> None:
+        if values["Delta_measure"] > measure_tol:
+            raise PNVNoetherRFCCurrentError(
+                f"common-measure defect {values['Delta_measure']!r} exceeds tolerance {measure_tol!r}"
+            )
+        if values["Delta_local_current"] > local_tol:
+            raise PNVNoetherRFCCurrentError(
+                f"local-current defect {values['Delta_local_current']!r} exceeds tolerance {local_tol!r}"
+            )
+        if values["Delta_total_charge"] > total_tol:
+            raise PNVNoetherRFCCurrentError(
+                f"total-charge defect {values['Delta_total_charge']!r} exceeds tolerance {total_tol!r}"
+            )
+        if values["side_flux_abs"] > flux_tol:
+            raise PNVNoetherRFCCurrentError(
+                f"side-flux defect {values['side_flux_abs']!r} exceeds tolerance {flux_tol!r}"
+            )
+
     def resolve_common_measure(state: Mapping[str, Any]) -> dict[str, Any]:
         raw = _raw(state)
         values = _derived(raw)
@@ -200,20 +218,7 @@ def noether_rfc_current_transforms(
             observed = _finite(state.get(key), key)
             if not math.isclose(observed, expected, rel_tol=1e-12, abs_tol=1e-15):
                 raise PNVNoetherRFCCurrentError(f"{key} changed before conserved-current binding")
-        if values["Delta_measure"] > measure_tol:
-            raise PNVNoetherRFCCurrentError("common-measure binding failed")
-        if values["Delta_local_current"] > local_tol:
-            raise PNVNoetherRFCCurrentError(
-                f"local-current defect {values['Delta_local_current']!r} exceeds tolerance {local_tol!r}"
-            )
-        if values["Delta_total_charge"] > total_tol:
-            raise PNVNoetherRFCCurrentError(
-                f"total-charge defect {values['Delta_total_charge']!r} exceeds tolerance {total_tol!r}"
-            )
-        if values["side_flux_abs"] > flux_tol:
-            raise PNVNoetherRFCCurrentError(
-                f"side-flux defect {values['side_flux_abs']!r} exceeds tolerance {flux_tol!r}"
-            )
+        enforce(values)
         return {
             **raw,
             **values,
@@ -225,6 +230,7 @@ def noether_rfc_current_transforms(
     def reconstruct_pair(state: Mapping[str, Any]) -> dict[str, Any]:
         raw = _raw(state)
         values = _derived(raw)
+        enforce(values)
         q_rfc = _positive(state.get("Q_RFC"), "Q_RFC")
         q_noether = _positive(state.get("Q_NOETHER"), "Q_NOETHER")
         if not math.isclose(q_rfc, values["Q_Sigma"], rel_tol=1e-12, abs_tol=1e-15):

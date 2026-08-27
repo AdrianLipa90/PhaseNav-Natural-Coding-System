@@ -1,3 +1,4 @@
+import math
 import pytest
 
 from phasenav_natural_code.gremlin_pnv_holonomy_v01 import (
@@ -11,12 +12,16 @@ from phasenav_natural_code.pnv_source_holonomy_v01 import (
     PNVSourceHolonomyError,
     build_carrier_normalization_loop,
     build_epsilon_source_loop,
+    build_euler_phase_intention_loop,
     build_q0_occupation_loop,
     carrier_normalization_invariants,
     carrier_normalization_transforms,
     epsilon_source_invariants,
     epsilon_source_transforms,
+    euler_phase_intention_invariants,
+    euler_phase_intention_transforms,
     make_current_density_state,
+    make_euler_phase_intention_state,
     make_extensive_carrier_state,
     q0_occupation_invariants,
     q0_occupation_transforms,
@@ -149,6 +154,121 @@ def test_epsilon_source_roundtrip_closes_exactly_for_explicit_normalization():
 def test_epsilon_parameter_must_be_positive():
     with pytest.raises(PNVSourceHolonomyError, match="epsilon_Q must be strictly positive"):
         epsilon_source_transforms(0.0)
+
+
+def test_euler_closed_charge_energy_roundtrip_closes_exactly():
+    closure = _kaku("LAW.EULER", 0.31, "euler_closure")
+    charge = _kaku("LAW.JI", 0.32, f"phase_charge:{CONTENT_IDT}")
+    energy = _kaku("LAW.HPHI", 0.33, f"rotor_energy:{CONTENT_RFC}")
+    loop = build_euler_phase_intention_loop(
+        closure,
+        charge,
+        energy,
+        evidence_refs=("source:Euler_Berry", "source:Phase_Intention_Hamiltonian"),
+    )
+    compiled = _compile(loop)
+    initial = make_euler_phase_intention_state(
+        D=1,
+        epsilon_eb=0.0,
+        phi_ab=math.pi / 2.0,
+        phi_berry=math.pi / 4.0,
+        phi_euler=math.pi / 4.0,
+        theta_prior=0.0,
+        hbar=1.0,
+        j_total=2.0 * math.pi,
+        i_phi=2.0,
+    )
+    audit = audit_information_holonomy(
+        loop,
+        compiled,
+        initial_state=initial,
+        transforms=euler_phase_intention_transforms(),
+        state_metric=exact_state_metric,
+        metric_id="EXACT_CANONICAL_STATE",
+        invariant_evaluators=euler_phase_intention_invariants(),
+    )
+    assert audit.receipt["status"] == "PASS"
+    assert audit.state_defect == 0.0
+    assert all(row["passed"] for row in audit.invariant_results)
+    assert CONTENT_IDT in audit.inverse_lineage.payload["explicit_content_ids"]
+    assert CONTENT_RFC in audit.inverse_lineage.payload["explicit_content_ids"]
+
+
+def test_euler_loop_orders_closure_before_charge_before_rotor_energy():
+    loop = build_euler_phase_intention_loop(
+        _kaku("LAW.EULER", 0.31, "euler"),
+        _kaku("LAW.JI", 0.32, "charge"),
+        _kaku("LAW.HPHI", 0.33, "energy"),
+    )
+    compiled = _compile(loop)
+    assert [row["transform_name"] for row in compiled.receipt["transport_plan"]] == [
+        "euler.resolve_intention_charge",
+        "rotor.derive_energy_per_charge",
+        "rotor.reconstruct_euler_input",
+    ]
+    assert [item.invariant_id for item in loop.invariants] == [
+        "SOURCE.EULER_CLOSURE_SECTOR",
+        "SOURCE.INTENTION_ACTION_CHARGE",
+        "SOURCE.ROTOR_PHASE_ENERGY",
+        "SOURCE.ENERGY_PER_ACTION_CHARGE",
+    ]
+
+
+def test_euler_loop_derives_expected_epsilon_and_effective_floquet_step():
+    state = make_euler_phase_intention_state(
+        D=1,
+        epsilon_eb=0.0,
+        phi_ab=math.pi / 2.0,
+        phi_berry=math.pi / 4.0,
+        phi_euler=math.pi / 4.0,
+        theta_prior=0.0,
+        hbar=1.0,
+        j_total=2.0 * math.pi,
+        i_phi=2.0,
+    )
+    transforms = euler_phase_intention_transforms()
+    charged = transforms["euler.resolve_intention_charge"](state)
+    energized = transforms["rotor.derive_energy_per_charge"](charged)
+    assert math.isclose(charged["theta_I_EB"], math.pi, rel_tol=0.0, abs_tol=1e-15)
+    assert math.isclose(charged["J_I_EB"], math.pi, rel_tol=0.0, abs_tol=1e-15)
+    assert math.isclose(energized["H_Phi_EB"], math.pi**2 / 4.0, rel_tol=0.0, abs_tol=1e-15)
+    assert math.isclose(energized["epsilon_I_EB"], math.pi / 4.0, rel_tol=0.0, abs_tol=1e-15)
+    assert math.isclose(energized["Delta_tau_eff_EB"], 4.0 / math.pi, rel_tol=0.0, abs_tol=1e-15)
+
+
+def test_euler_loop_fails_closed_for_zero_or_negative_action_charge():
+    transforms = euler_phase_intention_transforms()
+    state = make_euler_phase_intention_state(
+        D=0,
+        epsilon_eb=0.0,
+        phi_ab=0.0,
+        phi_berry=0.0,
+        phi_euler=0.0,
+        theta_prior=0.0,
+        hbar=1.0,
+        j_total=1.0,
+        i_phi=1.0,
+    )
+    with pytest.raises(PNVSourceHolonomyError, match="action charge must be positive"):
+        transforms["euler.resolve_intention_charge"](state)
+
+
+def test_euler_loop_fails_closed_for_rotor_degeneracy():
+    transforms = euler_phase_intention_transforms()
+    state = make_euler_phase_intention_state(
+        D=1,
+        epsilon_eb=0.0,
+        phi_ab=math.pi,
+        phi_berry=0.0,
+        phi_euler=0.0,
+        theta_prior=0.0,
+        hbar=1.0,
+        j_total=math.pi,
+        i_phi=1.0,
+    )
+    charged = transforms["euler.resolve_intention_charge"](state)
+    with pytest.raises(PNVSourceHolonomyError, match="rotor phase energy must be positive"):
+        transforms["rotor.derive_energy_per_charge"](charged)
 
 
 def test_source_loop_rejects_mixed_basis_before_compilation():

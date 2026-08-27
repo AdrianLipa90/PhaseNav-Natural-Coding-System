@@ -1,0 +1,83 @@
+{
+  "schema": "PNCS_PNV_SCALAR_FIELD_ROTOR_INERTIA_REDUCTION_IMPLEMENTATION_RECEIPT_V0_1",
+  "status": "IMPLEMENTED_CANDIDATE_REDUCTION__IDT_RFC_REFERENCE_PASS__PNCS_CI_EXECUTION_UNRESOLVED_PRE_TEST",
+  "branch": "feat/gremlin-pnv-authoring-v0.2",
+  "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
+  "code_snapshot": "26fb4714a7d7e71f16024f2120f93099a9c62c01",
+  "contract": "PNCS_PNV_SCALAR_FIELD_ROTOR_INERTIA_REDUCTION_V0_1",
+  "semantic_loop": "SOURCE.PHASE_NOETHER.ROTOR_INERTIA.REDUCTION.ROUNDTRIP",
+  "equations": [
+    "C_A=sum_a A_a^2 V_a",
+    "I_A=2 C_A",
+    "L_phase_field=C_A (D_tau_chi)^2=(I_A/2)(D_tau_chi)^2",
+    "L_phase_rotor=(I_phi/2)(D_tau_chi)^2",
+    "Q_theta=I_A D_tau_chi",
+    "P_Phi=I_phi D_tau_chi",
+    "H_Phi=P_Phi^2/(2 I_phi)",
+    "epsilon_N=H_Phi/Q_theta",
+    "Delta_I=abs(I_phi-I_A)/I_A",
+    "Delta_coefficient=abs(I_phi/2-C_A)/C_A",
+    "Delta_Q=abs(P_Phi-Q_theta)/Q_theta",
+    "Delta_epsilon=abs(epsilon_N-(D_tau_chi)/2)/((D_tau_chi)/2)",
+    "Delta_I=Delta_coefficient=Delta_Q=Delta_epsilon for one common positive D_tau_chi"
+  ],
+  "semantic_gates": {
+    "phase_mode_id_equality": "FAIL_CLOSED_EXACT",
+    "covariant_rate_id_equality": "FAIL_CLOSED_EXACT",
+    "measure_id_equality": "FAIL_CLOSED_EXACT",
+    "ordered_collective_support_equality": "FAIL_CLOSED_EXACT",
+    "rotor_inertia_input": "INDEPENDENT",
+    "field_inertia": "DERIVED_AS_2_SUM_A2V",
+    "reduction_tolerance": "EXPLICIT"
+  },
+  "tests_authored": {
+    "scalar_field_rotor_unit_roundtrip_adversarial": 11,
+    "unified_bridge_export": 1,
+    "total": 12
+  },
+  "ci": {
+    "workflow": "PNCS GREMLIN PNV authoring",
+    "run_id": 33125567602,
+    "job_id": 98702774903,
+    "head_sha": "26fb4714a7d7e71f16024f2120f93099a9c62c01",
+    "conclusion": "failure",
+    "steps": null,
+    "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
+    "code_test_failure_observed": false
+  },
+  "peer_reference_execution": {
+    "idt": {
+      "repository": "AdrianLipa90/Informational-Dynamics-of-Time",
+      "branch": "feat/idt-rfc-normalized-shape-holonomy-v0.1",
+      "tested_commit": "64126c9a88d564ed3d5200a6f226b64cca349571",
+      "workflow_run_id": 33125075845,
+      "workflow_job_id": 98701129577,
+      "passed": 373,
+      "failed": 0,
+      "status": "PASS"
+    },
+    "rfc": {
+      "repository": "AdrianLipa90/Relational-Field-Closure",
+      "branch": "feat/rfc-gremlin-pnv-holonomy-v0.1",
+      "tested_commit": "c868b3d7838ac9f9c824add487ecdf23b75ec85e",
+      "workflow_run_id": 33125109859,
+      "workflow_job_id": 98701242932,
+      "passed": 65,
+      "failed": 0,
+      "status": "PASS"
+    }
+  },
+  "authority": {
+    "epistemic_state": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false
+  },
+  "physical_promotion_gates": [
+    "field phase mode <-> rotor chi mode",
+    "field covariant phase rate <-> rotor D_tau chi",
+    "common measure and collective support",
+    "Noether current <-> RFC current"
+  ],
+  "main_mutated": false
+}

@@ -91,7 +91,7 @@ def test_relation_mining_finding_becomes_cross_domain_isomorphism_graph():
 def test_historical_non_native_grammar_atoms_remain_kaku_not_executable_opcodes():
     compiled = compile_relation_mining_finding(LEDGER, FINDING, kaku_by_atom=KAKU, **KWARGS)
 
-    assert any(node.spec if False else True for node in [compiled])
+    assert compiled.spec.invariant_id == "INV.SHARED.IDENTITY.ENDPOINT"
     assert any("DERIVE" in value["content"]["role"] for value in compiled.kaku_candidates.values())
     for operator in compiled.operator_candidates:
         assert operator["content"]["opcode"] in SUPPORTED_OPCODES

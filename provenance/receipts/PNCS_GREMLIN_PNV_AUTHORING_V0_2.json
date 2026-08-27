@@ -1,9 +1,9 @@
 {
   "schema": "PNCS_GREMLIN_PNV_AUTHORING_IMPLEMENTATION_RECEIPT_V0_2",
-  "status": "IMPLEMENTED_CANDIDATE_AUTHORING__RELATIONAL_COMPILER__KAKU_RESOLVER__INVERSE_LINEAGE__INFORMATION_HOLONOMY__SOURCE_HOLONOMY_LOOPS__CI_EXECUTION_UNRESOLVED_PRE_TEST",
+  "status": "IMPLEMENTED_CANDIDATE_AUTHORING__RELATIONAL_COMPILER__KAKU_RESOLVER__INVERSE_LINEAGE__SEVEN_SOURCE_HOLONOMY_LOOPS__IDT_RFC_REFERENCE_PASS__PNCS_CI_EXECUTION_UNRESOLVED_PRE_TEST",
   "branch": "feat/gremlin-pnv-authoring-v0.2",
   "base_main_sha256_git": "83a06b9398bab09052c2c2124974897cc31a461f",
-  "code_head_sha": "5f3bf90998b8c3547d51e7c47bddaf0d6be25d60",
+  "executable_code_snapshot": "26fb4714a7d7e71f16024f2120f93099a9c62c01",
   "authoring_contract": "PNCS_GREMLIN_PNV_AUTHORING_V0_2",
   "bridge_contract": "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2",
   "relational_compiler_contract": "PNCS_GREMLIN_RELATIONAL_ISOMORPHISM_COMPILER_V0_1",
@@ -12,17 +12,21 @@
   "inverse_lineage_contract": "PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_V0_1",
   "information_holonomy_contract": "PNCS_PNV_INFORMATION_HOLONOMY_V0_1",
   "source_holonomy_contract": "PNCS_PNV_SOURCE_HOLONOMY_LOOPS_V0_1",
+  "source_extension_contracts": [
+    "PNCS_PNV_NOETHER_COLLECTIVE_CARRIER_V0_1",
+    "PNCS_PNV_NOETHER_RFC_CURRENT_BINDING_V0_1",
+    "PNCS_PNV_SCALAR_FIELD_ROTOR_INERTIA_REDUCTION_V0_1"
+  ],
   "live_surface": "/dev/shm/ciel_noema",
   "noema_guard": {
     "schema": "noema.aux-tether-guard/v2",
     "tether_status": "ACTIVE",
     "failures": [],
     "guard_sha256": "de7481a0d71fe2033a66ed09de145570dace4b263167247d2f757aee60fcaefc",
-    "socket": "/run/user/1000/noema/ciel_headless.sock",
-    "runtime_owner": "oai:1000",
-    "socket_owner": "oai:1000"
+    "socket": "/run/user/1000/noema/ciel_headless.sock"
   },
   "live_gremlin_hydration": {
+    "path": "/dev/shm/ciel_noema/gremlin",
     "gremlin_directory_observed": false,
     "status": "OPEN",
     "live_authoring_entry": "BLOCKED_UNTIL_GREMLIN_STATE_WITNESS_IS_HYDRATED"
@@ -46,6 +50,10 @@
     "source_carrier_normalization_roundtrip": true,
     "source_q0_occupation_roundtrip": true,
     "source_epsilon_mass_density_roundtrip": true,
+    "source_euler_charge_energy_roundtrip": true,
+    "source_noether_collective_carrier_roundtrip": true,
+    "source_noether_rfc_current_roundtrip": true,
+    "source_scalar_field_rotor_reduction_roundtrip": true,
     "idt_rfc_paired_source_holonomy_pins": true,
     "content_addressed_append_only_store": true,
     "native_pnv_render_and_parse_gate": true,
@@ -67,29 +75,51 @@
     "SAME_EXPLICIT_CONTENT_ID_AND_EVIDENCE",
     "PHYSICAL_LAW_FRAME",
     "PNV_TRANSPORT_LOOP",
-    "INFORMATION_HOLONOMY_AUDIT_RECEIPT",
-    "SOURCE_HOLONOMY_REFERENCE_LOOPS"
+    "INFORMATION_HOLONOMY_AUDIT_RECEIPT"
   ],
   "source_holonomy_loops": [
     "SOURCE.CARRIER.NORMALIZATION.ROUNDTRIP",
     "SOURCE.CARRIER.Q0_OCCUPATION.ROUNDTRIP",
-    "SOURCE.CARRIER.EPSILON_MASS_DENSITY.ROUNDTRIP"
+    "SOURCE.CARRIER.EPSILON_MASS_DENSITY.ROUNDTRIP",
+    "SOURCE.PHASE_INTENTION.EULER_CHARGE_ENERGY.ROUNDTRIP",
+    "SOURCE.PHASE_NOETHER.COLLECTIVE_CARRIER.ROUNDTRIP",
+    "SOURCE.PHASE_NOETHER.RFC_CONSERVED_CURRENT.ROUNDTRIP",
+    "SOURCE.PHASE_NOETHER.ROTOR_INERTIA.REDUCTION.ROUNDTRIP"
   ],
-  "paired_repository_pins": {
-    "idt_commit": "8dc616fbcdd14a08ff8ef9d7dabad6ee7330ccc8",
-    "rfc_commit": "a934a408c89630b88026ae0c3839b65c22341368"
+  "authored_test_breakdown": {
+    "pre_source_authoring_compiler_resolver_inverse_and_generic_holonomy": 61,
+    "first_three_source_loops": 10,
+    "euler_charge_energy_extension": 6,
+    "noether_collective_extension": 10,
+    "noether_rfc_current_extension": 16,
+    "scalar_field_rotor_reduction_extension": 12,
+    "total": 115
   },
-  "new_tests_authored": 71,
+  "paired_repository_pins": {
+    "idt_tested_commit": "84664b5907c090e8c238106aab0ea3537ca34929",
+    "idt_reference": "373/373 PASS",
+    "rfc_tested_commit": "c3e9fdd8df2b8dd926f3b7050a805bfb126b12cb",
+    "rfc_reference": "65/65 PASS"
+  },
   "ci": {
     "workflow": "PNCS GREMLIN PNV authoring",
-    "latest_observed_run_id": 33119164722,
-    "latest_observed_job_id": 98681411714,
-    "latest_observed_head_sha": "5f3bf90998b8c3547d51e7c47bddaf0d6be25d60",
+    "latest_observed_run_id": 33125567602,
+    "latest_observed_job_id": 98702774903,
+    "latest_observed_head_sha": "26fb4714a7d7e71f16024f2120f93099a9c62c01",
     "conclusion": "failure",
     "steps": null,
     "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
     "code_test_failure_observed": false
   },
+  "physical_frontier": [
+    "field phase mode <-> rotor chi mode",
+    "field covariant rate <-> rotor D_tau chi",
+    "common measure/support",
+    "J_Q^mu <-> J_theta^mu",
+    "Q_Sigma <-> Q_theta",
+    "p_IDT <-> p_Q",
+    "source coupling/universality"
+  ],
   "epistemic_state": "CHYBA",
   "promotion_state": "CANDIDATE_ONLY",
   "main_mutated": false

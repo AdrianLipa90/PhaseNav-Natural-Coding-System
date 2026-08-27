@@ -14,6 +14,7 @@ from .gremlin_pnv_holonomy_v01 import (
 from .model import Kaku
 
 NOETHER_COLLECTIVE_CONTRACT = "PNCS_PNV_NOETHER_COLLECTIVE_CARRIER_V0_1"
+NOETHER_COLLECTIVE_LOOP_ID = "SOURCE.PHASE_NOETHER.COLLECTIVE_CARRIER.ROUNDTRIP"
 
 
 class PNVNoetherCollectiveError(PNVInformationHolonomyError):
@@ -34,6 +35,13 @@ def _positive(value: Any, field: str) -> float:
     out = _finite(value, field)
     if out <= 0.0:
         raise PNVNoetherCollectiveError(f"{field} must be positive")
+    return out
+
+
+def _nonnegative(value: Any, field: str) -> float:
+    out = _finite(value, field)
+    if out < 0.0:
+        raise PNVNoetherCollectiveError(f"{field} must be non-negative")
     return out
 
 
@@ -78,8 +86,10 @@ def _derived(state: Mapping[str, Any]) -> dict[str, float]:
         raise PNVNoetherCollectiveError("positive rotor carrier P_Phi is required")
     phase_rate = p_phi / i_phi
     q_theta = i_a * phase_rate
+    if q_theta <= 0.0:
+        raise PNVNoetherCollectiveError("positive finite Noether charge Q_theta is required")
     h_phi = p_phi * p_phi / (2.0 * i_phi)
-    epsilon_n = h_phi / p_phi
+    epsilon_n = h_phi / q_theta
     delta_i = abs(q_theta - p_phi) / abs(p_phi)
     return {
         "J_I_EB": j_i,
@@ -94,14 +104,12 @@ def _derived(state: Mapping[str, Any]) -> dict[str, float]:
 
 def collective_noether_binding_defect(state: Mapping[str, Any]) -> float:
     if "Delta_I" in state:
-        return _finite(state["Delta_I"], "Delta_I")
+        return _nonnegative(state["Delta_I"], "Delta_I")
     return _derived(state)["Delta_I"]
 
 
 def noether_collective_transforms(*, binding_tolerance: float = 1e-12) -> dict[str, Any]:
-    tol = _finite(binding_tolerance, "binding_tolerance")
-    if tol < 0.0:
-        raise PNVNoetherCollectiveError("binding_tolerance must be non-negative")
+    tol = _nonnegative(binding_tolerance, "binding_tolerance")
 
     def resolve_rotor_carrier(state: Mapping[str, Any]) -> dict[str, Any]:
         values = _derived(state)
@@ -130,9 +138,13 @@ def noether_collective_transforms(*, binding_tolerance: float = 1e-12) -> dict[s
 
     def reconstruct_rotor_input(state: Mapping[str, Any]) -> dict[str, Any]:
         values = _derived(state)
-        q_rfc = _finite(state.get("Q_RFC"), "Q_RFC")
+        if values["Delta_I"] > tol:
+            raise PNVNoetherCollectiveError(
+                f"Noether/rotor inertia binding defect {values['Delta_I']!r} exceeds tolerance {tol!r}"
+            )
+        q_rfc = _positive(state.get("Q_RFC"), "Q_RFC")
         epsilon_q = _positive(state.get("epsilon_Q_candidate"), "epsilon_Q_candidate")
-        if not math.isclose(q_rfc, values["P_Phi_EB"], rel_tol=1e-12, abs_tol=1e-15):
+        if not math.isclose(q_rfc, values["Q_theta"], rel_tol=1e-12, abs_tol=1e-15):
             raise PNVNoetherCollectiveError("RFC carrier failed reverse Noether audit")
         if not math.isclose(epsilon_q, values["epsilon_N_EB"], rel_tol=1e-12, abs_tol=1e-15):
             raise PNVNoetherCollectiveError("RFC epsilon candidate failed reverse Noether audit")
@@ -208,9 +220,7 @@ def build_noether_collective_loop(
 ) -> InformationHolonomyLoop:
     if not all(isinstance(item, Kaku) for item in (rotor_kaku, noether_kaku, rfc_kaku)):
         raise PNVNoetherCollectiveError("Noether collective law gates require Kaku")
-    tol = _finite(tolerance, "tolerance")
-    if tol < 0.0:
-        raise PNVNoetherCollectiveError("tolerance must be non-negative")
+    tol = _nonnegative(tolerance, "tolerance")
     refs = _refs(
         (
             *evidence_refs,
@@ -228,7 +238,7 @@ def build_noether_collective_loop(
         evidence_refs=refs,
     )
     return InformationHolonomyLoop(
-        loop_id="PNV_SOURCE_NOETHER_COLLECTIVE_CARRIER_LOOP_V0_1",
+        loop_id=NOETHER_COLLECTIVE_LOOP_ID,
         connection=connection,
         nodes=(rotor, noether, rfc),
         transports=(

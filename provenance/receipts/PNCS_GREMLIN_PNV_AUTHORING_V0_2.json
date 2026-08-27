@@ -31,13 +31,7 @@
     "automatic_canon_promotion": false,
     "automatic_runtime_execution_authority": false
   },
-  "candidate_chain": [
-    "RELATION_MINING_FINDING",
-    "KAKU",
-    "RADICAL",
-    "OPERATOR",
-    "PNV_CANDIDATE_PROGRAM"
-  ],
+  "candidate_chain": ["RELATION_MINING_FINDING", "KAKU", "RADICAL", "OPERATOR", "PNV_CANDIDATE_PROGRAM"],
   "new_tests_authored": 28,
   "ci": {
     "workflow": "PNCS GREMLIN PNV authoring",

@@ -1,9 +1,9 @@
 {
   "schema": "PNCS_GREMLIN_PNV_AUTHORING_IMPLEMENTATION_RECEIPT_V0_2",
-  "status": "IMPLEMENTED_CANDIDATE_AUTHORING__RELATIONAL_COMPILER__KAKU_RESOLVER__INVERSE_LINEAGE__INFORMATION_HOLONOMY__CI_EXECUTION_UNRESOLVED_PRE_TEST",
+  "status": "IMPLEMENTED_CANDIDATE_AUTHORING__RELATIONAL_COMPILER__KAKU_RESOLVER__INVERSE_LINEAGE__INFORMATION_HOLONOMY__SOURCE_HOLONOMY_LOOPS__CI_PENDING",
   "branch": "feat/gremlin-pnv-authoring-v0.2",
   "base_main_sha256_git": "83a06b9398bab09052c2c2124974897cc31a461f",
-  "code_head_sha": "f838752f61bd2b7248ed8c52a0927ad2a4302579",
+  "code_head_sha": "5f3bf90998b8c3547d51e7c47bddaf0d6be25d60",
   "authoring_contract": "PNCS_GREMLIN_PNV_AUTHORING_V0_2",
   "bridge_contract": "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2",
   "relational_compiler_contract": "PNCS_GREMLIN_RELATIONAL_ISOMORPHISM_COMPILER_V0_1",
@@ -11,12 +11,14 @@
   "kaku_resolver_contract": "PNCS_GREMLIN_KAKU_RESOLVER_V0_1",
   "inverse_lineage_contract": "PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_V0_1",
   "information_holonomy_contract": "PNCS_PNV_INFORMATION_HOLONOMY_V0_1",
+  "source_holonomy_contract": "PNCS_PNV_SOURCE_HOLONOMY_LOOPS_V0_1",
   "live_surface": "/dev/shm/ciel_noema",
   "noema_guard": {
     "schema": "noema.aux-tether-guard/v2",
     "tether_status": "ACTIVE",
     "failures": [],
     "guard_sha256": "de7481a0d71fe2033a66ed09de145570dace4b263167247d2f757aee60fcaefc",
+    "socket": "/run/user/1000/noema/ciel_headless.sock",
     "runtime_owner": "oai:1000",
     "socket_owner": "oai:1000"
   },
@@ -41,6 +43,10 @@
     "holonomy_state_defect": true,
     "holonomy_invariant_defects": true,
     "holonomy_inverse_lineage": true,
+    "source_carrier_normalization_roundtrip": true,
+    "source_q0_occupation_roundtrip": true,
+    "source_epsilon_mass_density_roundtrip": true,
+    "idt_rfc_paired_source_holonomy_pins": true,
     "content_addressed_append_only_store": true,
     "native_pnv_render_and_parse_gate": true,
     "pure_conformance_execution_path": true,
@@ -61,18 +67,24 @@
     "SAME_EXPLICIT_CONTENT_ID_AND_EVIDENCE",
     "PHYSICAL_LAW_FRAME",
     "PNV_TRANSPORT_LOOP",
-    "INFORMATION_HOLONOMY_AUDIT_RECEIPT"
+    "INFORMATION_HOLONOMY_AUDIT_RECEIPT",
+    "SOURCE_HOLONOMY_REFERENCE_LOOPS"
   ],
-  "new_tests_authored": 61,
+  "source_holonomy_loops": [
+    "SOURCE.CARRIER.NORMALIZATION.ROUNDTRIP",
+    "SOURCE.CARRIER.Q0_OCCUPATION.ROUNDTRIP",
+    "SOURCE.CARRIER.EPSILON_MASS_DENSITY.ROUNDTRIP"
+  ],
+  "paired_repository_pins": {
+    "idt_commit": "8dc616fbcdd14a08ff8ef9d7dabad6ee7330ccc8",
+    "rfc_commit": "a934a408c89630b88026ae0c3839b65c22341368"
+  },
+  "new_tests_authored": 71,
   "ci": {
     "workflow": "PNCS GREMLIN PNV authoring",
-    "latest_observed_run_id": 33118855927,
-    "latest_observed_job_id": 98680367487,
-    "latest_observed_head_sha": "f838752f61bd2b7248ed8c52a0927ad2a4302579",
-    "conclusion": "failure",
-    "steps": null,
-    "job_logs": "UNAVAILABLE_404_BLOB_NOT_FOUND",
-    "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
+    "latest_observed_run_id": 33119164722,
+    "latest_observed_head_sha": "5f3bf90998b8c3547d51e7c47bddaf0d6be25d60",
+    "status": "PENDING",
     "code_test_failure_observed": false
   },
   "epistemic_state": "CHYBA",

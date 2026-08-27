@@ -1,402 +1,197 @@
 # PNCS PNV Source Holonomy Loops v0.1
 
-Status: `REFERENCE_SOURCE_LOOPS_IMPLEMENTED / EULER_CHARGE_ENERGY_LOOP_IMPLEMENTED / IDT_RFC_INTERFACE_EXPLICIT / Q0_CONDITIONAL / EPSILON_Q_DOWNSTREAM_CONDITIONAL`
+Status: `SEVEN_REFERENCE_SOURCE_LOOPS_IMPLEMENTED / IDT_RFC_INTERFACE_EXPLICIT / PHYSICAL_PROMOTION_GATES_OPEN`
 
 ## Purpose
 
-This contract instantiates `PNCS_PNV_INFORMATION_HOLONOMY_V0_1` for source-factorization and source-normalization loops at the IDT ↔ RFC interface.
+This contract instantiates `PNCS_PNV_INFORMATION_HOLONOMY_V0_1` for the source-factorization, phase-energy, Noether-carrier, conserved-current and scalar-field/rotor reduction layers at the IDT ↔ RFC interface.
 
-Each reference loop compiles into KAKU candidates, one RADICAL, native PNV OPERATOR candidates, a pure execution trace, an information-holonomy audit receipt, and inverse lineage back to explicit content/evidence.
+Each reference loop compiles into explicit KAKU law gates, one RADICAL, native PNV OPERATOR candidates, a pure execution trace, an information-holonomy audit receipt and inverse lineage back to explicit content/evidence.
 
-The normalization order is now explicit:
+The canonical sequence is:
 
 ```text
-Euler/Berry closure
-  -> intention phase residual
-  -> action charge J_I
-  -> canonical rotor energy H_Phi
-  -> energy per action-charge epsilon_I
-  -> effective Floquet step
-  -> later RFC epsilon_Q binding
+1. SOURCE.CARRIER.NORMALIZATION.ROUNDTRIP
+2. SOURCE.CARRIER.Q0_OCCUPATION.ROUNDTRIP
+3. SOURCE.CARRIER.EPSILON_MASS_DENSITY.ROUNDTRIP
+4. SOURCE.PHASE_INTENTION.EULER_CHARGE_ENERGY.ROUNDTRIP
+5. SOURCE.PHASE_NOETHER.COLLECTIVE_CARRIER.ROUNDTRIP
+6. SOURCE.PHASE_NOETHER.RFC_CONSERVED_CURRENT.ROUNDTRIP
+7. SOURCE.PHASE_NOETHER.ROTOR_INERTIA.REDUCTION.ROUNDTRIP
 ```
-
-The downstream `epsilon_Q` source-density loop therefore consumes an admitted normalization; it does not derive that normalization itself.
 
 ## 1. Extensive carrier ↔ normalized profile
 
-The first control loop implements
+```text
+Q_total = sum_a Q_a
+p_a = Q_a/Q_total
+Q'_a = Q_total p_a
+```
 
-```math
-Q_a
-\xrightarrow{\;p_a=Q_a/Q_\Sigma\;}
-(Q_\Sigma,p_a)
-\xrightarrow{\;Q'_a=Q_\Sigma p_a\;}
-Q'_a.
+The loop audits exact reconstruction and normalized profile support.
+
+## 2. Conditional q0 occupation
+
+For explicitly admitted positive `q0`,
+
+```text
+n_a = Q_a/q0
+Q'_a = q0 n_a
+```
+
+`q0` remains a separately admitted quantization coordinate.
+
+## 3. Conditional epsilon source-density consumer
+
+For explicitly admitted positive `epsilon_Q`,
+
+```text
+rho_Q = (epsilon_Q/c^2) j_Q
+j'_Q = (c^2/epsilon_Q) rho_Q
+```
+
+This loop consumes the energy-per-carrier normalization; it does not promote the physical carrier identity.
+
+## 4. Euler/Berry phase-intention charge-energy loop
+
+The Euler/Berry closure fixes the residual intention sector and the phase rotor supplies the energy coordinate:
+
+```text
+J_I^EB = hbar theta_I^EB
+P_Phi^EB = J - J_I^EB
+H_Phi^EB = (P_Phi^EB)^2/(2 I_phi)
+```
+
+The executable loop preserves the closure sector, intention action charge and rotor energy through exact forward/reverse transport.
+
+## 5. Collective Noether carrier loop
+
+The finite Noether carrier is typed as
+
+```text
+Q_theta = I_A D_tau chi
+P_Phi^EB = I_phi D_tau chi
+Delta_I_01Z = |I_A/I_phi - 1|
+epsilon_N^EB = H_Phi^EB/Q_theta
+```
+
+This layer keeps the finite Noether charge distinct from both `J_I^EB` and `P_Phi^EB` until a coefficient reduction is admitted.
+
+## 6. Noether ↔ RFC conserved-current loop
+
+On one common slice, normal orientation and ordered cell support,
+
+```text
+Q_theta = sum_a V_theta,a j_theta,a
+Q_Sigma = sum_a V_Q,a j_Q,a
 ```
 
 with
 
-```math
-Q_\Sigma=\sum_a Q_a,
-\qquad
-\sum_a p_a=1.
+```text
+Delta_J = sum_a V_Q,a |j_Q,a-j_theta,a| / Q_theta
+Delta_V = sum_a |V_Q,a-V_theta,a| |j_theta,a| / Q_theta
+Delta_Sigma = |Q_Sigma-Q_theta| / Q_theta
+Delta_F = |F_side|
 ```
 
-Law nodes:
+The exact finite-cell theorem is
 
 ```text
-LAW.RFC.CARRIER_EXTENSIVE
-LAW.IDT.NORMALIZED_PROFILE
+Delta_Sigma <= Delta_J + Delta_V.
 ```
 
-Transport names:
+The executable bound coordinate is
 
 ```text
-carrier.normalize_profile
-carrier.reconstruct_extensive
+Delta_bound = max(0, Delta_Sigma-(Delta_J+Delta_V)).
 ```
 
-Invariants:
+Integrated equality alone is insufficient for local-current promotion. The canonical anti-false-positive witness
 
 ```text
-SOURCE.TOTAL_Q
-SOURCE.PROFILE_NORM
+V=(1,1)
+j_theta=(1,3)
+j_Q=(2,2)
 ```
 
-This is the executable form of `Q_a = Q_Sigma p_a`.
+has `Q_theta=Q_Sigma=4` and `Delta_Sigma=0`, but `Delta_J=0.5`.
 
-## 2. Conditional q0 occupation loop
+## 7. Scalar-field ↔ canonical-rotor coefficient reduction
 
-For explicitly supplied positive `q0`,
-
-```math
-Q_a
-\xrightarrow{\;n_a=Q_a/q_0\;}
-n_a
-\xrightarrow{\;Q'_a=q_0n_a\;}
-Q'_a.
-```
-
-Law nodes:
+For the common scalar-field phase mode,
 
 ```text
-LAW.RFC.CARRIER_EXTENSIVE
-LAW.CARRIER.QUANTIZED_OCCUPATION
+C_A = sum_a A_a^2 V_a
+I_A = 2 C_A
+L_phase^field = C_A (D_tau chi)^2
+              = (I_A/2)(D_tau chi)^2.
 ```
 
-Transport names:
+The independently supplied canonical rotor uses
 
 ```text
-carrier.to_occupation
-carrier.from_occupation
+L_phase^rotor = (I_phi/2)(D_tau chi)^2
+P_Phi = I_phi D_tau chi
+H_Phi = P_Phi^2/(2 I_phi)
+Q_theta = I_A D_tau chi
+epsilon_N = H_Phi/Q_theta.
 ```
 
-The loop records
+The executable reduction coordinates are
 
 ```text
-gate:q0:CONDITIONAL
+Delta_I_reduction = |I_phi-I_A|/I_A
+Delta_coefficient = |I_phi/2-C_A|/C_A
+Delta_Q_reduction = |P_Phi-Q_theta|/Q_theta
+Delta_epsilon_reduction = |epsilon_N-(D_tau chi)/2| / ((D_tau chi)/2).
 ```
 
-and preserves
+For one common positive covariant phase rate they obey
 
 ```text
-SOURCE.TOTAL_Q
+Delta_I_reduction
+= Delta_coefficient
+= Delta_Q_reduction
+= Delta_epsilon_reduction.
 ```
 
-The derivation/admission of `q0` remains a separate gate.
-
-## 3. Conditional epsilon_Q source-density consumer
-
-For an explicitly supplied positive energy-per-carrier-charge `epsilon_Q`,
-
-```math
-j_Q
-\xrightarrow{\;\rho_Q=(\epsilon_Q/c^2)j_Q\;}
-\rho_Q
-\xrightarrow{\;j'_Q=(c^2/\epsilon_Q)\rho_Q\;}
-j'_Q.
-```
-
-Law nodes:
+At the exact collective reduction gate,
 
 ```text
-LAW.CARRIER.CURRENT_DENSITY
-LAW.RFC.PHYSICAL_SOURCE_DENSITY
+I_phi = I_A
+P_Phi = Q_theta
+epsilon_N = (1/2) D_tau chi.
 ```
 
-Transport names:
+The implementation does not assign `I_phi=I_A`; `I_phi` is an independent input and the equality is audited against `I_A=2 sum A_a^2 V_a`.
 
-```text
-source.to_mass_density
-source.from_mass_density
-```
+Admission requires explicit equality of the field/rotor phase-mode ID, covariant-rate ID, measure ID and ordered collective support.
 
-The loop records
+## Holonomy audit
 
-```text
-gate:epsilon_Q:CONDITIONAL
-```
-
-and audits
-
-```text
-SOURCE.EQUIVALENT_CURRENT_NORM
-```
-
-This loop is a downstream consumer. The candidate source of `epsilon_Q` is the Euler-closed phase-intention loop below, followed by the still-open physical carrier/current binding.
-
-## 4. Euler/Berry → action charge → rotor energy → epsilon loop
-
-The fourth loop implements the normalization sequence demanded by IDT 01Y and RFC RF-N1B2I.
-
-### 4.1 Closure residual
-
-The input closure law is
-
-```math
-\Phi_{tot}
-=\Phi_{AB}+\Phi_B+\Phi_E+\Theta_I
-=2\pi(D+\epsilon_{EB}).
-```
-
-For the next intention step,
-
-```math
-\theta_{I,k}^{EB}
-=2\pi(D+\epsilon_{EB})
--\Phi_{AB}-\Phi_B-\Phi_E-\Theta_I^{<k}.
-```
-
-The first transport is
-
-```text
-euler.resolve_intention_charge
-```
-
-and produces
-
-```math
-J_{I,k}^{EB}=\hbar\theta_{I,k}^{EB}.
-```
-
-### 4.2 Rotor energy
-
-The second transport is
-
-```text
-rotor.derive_energy_per_charge
-```
-
-and uses
-
-```math
-H_{\Phi,k}^{EB}
-=\frac{(J_k-J_{I,k}^{EB})^2}{2I_\phi}.
-```
-
-On the positive non-degenerate sector it then derives
-
-```math
-\epsilon_{I,k}^{EB}
-=\frac{H_{\Phi,k}^{EB}}{J_{I,k}^{EB}},
-\qquad
-\Delta\tau_{k,eff}^{EB}
-=\frac{J_{I,k}^{EB}}{H_{\Phi,k}^{EB}}
-=\frac1{\epsilon_{I,k}^{EB}}.
-```
-
-The effective Floquet step is therefore an output of the Euler-closed rotor sector rather than the primary normalization input.
-
-### 4.3 Reverse transport
-
-The third transport
-
-```text
-rotor.reconstruct_euler_input
-```
-
-verifies the same Euler action charge, rotor energy, energy-per-charge and Floquet relation, then reconstructs the exact initial closure state.
-
-The loop ID is
-
-```text
-PNV_SOURCE_EULER_PHASE_INTENTION_ENERGY_LOOP_V0_1
-```
-
-and the cross-repository semantic alias is
-
-```text
-SOURCE.PHASE_INTENTION.EULER_CHARGE_ENERGY.ROUNDTRIP
-```
-
-Law nodes:
-
-```text
-LAW.EULER.BERRY_CLOSURE
-LAW.PHASE.INTENTION_ACTION_CHARGE
-LAW.PHASE.ROTOR_ENERGY_PER_CHARGE
-```
-
-Required invariants:
-
-```text
-SOURCE.EULER_CLOSURE_SECTOR
-SOURCE.INTENTION_ACTION_CHARGE
-SOURCE.ROTOR_PHASE_ENERGY
-SOURCE.ENERGY_PER_ACTION_CHARGE
-```
-
-Explicit evidence gates include
-
-```text
-gate:epsilon_Q:AFTER_EULER
-gate:Q_Sigma_to_J_I:OPEN
-```
-
-Ratio evaluation fails closed unless
-
-```text
-I_phi > 0
-J_I^EB > 0
-H_Phi^EB > 0
-all closure data finite
-```
-
-Zero/degenerate sectors retain their lower-level closure/action-charge equations without forcing a finite ratio.
-
-## 5. State contracts
-
-### Extensive carrier
-
-```text
-schema         = PNCS_EXTENSIVE_CARRIER_STATE_V0_1
-representation = EXTENSIVE_CARRIER
-Q_cells
-Q_total
-```
-
-### Normalized carrier profile
-
-```text
-schema         = PNCS_NORMALIZED_CARRIER_STATE_V0_1
-representation = NORMALIZED_PROFILE
-p_cells
-Q_total
-```
-
-### Occupation profile
-
-```text
-schema         = PNCS_CARRIER_OCCUPATION_STATE_V0_1
-representation = OCCUPATION_PROFILE
-n_cells
-q0
-Q_total
-```
-
-### Carrier current density
-
-```text
-schema         = PNCS_CARRIER_CURRENT_DENSITY_STATE_V0_1
-representation = CARRIER_CURRENT_DENSITY
-j_Q
-```
-
-### Physical source density
-
-```text
-schema         = PNCS_PHYSICAL_SOURCE_DENSITY_STATE_V0_1
-representation = PHYSICAL_SOURCE_DENSITY
-rho_Q
-epsilon_Q
-c
-```
-
-### Euler-closed phase-intention state
-
-```text
-schema         = PNCS_EULER_PHASE_INTENTION_STATE_V0_1
-representation = EULER_BERRY_CLOSURE_INPUT
-D
-epsilon_EB
-phi_AB
-phi_Berry
-phi_Euler
-theta_prior
-hbar
-J_total
-I_phi
-```
-
-Intermediate representations add
-
-```text
-theta_I_EB
-J_I_EB
-H_Phi_EB
-epsilon_I_EB
-Delta_tau_eff_EB
-```
-
-and are removed by exact reverse reconstruction.
-
-## 6. Holonomy audit
-
-All loops are compiled and audited through
-
-```text
-PNCS_PNV_INFORMATION_HOLONOMY_V0_1
-```
-
-so receipts contain
-
-```text
-state_defect = Delta_gamma
-invariant_results
-native execution receipt
-inverse-lineage receipt
-KAKU/RADICAL/OPERATOR provenance
-```
+All seven loops are compiled and audited through `PNCS_PNV_INFORMATION_HOLONOMY_V0_1`. Receipts contain state defect, invariant defects, native execution provenance and inverse lineage.
 
 Exact round-trip controls target
 
-```math
-\Delta_\gamma=0.
+```text
+Delta_gamma = 0.
 ```
 
-## 7. GREMLIN integration
+## GREMLIN authority
 
-The unified GREMLIN ↔ PNV bridge exports builders, state constructors, transforms and invariant evaluators for all four source loops.
+GREMLIN may generate and encode law candidates and their KAKU/RADICAL/OPERATOR structure. All authored objects remain `CHYBA / CANDIDATE_ONLY`. Physical cross-binding, canon promotion and runtime authority remain explicit admission steps.
 
-The coding path is
+## Current source frontier
+
+The scalar-field/rotor coefficient equality is conditionally exact after the common collective phase/rate/measure/support reduction gate. The next physical promotion surface is therefore concentrated on:
 
 ```text
-GREMLIN law/isomorphism candidate
-  -> explicit KAKU law gates
-  -> source-loop template
-  -> RADICAL
-  -> TRANSFORM operators
-  -> native PNV execution
-  -> holonomy receipt
-  -> inverse lineage
+field phase mode <-> rotor chi mode
+field covariant phase rate <-> rotor D_tau chi
+common measure/support
+J_Q^mu <-> J_theta^mu
+Q_Sigma <-> Q_theta
+p_IDT <-> p_Q
+source coupling/universality
 ```
-
-GREMLIN remains candidate-only; admission and canon promotion are separate gates.
-
-## 8. Coupled frontier
-
-The next source law frame is
-
-```text
-Euler/Berry closure
-  -> J_I^EB
-  -> H_Phi^EB
-  -> epsilon_I^EB
-  -> [J_I^EB <-> Q_Sigma] OPEN
-  -> [J_I^EB <-> integral j_I dV_h] OPEN
-  -> epsilon_Q
-  -> RFC source density
-  -> RF-N1C coupling/universality audit
-```
-
-OPEN transport edges remain explicit gates rather than implicit normalizations.

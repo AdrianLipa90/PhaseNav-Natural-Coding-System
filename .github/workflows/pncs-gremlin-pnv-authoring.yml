@@ -11,13 +11,17 @@ on:
       - 'src/phasenav_natural_code/gremlin_pnv_bridge_v02.py'
       - 'src/phasenav_natural_code/gremlin_relational_compiler_v01.py'
       - 'src/phasenav_natural_code/gremlin_relation_mining_adapter_v01.py'
+      - 'src/phasenav_natural_code/gremlin_kaku_resolver_v01.py'
       - 'tests/test_gremlin_pnv_authoring_v02.py'
       - 'tests/test_gremlin_pnv_bridge_v02.py'
       - 'tests/test_gremlin_relational_compiler_v01.py'
       - 'tests/test_gremlin_relation_mining_adapter_v01.py'
+      - 'tests/test_gremlin_kaku_resolver_v01.py'
+      - 'tests/test_gremlin_kaku_resolver_pipeline_v01.py'
       - 'spec/PNCS_GREMLIN_PNV_AUTHORING_V0_2.md'
       - 'spec/PNCS_GREMLIN_RELATIONAL_ISOMORPHISM_COMPILER_V0_1.md'
       - 'spec/PNCS_GREMLIN_RELATION_MINING_ADAPTER_V0_1.md'
+      - 'spec/PNCS_GREMLIN_KAKU_RESOLVER_V0_1.md'
       - '.github/workflows/pncs-gremlin-pnv-authoring.yml'
   workflow_dispatch:
 
@@ -33,4 +37,4 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -e . pytest
-      - run: python -m pytest -q tests/test_gremlin_pnv_authoring_v02.py tests/test_gremlin_pnv_bridge_v02.py tests/test_gremlin_relational_compiler_v01.py tests/test_gremlin_relation_mining_adapter_v01.py tests/test_gremlin_native_pnv_bridge_v01.py tests/test_native_pnv_exec_v01.py
+      - run: python -m pytest -q tests/test_gremlin_pnv_authoring_v02.py tests/test_gremlin_pnv_bridge_v02.py tests/test_gremlin_relational_compiler_v01.py tests/test_gremlin_relation_mining_adapter_v01.py tests/test_gremlin_kaku_resolver_v01.py tests/test_gremlin_kaku_resolver_pipeline_v01.py tests/test_gremlin_native_pnv_bridge_v01.py tests/test_native_pnv_exec_v01.py

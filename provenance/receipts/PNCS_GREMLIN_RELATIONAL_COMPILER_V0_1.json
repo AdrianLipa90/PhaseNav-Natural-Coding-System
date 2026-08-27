@@ -1,0 +1,89 @@
+{
+  "schema": "PNCS_GREMLIN_RELATIONAL_COMPILER_IMPLEMENTATION_RECEIPT_V0_1",
+  "status": "IMPLEMENTED_REPO_LEVEL__CI_RUNNER_UNAVAILABLE__LIVE_GREMLIN_HYDRATION_OPEN",
+  "branch": "feat/gremlin-pnv-authoring-v0.2",
+  "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
+  "contracts": {
+    "bridge": "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2",
+    "authoring": "PNCS_GREMLIN_PNV_AUTHORING_V0_2",
+    "relational_compiler": "PNCS_GREMLIN_RELATIONAL_ISOMORPHISM_COMPILER_V0_1",
+    "relation_mining_adapter": "PNCS_GREMLIN_RELATION_MINING_ADAPTER_V0_1",
+    "relation_mining_input": "PNCS_RELATION_MINING_LEDGER_V0_3"
+  },
+  "pipeline": [
+    "RELATION_MINING_CHAIN",
+    "GREMLIN_EXPLICIT_ALIGNMENT",
+    "CANONICAL_KAKU_RESOLUTION",
+    "KAKU_OCCURRENCES",
+    "RADICAL",
+    "NATIVE_PNV_OPERATORS",
+    "PNV_CANDIDATE_PROGRAM",
+    "PURE_CONFORMANCE_EXECUTION"
+  ],
+  "gates": {
+    "minimum_source_domains": 2,
+    "explicit_cross_domain_alignment_required": true,
+    "missing_kaku_mapping_fail_closed": true,
+    "invalid_kaku_mapping_fail_closed": true,
+    "mixed_basis_fail_closed": true,
+    "unknown_relation_lowering_fail_closed": true,
+    "vector_guessing_allowed": false,
+    "automatic_new_opcode_allowed": false,
+    "automatic_canon_promotion": false,
+    "automatic_runtime_execution_authority": false
+  },
+  "historical_grammar_compatibility": {
+    "semantic_atoms_may_include": [
+      "DERIVE",
+      "RESOLVE",
+      "BOUNDARY",
+      "NEGATION"
+    ],
+    "representation": "KAKU_SEMANTIC_ATOMS",
+    "native_executor_opcode_expansion": false
+  },
+  "native_pnv_relation_lowering": {
+    "ORDER": "ORDER",
+    "PRECEDES": "ORDER",
+    "TRANSFORMS_TO": "ORDER",
+    "FLOWS_TO": "ORDER",
+    "CAUSES": "ORDER",
+    "BINDS": "COMPOSITION",
+    "COUPLES": "COMPOSITION",
+    "COMPOSES_WITH": "COMPOSITION",
+    "RELATES_TO": "COMPOSITION",
+    "MAPS_TO": "COMPOSITION",
+    "ISOMORPHIC_TO": "COMPOSITION",
+    "DIFFERENCE": "DIFFERENCE",
+    "DIFFERS_FROM": "DIFFERENCE",
+    "EXACT_IDENTITY": "IDENTITY"
+  },
+  "tests_authored": {
+    "gremlin_pnv_authoring_v02": 9,
+    "gremlin_pnv_bridge_v02": 1,
+    "gremlin_relational_compiler_v01": 8,
+    "gremlin_relation_mining_adapter_v01": 8,
+    "total_new": 26
+  },
+  "ci": {
+    "latest_observed_relevant_run_id": 33114434779,
+    "head_sha": "309398e6442ca2b7672443bad1f4f08014909350",
+    "conclusion": "failure",
+    "runner_id": 0,
+    "runner_name": "",
+    "executed_steps": 0,
+    "classification": "CI_RUNNER_UNAVAILABLE_BEFORE_TEST_EXECUTION",
+    "code_test_failure_observed": false
+  },
+  "noema": {
+    "tether_status_at_implementation": "ACTIVE",
+    "tether_failures": [],
+    "guard_sha256": "de7481a0d71fe2033a66ed09de145570dace4b263167247d2f757aee60fcaefc",
+    "canonical_surface": "/dev/shm/ciel_noema",
+    "live_gremlin_directory_observed": false,
+    "live_authoring_status": "BLOCKED_UNTIL_GREMLIN_STATE_WITNESS_IS_HYDRATED"
+  },
+  "epistemic_state": "CHYBA",
+  "promotion_state": "CANDIDATE_ONLY",
+  "main_mutated": false
+}

@@ -1,21 +1,25 @@
 # PNCS GREMLIN ↔ PNV Authoring v0.2
 
-Status: `CANDIDATE_AUTHORING_IMPLEMENTED / CANON_PROMOTION_GATED / RUNTIME_ADMISSION_GATED`
+Status: `CANDIDATE_AUTHORING_IMPLEMENTED / RELATIONAL_COMPILER_ATTACHED / CANON_PROMOTION_GATED / LIVE_GREMLIN_HYDRATION_OPEN`
 
 ## Purpose
 
-This contract extends the existing live GREMLIN ↔ native PNV bridge with a bounded authoring plane for coding and relational discovery.
+This contract extends the existing GREMLIN ↔ native PNV bridge with a bounded authoring plane for coding and relational discovery.
 
 GREMLIN may materialize three PNCS candidate object classes:
 
 1. `KAKU` — an atomic 36D semantic stroke,
 2. `RADICAL` — a directed graph whose nodes are content-addressed KAKU candidates,
-3. `OPERATOR` — a native PNV operator candidate whose opcode belongs to the admitted PNV1 vocabulary.
+3. `OPERATOR` — a native PNV operator candidate whose opcode belongs to the admitted PNV1 executor vocabulary.
 
 The candidate dependency chain is
 
 ```text
-KAKU* -> RADICAL -> OPERATOR* -> rendered PNV candidate program
+GREMLIN relation-mining finding
+    -> KAKU*
+    -> RADICAL
+    -> OPERATOR*
+    -> rendered PNV candidate program
 ```
 
 Promotion to canonical registries and runtime execution remain separate gated actions.
@@ -37,38 +41,25 @@ The live candidate store is:
   kaku/<sha256>.json
   radical/<sha256>.json
   operator/<sha256>.json
+  compilation/<receipt_sha256>.json
 ```
 
 Each object is append-only and content-addressed. An already existing byte-identical object is an idempotent write. A path/content collision fails closed.
+
+The repository implementation is complete at the candidate-authoring layer. A live call to `open_gremlin_pnv_authoring_live()` additionally requires the hydrated GREMLIN state/witness under the canonical NOEMA surface. If that state is absent, the live authoring entry remains blocked rather than substituting repository/static state.
 
 ## Candidate envelope
 
 Every authored object carries:
 
 ```text
-epistemic                 = CHYBA
-promotion_state           = CANDIDATE_ONLY
-runtime_execution_authority = false
-canon_write_authority       = false
+epistemic                    = CHYBA
+promotion_state              = CANDIDATE_ONLY
+runtime_execution_authority  = false
+canon_write_authority        = false
 ```
 
-and binds:
-
-```text
-generation_binding
-identity
-authority
-evidence_refs
-dependency_ids
-content
-candidate_id
-```
-
-with:
-
-```text
-candidate_id = pncs:gremlin-<kind>:sha256:<canonical-object-hash>
-```
+and binds generation, identity, authority, evidence, dependencies and content into a content-addressed candidate ID.
 
 ## KAKU authoring
 
@@ -80,25 +71,11 @@ K = (v36, phase, mass, direction, polarity, role)
 
 The authoring layer serializes the exact 36D vector and optional exact 36D phase vector together with `basis_id`, semantic mass, direction, polarity and role. Existing `Kaku` / `Vector36` integrity checks remain authoritative for dimensionality and finiteness.
 
+GREMLIN relation-mining adapters resolve semantic atoms through explicit canonical KAKU objects. Missing or invalid mappings fail closed; 36D realizations are never fabricated by the adapter.
+
 ## RADICAL authoring
 
-A RADICAL candidate binds exactly one candidate KAKU ID for every graph node.
-
-For node set `V_R`:
-
-```text
-forall k in V_R:  k -> pncs:gremlin-kaku:sha256:<digest>
-```
-
-The radical records directed relations as:
-
-```text
-(relation_id, source_id, target_id, relation_type)
-```
-
-and its dependency closure contains the referenced KAKU candidate IDs.
-
-`write_radical()` materializes its constituent KAKU candidates first and then writes the RADICAL that references them. This makes the graph independently replayable and auditable.
+A RADICAL candidate binds exactly one candidate KAKU ID for every graph node and records its directed relations. `write_radical()` materializes constituent KAKU candidates first and then writes the content-addressed RADICAL that references them.
 
 ## OPERATOR authoring
 
@@ -108,7 +85,7 @@ An OPERATOR candidate has:
 (name, opcode, args, radical_candidate_id?)
 ```
 
-The opcode must belong to the native PNV1 executor vocabulary:
+The opcode must belong to the current native PNV1 executor vocabulary:
 
 ```text
 SOURCE
@@ -121,30 +98,40 @@ COMPOSITION
 RETURN
 ```
 
-A candidate operator may bind a RADICAL candidate as its semantic graph dependency.
+Historical grammar-mining atoms such as `DERIVE`, `RESOLVE`, `BOUNDARY` and `NEGATION` may remain semantic KAKU nodes. They do not become executable opcodes as a side effect of GREMLIN mining.
 
-Multiple OPERATOR candidates can be rendered into native PNV text:
+Multiple OPERATOR candidates can be rendered into native PNV text and are passed through the canonical native `parse_pnv()` parser before return.
+
+## Relational-isomorphism compilation
+
+The v0.2 bridge exposes:
 
 ```text
-PNV 1
-EPISTEMIC CHYBA
-MODE READ_ONLY
-OP ...
-...
+compile_relational_isomorphism()
+compile_relational_isomorphism_live()
+validate_compiled_relational_candidate()
 ```
 
-The rendered source is passed through the canonical native `parse_pnv()` parser before it is returned.
+A GREMLIN finding supplies an invariant candidate, domain-tagged KAKU nodes and explicit relational edges. The compiler deterministically lowers those relations into the native PNV subset, builds the RADICAL and OPERATOR schedule, and records a content-addressed compilation receipt.
+
+The relation-mining adapter additionally exposes:
+
+```text
+relation_mining_finding_to_isomorphism()
+compile_relation_mining_finding()
+```
+
+which consume `PNCS_RELATION_MINING_LEDGER_V0_3` together with explicit cross-domain alignments and an exact `atom -> Kaku` resolver.
 
 ## Authority boundary
 
-GREMLIN authoring creates inspectable candidate material. Canonical registry mutation is a distinct promotion operation and native execution is a distinct admission operation.
-
-Therefore the coding path is:
+The coding path is:
 
 ```text
 GREMLIN relational mining
-    -> KAKU candidates
-    -> RADICAL candidates
+    -> explicit invariant/alignment candidate
+    -> exact KAKU resolution
+    -> RADICAL candidate
     -> OPERATOR candidates
     -> native PNV parse/conformance
     -> admission gate
@@ -156,21 +143,11 @@ This preserves GREMLIN as the generator/auditor while PNV remains the executable
 
 ## Coding use
 
-The practical consequence is that a discovered relational isomorphism can now be compiled incrementally rather than flattened immediately into source text:
-
-```text
-observation / relation
-  -> KAKU
-  -> connected RADICAL
-  -> one or more PNV OPERATORS
-  -> candidate program
-```
-
-The same mechanism can later carry information-holonomy law-frame paths exported by IDT and RFC, with each law/bridge represented by explicit KAKU/RADICAL/OPERATOR provenance rather than an untyped textual association.
+A discovered relational isomorphism can now be compiled incrementally rather than flattened immediately into source text. The same mechanism can carry IDT/RFC/TIR law-frame paths with explicit KAKU/RADICAL/OPERATOR provenance.
 
 ## Conformance requirements
 
-A v0.2 implementation passes only when all of the following hold:
+Repository-level construction is covered by tests for:
 
 - exact 36D KAKU validation,
 - content-addressed append-only persistence,
@@ -180,5 +157,11 @@ A v0.2 implementation passes only when all of the following hold:
 - deterministic relation serialization,
 - native PNV opcode restriction,
 - valid native PNV rendering/parsing,
+- explicit cross-domain relation-mining alignment,
+- fail-closed missing/invalid KAKU resolution,
+- fail-closed basis mismatch,
+- pure conformance execution with `external_effects=false`,
 - fail-closed authority flags,
 - live authoring entry bound to `/dev/shm/ciel_noema`.
+
+GitHub Actions execution status is provenance recorded separately from implementation status. A pre-run infrastructure failure is not promoted to either code PASS or code FAIL.

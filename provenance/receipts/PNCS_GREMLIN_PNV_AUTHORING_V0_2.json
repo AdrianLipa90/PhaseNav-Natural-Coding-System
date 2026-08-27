@@ -1,10 +1,12 @@
 {
   "schema": "PNCS_GREMLIN_PNV_AUTHORING_IMPLEMENTATION_RECEIPT_V0_2",
-  "status": "IMPLEMENTED_CANDIDATE_AUTHORING__CI_RUNNER_UNAVAILABLE",
+  "status": "IMPLEMENTED_CANDIDATE_AUTHORING__RELATIONAL_COMPILER_ATTACHED__CI_RUNNER_UNAVAILABLE",
   "branch": "feat/gremlin-pnv-authoring-v0.2",
   "base_main_sha256_git": "83a06b9398bab09052c2c2124974897cc31a461f",
   "authoring_contract": "PNCS_GREMLIN_PNV_AUTHORING_V0_2",
   "bridge_contract": "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2",
+  "relational_compiler_contract": "PNCS_GREMLIN_RELATIONAL_ISOMORPHISM_COMPILER_V0_1",
+  "relation_mining_adapter_contract": "PNCS_GREMLIN_RELATION_MINING_ADAPTER_V0_1",
   "live_surface": "/dev/shm/ciel_noema",
   "noema_guard": {
     "schema": "noema.aux-tether-guard/v2",
@@ -12,26 +14,35 @@
     "failures": [],
     "guard_sha256": "de7481a0d71fe2033a66ed09de145570dace4b263167247d2f757aee60fcaefc"
   },
+  "live_gremlin_hydration": {
+    "gremlin_directory_observed": false,
+    "status": "OPEN",
+    "live_authoring_entry": "BLOCKED_UNTIL_GREMLIN_STATE_WITNESS_IS_HYDRATED"
+  },
   "capabilities": {
     "gremlin_write_kaku_candidate": true,
     "gremlin_write_radical_candidate": true,
     "gremlin_write_operator_candidate": true,
+    "gremlin_compile_relational_isomorphism": true,
+    "gremlin_adapt_relation_mining_finding": true,
     "content_addressed_append_only_store": true,
     "native_pnv_render_and_parse_gate": true,
+    "pure_conformance_execution_path": true,
     "automatic_canon_promotion": false,
     "automatic_runtime_execution_authority": false
   },
   "candidate_chain": [
+    "RELATION_MINING_FINDING",
     "KAKU",
     "RADICAL",
     "OPERATOR",
     "PNV_CANDIDATE_PROGRAM"
   ],
-  "new_tests_authored": 10,
+  "new_tests_authored": 26,
   "ci": {
     "workflow": "PNCS GREMLIN PNV authoring",
-    "latest_observed_run_id": 33113171090,
-    "latest_observed_head_sha": "81c4d7b01e91e227d447d4465ad1f07ce4437546",
+    "latest_observed_run_id": 33114434779,
+    "latest_observed_head_sha": "309398e6442ca2b7672443bad1f4f08014909350",
     "conclusion": "failure",
     "runner_id": 0,
     "runner_name": "",

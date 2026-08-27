@@ -1,9 +1,9 @@
 {
   "schema": "PNCS_GREMLIN_PNV_AUTHORING_IMPLEMENTATION_RECEIPT_V0_2",
-  "status": "IMPLEMENTED_CANDIDATE_AUTHORING__RELATIONAL_COMPILER__KAKU_RESOLVER__INVERSE_LINEAGE__CI_EXECUTION_UNRESOLVED_PRE_TEST",
+  "status": "IMPLEMENTED_CANDIDATE_AUTHORING__RELATIONAL_COMPILER__KAKU_RESOLVER__INVERSE_LINEAGE__ROUND_TRIP_AUTHORED__CI_EXECUTION_UNRESOLVED_PRE_TEST",
   "branch": "feat/gremlin-pnv-authoring-v0.2",
   "base_main_sha256_git": "83a06b9398bab09052c2c2124974897cc31a461f",
-  "code_head_sha": "5a0bdaea680fd65f084b6936b89f1d23f07e7649",
+  "code_head_sha": "71c81a4ca32857d7b86ebc1e14cffe83acdaf2ee",
   "authoring_contract": "PNCS_GREMLIN_PNV_AUTHORING_V0_2",
   "bridge_contract": "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2",
   "relational_compiler_contract": "PNCS_GREMLIN_RELATIONAL_ISOMORPHISM_COMPILER_V0_1",
@@ -32,6 +32,7 @@
     "gremlin_adapt_relation_mining_finding": true,
     "gremlin_resolve_exact_kaku": true,
     "gremlin_inverse_lineage": true,
+    "gremlin_full_forward_inverse_round_trip_authored": true,
     "content_addressed_append_only_store": true,
     "native_pnv_render_and_parse_gate": true,
     "pure_conformance_execution_path": true,
@@ -49,17 +50,16 @@
     "INVERSE_OPERATOR_GRAPH",
     "RADICAL",
     "KAKU",
-    "EXPLICIT_CONTENT_AND_EVIDENCE"
+    "SAME_EXPLICIT_CONTENT_ID_AND_EVIDENCE"
   ],
   "new_tests_authored": 50,
   "ci": {
     "workflow": "PNCS GREMLIN PNV authoring",
-    "latest_observed_run_id": 33118082936,
-    "latest_observed_job_id": 98677784546,
-    "latest_observed_head_sha": "5a0bdaea680fd65f084b6936b89f1d23f07e7649",
+    "latest_observed_run_id": 33118194156,
+    "latest_observed_job_id": 98678163727,
+    "latest_observed_head_sha": "71c81a4ca32857d7b86ebc1e14cffe83acdaf2ee",
     "conclusion": "failure",
     "steps": null,
-    "job_logs": "UNAVAILABLE_404_BLOB_NOT_FOUND",
     "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
     "code_test_failure_observed": false
   },

@@ -1,0 +1,75 @@
+{
+  "schema": "PNCS_PNV_NOETHER_RFC_CURRENT_BINDING_IMPLEMENTATION_RECEIPT_V0_1",
+  "status": "IMPLEMENTED_CANDIDATE_CURRENT_BINDING__PNCS_CI_EXECUTION_UNRESOLVED_PRE_TEST__PEER_REFERENCE_EXECUTION_PENDING",
+  "branch": "feat/gremlin-pnv-authoring-v0.2",
+  "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
+  "code_snapshot": "f7b428f4dc30ddeb1280c9213c5788f576a54db4",
+  "contract": "PNCS_PNV_NOETHER_RFC_CURRENT_BINDING_V0_1",
+  "semantic_loop": "SOURCE.PHASE_NOETHER.RFC_CONSERVED_CURRENT.ROUNDTRIP",
+  "equations": [
+    "Q_theta=sum_a V_theta,a*j_theta,a",
+    "Q_Sigma=sum_a V_Q,a*j_Q,a",
+    "Delta_measure=sum_a abs(V_theta,a-V_Q,a)/sum_a V_theta,a",
+    "Delta_local_current=sum_a V_theta,a*abs(j_Q,a-j_theta,a)/Q_theta",
+    "Delta_total_charge=abs(Q_Sigma-Q_theta)/Q_theta",
+    "Delta_side_flux=abs(F_side)"
+  ],
+  "semantic_gates": {
+    "slice_id": "EXPLICIT",
+    "measure_id_equality": "FAIL_CLOSED_EXACT",
+    "ordered_cell_id_equality": "FAIL_CLOSED_EXACT",
+    "cell_volume_binding": "CONDITIONAL_MEASURED_BY_Delta_measure",
+    "local_current_binding": "CONDITIONAL_MEASURED_BY_Delta_local_current",
+    "total_charge_binding": "CONDITIONAL_MEASURED_BY_Delta_total_charge",
+    "side_flux_binding": "CONDITIONAL_ZERO_MEASURED_BY_Delta_side_flux"
+  },
+  "law_nodes": [
+    "LAW.NOETHER.LOCAL_NORMAL_CURRENT",
+    "LAW.SOURCE.COMMON_SLICE_MEASURE",
+    "LAW.RFC.CONSERVED_LOCAL_CURRENT"
+  ],
+  "invariants": [
+    "SOURCE.NOETHER_TOTAL_CHARGE",
+    "SOURCE.RFC_TOTAL_CHARGE",
+    "SOURCE.COMMON_MEASURE_DEFECT",
+    "SOURCE.LOCAL_CURRENT_BINDING_DEFECT",
+    "SOURCE.TOTAL_CHARGE_BINDING_DEFECT",
+    "SOURCE.SIDE_FLUX_DEFECT"
+  ],
+  "anti_false_positive_witness": {
+    "volumes": [1.0, 1.0],
+    "j_theta": [1.0, 3.0],
+    "j_Q": [2.0, 2.0],
+    "Q_theta": 4.0,
+    "Q_Sigma": 4.0,
+    "Delta_total_charge": 0.0,
+    "Delta_local_current": 0.5,
+    "expected_binding": "FAIL"
+  },
+  "tests_authored": {
+    "current_binding_unit_and_roundtrip": 10,
+    "unified_bridge_export": 1,
+    "total": 11
+  },
+  "ci": {
+    "workflow": "PNCS GREMLIN PNV authoring",
+    "run_id": 33123979049,
+    "job_id": 98697546433,
+    "head_sha": "f7b428f4dc30ddeb1280c9213c5788f576a54db4",
+    "conclusion": "failure",
+    "steps": null,
+    "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
+    "code_test_failure_observed": false
+  },
+  "peer_reference_execution": {
+    "idt": "PENDING",
+    "rfc": "PENDING"
+  },
+  "authority": {
+    "epistemic_state": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false
+  },
+  "main_mutated": false
+}

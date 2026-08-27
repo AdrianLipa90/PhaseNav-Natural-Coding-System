@@ -7,7 +7,8 @@ authoring for KAKU/RADICAL/OPERATOR objects, exposes deterministic relational
 isomorphism compilation, adapts relation-mining findings into that compiler,
 resolves relation atoms through explicit semantic bindings plus exact PNCS
 realization/mass/vector evidence, exposes candidate inverse lineage, and provides
-an executable physical-law frame with information-holonomy receipts.
+an executable physical-law frame with information-holonomy receipts and canonical
+source-law round-trip templates.
 """
 
 from .gremlin_native_pnv_bridge_v01 import (
@@ -89,6 +90,22 @@ from .gremlin_pnv_holonomy_v01 import (
     numeric_linf_metric,
     persist_information_holonomy_audit,
 )
+from .pnv_source_holonomy_v01 import (
+    C_LIGHT_EXACT,
+    SOURCE_HOLONOMY_CONTRACT,
+    PNVSourceHolonomyError,
+    build_carrier_normalization_loop,
+    build_epsilon_source_loop,
+    build_q0_occupation_loop,
+    carrier_normalization_invariants,
+    carrier_normalization_transforms,
+    epsilon_source_invariants,
+    epsilon_source_transforms,
+    make_current_density_state,
+    make_extensive_carrier_state,
+    q0_occupation_invariants,
+    q0_occupation_transforms,
+)
 
 BRIDGE_SCHEMA = "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2"
 
@@ -143,6 +160,8 @@ __all__ = [
     "HOLONOMY_CONTRACT",
     "HOLONOMY_COMPILATION_RECEIPT_SCHEMA",
     "HOLONOMY_AUDIT_RECEIPT_SCHEMA",
+    "SOURCE_HOLONOMY_CONTRACT",
+    "C_LIGHT_EXACT",
     "NativePNVLiveBridgeError",
     "GremlinPNVAuthoringError",
     "GremlinRelationalCompilerError",
@@ -150,6 +169,7 @@ __all__ = [
     "GremlinKakuResolverError",
     "GremlinInverseLineageError",
     "PNVInformationHolonomyError",
+    "PNVSourceHolonomyError",
     "TriplePulseNativeRun",
     "BelzebubNativeRun",
     "GremlinPNVAuthoringSession",
@@ -196,4 +216,15 @@ __all__ = [
     "persist_information_holonomy_audit_live",
     "exact_state_metric",
     "numeric_linf_metric",
+    "make_extensive_carrier_state",
+    "build_carrier_normalization_loop",
+    "carrier_normalization_transforms",
+    "carrier_normalization_invariants",
+    "build_q0_occupation_loop",
+    "q0_occupation_transforms",
+    "q0_occupation_invariants",
+    "make_current_density_state",
+    "build_epsilon_source_loop",
+    "epsilon_source_transforms",
+    "epsilon_source_invariants",
 ]

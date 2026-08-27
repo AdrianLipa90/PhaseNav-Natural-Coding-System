@@ -1,9 +1,9 @@
 {
   "schema": "PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_IMPLEMENTATION_RECEIPT_V0_1",
-  "status": "IMPLEMENTED_REPO_LEVEL__LIVE_RUNTIME_ACTIVE__LIVE_GREMLIN_HYDRATION_OPEN__CI_EXECUTION_UNRESOLVED_PRE_TEST",
+  "status": "IMPLEMENTED_REPO_LEVEL__ROUND_TRIP_AUTHORED__LIVE_RUNTIME_ACTIVE__LIVE_GREMLIN_HYDRATION_OPEN__CI_EXECUTION_UNRESOLVED_PRE_TEST",
   "branch": "feat/gremlin-pnv-authoring-v0.2",
   "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
-  "code_head_sha": "5a0bdaea680fd65f084b6936b89f1d23f07e7649",
+  "code_head_sha": "71c81a4ca32857d7b86ebc1e14cffe83acdaf2ee",
   "lineage_contract": "PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_V0_1",
   "lineage_receipt_schema": "PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_RECEIPT_V0_1",
   "native_execution_receipt_schema": "PNCS_NATIVE_PNV_EXEC_RECEIPT_V0_1",
@@ -16,11 +16,20 @@
     "KAKU_CANDIDATES",
     "EXPLICIT_CONTENT_IDS_AND_EVIDENCE"
   ],
+  "round_trip_chain": [
+    "RELATION_MINING_FINDING",
+    "EXACT_KAKU_RESOLVER",
+    "RELATIONAL_COMPILER",
+    "NATIVE_PNV_RESULT",
+    "CANDIDATE_INVERSE_LINEAGE",
+    "SAME_EXPLICIT_CONTENT_ID"
+  ],
   "capabilities": {
     "result_to_operator_inverse_graph": true,
     "operator_to_radical_binding": true,
     "radical_to_kaku_exact_closure": true,
     "explicit_content_id_extraction": true,
+    "resolver_compiler_inverse_round_trip_authored": true,
     "content_addressed_lineage_receipt": true,
     "offline_idempotent_persistence": true,
     "live_persistence_via_authoring_session": true,
@@ -53,16 +62,16 @@
   "tests_authored": {
     "inverse_lineage_unit_and_adversarial": 9,
     "unified_bridge_export": 1,
-    "total": 10
+    "resolver_to_compiler_to_inverse_round_trip": 1,
+    "total_inverse_focused": 11
   },
   "ci_observation": {
     "workflow": "PNCS GREMLIN PNV authoring",
-    "run_id": 33118082936,
-    "job_id": 98677784546,
-    "head_sha": "5a0bdaea680fd65f084b6936b89f1d23f07e7649",
+    "run_id": 33118194156,
+    "job_id": 98678163727,
+    "head_sha": "71c81a4ca32857d7b86ebc1e14cffe83acdaf2ee",
     "conclusion": "failure",
     "steps": null,
-    "job_logs": "UNAVAILABLE_404_BLOB_NOT_FOUND",
     "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
     "code_test_failure_observed": false
   },

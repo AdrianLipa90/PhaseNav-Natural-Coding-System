@@ -23,66 +23,25 @@
     "physical current/state-space promotion OPEN"
   ],
   "loops": [
-    {
-      "loop_id": "SOURCE.CARRIER.NORMALIZATION.ROUNDTRIP",
-      "equations": ["p_a=Q_a/Q_Sigma", "Q_a'=Q_Sigma*p_a"],
-      "gate_state": "REFERENCE_EXACT_CONTROL"
-    },
-    {
-      "loop_id": "SOURCE.CARRIER.Q0_OCCUPATION.ROUNDTRIP",
-      "equations": ["n_a=Q_a/q0", "Q_a'=q0*n_a"],
-      "gate_state": "Q0_CONDITIONAL"
-    },
-    {
-      "loop_id": "SOURCE.CARRIER.EPSILON_MASS_DENSITY.ROUNDTRIP",
-      "equations": ["rho_Q=(epsilon_Q/c^2)j_Q", "j_Q'=(c^2/epsilon_Q)rho_Q"],
-      "gate_state": "EPSILON_Q_DOWNSTREAM_CONDITIONAL_CONSUMER"
-    },
-    {
-      "loop_id": "SOURCE.PHASE_INTENTION.EULER_CHARGE_ENERGY.ROUNDTRIP",
-      "equations": [
-        "J_I^EB=hbar*theta_I^EB",
-        "P_Phi^EB=J-J_I^EB",
-        "H_Phi^EB=(P_Phi^EB)^2/(2 I_phi)"
-      ],
-      "gate_state": "EULER_CLOSED_PHASE_ENERGY_CANDIDATE"
-    },
-    {
-      "loop_id": "SOURCE.PHASE_NOETHER.COLLECTIVE_CARRIER.ROUNDTRIP",
-      "equations": [
-        "Q_theta=I_A D_tau_chi",
-        "P_Phi^EB=I_phi D_tau_chi",
-        "Delta_I_01Z=abs(I_A/I_phi-1)",
-        "epsilon_N^EB=H_Phi^EB/Q_theta"
-      ],
-      "gate_state": "FINITE_NOETHER_CARRIER_TYPED"
-    },
-    {
-      "loop_id": "SOURCE.PHASE_NOETHER.RFC_CONSERVED_CURRENT.ROUNDTRIP",
-      "equations": [
-        "Q_theta=sum V_theta j_theta",
-        "Q_Sigma=sum V_Q j_Q",
-        "Delta_J=sum V_Q abs(j_Q-j_theta)/Q_theta",
-        "Delta_V=sum abs(V_Q-V_theta) abs(j_theta)/Q_theta",
-        "Delta_Sigma=abs(Q_Sigma-Q_theta)/Q_theta",
-        "Delta_Sigma<=Delta_J+Delta_V"
-      ],
-      "gate_state": "EXACT_CURRENT_MEASURE_FALSIFICATION_GATE"
-    },
-    {
-      "loop_id": "SOURCE.PHASE_NOETHER.ROTOR_INERTIA.REDUCTION.ROUNDTRIP",
-      "equations": [
-        "C_A=sum A_a^2 V_a",
-        "I_A=2 C_A",
-        "Delta_I_reduction=abs(I_phi-I_A)/I_A",
-        "Delta_coefficient=abs(I_phi/2-C_A)/C_A",
-        "Delta_Q_reduction=abs(P_Phi-Q_theta)/Q_theta",
-        "Delta_epsilon_reduction=abs(epsilon_N-(D_tau_chi)/2)/((D_tau_chi)/2)",
-        "Delta_I_reduction=Delta_coefficient=Delta_Q_reduction=Delta_epsilon_reduction"
-      ],
-      "gate_state": "CONDITIONAL_EXACT_COLLECTIVE_COEFFICIENT_REDUCTION"
-    }
+    {"loop_id":"SOURCE.CARRIER.NORMALIZATION.ROUNDTRIP","gate_state":"REFERENCE_EXACT_CONTROL"},
+    {"loop_id":"SOURCE.CARRIER.Q0_OCCUPATION.ROUNDTRIP","gate_state":"Q0_CONDITIONAL"},
+    {"loop_id":"SOURCE.CARRIER.EPSILON_MASS_DENSITY.ROUNDTRIP","gate_state":"EPSILON_Q_DOWNSTREAM_CONDITIONAL_CONSUMER"},
+    {"loop_id":"SOURCE.PHASE_INTENTION.EULER_CHARGE_ENERGY.ROUNDTRIP","gate_state":"EULER_CLOSED_PHASE_ENERGY_CANDIDATE"},
+    {"loop_id":"SOURCE.PHASE_NOETHER.COLLECTIVE_CARRIER.ROUNDTRIP","gate_state":"FINITE_NOETHER_CARRIER_TYPED"},
+    {"loop_id":"SOURCE.PHASE_NOETHER.RFC_CONSERVED_CURRENT.ROUNDTRIP","gate_state":"EXACT_CURRENT_MEASURE_FALSIFICATION_GATE"},
+    {"loop_id":"SOURCE.PHASE_NOETHER.ROTOR_INERTIA.REDUCTION.ROUNDTRIP","gate_state":"CONDITIONAL_EXACT_COLLECTIVE_COEFFICIENT_REDUCTION"}
   ],
+  "scalar_field_rotor_reduction": {
+    "C_A": "sum A_a^2 V_a",
+    "I_A": "2 C_A",
+    "Delta_I_01Z": "abs(I_A/I_phi-1)",
+    "Delta_I_reduction": "abs(I_phi-I_A)/I_A",
+    "Delta_coefficient": "abs(I_phi/2-C_A)/C_A",
+    "Delta_Q_reduction": "abs(P_Phi-Q_theta)/Q_theta",
+    "Delta_epsilon_reduction": "abs(epsilon_N-(D_tau_chi)/2)/((D_tau_chi)/2)",
+    "exact_identity": "common positive D_tau_chi => Delta_I_reduction=Delta_coefficient=Delta_Q_reduction=Delta_epsilon_reduction",
+    "exact_consequence": "I_phi=I_A => P_Phi=Q_theta and epsilon_N=(1/2)D_tau_chi"
+  },
   "tests_authored": {
     "first_four_source_loops_including_bridge": 16,
     "noether_collective_including_bridge": 10,
@@ -92,21 +51,17 @@
   },
   "cross_repository_reference_execution": {
     "idt": {
-      "repository": "AdrianLipa90/Informational-Dynamics-of-Time",
-      "branch": "feat/idt-rfc-normalized-shape-holonomy-v0.1",
-      "tested_commit": "84664b5907c090e8c238106aab0ea3537ca34929",
-      "workflow_run_id": 33125737598,
-      "workflow_job_id": 98703331402,
+      "tested_commit": "f1bbb6698234c38dd2c643c646ff00f72964fe41",
+      "workflow_run_id": 33126056152,
+      "workflow_job_id": 98704363770,
       "passed": 373,
       "failed": 0,
       "status": "PASS"
     },
     "rfc": {
-      "repository": "AdrianLipa90/Relational-Field-Closure",
-      "branch": "feat/rfc-gremlin-pnv-holonomy-v0.1",
-      "tested_commit": "c3e9fdd8df2b8dd926f3b7050a805bfb126b12cb",
-      "workflow_run_id": 33125790662,
-      "workflow_job_id": 98703505138,
+      "tested_commit": "98fe8c186a420ba8f59fc6b218de4ac86e7ef12c",
+      "workflow_run_id": 33126145853,
+      "workflow_job_id": 98704659073,
       "passed": 65,
       "failed": 0,
       "status": "PASS"

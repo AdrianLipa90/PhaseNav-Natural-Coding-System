@@ -10,16 +10,7 @@
     "relation_mining_adapter": "PNCS_GREMLIN_RELATION_MINING_ADAPTER_V0_1",
     "relation_mining_input": "PNCS_RELATION_MINING_LEDGER_V0_3"
   },
-  "pipeline": [
-    "RELATION_MINING_CHAIN",
-    "GREMLIN_EXPLICIT_ALIGNMENT",
-    "CANONICAL_KAKU_RESOLUTION",
-    "KAKU_OCCURRENCES",
-    "RADICAL",
-    "NATIVE_PNV_OPERATORS",
-    "PNV_CANDIDATE_PROGRAM",
-    "PURE_CONFORMANCE_EXECUTION"
-  ],
+  "pipeline": ["RELATION_MINING_CHAIN", "GREMLIN_EXPLICIT_ALIGNMENT", "CANONICAL_KAKU_RESOLUTION", "KAKU_OCCURRENCES", "RADICAL", "NATIVE_PNV_OPERATORS", "PNV_CANDIDATE_PROGRAM", "PURE_CONFORMANCE_EXECUTION"],
   "gates": {
     "minimum_source_domains": 2,
     "explicit_cross_domain_alignment_required": true,

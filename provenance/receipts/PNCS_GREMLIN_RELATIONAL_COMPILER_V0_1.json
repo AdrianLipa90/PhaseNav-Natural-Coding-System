@@ -60,10 +60,10 @@
   },
   "tests_authored": {
     "gremlin_pnv_authoring_v02": 9,
-    "gremlin_pnv_bridge_v02": 1,
+    "gremlin_pnv_bridge_v02": 2,
     "gremlin_relational_compiler_v01": 8,
     "gremlin_relation_mining_adapter_v01": 9,
-    "total_new": 27
+    "total_new": 28
   },
   "ci": {
     "latest_observed_relevant_run_id": 33114434779,

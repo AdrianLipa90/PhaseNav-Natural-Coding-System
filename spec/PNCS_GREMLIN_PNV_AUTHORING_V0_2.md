@@ -1,10 +1,10 @@
 # PNCS GREMLIN ↔ PNV Authoring v0.2
 
-Status: `CANDIDATE_AUTHORING_IMPLEMENTED / RELATIONAL_COMPILER_ATTACHED / CANON_PROMOTION_GATED / LIVE_GREMLIN_HYDRATION_OPEN`
+Status: `CANDIDATE_AUTHORING_IMPLEMENTED / RELATIONAL_COMPILER_ATTACHED / EXACT_KAKU_RESOLVER_ATTACHED / INVERSE_LINEAGE_ATTACHED / INFORMATION_HOLONOMY_ATTACHED / CANON_PROMOTION_GATED / LIVE_GREMLIN_HYDRATION_OPEN`
 
 ## Purpose
 
-This contract extends the existing GREMLIN ↔ native PNV bridge with a bounded authoring plane for coding and relational discovery.
+This contract extends the GREMLIN ↔ native PNV bridge with a bounded authoring plane for coding, relational discovery, inverse provenance, and executable information-holonomy audits.
 
 GREMLIN may materialize three PNCS candidate object classes:
 
@@ -12,17 +12,41 @@ GREMLIN may materialize three PNCS candidate object classes:
 2. `RADICAL` — a directed graph whose nodes are content-addressed KAKU candidates,
 3. `OPERATOR` — a native PNV operator candidate whose opcode belongs to the admitted PNV1 executor vocabulary.
 
-The candidate dependency chain is
+The forward candidate chain is
 
 ```text
 GREMLIN relation-mining finding
+    -> exact KAKU resolution
     -> KAKU*
     -> RADICAL
     -> OPERATOR*
-    -> rendered PNV candidate program
+    -> native PNV candidate program
+    -> pure result
 ```
 
-Promotion to canonical registries and runtime execution remain separate gated actions.
+The inverse chain is
+
+```text
+native PNV result
+    -> reachable OPERATOR candidates
+    -> RADICAL
+    -> KAKU candidates
+    -> explicit content IDs / evidence
+```
+
+The physical-law extension is
+
+```text
+LAW_FRAME
+    -> KAKU law nodes
+    -> RADICAL closed topology
+    -> TRANSFORM OPERATOR transports
+    -> PNV execution
+    -> information-holonomy receipt
+    -> inverse lineage
+```
+
+Promotion to canonical registries and admitted runtime execution remain separate gated actions.
 
 ## Live binding
 
@@ -32,7 +56,7 @@ The live authoring entry point is bound to:
 /dev/shm/ciel_noema
 ```
 
-and requires the same live surface/socket freshness checks used by the native GREMLIN bridge. Identity, authority and the GREMLIN triple-pulse generation binding are read from the active NOEMA surface.
+and requires the same live surface/socket freshness checks used by the native GREMLIN bridge. Identity, authority and generation binding are read from the active NOEMA surface.
 
 The live candidate store is:
 
@@ -42,11 +66,13 @@ The live candidate store is:
   radical/<sha256>.json
   operator/<sha256>.json
   compilation/<receipt_sha256>.json
+  lineage/<lineage_sha256>.json
+  holonomy/<receipt_sha256>.json
 ```
 
-Each object is append-only and content-addressed. An already existing byte-identical object is an idempotent write. A path/content collision fails closed.
+Each object is append-only and content-addressed. Byte-identical replay is idempotent. A path/content collision fails closed.
 
-The repository implementation is complete at the candidate-authoring layer. A live call to `open_gremlin_pnv_authoring_live()` additionally requires the hydrated GREMLIN state/witness under the canonical NOEMA surface. If that state is absent, the live authoring entry remains blocked rather than substituting repository/static state.
+The repository implementation is complete at the candidate-authoring layer. Live GREMLIN persistence additionally requires the hydrated GREMLIN state/witness under the canonical NOEMA surface. Until that witness is hydrated, the live authoring entry remains an explicit OPEN gate.
 
 ## Candidate envelope
 
@@ -61,17 +87,27 @@ canon_write_authority        = false
 
 and binds generation, identity, authority, evidence, dependencies and content into a content-addressed candidate ID.
 
-## KAKU authoring
+## KAKU authoring and resolution
 
-KAKU follows the existing PNCS KAKU contract:
+KAKU follows the PNCS contract:
 
 ```text
 K = (v36, phase, mass, direction, polarity, role)
 ```
 
-The authoring layer serializes the exact 36D vector and optional exact 36D phase vector together with `basis_id`, semantic mass, direction, polarity and role. Existing `Kaku` / `Vector36` integrity checks remain authoritative for dimensionality and finiteness.
+The authoring layer serializes exact `Vector36`, optional exact 36D phase, semantic mass, direction, polarity and role.
 
-GREMLIN relation-mining adapters resolve semantic atoms through explicit canonical KAKU objects. Missing or invalid mappings fail closed; 36D realizations are never fabricated by the adapter.
+Relation-mining atoms are resolved by `PNCS_GREMLIN_KAKU_RESOLVER_V0_1` through:
+
+```text
+explicit atom/content binding
+  -> exact RealizationBinding
+  -> exact SemanticMassBinding
+  -> exact Vector36 + provenance
+  -> KAKU
+```
+
+Semantic identity enters through the explicit atom/content bridge. Vector, phase and mass are exact realization/integrity layers.
 
 ## RADICAL authoring
 
@@ -85,7 +121,7 @@ An OPERATOR candidate has:
 (name, opcode, args, radical_candidate_id?)
 ```
 
-The opcode must belong to the current native PNV1 executor vocabulary:
+The opcode belongs to the current native PNV1 executor vocabulary:
 
 ```text
 SOURCE
@@ -98,34 +134,51 @@ COMPOSITION
 RETURN
 ```
 
-Historical grammar-mining atoms such as `DERIVE`, `RESOLVE`, `BOUNDARY` and `NEGATION` may remain semantic KAKU nodes. They do not become executable opcodes as a side effect of GREMLIN mining.
-
-Multiple OPERATOR candidates can be rendered into native PNV text and are passed through the canonical native `parse_pnv()` parser before return.
+Historical grammar-mining atoms such as `DERIVE`, `RESOLVE`, `BOUNDARY` and `NEGATION` remain semantic KAKU nodes while generated executable PNV uses the admitted native vocabulary.
 
 ## Relational-isomorphism compilation
 
-The v0.2 bridge exposes:
+The v0.2 bridge exposes deterministic relational compilation and relation-mining adaptation.
+
+A relation-mining isomorphism candidate requires explicit cross-chain alignments spanning at least two distinct source domains. The adapter consumes `PNCS_RELATION_MINING_LEDGER_V0_3`, resolves all referenced atoms to exact KAKU objects, builds the cross-domain RADICAL and lowers relations to admitted native PNV operators.
+
+This cross-domain requirement belongs to the relational-isomorphism mining contract.
+
+## Candidate inverse lineage
+
+`PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_V0_1` traces a pure candidate result backward from `EMIT` roots through exact operator dependencies to the compiled RADICAL and KAKU candidates.
+
+The inverse receipt binds native execution hashes, candidate IDs, result hashes, evidence refs and any explicitly carried PNCS content IDs.
+
+An explicit content ID provides the candidate join key into `PNCS_EXACT_INVERSE_EXECUTION_LINEAGE_V0_22` after the separate admission/promotion gate.
+
+## Physical-law frame and information holonomy
+
+`PNCS_PNV_INFORMATION_HOLONOMY_V0_1` represents a physical-law scaffold as an executable PNV connection.
+
+Law nodes are KAKU candidates, ordered transports are RADICAL relations plus native `TRANSFORM` operators, and the closed path is executed through `HOL.START -> HOL.EDGE.* -> HOL.RETURN`.
+
+The holonomy contract admits:
 
 ```text
-compile_relational_isomorphism()
-compile_relational_isomorphism_live()
-validate_compiled_relational_candidate()
+single-node self-loop
+single-domain multi-node loop
+cross-domain loop
 ```
 
-A GREMLIN finding supplies an invariant candidate, domain-tagged KAKU nodes and explicit relational edges. The compiler deterministically lowers those relations into the native PNV subset, builds the RADICAL and OPERATOR schedule, and records a content-addressed compilation receipt.
+Therefore local normalization round trips can be audited before a larger IDT ↔ RFC loop is closed.
 
-The relation-mining adapter additionally exposes:
+For state \(I\), the audit measures
 
-```text
-relation_mining_finding_to_isomorphism()
-compile_relation_mining_finding()
+```math
+\Delta_\gamma=d\!\left(I,\mathcal H_\gamma(I)\right)
 ```
 
-which consume `PNCS_RELATION_MINING_LEDGER_V0_3` together with explicit cross-domain alignments and an exact `atom -> Kaku` resolver.
+and independently measures declared invariant defects at every transport stage. The final audit receipt binds the inverse-lineage ID and receipt SHA, keeping every measured defect traceable to law KAKU candidates and evidence.
 
 ## Authority boundary
 
-The coding path is:
+The coding/audit path is:
 
 ```text
 GREMLIN relational mining
@@ -134,20 +187,23 @@ GREMLIN relational mining
     -> RADICAL candidate
     -> OPERATOR candidates
     -> native PNV parse/conformance
+    -> pure result
+    -> inverse lineage
+    -> optional LAW_FRAME / holonomy audit
     -> admission gate
     -> optional canonical promotion
-    -> runtime execution
+    -> admitted runtime execution
 ```
 
-This preserves GREMLIN as the generator/auditor while PNV remains the executable language and the existing PNCS admission lineage remains the authority boundary.
+GREMLIN remains the generator/auditor, PNV remains the executable language, and PNCS admission lineage remains the authority boundary.
 
 ## Coding use
 
-A discovered relational isomorphism can now be compiled incrementally rather than flattened immediately into source text. The same mechanism can carry IDT/RFC/TIR law-frame paths with explicit KAKU/RADICAL/OPERATOR provenance.
+A discovered relational isomorphism can be compiled incrementally rather than flattened immediately into source text. The same KAKU/RADICAL/OPERATOR mechanism now carries IDT/RFC/TIR law-frame paths and their measurable holonomy receipts.
 
 ## Conformance requirements
 
-Repository-level construction is covered by tests for:
+Repository-level construction is covered by focused tests for:
 
 - exact 36D KAKU validation,
 - content-addressed append-only persistence,
@@ -161,7 +217,15 @@ Repository-level construction is covered by tests for:
 - fail-closed missing/invalid KAKU resolution,
 - fail-closed basis mismatch,
 - pure conformance execution with `external_effects=false`,
+- exact candidate inverse lineage,
+- emitted-value and trace provenance,
+- forward↔inverse content-ID round trip,
+- local self holonomy loops,
+- cross-domain holonomy loops,
+- state holonomy defects,
+- intermediate invariant defects,
+- holonomy inverse-lineage binding,
 - fail-closed authority flags,
 - live authoring entry bound to `/dev/shm/ciel_noema`.
 
-GitHub Actions execution status is provenance recorded separately from implementation status. A pre-run infrastructure failure is not promoted to either code PASS or code FAIL.
+GitHub Actions execution status is provenance-recorded separately from implementation status. Pre-test runner failures remain an unresolved CI execution state rather than a code verdict.

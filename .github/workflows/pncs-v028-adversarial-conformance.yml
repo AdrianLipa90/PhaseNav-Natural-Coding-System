@@ -23,6 +23,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   structural-authority:
     runs-on: ubuntu-latest
@@ -164,6 +168,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: pncs-v028-macos-closure
+          retention-days: 7
           path: |
             MANIFEST.sha256.json
             MANIFEST.sha256.json.sha256
@@ -222,6 +227,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: pncs-v028-manifest-candidate
+          retention-days: 7
           path: |
             MANIFEST.sha256.json
             MANIFEST.sha256.json.sha256

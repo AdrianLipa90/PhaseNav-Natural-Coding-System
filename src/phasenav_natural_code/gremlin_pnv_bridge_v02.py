@@ -6,8 +6,8 @@ v0.2 preserves the v0.1 live execution/audit entry points, adds bounded candidat
 authoring for KAKU/RADICAL/OPERATOR objects, exposes deterministic relational
 isomorphism compilation, adapts relation-mining findings into that compiler,
 resolves relation atoms through explicit semantic bindings plus exact PNCS
-realization/mass/vector evidence, and exposes candidate inverse lineage from native
-PNV result back through OPERATOR/RADICAL/KAKU provenance.
+realization/mass/vector evidence, exposes candidate inverse lineage, and provides
+an executable physical-law frame with information-holonomy receipts.
 """
 
 from .gremlin_native_pnv_bridge_v01 import (
@@ -73,6 +73,22 @@ from .gremlin_inverse_lineage_v01 import (
     persist_gremlin_candidate_inverse_lineage,
     resolve_gremlin_candidate_inverse_lineage,
 )
+from .gremlin_pnv_holonomy_v01 import (
+    HOLONOMY_AUDIT_RECEIPT_SCHEMA,
+    HOLONOMY_COMPILATION_RECEIPT_SCHEMA,
+    HOLONOMY_CONTRACT,
+    HolonomyInvariant,
+    InformationHolonomyAudit,
+    InformationHolonomyLoop,
+    LawFrameNode,
+    LawTransport,
+    PNVInformationHolonomyError,
+    audit_information_holonomy,
+    compile_information_holonomy_loop,
+    exact_state_metric,
+    numeric_linf_metric,
+    persist_information_holonomy_audit,
+)
 
 BRIDGE_SCHEMA = "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2"
 
@@ -84,6 +100,30 @@ def persist_gremlin_candidate_inverse_lineage_live(
 ) -> str:
     live = session or open_gremlin_pnv_authoring_live()
     return persist_gremlin_candidate_inverse_lineage(lineage, authoring_root=live.authoring_root)
+
+
+def compile_information_holonomy_loop_live(
+    loop: InformationHolonomyLoop,
+    *,
+    session: GremlinPNVAuthoringSession | None = None,
+) -> RelationalCompilation:
+    live = session or open_gremlin_pnv_authoring_live()
+    return compile_information_holonomy_loop(
+        loop,
+        generation_binding=live.generation_binding,
+        identity=live.identity,
+        authority=live.authority,
+        authoring_root=live.authoring_root,
+    )
+
+
+def persist_information_holonomy_audit_live(
+    audit: InformationHolonomyAudit,
+    *,
+    session: GremlinPNVAuthoringSession | None = None,
+) -> str:
+    live = session or open_gremlin_pnv_authoring_live()
+    return persist_information_holonomy_audit(audit, authoring_root=live.authoring_root)
 
 
 __all__ = [
@@ -100,12 +140,16 @@ __all__ = [
     "KAKU_RESOLUTION_RECEIPT_SCHEMA",
     "CANDIDATE_INVERSE_LINEAGE_SCHEMA",
     "CANDIDATE_INVERSE_LINEAGE_RECEIPT_SCHEMA",
+    "HOLONOMY_CONTRACT",
+    "HOLONOMY_COMPILATION_RECEIPT_SCHEMA",
+    "HOLONOMY_AUDIT_RECEIPT_SCHEMA",
     "NativePNVLiveBridgeError",
     "GremlinPNVAuthoringError",
     "GremlinRelationalCompilerError",
     "GremlinRelationMiningAdapterError",
     "GremlinKakuResolverError",
     "GremlinInverseLineageError",
+    "PNVInformationHolonomyError",
     "TriplePulseNativeRun",
     "BelzebubNativeRun",
     "GremlinPNVAuthoringSession",
@@ -118,6 +162,11 @@ __all__ = [
     "GremlinAtomKakuBinding",
     "GremlinKakuResolver",
     "GremlinCandidateInverseLineage",
+    "LawFrameNode",
+    "LawTransport",
+    "HolonomyInvariant",
+    "InformationHolonomyLoop",
+    "InformationHolonomyAudit",
     "execute_gremlin_triple_pulse",
     "execute_gremlin_triple_pulse_live",
     "compare_triple_pulse_harness",
@@ -140,4 +189,11 @@ __all__ = [
     "resolve_gremlin_candidate_inverse_lineage",
     "persist_gremlin_candidate_inverse_lineage",
     "persist_gremlin_candidate_inverse_lineage_live",
+    "compile_information_holonomy_loop",
+    "compile_information_holonomy_loop_live",
+    "audit_information_holonomy",
+    "persist_information_holonomy_audit",
+    "persist_information_holonomy_audit_live",
+    "exact_state_metric",
+    "numeric_linf_metric",
 ]

@@ -3,8 +3,8 @@ from __future__ import annotations
 """Unified GREMLIN <-> native PNV bridge.
 
 v0.2 preserves the v0.1 live execution/audit entry points, adds bounded candidate
-authoring for KAKU/RADICAL/OPERATOR objects, and exposes deterministic relational
-isomorphism compilation into native PNV candidate programs.
+authoring for KAKU/RADICAL/OPERATOR objects, exposes deterministic relational
+isomorphism compilation, and adapts relation-mining findings into that compiler.
 """
 
 from .gremlin_native_pnv_bridge_v01 import (
@@ -44,6 +44,14 @@ from .gremlin_relational_compiler_v01 import (
     compile_relational_isomorphism_live,
     validate_compiled_relational_candidate,
 )
+from .gremlin_relation_mining_adapter_v01 import (
+    ADAPTER_SCHEMA as RELATION_MINING_ADAPTER_SCHEMA,
+    GremlinRelationMiningAdapterError,
+    RelationMiningAlignment,
+    RelationMiningFinding,
+    compile_relation_mining_finding,
+    relation_mining_finding_to_isomorphism,
+)
 
 BRIDGE_SCHEMA = "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2"
 
@@ -56,9 +64,11 @@ __all__ = [
     "AUTHORING_RECEIPT_SCHEMA",
     "RELATIONAL_COMPILER_SCHEMA",
     "RELATIONAL_COMPILATION_RECEIPT_SCHEMA",
+    "RELATION_MINING_ADAPTER_SCHEMA",
     "NativePNVLiveBridgeError",
     "GremlinPNVAuthoringError",
     "GremlinRelationalCompilerError",
+    "GremlinRelationMiningAdapterError",
     "TriplePulseNativeRun",
     "BelzebubNativeRun",
     "GremlinPNVAuthoringSession",
@@ -66,6 +76,8 @@ __all__ = [
     "RelationalEdge",
     "RelationalIsomorphism",
     "RelationalCompilation",
+    "RelationMiningAlignment",
+    "RelationMiningFinding",
     "execute_gremlin_triple_pulse",
     "execute_gremlin_triple_pulse_live",
     "compare_triple_pulse_harness",
@@ -80,4 +92,6 @@ __all__ = [
     "compile_relational_isomorphism",
     "compile_relational_isomorphism_live",
     "validate_compiled_relational_candidate",
+    "relation_mining_finding_to_isomorphism",
+    "compile_relation_mining_finding",
 ]

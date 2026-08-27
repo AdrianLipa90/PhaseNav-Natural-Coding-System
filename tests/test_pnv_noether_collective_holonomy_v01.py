@@ -9,6 +9,7 @@ from phasenav_natural_code.gremlin_pnv_holonomy_v01 import (
 from phasenav_natural_code.model import Kaku, Vector36
 from phasenav_natural_code.pnv_noether_collective_holonomy_v01 import (
     NOETHER_COLLECTIVE_CONTRACT,
+    NOETHER_COLLECTIVE_LOOP_ID,
     PNVNoetherCollectiveError,
     build_noether_collective_loop,
     collective_noether_binding_defect,
@@ -57,8 +58,9 @@ def _state(i_a=2.0):
     )
 
 
-def test_contract_is_versioned():
+def test_contract_and_semantic_loop_id_are_versioned():
     assert NOETHER_COLLECTIVE_CONTRACT == "PNCS_PNV_NOETHER_COLLECTIVE_CARRIER_V0_1"
+    assert NOETHER_COLLECTIVE_LOOP_ID == "SOURCE.PHASE_NOETHER.COLLECTIVE_CARRIER.ROUNDTRIP"
 
 
 def test_exact_collective_inertia_binding_closes_holonomy():
@@ -92,6 +94,7 @@ def test_noether_loop_orders_rotor_to_field_to_rfc_and_back():
         _kaku("LAW.RFC", 0.3, "rfc"),
     )
     compiled = _compile(loop)
+    assert loop.loop_id == NOETHER_COLLECTIVE_LOOP_ID
     assert [row["transform_name"] for row in compiled.receipt["transport_plan"]] == [
         "noether.resolve_rotor_carrier",
         "noether.bind_rfc_carrier",
@@ -107,6 +110,12 @@ def test_exact_binding_derives_p_phi_q_theta_and_epsilon_n():
     assert math.isclose(resolved["Q_theta"], math.pi, rel_tol=0.0, abs_tol=1e-15)
     assert math.isclose(resolved["H_Phi_EB"], math.pi**2 / 4.0, rel_tol=0.0, abs_tol=1e-15)
     assert math.isclose(resolved["epsilon_N_EB"], math.pi / 4.0, rel_tol=0.0, abs_tol=1e-15)
+    assert math.isclose(
+        resolved["epsilon_N_EB"],
+        resolved["H_Phi_EB"] / resolved["Q_theta"],
+        rel_tol=0.0,
+        abs_tol=1e-15,
+    )
     assert resolved["Delta_I"] == 0.0
 
 
@@ -118,6 +127,33 @@ def test_inertia_mismatch_exposes_exact_binding_defect_and_fails_closed():
     resolved = transforms["noether.resolve_rotor_carrier"](state)
     with pytest.raises(PNVNoetherCollectiveError, match="inertia binding defect"):
         transforms["noether.bind_rfc_carrier"](resolved)
+
+
+def test_explicit_nonzero_binding_tolerance_keeps_epsilon_typed_by_q_theta():
+    state = _state(i_a=2.000001)
+    transforms = noether_collective_transforms(binding_tolerance=1e-6)
+    resolved = transforms["noether.resolve_rotor_carrier"](state)
+    bound = transforms["noether.bind_rfc_carrier"](resolved)
+    reconstructed = transforms["noether.reconstruct_rotor_input"](bound)
+    assert reconstructed == state
+    assert 0.0 < resolved["Delta_I"] < 1e-6
+    assert math.isclose(
+        resolved["epsilon_N_EB"],
+        resolved["H_Phi_EB"] / resolved["Q_theta"],
+        rel_tol=0.0,
+        abs_tol=1e-15,
+    )
+    assert bound["Q_RFC"] == resolved["Q_theta"]
+    assert bound["epsilon_Q_candidate"] == resolved["epsilon_N_EB"]
+
+
+def test_tampered_rfc_candidate_fails_reverse_audit():
+    transforms = noether_collective_transforms(binding_tolerance=1e-12)
+    resolved = transforms["noether.resolve_rotor_carrier"](_state())
+    bound = transforms["noether.bind_rfc_carrier"](resolved)
+    tampered = {**bound, "Q_RFC": bound["Q_RFC"] * 1.01}
+    with pytest.raises(PNVNoetherCollectiveError, match="reverse Noether audit"):
+        transforms["noether.reconstruct_rotor_input"](tampered)
 
 
 def test_positive_rotor_carrier_gate_fails_closed():

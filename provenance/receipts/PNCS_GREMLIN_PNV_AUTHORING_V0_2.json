@@ -1,0 +1,45 @@
+{
+  "schema": "PNCS_GREMLIN_PNV_AUTHORING_IMPLEMENTATION_RECEIPT_V0_2",
+  "status": "IMPLEMENTED_CANDIDATE_AUTHORING__CI_RUNNER_UNAVAILABLE",
+  "branch": "feat/gremlin-pnv-authoring-v0.2",
+  "base_main_sha256_git": "83a06b9398bab09052c2c2124974897cc31a461f",
+  "authoring_contract": "PNCS_GREMLIN_PNV_AUTHORING_V0_2",
+  "bridge_contract": "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2",
+  "live_surface": "/dev/shm/ciel_noema",
+  "noema_guard": {
+    "schema": "noema.aux-tether-guard/v2",
+    "tether_status": "ACTIVE",
+    "failures": [],
+    "guard_sha256": "de7481a0d71fe2033a66ed09de145570dace4b263167247d2f757aee60fcaefc"
+  },
+  "capabilities": {
+    "gremlin_write_kaku_candidate": true,
+    "gremlin_write_radical_candidate": true,
+    "gremlin_write_operator_candidate": true,
+    "content_addressed_append_only_store": true,
+    "native_pnv_render_and_parse_gate": true,
+    "automatic_canon_promotion": false,
+    "automatic_runtime_execution_authority": false
+  },
+  "candidate_chain": [
+    "KAKU",
+    "RADICAL",
+    "OPERATOR",
+    "PNV_CANDIDATE_PROGRAM"
+  ],
+  "new_tests_authored": 10,
+  "ci": {
+    "workflow": "PNCS GREMLIN PNV authoring",
+    "latest_observed_run_id": 33113171090,
+    "latest_observed_head_sha": "81c4d7b01e91e227d447d4465ad1f07ce4437546",
+    "conclusion": "failure",
+    "runner_id": 0,
+    "runner_name": "",
+    "executed_steps": 0,
+    "classification": "CI_RUNNER_UNAVAILABLE_BEFORE_TEST_EXECUTION",
+    "code_test_failure_observed": false
+  },
+  "epistemic_state": "CHYBA",
+  "promotion_state": "CANDIDATE_ONLY",
+  "main_mutated": false
+}

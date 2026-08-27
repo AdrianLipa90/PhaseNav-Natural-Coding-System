@@ -217,3 +217,43 @@ def required_relation_mining_atoms(ledger: Mapping[str, Any], chain_ids: Iterabl
     if not atoms:
         raise GremlinKakuResolverError("no relation-mining atoms resolved")
     return tuple(sorted(atoms))
+
+
+def resolve_relation_mining_kaku(
+    ledger: Mapping[str, Any],
+    chain_ids: Iterable[str],
+    *,
+    resolver: GremlinKakuResolver,
+) -> dict[str, Kaku]:
+    if not isinstance(resolver, GremlinKakuResolver):
+        raise GremlinKakuResolverError("GremlinKakuResolver required")
+    return resolver.resolve_many(required_relation_mining_atoms(ledger, chain_ids))
+
+
+def compile_relation_mining_with_resolver(
+    ledger: Mapping[str, Any],
+    finding: Any,
+    *,
+    resolver: GremlinKakuResolver,
+    generation_binding: str,
+    identity: str,
+    authority: str,
+    authoring_root: str | None = None,
+):
+    from .gremlin_relation_mining_adapter_v01 import (
+        RelationMiningFinding,
+        compile_relation_mining_finding,
+    )
+
+    if not isinstance(finding, RelationMiningFinding):
+        raise GremlinKakuResolverError("RelationMiningFinding required")
+    kaku_by_atom = resolve_relation_mining_kaku(ledger, finding.chain_ids, resolver=resolver)
+    return compile_relation_mining_finding(
+        ledger,
+        finding,
+        kaku_by_atom=kaku_by_atom,
+        generation_binding=generation_binding,
+        identity=identity,
+        authority=authority,
+        authoring_root=authoring_root,
+    )

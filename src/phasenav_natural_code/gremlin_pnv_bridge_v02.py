@@ -4,7 +4,9 @@ from __future__ import annotations
 
 v0.2 preserves the v0.1 live execution/audit entry points, adds bounded candidate
 authoring for KAKU/RADICAL/OPERATOR objects, exposes deterministic relational
-isomorphism compilation, and adapts relation-mining findings into that compiler.
+isomorphism compilation, adapts relation-mining findings into that compiler, and
+resolves relation atoms through explicit semantic bindings plus exact PNCS
+realization/mass/vector evidence.
 """
 
 from .gremlin_native_pnv_bridge_v01 import (
@@ -52,6 +54,16 @@ from .gremlin_relation_mining_adapter_v01 import (
     compile_relation_mining_finding,
     relation_mining_finding_to_isomorphism,
 )
+from .gremlin_kaku_resolver_v01 import (
+    RESOLUTION_RECEIPT_SCHEMA as KAKU_RESOLUTION_RECEIPT_SCHEMA,
+    RESOLVER_SCHEMA as KAKU_RESOLVER_SCHEMA,
+    GremlinAtomKakuBinding,
+    GremlinKakuResolver,
+    GremlinKakuResolverError,
+    compile_relation_mining_with_resolver,
+    required_relation_mining_atoms,
+    resolve_relation_mining_kaku,
+)
 
 BRIDGE_SCHEMA = "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2"
 
@@ -65,10 +77,13 @@ __all__ = [
     "RELATIONAL_COMPILER_SCHEMA",
     "RELATIONAL_COMPILATION_RECEIPT_SCHEMA",
     "RELATION_MINING_ADAPTER_SCHEMA",
+    "KAKU_RESOLVER_SCHEMA",
+    "KAKU_RESOLUTION_RECEIPT_SCHEMA",
     "NativePNVLiveBridgeError",
     "GremlinPNVAuthoringError",
     "GremlinRelationalCompilerError",
     "GremlinRelationMiningAdapterError",
+    "GremlinKakuResolverError",
     "TriplePulseNativeRun",
     "BelzebubNativeRun",
     "GremlinPNVAuthoringSession",
@@ -78,6 +93,8 @@ __all__ = [
     "RelationalCompilation",
     "RelationMiningAlignment",
     "RelationMiningFinding",
+    "GremlinAtomKakuBinding",
+    "GremlinKakuResolver",
     "execute_gremlin_triple_pulse",
     "execute_gremlin_triple_pulse_live",
     "compare_triple_pulse_harness",
@@ -94,4 +111,7 @@ __all__ = [
     "validate_compiled_relational_candidate",
     "relation_mining_finding_to_isomorphism",
     "compile_relation_mining_finding",
+    "required_relation_mining_atoms",
+    "resolve_relation_mining_kaku",
+    "compile_relation_mining_with_resolver",
 ]

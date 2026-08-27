@@ -173,15 +173,25 @@ def test_transport_order_must_close_declared_cycle():
         )
 
 
-def test_law_frame_requires_cross_domain_loop():
-    left = LawFrameNode("A", "IDT", _kaku("A", 0.1, "a"))
-    right = LawFrameNode("B", "IDT", _kaku("B", 0.2, "b"))
-    with pytest.raises(PNVInformationHolonomyError, match="at least two source domains"):
-        InformationHolonomyLoop(
-            "ONE_DOMAIN",
-            (left, right),
-            (LawTransport("E0", "A", "B", "identity"), LawTransport("E1", "B", "A", "identity")),
-        )
+def test_local_single_node_self_loop_is_admitted_and_can_close_exactly():
+    node = LawFrameNode("LAW.LOCAL.IDENTITY", "IDT", _kaku("LAW.LOCAL", 0.1, f"local:{CONTENT}"))
+    loop = InformationHolonomyLoop(
+        "LOCAL_SELF_LOOP",
+        (node,),
+        (LawTransport("E0", "LAW.LOCAL", "LAW.LOCAL", "identity"),),
+    )
+    compiled = _compile(loop)
+    audit = audit_information_holonomy(
+        loop,
+        compiled,
+        initial_state=[1.0, 2.0],
+        transforms={"identity": lambda x: x},
+        state_metric=numeric_linf_metric,
+        metric_id="L_INF",
+    )
+    assert audit.state_defect == 0.0
+    assert audit.receipt["status"] == "PASS"
+    assert compiled.receipt["law_frame"][0]["domain"] == "IDT"
 
 
 def test_law_frame_requires_exact_shared_basis():

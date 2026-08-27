@@ -1,90 +1,113 @@
 {
   "schema": "PNCS_PNV_SOURCE_HOLONOMY_LOOPS_IMPLEMENTATION_RECEIPT_V0_1",
-  "status": "IMPLEMENTED_EULER_CLOSED_SOURCE_LOOPS__IDT_RFC_REFERENCE_PASS__PNCS_CI_EXECUTION_UNRESOLVED_PRE_TEST",
+  "status": "SEVEN_SOURCE_LOOPS_IMPLEMENTED__IDT_RFC_REFERENCE_PASS__PNCS_CI_EXECUTION_UNRESOLVED_PRE_TEST",
   "branch": "feat/gremlin-pnv-authoring-v0.2",
   "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
-  "code_head_sha": "e6d5e217aeed2906372fdd0aa41845f0df32bbae",
+  "executable_code_snapshot": "26fb4714a7d7e71f16024f2120f93099a9c62c01",
   "source_holonomy_contract": "PNCS_PNV_SOURCE_HOLONOMY_LOOPS_V0_1",
   "information_holonomy_contract": "PNCS_PNV_INFORMATION_HOLONOMY_V0_1",
   "bridge_contract": "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2",
-  "normalization_order": [
-    "Euler/Berry closure",
-    "theta_I^EB",
-    "J_I^EB=hbar*theta_I^EB",
-    "H_Phi^EB=(J-J_I^EB)^2/(2 I_phi)",
-    "epsilon_I^EB=H_Phi^EB/J_I^EB",
-    "Delta_tau_eff=J_I^EB/H_Phi^EB",
-    "Q_Sigma <-> J_I^EB OPEN",
-    "epsilon_Q binding OPEN"
+  "additional_contracts": [
+    "PNCS_PNV_NOETHER_COLLECTIVE_CARRIER_V0_1",
+    "PNCS_PNV_NOETHER_RFC_CURRENT_BINDING_V0_1",
+    "PNCS_PNV_SCALAR_FIELD_ROTOR_INERTIA_REDUCTION_V0_1"
+  ],
+  "normalization_and_binding_order": [
+    "carrier extensive scale -> normalized profile",
+    "conditional q0 occupation coordinate",
+    "conditional epsilon_Q source-density consumer",
+    "Euler/Berry closure -> J_I^EB -> rotor energy",
+    "finite collective Noether carrier Q_theta",
+    "Noether <-> RFC local current/measure theorem",
+    "scalar-field <-> rotor collective coefficient reduction",
+    "physical current/state-space promotion OPEN"
   ],
   "loops": [
     {
       "loop_id": "SOURCE.CARRIER.NORMALIZATION.ROUNDTRIP",
-      "internal_loop_id": "PNV_SOURCE_CARRIER_NORMALIZATION_LOOP_V0_1",
       "equations": ["p_a=Q_a/Q_Sigma", "Q_a'=Q_Sigma*p_a"],
-      "domains": ["RFC", "IDT"],
-      "invariants": ["SOURCE.TOTAL_Q", "SOURCE.PROFILE_NORM"],
       "gate_state": "REFERENCE_EXACT_CONTROL"
     },
     {
       "loop_id": "SOURCE.CARRIER.Q0_OCCUPATION.ROUNDTRIP",
-      "internal_loop_id": "PNV_SOURCE_Q0_OCCUPATION_LOOP_V0_1",
       "equations": ["n_a=Q_a/q0", "Q_a'=q0*n_a"],
-      "domains": ["RFC", "PHASE_TIME_HAMILTONIAN"],
-      "invariants": ["SOURCE.TOTAL_Q"],
       "gate_state": "Q0_CONDITIONAL"
     },
     {
       "loop_id": "SOURCE.CARRIER.EPSILON_MASS_DENSITY.ROUNDTRIP",
-      "internal_loop_id": "PNV_SOURCE_EPSILON_Q_LOOP_V0_1",
       "equations": ["rho_Q=(epsilon_Q/c^2)j_Q", "j_Q'=(c^2/epsilon_Q)rho_Q"],
-      "domains": ["RFC_SOURCE_CARRIER", "RFC_SOURCE_TYPE"],
-      "invariants": ["SOURCE.EQUIVALENT_CURRENT_NORM"],
       "gate_state": "EPSILON_Q_DOWNSTREAM_CONDITIONAL_CONSUMER"
     },
     {
       "loop_id": "SOURCE.PHASE_INTENTION.EULER_CHARGE_ENERGY.ROUNDTRIP",
-      "internal_loop_id": "PNV_SOURCE_EULER_PHASE_INTENTION_ENERGY_LOOP_V0_1",
       "equations": [
-        "theta_I^EB=2*pi*(D+epsilon_EB)-phi_AB-phi_Berry-phi_Euler-theta_prior",
         "J_I^EB=hbar*theta_I^EB",
-        "H_Phi^EB=(J-J_I^EB)^2/(2*I_phi)",
-        "epsilon_I^EB=H_Phi^EB/J_I^EB",
-        "Delta_tau_eff^EB=J_I^EB/H_Phi^EB"
+        "P_Phi^EB=J-J_I^EB",
+        "H_Phi^EB=(P_Phi^EB)^2/(2 I_phi)"
       ],
-      "domains": ["PHASE_TOPOLOGY", "PHASE_TIME_HAMILTONIAN"],
-      "invariants": [
-        "SOURCE.EULER_CLOSURE_SECTOR",
-        "SOURCE.INTENTION_ACTION_CHARGE",
-        "SOURCE.ROTOR_PHASE_ENERGY",
-        "SOURCE.ENERGY_PER_ACTION_CHARGE"
+      "gate_state": "EULER_CLOSED_PHASE_ENERGY_CANDIDATE"
+    },
+    {
+      "loop_id": "SOURCE.PHASE_NOETHER.COLLECTIVE_CARRIER.ROUNDTRIP",
+      "equations": [
+        "Q_theta=I_A D_tau_chi",
+        "P_Phi^EB=I_phi D_tau_chi",
+        "Delta_I_01Z=abs(I_A/I_phi-1)",
+        "epsilon_N^EB=H_Phi^EB/Q_theta"
       ],
-      "gate_state": "EULER_CLOSED_NORMALIZATION_PASS_CONDITIONAL_RFC_BINDING"
+      "gate_state": "FINITE_NOETHER_CARRIER_TYPED"
+    },
+    {
+      "loop_id": "SOURCE.PHASE_NOETHER.RFC_CONSERVED_CURRENT.ROUNDTRIP",
+      "equations": [
+        "Q_theta=sum V_theta j_theta",
+        "Q_Sigma=sum V_Q j_Q",
+        "Delta_J=sum V_Q abs(j_Q-j_theta)/Q_theta",
+        "Delta_V=sum abs(V_Q-V_theta) abs(j_theta)/Q_theta",
+        "Delta_Sigma=abs(Q_Sigma-Q_theta)/Q_theta",
+        "Delta_Sigma<=Delta_J+Delta_V"
+      ],
+      "gate_state": "EXACT_CURRENT_MEASURE_FALSIFICATION_GATE"
+    },
+    {
+      "loop_id": "SOURCE.PHASE_NOETHER.ROTOR_INERTIA.REDUCTION.ROUNDTRIP",
+      "equations": [
+        "C_A=sum A_a^2 V_a",
+        "I_A=2 C_A",
+        "Delta_I_reduction=abs(I_phi-I_A)/I_A",
+        "Delta_coefficient=abs(I_phi/2-C_A)/C_A",
+        "Delta_Q_reduction=abs(P_Phi-Q_theta)/Q_theta",
+        "Delta_epsilon_reduction=abs(epsilon_N-(D_tau_chi)/2)/((D_tau_chi)/2)",
+        "Delta_I_reduction=Delta_coefficient=Delta_Q_reduction=Delta_epsilon_reduction"
+      ],
+      "gate_state": "CONDITIONAL_EXACT_COLLECTIVE_COEFFICIENT_REDUCTION"
     }
   ],
   "tests_authored": {
-    "source_loop_unit_and_roundtrip": 15,
-    "unified_bridge_export": 1,
-    "total": 16
+    "first_four_source_loops_including_bridge": 16,
+    "noether_collective_including_bridge": 10,
+    "noether_rfc_current_including_bridge": 16,
+    "scalar_field_rotor_reduction_including_bridge": 12,
+    "total_focused_source_law_checks": 54
   },
   "cross_repository_reference_execution": {
     "idt": {
       "repository": "AdrianLipa90/Informational-Dynamics-of-Time",
       "branch": "feat/idt-rfc-normalized-shape-holonomy-v0.1",
-      "tested_commit": "04de014d908060ab329e53bffdab74dfc5599af4",
-      "workflow_run_id": 33121699876,
-      "workflow_job_id": 98689879614,
-      "passed": 348,
+      "tested_commit": "84664b5907c090e8c238106aab0ea3537ca34929",
+      "workflow_run_id": 33125737598,
+      "workflow_job_id": 98703331402,
+      "passed": 373,
       "failed": 0,
       "status": "PASS"
     },
     "rfc": {
       "repository": "AdrianLipa90/Relational-Field-Closure",
       "branch": "feat/rfc-gremlin-pnv-holonomy-v0.1",
-      "tested_commit": "ec5176222af50c4f5ebfd455645f889849c5ca3e",
-      "workflow_run_id": 33121748877,
-      "workflow_job_id": 98690039397,
-      "passed": 40,
+      "tested_commit": "c3e9fdd8df2b8dd926f3b7050a805bfb126b12cb",
+      "workflow_run_id": 33125790662,
+      "workflow_job_id": 98703505138,
+      "passed": 65,
       "failed": 0,
       "status": "PASS"
     }
@@ -92,16 +115,14 @@
   "noema": {
     "guard_schema": "noema.aux-tether-guard/v2",
     "surface_root": "/dev/shm/ciel_noema",
-    "socket": "/run/user/1000/noema/ciel_headless.sock",
     "tether_status": "ACTIVE",
-    "failures": [],
-    "note": "one transient phi/status race was observed and cleared on immediate fresh guard without changing guard policy"
+    "failures": []
   },
   "ci": {
     "workflow": "PNCS GREMLIN PNV authoring",
-    "run_id": 33121573174,
-    "job_id": 98689454717,
-    "head_sha": "e6d5e217aeed2906372fdd0aa41845f0df32bbae",
+    "run_id": 33125567602,
+    "job_id": 98702774903,
+    "head_sha": "26fb4714a7d7e71f16024f2120f93099a9c62c01",
     "conclusion": "failure",
     "steps": null,
     "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
@@ -113,5 +134,14 @@
     "runtime_execution_authority": false,
     "canon_write_authority": false
   },
+  "physical_frontier": [
+    "field phase mode <-> rotor chi mode",
+    "field covariant rate <-> rotor D_tau chi",
+    "common measure/support",
+    "J_Q^mu <-> J_theta^mu",
+    "Q_Sigma <-> Q_theta",
+    "p_IDT <-> p_Q",
+    "source coupling/universality"
+  ],
   "main_mutated": false
 }

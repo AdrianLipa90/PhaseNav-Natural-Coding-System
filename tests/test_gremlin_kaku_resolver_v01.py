@@ -1,6 +1,7 @@
 import pytest
 
 from phasenav_natural_code.gremlin_kaku_resolver_v01 import (
+    EXPECTED_LEDGER_SCHEMA,
     RESOLUTION_RECEIPT_SCHEMA,
     RESOLVER_SCHEMA,
     GremlinAtomKakuBinding,
@@ -58,6 +59,7 @@ def _binding(atom, content_id, realization, mass, *, vector=None):
 def test_resolver_schema_is_versioned():
     assert RESOLVER_SCHEMA == "PNCS_GREMLIN_KAKU_RESOLVER_V0_1"
     assert RESOLUTION_RECEIPT_SCHEMA == "PNCS_GREMLIN_KAKU_RESOLUTION_RECEIPT_V0_1"
+    assert EXPECTED_LEDGER_SCHEMA == "PNCS_RELATION_MINING_LEDGER_V0_3"
 
 
 def test_explicit_atom_content_binding_resolves_exact_kaku():
@@ -143,14 +145,24 @@ def test_duplicate_atom_binding_is_rejected():
 
 def test_required_relation_mining_atoms_are_exact_union_of_selected_chains():
     ledger = {
+        "schema": EXPECTED_LEDGER_SCHEMA,
         "chains": [
             {"id": "A", "atoms": ["TRANSFORM", "IDENTITY"]},
             {"id": "B", "atoms": ["DERIVE", "IDENTITY"]},
             {"id": "C", "atoms": ["BOUNDARY"]},
-        ]
+        ],
     }
     assert required_relation_mining_atoms(ledger, ("A", "B")) == (
         "DERIVE",
         "IDENTITY",
         "TRANSFORM",
     )
+
+
+def test_relation_mining_ledger_schema_mismatch_fails_closed_early():
+    ledger = {
+        "schema": "PNCS_RELATION_MINING_LEDGER_V0_2",
+        "chains": [{"id": "A", "atoms": ["IDENTITY"]}],
+    }
+    with pytest.raises(GremlinKakuResolverError, match="ledger schema mismatch"):
+        required_relation_mining_atoms(ledger, ("A",))

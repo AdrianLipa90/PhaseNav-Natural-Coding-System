@@ -13,6 +13,7 @@ on:
       - 'src/phasenav_natural_code/gremlin_pnv_holonomy_v01.py'
       - 'src/phasenav_natural_code/pnv_source_holonomy_v01.py'
       - 'src/phasenav_natural_code/pnv_noether_collective_holonomy_v01.py'
+      - 'src/phasenav_natural_code/pnv_noether_rfc_current_holonomy_v01.py'
       - 'tests/test_gremlin_pnv_authoring_v02.py'
       - 'tests/test_gremlin_pnv_bridge_v02.py'
       - 'tests/test_gremlin_pnv_bridge_kaku_resolver_v02.py'
@@ -20,6 +21,7 @@ on:
       - 'tests/test_gremlin_pnv_bridge_holonomy_v02.py'
       - 'tests/test_gremlin_pnv_bridge_source_holonomy_v02.py'
       - 'tests/test_gremlin_pnv_bridge_noether_collective_v02.py'
+      - 'tests/test_gremlin_pnv_bridge_noether_rfc_current_v02.py'
       - 'tests/test_gremlin_relational_compiler_v01.py'
       - 'tests/test_gremlin_relation_mining_adapter_v01.py'
       - 'tests/test_gremlin_kaku_resolver_v01.py'
@@ -28,6 +30,7 @@ on:
       - 'tests/test_gremlin_pnv_holonomy_v01.py'
       - 'tests/test_pnv_source_holonomy_v01.py'
       - 'tests/test_pnv_noether_collective_holonomy_v01.py'
+      - 'tests/test_pnv_noether_rfc_current_holonomy_v01.py'
       - 'spec/PNCS_GREMLIN_PNV_AUTHORING_V0_2.md'
       - 'spec/PNCS_GREMLIN_RELATIONAL_ISOMORPHISM_COMPILER_V0_1.md'
       - 'spec/PNCS_GREMLIN_RELATION_MINING_ADAPTER_V0_1.md'
@@ -36,6 +39,7 @@ on:
       - 'spec/PNCS_PNV_INFORMATION_HOLONOMY_V0_1.md'
       - 'spec/PNCS_PNV_SOURCE_HOLONOMY_LOOPS_V0_1.md'
       - 'spec/PNCS_PNV_NOETHER_COLLECTIVE_CARRIER_V0_1.md'
+      - 'spec/PNCS_PNV_NOETHER_RFC_CURRENT_BINDING_V0_1.md'
       - '.github/workflows/pncs-gremlin-pnv-authoring.yml'
   workflow_dispatch:
 
@@ -55,4 +59,4 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -e . pytest
-      - run: python -m pytest -q tests/test_gremlin_pnv_authoring_v02.py tests/test_gremlin_pnv_bridge_v02.py tests/test_gremlin_pnv_bridge_kaku_resolver_v02.py tests/test_gremlin_pnv_bridge_inverse_lineage_v02.py tests/test_gremlin_pnv_bridge_holonomy_v02.py tests/test_gremlin_pnv_bridge_source_holonomy_v02.py tests/test_gremlin_pnv_bridge_noether_collective_v02.py tests/test_gremlin_relational_compiler_v01.py tests/test_gremlin_relation_mining_adapter_v01.py tests/test_gremlin_kaku_resolver_v01.py tests/test_gremlin_kaku_resolver_pipeline_v01.py tests/test_gremlin_inverse_lineage_v01.py tests/test_gremlin_pnv_holonomy_v01.py tests/test_pnv_source_holonomy_v01.py tests/test_pnv_noether_collective_holonomy_v01.py tests/test_gremlin_native_pnv_bridge_v01.py tests/test_native_pnv_exec_v01.py
+      - run: python -m pytest -q tests/test_gremlin_pnv_authoring_v02.py tests/test_gremlin_pnv_bridge_v02.py tests/test_gremlin_pnv_bridge_kaku_resolver_v02.py tests/test_gremlin_pnv_bridge_inverse_lineage_v02.py tests/test_gremlin_pnv_bridge_holonomy_v02.py tests/test_gremlin_pnv_bridge_source_holonomy_v02.py tests/test_gremlin_pnv_bridge_noether_collective_v02.py tests/test_gremlin_pnv_bridge_noether_rfc_current_v02.py tests/test_gremlin_relational_compiler_v01.py tests/test_gremlin_relation_mining_adapter_v01.py tests/test_gremlin_kaku_resolver_v01.py tests/test_gremlin_kaku_resolver_pipeline_v01.py tests/test_gremlin_inverse_lineage_v01.py tests/test_gremlin_pnv_holonomy_v01.py tests/test_pnv_source_holonomy_v01.py tests/test_pnv_noether_collective_holonomy_v01.py tests/test_pnv_noether_rfc_current_holonomy_v01.py tests/test_gremlin_native_pnv_bridge_v01.py tests/test_native_pnv_exec_v01.py

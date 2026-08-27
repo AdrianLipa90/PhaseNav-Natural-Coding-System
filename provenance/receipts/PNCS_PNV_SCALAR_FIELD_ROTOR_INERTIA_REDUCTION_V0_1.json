@@ -49,9 +49,9 @@
     "idt": {
       "repository": "AdrianLipa90/Informational-Dynamics-of-Time",
       "branch": "feat/idt-rfc-normalized-shape-holonomy-v0.1",
-      "tested_commit": "84664b5907c090e8c238106aab0ea3537ca34929",
-      "workflow_run_id": 33125737598,
-      "workflow_job_id": 98703331402,
+      "tested_commit": "f1bbb6698234c38dd2c643c646ff00f72964fe41",
+      "workflow_run_id": 33126056152,
+      "workflow_job_id": 98704363770,
       "passed": 373,
       "failed": 0,
       "status": "PASS"
@@ -59,9 +59,9 @@
     "rfc": {
       "repository": "AdrianLipa90/Relational-Field-Closure",
       "branch": "feat/rfc-gremlin-pnv-holonomy-v0.1",
-      "tested_commit": "c3e9fdd8df2b8dd926f3b7050a805bfb126b12cb",
-      "workflow_run_id": 33125790662,
-      "workflow_job_id": 98703505138,
+      "tested_commit": "98fe8c186a420ba8f59fc6b218de4ac86e7ef12c",
+      "workflow_run_id": 33126145853,
+      "workflow_job_id": 98704659073,
       "passed": 65,
       "failed": 0,
       "status": "PASS"

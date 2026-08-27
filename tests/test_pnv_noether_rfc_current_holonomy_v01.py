@@ -1,3 +1,4 @@
+import math
 import pytest
 
 from phasenav_natural_code.gremlin_pnv_holonomy_v01 import (
@@ -12,6 +13,7 @@ from phasenav_natural_code.pnv_noether_rfc_current_holonomy_v01 import (
     PNVNoetherRFCCurrentError,
     build_noether_rfc_current_loop,
     make_noether_rfc_current_state,
+    noether_rfc_current_defects,
     noether_rfc_current_invariants,
     noether_rfc_current_transforms,
 )
@@ -44,15 +46,26 @@ def _compile(loop):
     )
 
 
-def _state(*, j_theta=(1.0, 2.0, 3.0), j_q=(1.0, 2.0, 3.0), side_flux=0.0):
+def _state(
+    *,
+    j_theta=(1.0, 2.0, 3.0),
+    j_q=(1.0, 2.0, 3.0),
+    noether_volumes=(1.0, 2.0, 1.0),
+    rfc_volumes=(1.0, 2.0, 1.0),
+    side_flux=0.0,
+    noether_normal_id="future",
+    rfc_normal_id="future",
+):
     return make_noether_rfc_current_state(
         slice_id="SIGMA.TEST.001",
         noether_measure_id="measure:shared:v1",
         rfc_measure_id="measure:shared:v1",
+        noether_normal_id=noether_normal_id,
+        rfc_normal_id=rfc_normal_id,
         noether_cell_ids=("c0", "c1", "c2"),
         rfc_cell_ids=("c0", "c1", "c2"),
-        noether_volumes=(1.0, 2.0, 1.0),
-        rfc_volumes=(1.0, 2.0, 1.0),
+        noether_volumes=noether_volumes,
+        rfc_volumes=rfc_volumes,
         j_theta_cells=j_theta,
         j_q_cells=j_q,
         side_flux=side_flux,
@@ -101,6 +114,34 @@ def test_loop_transport_order_is_noether_measure_rfc_roundtrip():
     ]
 
 
+def test_exact_current_measure_binding_has_zero_defects_and_equal_profiles():
+    state = _state()
+    defects = noether_rfc_current_defects(state)
+    assert defects == {
+        "Delta_measure": 0.0,
+        "Delta_local_current": 0.0,
+        "Delta_total_charge": 0.0,
+        "Delta_bound_margin": 0.0,
+        "side_flux_abs": 0.0,
+    }
+    resolved = noether_rfc_current_transforms()["noether_rfc.resolve_common_measure"](state)
+    assert resolved["Q_theta"] == resolved["Q_Sigma"]
+    assert resolved["p_theta"] == resolved["p_Q"]
+    assert math.isclose(sum(resolved["p_theta"]), 1.0, rel_tol=0.0, abs_tol=1e-15)
+
+
+def test_exact_triangle_bound_holds_for_current_and_measure_mismatch():
+    states = [
+        _state(j_q=(1.2, 1.8, 3.0)),
+        _state(rfc_volumes=(1.1, 1.9, 1.0)),
+        _state(j_q=(1.1, 2.2, 2.8), rfc_volumes=(0.9, 2.1, 1.1)),
+    ]
+    for state in states:
+        d = noether_rfc_current_defects(state)
+        assert d["Delta_total_charge"] <= d["Delta_local_current"] + d["Delta_measure"] + 1e-15
+        assert d["Delta_bound_margin"] == 0.0
+
+
 def test_equal_total_charge_does_not_hide_local_current_mismatch():
     state = make_noether_rfc_current_state(
         slice_id="SIGMA.TEST.002",
@@ -147,6 +188,13 @@ def test_measure_id_mismatch_fails_before_current_binding():
         noether_rfc_current_transforms()["noether_rfc.resolve_common_measure"](state)
 
 
+def test_normal_orientation_mismatch_fails_before_current_binding():
+    with pytest.raises(PNVNoetherRFCCurrentError, match="normal orientations differ"):
+        noether_rfc_current_transforms()["noether_rfc.resolve_common_measure"](
+            _state(rfc_normal_id="past")
+        )
+
+
 def test_cell_partition_mismatch_fails_before_current_binding():
     state = make_noether_rfc_current_state(
         slice_id="SIGMA.TEST.004",
@@ -163,7 +211,7 @@ def test_cell_partition_mismatch_fails_before_current_binding():
         noether_rfc_current_transforms()["noether_rfc.resolve_common_measure"](state)
 
 
-def test_volume_measure_defect_is_measured_and_fails_closed():
+def test_volume_measure_defect_is_charge_weighted_and_fails_closed():
     state = make_noether_rfc_current_state(
         slice_id="SIGMA.TEST.005",
         noether_measure_id="measure:shared:v1",
@@ -172,9 +220,12 @@ def test_volume_measure_defect_is_measured_and_fails_closed():
         rfc_cell_ids=("c0", "c1"),
         noether_volumes=(1.0, 1.0),
         rfc_volumes=(1.0, 1.1),
-        j_theta_cells=(1.0, 1.0),
-        j_q_cells=(1.0, 1.0),
+        j_theta_cells=(1.0, 2.0),
+        j_q_cells=(1.0, 2.0),
     )
+    defects = noether_rfc_current_defects(state)
+    assert defects["Delta_local_current"] == 0.0
+    assert defects["Delta_measure"] > 0.0
     with pytest.raises(PNVNoetherRFCCurrentError, match="common-measure defect"):
         noether_rfc_current_transforms()["noether_rfc.resolve_common_measure"](state)
 
@@ -186,16 +237,33 @@ def test_nonzero_side_flux_fails_conservation_gate():
         transforms["noether_rfc.bind_conserved_current"](resolved)
 
 
-def test_tampered_bound_total_fails_reverse_audit():
+def test_explicit_small_tolerances_can_bind_and_reverse_candidate():
+    state = _state(j_q=(1.0 + 1e-8, 2.0, 3.0))
+    defects = noether_rfc_current_defects(state)
+    transforms = noether_rfc_current_transforms(
+        local_current_tolerance=1e-7,
+        total_charge_tolerance=1e-7,
+    )
+    resolved = transforms["noether_rfc.resolve_common_measure"](state)
+    bound = transforms["noether_rfc.bind_conserved_current"](resolved)
+    reconstructed = transforms["noether_rfc.reconstruct_pair"](bound)
+    assert reconstructed == state
+    assert 0.0 < defects["Delta_local_current"] < 1e-7
+
+
+def test_tampered_bound_total_or_profile_fails_reverse_audit():
     transforms = noether_rfc_current_transforms()
     resolved = transforms["noether_rfc.resolve_common_measure"](_state())
     bound = transforms["noether_rfc.bind_conserved_current"](resolved)
-    tampered = {**bound, "Q_RFC": bound["Q_RFC"] * 1.01}
+    tampered_total = {**bound, "Q_RFC": bound["Q_RFC"] * 1.01}
     with pytest.raises(PNVNoetherRFCCurrentError, match="reverse current audit"):
-        transforms["noether_rfc.reconstruct_pair"](tampered)
+        transforms["noether_rfc.reconstruct_pair"](tampered_total)
+    tampered_profile = {**bound, "p_Q": [0.0] * len(bound["p_Q"])}
+    with pytest.raises(PNVNoetherRFCCurrentError, match="p_Q failed reverse current audit"):
+        transforms["noether_rfc.reconstruct_pair"](tampered_profile)
 
 
-def test_loop_exposes_measure_local_total_and_flux_invariants():
+def test_loop_exposes_measure_local_total_bound_profile_and_flux_invariants():
     loop = _loop()
     assert [item.invariant_id for item in loop.invariants] == [
         "SOURCE.NOETHER_TOTAL_CHARGE",
@@ -203,5 +271,8 @@ def test_loop_exposes_measure_local_total_and_flux_invariants():
         "SOURCE.COMMON_MEASURE_DEFECT",
         "SOURCE.LOCAL_CURRENT_BINDING_DEFECT",
         "SOURCE.TOTAL_CHARGE_BINDING_DEFECT",
+        "SOURCE.CURRENT_MEASURE_BOUND_MARGIN",
+        "SOURCE.NOETHER_PROFILE_NORM",
+        "SOURCE.RFC_PROFILE_NORM",
         "SOURCE.SIDE_FLUX_DEFECT",
     ]

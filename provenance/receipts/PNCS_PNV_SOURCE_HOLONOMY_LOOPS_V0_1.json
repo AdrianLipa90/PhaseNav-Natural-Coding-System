@@ -1,0 +1,66 @@
+{
+  "schema": "PNCS_PNV_SOURCE_HOLONOMY_LOOPS_IMPLEMENTATION_RECEIPT_V0_1",
+  "status": "IMPLEMENTED_REFERENCE_SOURCE_LOOPS__IDT_RFC_PINNED__CI_PENDING",
+  "branch": "feat/gremlin-pnv-authoring-v0.2",
+  "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
+  "code_head_sha": "5f3bf90998b8c3547d51e7c47bddaf0d6be25d60",
+  "source_holonomy_contract": "PNCS_PNV_SOURCE_HOLONOMY_LOOPS_V0_1",
+  "information_holonomy_contract": "PNCS_PNV_INFORMATION_HOLONOMY_V0_1",
+  "bridge_contract": "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2",
+  "loops": [
+    {
+      "loop_id": "SOURCE.CARRIER.NORMALIZATION.ROUNDTRIP",
+      "equations": ["p_a=Q_a/Q_Sigma", "Q_a'=Q_Sigma*p_a"],
+      "domains": ["RFC", "IDT"],
+      "invariants": ["SOURCE.TOTAL_Q", "SOURCE.PROFILE_NORM"],
+      "gate_state": "REFERENCE_EXACT_CONTROL"
+    },
+    {
+      "loop_id": "SOURCE.CARRIER.Q0_OCCUPATION.ROUNDTRIP",
+      "equations": ["n_a=Q_a/q0", "Q_a'=q0*n_a"],
+      "domains": ["RFC", "CARRIER_QUANTIZATION"],
+      "invariants": ["SOURCE.TOTAL_Q"],
+      "gate_state": "Q0_CONDITIONAL"
+    },
+    {
+      "loop_id": "SOURCE.CARRIER.EPSILON_MASS_DENSITY.ROUNDTRIP",
+      "equations": ["rho_Q=(epsilon_Q/c^2)j_Q", "j_Q'=(c^2/epsilon_Q)rho_Q"],
+      "domains": ["IDT_RFC_INTERFACE", "RFC"],
+      "invariants": ["SOURCE.EQUIVALENT_CURRENT_NORM"],
+      "gate_state": "EPSILON_Q_CONDITIONAL"
+    }
+  ],
+  "paired_repository_pins": {
+    "idt": {
+      "repository": "AdrianLipa90/Informational-Dynamics-of-Time",
+      "branch": "feat/idt-rfc-normalized-shape-holonomy-v0.1",
+      "cross_reference_update_commit": "8dc616fbcdd14a08ff8ef9d7dabad6ee7330ccc8"
+    },
+    "rfc": {
+      "repository": "AdrianLipa90/Relational-Field-Closure",
+      "branch": "feat/rfc-gremlin-pnv-holonomy-v0.1",
+      "cross_reference_update_commit": "a934a408c89630b88026ae0c3839b65c22341368"
+    }
+  },
+  "tests_authored": {
+    "source_loop_unit_and_roundtrip": 9,
+    "unified_bridge_export": 1,
+    "total": 10
+  },
+  "noema": {
+    "guard_schema": "noema.aux-tether-guard/v2",
+    "surface_root": "/dev/shm/ciel_noema",
+    "socket": "/run/user/1000/noema/ciel_headless.sock",
+    "tether_status": "ACTIVE",
+    "failures": []
+  },
+  "ci": {
+    "workflow": "PNCS GREMLIN PNV authoring",
+    "run_id": 33119164722,
+    "head_sha": "5f3bf90998b8c3547d51e7c47bddaf0d6be25d60",
+    "status": "PENDING"
+  },
+  "epistemic_state": "CHYBA",
+  "promotion_state": "CANDIDATE_ONLY",
+  "main_mutated": false
+}

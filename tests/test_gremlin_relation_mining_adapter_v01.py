@@ -114,6 +114,13 @@ def test_missing_kaku_mapping_fails_closed_without_vector_guessing():
         relation_mining_finding_to_isomorphism(LEDGER, FINDING, kaku_by_atom=incomplete)
 
 
+def test_invalid_kaku_mapping_fails_closed_with_adapter_error():
+    invalid = dict(KAKU)
+    invalid["DERIVE"] = object()
+    with pytest.raises(GremlinRelationMiningAdapterError, match="invalid value"):
+        relation_mining_finding_to_isomorphism(LEDGER, FINDING, kaku_by_atom=invalid)
+
+
 def test_same_source_family_cannot_be_presented_as_cross_domain_isomorphism():
     ledger = {
         "schema": "PNCS_RELATION_MINING_LEDGER_V0_3",

@@ -8,7 +8,8 @@ isomorphism compilation, adapts relation-mining findings into that compiler,
 resolves relation atoms through explicit semantic bindings plus exact PNCS
 realization/mass/vector evidence, exposes candidate inverse lineage, and provides
 an executable physical-law frame with information-holonomy receipts and source-law
-round-trip templates including Euler-closed and collective Noether carrier gates.
+round-trip templates including Euler-closed, collective Noether, and Noether↔RFC
+conserved-current gates.
 """
 
 from .gremlin_native_pnv_bridge_v01 import (
@@ -119,6 +120,15 @@ from .pnv_noether_collective_holonomy_v01 import (
     noether_collective_invariants,
     noether_collective_transforms,
 )
+from .pnv_noether_rfc_current_holonomy_v01 import (
+    NOETHER_RFC_CURRENT_CONTRACT,
+    NOETHER_RFC_CURRENT_LOOP_ID,
+    PNVNoetherRFCCurrentError,
+    build_noether_rfc_current_loop,
+    make_noether_rfc_current_state,
+    noether_rfc_current_invariants,
+    noether_rfc_current_transforms,
+)
 
 BRIDGE_SCHEMA = "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2"
 
@@ -175,6 +185,8 @@ __all__ = [
     "HOLONOMY_AUDIT_RECEIPT_SCHEMA",
     "SOURCE_HOLONOMY_CONTRACT",
     "NOETHER_COLLECTIVE_CONTRACT",
+    "NOETHER_RFC_CURRENT_CONTRACT",
+    "NOETHER_RFC_CURRENT_LOOP_ID",
     "C_LIGHT_EXACT",
     "NativePNVLiveBridgeError",
     "GremlinPNVAuthoringError",
@@ -185,6 +197,7 @@ __all__ = [
     "PNVInformationHolonomyError",
     "PNVSourceHolonomyError",
     "PNVNoetherCollectiveError",
+    "PNVNoetherRFCCurrentError",
     "TriplePulseNativeRun",
     "BelzebubNativeRun",
     "GremlinPNVAuthoringSession",
@@ -251,4 +264,8 @@ __all__ = [
     "noether_collective_transforms",
     "noether_collective_invariants",
     "collective_noether_binding_defect",
+    "make_noether_rfc_current_state",
+    "build_noether_rfc_current_loop",
+    "noether_rfc_current_transforms",
+    "noether_rfc_current_invariants",
 ]

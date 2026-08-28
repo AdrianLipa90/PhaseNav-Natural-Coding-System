@@ -65,12 +65,6 @@ def _refs(values: Sequence[str]) -> tuple[str, ...]:
     return tuple(sorted({str(value) for value in values if str(value)}))
 
 
-def _law_node(law_id: str, domain: str, kaku: Kaku, refs: Sequence[str]) -> LawFrameNode:
-    if not isinstance(kaku, Kaku):
-        raise PNVGaugeCovariantPhasePullbackError("gauge-covariant pullback law gate requires Kaku")
-    return LawFrameNode(law_id, domain, kaku, _refs(refs))
-
-
 def make_gauge_covariant_phase_pullback_state(
     *,
     field_bundle_id: str,
@@ -124,10 +118,6 @@ def make_gauge_covariant_phase_pullback_state(
     if len(rotor_cells) != len(field_cells):
         raise PNVGaugeCovariantPhasePullbackError("field/rotor support cardinality mismatch")
 
-    normal_rate = _positive(field_normal_rate, "field_normal_rate")
-    rotor_covariant_rate = _positive(rotor_rate, "rotor_rate")
-    rotor_inertia = _positive(i_phi, "I_phi")
-
     return {
         "schema": "PNCS_GAUGE_COVARIANT_PHASE_PULLBACK_STATE_V0_1",
         "representation": "GAUGE_COVARIANT_PHASE_PULLBACK_INPUT",
@@ -138,11 +128,11 @@ def make_gauge_covariant_phase_pullback_state(
         "connection_components": list(connection),
         "gauge_shift_components": list(gauge_shift),
         "trajectory_velocity": list(velocity),
-        "field_normal_rate": normal_rate,
-        "rotor_rate": rotor_covariant_rate,
+        "field_normal_rate": _positive(field_normal_rate, "field_normal_rate"),
+        "rotor_rate": _positive(rotor_rate, "rotor_rate"),
         "amplitudes": list(amps),
         "volumes": list(vols),
-        "I_phi": rotor_inertia,
+        "I_phi": _positive(i_phi, "I_phi"),
     }
 
 
@@ -171,13 +161,12 @@ def _raw(state: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _require_common_ids(raw: Mapping[str, Any]) -> None:
-    pairs = (
+    for left, right, message in (
         ("field_bundle_id", "rotor_bundle_id", "bundle IDs differ"),
         ("field_phase_patch_id", "rotor_phase_patch_id", "phase-patch IDs differ"),
         ("field_connection_id", "rotor_connection_id", "connection IDs differ"),
         ("field_measure_id", "rotor_measure_id", "measure IDs differ"),
-    )
-    for left, right, message in pairs:
+    ):
         if raw[left] != raw[right]:
             raise PNVGaugeCovariantPhasePullbackError(message)
     if raw["field_cell_ids"] != raw["rotor_cell_ids"]:
@@ -188,30 +177,32 @@ def _derived(state: Mapping[str, Any]) -> dict[str, Any]:
     raw = _raw(state)
     _require_common_ids(raw)
 
-    grad = tuple(float(value) for value in raw["phase_gradients"])
-    conn = tuple(float(value) for value in raw["connection_components"])
-    shift = tuple(float(value) for value in raw["gauge_shift_components"])
-    velocity = tuple(float(value) for value in raw["trajectory_velocity"])
+    grad = tuple(float(v) for v in raw["phase_gradients"])
+    conn = tuple(float(v) for v in raw["connection_components"])
+    shift = tuple(float(v) for v in raw["gauge_shift_components"])
+    velocity = tuple(float(v) for v in raw["trajectory_velocity"])
+
     transformed_grad = tuple(g + lam for g, lam in zip(grad, shift))
     transformed_conn = tuple(a - lam for a, lam in zip(conn, shift))
     covariant_before = tuple(g + a for g, a in zip(grad, conn))
     covariant_after = tuple(g + a for g, a in zip(transformed_grad, transformed_conn))
-    gauge_residual = max(abs(a - b) for a, b in zip(covariant_before, covariant_after))
+    delta_gauge = max(abs(a - b) for a, b in zip(covariant_before, covariant_after))
 
     opposite_before = tuple(g - a for g, a in zip(grad, conn))
     opposite_after = tuple(g - a for g, a in zip(transformed_grad, transformed_conn))
     opposite_sign_residual = max(abs(a - b) for a, b in zip(opposite_before, opposite_after))
-    gauge_probe_norm = max(abs(value) for value in shift)
     if opposite_sign_residual <= 0.0:
         raise PNVGaugeCovariantPhasePullbackError("gauge probe does not discriminate the admitted connection sign")
 
-    field_pullback_rate = sum(component * speed for component, speed in zip(covariant_before, velocity))
-    field_pullback_rate = _positive(field_pullback_rate, "field_pullback_rate")
+    field_pullback_rate = _positive(
+        sum(component * speed for component, speed in zip(covariant_before, velocity)),
+        "field_pullback_rate",
+    )
     normal_rate = float(raw["field_normal_rate"])
     rotor_rate = float(raw["rotor_rate"])
 
-    amps = tuple(float(value) for value in raw["amplitudes"])
-    vols = tuple(float(value) for value in raw["volumes"])
+    amps = tuple(float(v) for v in raw["amplitudes"])
+    vols = tuple(float(v) for v in raw["volumes"])
     c_a = sum((a * a) * v for a, v in zip(amps, vols))
     i_a = 2.0 * c_a
     if i_a <= 0.0:
@@ -222,26 +213,18 @@ def _derived(state: Mapping[str, Any]) -> dict[str, Any]:
     p_phi = i_phi * rotor_rate
     h_phi = p_phi * p_phi / (2.0 * i_phi)
     epsilon_n = h_phi / q_theta
-    half_rotor_rate = rotor_rate / 2.0
+    half_rate = rotor_rate / 2.0
 
-    delta_inertia = abs(i_phi - i_a) / i_a
-    delta_rate = abs(field_pullback_rate - rotor_rate) / rotor_rate
-    delta_normal = abs(normal_rate - field_pullback_rate) / field_pullback_rate
-    delta_q = abs(q_theta - p_phi) / p_phi
-    delta_epsilon = abs(epsilon_n - half_rotor_rate) / half_rotor_rate
     moment_map_ratio = q_theta / p_phi
     factorized_ratio = (i_a / i_phi) * (normal_rate / rotor_rate)
-    factorization_residual = abs(moment_map_ratio - factorized_ratio)
-
-    field_phase_action = c_a * field_pullback_rate * field_pullback_rate
-    rotor_phase_action = 0.5 * i_phi * rotor_rate * rotor_rate
-    delta_action = abs(field_phase_action - rotor_phase_action) / rotor_phase_action
+    field_action = c_a * field_pullback_rate * field_pullback_rate
+    rotor_action = 0.5 * i_phi * rotor_rate * rotor_rate
 
     return {
         "transformed_phase_gradients": list(transformed_grad),
         "transformed_connection_components": list(transformed_conn),
-        "gauge_probe_norm": gauge_probe_norm,
-        "Delta_gauge": gauge_residual,
+        "gauge_probe_norm": max(abs(v) for v in shift),
+        "Delta_gauge": delta_gauge,
         "opposite_sign_residual": opposite_sign_residual,
         "field_pullback_rate": field_pullback_rate,
         "field_normal_rate": normal_rate,
@@ -253,57 +236,56 @@ def _derived(state: Mapping[str, Any]) -> dict[str, Any]:
         "P_Phi": p_phi,
         "H_Phi": h_phi,
         "epsilon_N": epsilon_n,
-        "half_rotor_rate": half_rotor_rate,
-        "Delta_I_reduction": delta_inertia,
-        "Delta_rate": delta_rate,
-        "Delta_normal": delta_normal,
-        "Delta_Q": delta_q,
-        "Delta_epsilon": delta_epsilon,
+        "half_rotor_rate": half_rate,
+        "Delta_I_reduction": abs(i_phi - i_a) / i_a,
+        "Delta_rate": abs(field_pullback_rate - rotor_rate) / rotor_rate,
+        "Delta_normal": abs(normal_rate - field_pullback_rate) / field_pullback_rate,
+        "Delta_Q": abs(q_theta - p_phi) / p_phi,
+        "Delta_epsilon": abs(epsilon_n - half_rate) / half_rate,
         "moment_map_ratio": moment_map_ratio,
         "factorized_moment_map_ratio": factorized_ratio,
-        "Delta_factorization": factorization_residual,
-        "field_phase_action": field_phase_action,
-        "rotor_phase_action": rotor_phase_action,
-        "Delta_action": delta_action,
+        "Delta_factorization": abs(moment_map_ratio - factorized_ratio),
+        "field_phase_action": field_action,
+        "rotor_phase_action": rotor_action,
+        "Delta_action": abs(field_action - rotor_action) / rotor_action,
     }
 
 
 def gauge_covariant_phase_pullback_defects(state: Mapping[str, Any]) -> dict[str, float]:
     values = _derived(state)
-    return {
-        key: float(values[key])
-        for key in (
-            "Delta_gauge",
-            "Delta_I_reduction",
-            "Delta_rate",
-            "Delta_normal",
-            "Delta_Q",
-            "Delta_epsilon",
-            "Delta_factorization",
-            "Delta_action",
-        )
-    }
+    names = (
+        "Delta_gauge",
+        "Delta_I_reduction",
+        "Delta_rate",
+        "Delta_normal",
+        "Delta_Q",
+        "Delta_epsilon",
+        "Delta_factorization",
+        "Delta_action",
+    )
+    return {name: float(values[name]) for name in names}
 
 
 def gauge_covariant_phase_pullback_transforms(*, tolerance: float = 1e-12) -> dict[str, Any]:
     eps = _nonnegative(tolerance, "tolerance")
+    defect_names = (
+        "Delta_gauge",
+        "Delta_I_reduction",
+        "Delta_rate",
+        "Delta_normal",
+        "Delta_Q",
+        "Delta_epsilon",
+        "Delta_factorization",
+        "Delta_action",
+    )
 
     def field_to_rotor(state: Mapping[str, Any]) -> dict[str, Any]:
         raw = _raw(state)
         values = _derived(raw)
-        for key in (
-            "Delta_gauge",
-            "Delta_I_reduction",
-            "Delta_rate",
-            "Delta_normal",
-            "Delta_Q",
-            "Delta_epsilon",
-            "Delta_factorization",
-            "Delta_action",
-        ):
-            if float(values[key]) > eps:
+        for name in defect_names:
+            if float(values[name]) > eps:
                 raise PNVGaugeCovariantPhasePullbackError(
-                    f"{key} {values[key]!r} exceeds tolerance {eps!r}"
+                    f"{name} {values[name]!r} exceeds tolerance {eps!r}"
                 )
         return {
             **raw,
@@ -321,22 +303,12 @@ def gauge_covariant_phase_pullback_transforms(*, tolerance: float = 1e-12) -> di
                 if list(observed or ()) != expected:
                     raise PNVGaugeCovariantPhasePullbackError(f"{key} changed before reverse pullback audit")
             else:
-                observed_value = _finite(observed, key)
-                if not math.isclose(observed_value, float(expected), rel_tol=1e-12, abs_tol=1e-15):
+                if not math.isclose(_finite(observed, key), float(expected), rel_tol=1e-12, abs_tol=1e-15):
                     raise PNVGaugeCovariantPhasePullbackError(f"{key} changed before reverse pullback audit")
-        for key in (
-            "Delta_gauge",
-            "Delta_I_reduction",
-            "Delta_rate",
-            "Delta_normal",
-            "Delta_Q",
-            "Delta_epsilon",
-            "Delta_factorization",
-            "Delta_action",
-        ):
-            if float(values[key]) > eps:
+        for name in defect_names:
+            if float(values[name]) > eps:
                 raise PNVGaugeCovariantPhasePullbackError(
-                    f"{key} {values[key]!r} exceeds tolerance {eps!r}"
+                    f"{name} {values[name]!r} exceeds tolerance {eps!r}"
                 )
         return raw
 
@@ -349,16 +321,11 @@ def gauge_covariant_phase_pullback_transforms(*, tolerance: float = 1e-12) -> di
 def _signature(state: Mapping[str, Any]) -> tuple[Any, ...]:
     raw = _raw(state)
     return (
-        raw["field_bundle_id"],
-        raw["rotor_bundle_id"],
-        raw["field_phase_patch_id"],
-        raw["rotor_phase_patch_id"],
-        raw["field_connection_id"],
-        raw["rotor_connection_id"],
-        raw["field_measure_id"],
-        raw["rotor_measure_id"],
-        tuple(raw["field_cell_ids"]),
-        tuple(raw["rotor_cell_ids"]),
+        raw["field_bundle_id"], raw["rotor_bundle_id"],
+        raw["field_phase_patch_id"], raw["rotor_phase_patch_id"],
+        raw["field_connection_id"], raw["rotor_connection_id"],
+        raw["field_measure_id"], raw["rotor_measure_id"],
+        tuple(raw["field_cell_ids"]), tuple(raw["rotor_cell_ids"]),
     )
 
 
@@ -391,6 +358,12 @@ def gauge_covariant_phase_pullback_invariants() -> dict[str, Any]:
     }
 
 
+def _law_node(law_id: str, domain: str, kaku: Kaku, refs: Sequence[str]) -> LawFrameNode:
+    if not isinstance(kaku, Kaku):
+        raise PNVGaugeCovariantPhasePullbackError("gauge-covariant pullback law gate requires Kaku")
+    return LawFrameNode(law_id, domain, kaku, _refs(refs))
+
+
 def build_gauge_covariant_phase_pullback_loop(
     field_kaku: Kaku,
     rotor_kaku: Kaku,
@@ -398,32 +371,18 @@ def build_gauge_covariant_phase_pullback_loop(
     evidence_refs: Sequence[str] = (),
     tolerance: float = 1e-12,
 ) -> InformationHolonomyLoop:
-    if not isinstance(field_kaku, Kaku) or not isinstance(rotor_kaku, Kaku):
-        raise PNVGaugeCovariantPhasePullbackError("gauge-covariant pullback law gates require Kaku")
     eps = _nonnegative(tolerance, "tolerance")
-    refs = _refs(
-        (
-            *evidence_refs,
-            f"contract:{GAUGE_COVARIANT_PULLBACK_CONTRACT}",
-            "gate:common_u1_bundle:CONDITIONAL",
-            "gate:common_phase_patch:CONDITIONAL",
-            "gate:common_abe_connection:CONDITIONAL",
-            "gate:common_measure_support:CONDITIONAL",
-            "gate:normal_flow_alignment:CONDITIONAL",
-        )
-    )
-    field = _law_node(
-        "LAW.NOETHER.GAUGE_COVARIANT_SCALAR_PHASE",
-        "EULER_NOETHER_FIELD",
-        field_kaku,
-        refs,
-    )
-    rotor = _law_node(
-        "LAW.PHASE.GAUGE_COVARIANT_CANONICAL_ROTOR",
-        "IDT_PHASE_HAMILTONIAN",
-        rotor_kaku,
-        refs,
-    )
+    refs = _refs((
+        *evidence_refs,
+        f"contract:{GAUGE_COVARIANT_PULLBACK_CONTRACT}",
+        "gate:common_u1_bundle:CONDITIONAL",
+        "gate:common_phase_patch:CONDITIONAL",
+        "gate:common_abe_connection:CONDITIONAL",
+        "gate:common_measure_support:CONDITIONAL",
+        "gate:normal_flow_alignment:CONDITIONAL",
+    ))
+    field = _law_node("LAW.NOETHER.GAUGE_COVARIANT_SCALAR_PHASE", "EULER_NOETHER_FIELD", field_kaku, refs)
+    rotor = _law_node("LAW.PHASE.GAUGE_COVARIANT_CANONICAL_ROTOR", "IDT_PHASE_HAMILTONIAN", rotor_kaku, refs)
     return InformationHolonomyLoop(
         loop_id=GAUGE_COVARIANT_PULLBACK_LOOP_ID,
         connection=information_transport_connection(
@@ -448,7 +407,7 @@ def build_gauge_covariant_phase_pullback_loop(
             ),
         ),
         invariants=tuple(
-            HolonomyInvariant(invariant_id, tolerance=eps, evidence_refs=refs)
+            HolonomyInvariant(invariant_id, tolerance=eps)
             for invariant_id in gauge_covariant_phase_pullback_invariants()
         ),
         evidence_refs=refs,

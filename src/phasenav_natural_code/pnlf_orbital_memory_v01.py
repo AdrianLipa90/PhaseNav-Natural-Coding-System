@@ -128,6 +128,7 @@ class OrbitalState:
     memory_affinity: float
     mass_model_id: str
     orbit_quantizer_id: str
+    proper_time_model_id: str
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "attractor_id", _require_text(self.attractor_id, "attractor_id"))
@@ -152,6 +153,7 @@ class OrbitalState:
         object.__setattr__(self, "memory_affinity", affinity)
         object.__setattr__(self, "mass_model_id", _require_text(self.mass_model_id, "mass_model_id"))
         object.__setattr__(self, "orbit_quantizer_id", _require_text(self.orbit_quantizer_id, "orbit_quantizer_id"))
+        object.__setattr__(self, "proper_time_model_id", _require_text(self.proper_time_model_id, "proper_time_model_id"))
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -168,6 +170,7 @@ class OrbitalState:
             "memory_affinity": self.memory_affinity,
             "mass_model_id": self.mass_model_id,
             "orbit_quantizer_id": self.orbit_quantizer_id,
+            "proper_time_model_id": self.proper_time_model_id,
         }
 
 
@@ -181,6 +184,7 @@ class PNLFHeader:
     storage_profile: str
     mass_model_id: str
     orbit_quantizer_id: str
+    proper_time_model_id: str
     t36_basis_id: str
     lineage_head: str | None = None
 
@@ -193,6 +197,7 @@ class PNLFHeader:
             "storage_profile",
             "mass_model_id",
             "orbit_quantizer_id",
+            "proper_time_model_id",
             "t36_basis_id",
         ):
             object.__setattr__(self, field, _require_text(getattr(self, field), field))
@@ -211,6 +216,7 @@ class PNLFHeader:
             "storage_profile": self.storage_profile,
             "mass_model_id": self.mass_model_id,
             "orbit_quantizer_id": self.orbit_quantizer_id,
+            "proper_time_model_id": self.proper_time_model_id,
             "t36_basis_id": self.t36_basis_id,
             "lineage_head": self.lineage_head,
             "runtime_execution_authority": False,
@@ -630,10 +636,13 @@ def validate_checkpoint_against_header(header: PNLFHeader, checkpoint: StateMemo
         raise PNLFOrbitalMemoryError("header and checkpoint types are required")
     if checkpoint.object_id != header.object_id:
         raise PNLFOrbitalMemoryError("checkpoint object_id does not match PNLF header")
-    if checkpoint.orbital_state.mass_model_id != header.mass_model_id:
+    state = checkpoint.orbital_state
+    if state.mass_model_id != header.mass_model_id:
         raise PNLFOrbitalMemoryError("checkpoint mass model does not match PNLF header")
-    if checkpoint.orbital_state.orbit_quantizer_id != header.orbit_quantizer_id:
+    if state.orbit_quantizer_id != header.orbit_quantizer_id:
         raise PNLFOrbitalMemoryError("checkpoint orbit quantizer does not match PNLF header")
+    if state.proper_time_model_id != header.proper_time_model_id:
+        raise PNLFOrbitalMemoryError("checkpoint proper-time model does not match PNLF header")
     if header.file_id in {checkpoint.content_commitment, checkpoint.checkpoint_object_id}:
         raise PNLFOrbitalMemoryError("FILE_ID cannot collapse into content/checkpoint identity")
     if checkpoint.content_commitment == checkpoint.checkpoint_object_id:
@@ -653,6 +662,8 @@ def validate_segment_against_header(header: PNLFHeader, segment: LiminalSegmentR
             raise PNLFOrbitalMemoryError("segment orbital state mass model does not match PNLF header")
         if state.orbit_quantizer_id != header.orbit_quantizer_id:
             raise PNLFOrbitalMemoryError("segment orbit quantizer does not match PNLF header")
+        if state.proper_time_model_id != header.proper_time_model_id:
+            raise PNLFOrbitalMemoryError("segment proper-time model does not match PNLF header")
     if header.file_id == segment.segment_commitment:
         raise PNLFOrbitalMemoryError("FILE_ID cannot collapse into SEGMENT_COMMITMENT")
 
@@ -682,6 +693,7 @@ def tau_frame(segment: LiminalSegmentRevision, tau: float) -> dict[str, Any]:
         },
         "pilot_r": segment.pilot_r_checkpoint_id,
         "t36": segment.t36_trajectory_commitment,
+        "proper_time_model_id": segment.source_orbital_state.proper_time_model_id,
         "runtime_execution_authority": False,
         "canon_write_authority": False,
     }

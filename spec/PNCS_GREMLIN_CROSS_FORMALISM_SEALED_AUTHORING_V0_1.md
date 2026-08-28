@@ -67,7 +67,7 @@ epistemic = CHYBA
 
 `identity` and `authority` are provenance assertions supplied to the compiler and cryptographically committed by the bundle. A downstream admission surface compares those assertions with its independently established live principal/capability state before granting any stronger operation.
 
-## 4. Atomic persistence
+## 4. Atomic create-once persistence
 
 `write_sealed_cross_formalism_bundle()` performs:
 
@@ -76,13 +76,14 @@ verify bundle
  -> write same-directory temporary file
  -> flush
  -> fsync(file)
- -> atomic replace into final path
+ -> atomically hard-link the verified inode into the final create-once path
+ -> unlink temporary name
  -> fsync(parent directory)
 ```
 
-The v0.1 writer uses create-once semantics at the contract level: an existing final target causes a fail-closed error.
+Because temporary and final names are on the same filesystem, hard-link publication either creates the final name as one filesystem operation or fails with `FileExistsError` when another writer has already claimed it. The writer converts that collision into a fail-closed `CrossFormalismBundleError`.
 
-This gives one durable receipt-bearing object for the complete bank generation rather than publishing a partially compiled set as a complete ROUND27 package.
+This gives one durable receipt-bearing object for the complete bank generation instead of exposing a partial generation as a complete ROUND27 package.
 
 ## 5. Import gate
 
@@ -106,12 +107,12 @@ Any failed dependency stops import before candidate publication.
 - whole-package commitment verification;
 - explicit caller-provenance binding;
 - tamper rejection inside embedded PNV text;
-- generation-binding syntax rejection;
+- generation-binding syntax/type rejection;
 - READ_ONLY / CHYBA / zero-external-effect validation;
 - single-file reopen and commitment verification;
-- create-once target collision rejection.
+- atomic create-once target collision rejection.
 
-The execution evidence status remains tied to actual test execution. The prior environment DNS blocker remains recorded until an exact branch run or repository CI supplies a fresh receipt.
+The execution evidence status remains tied to actual test execution. The recorded environment/runner blockers remain attached until an exact branch run executes these gates.
 
 ## 7. Relation to ROUND27
 

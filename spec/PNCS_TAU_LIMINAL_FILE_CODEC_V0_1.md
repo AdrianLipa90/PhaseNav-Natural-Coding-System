@@ -29,10 +29,25 @@ PILOT_L
 
 The reference implementation uses one T36 witness per block. The 36 phase coordinates carry a 32-byte BLAKE2b-256 block commitment plus a 4-byte block index as one whole lane.
 
+PNCS exposes two distinct canonical commitments:
+
+```text
+frame_commitment(frame)
+witness_commitment(frame.witness)
+```
+
+The first commits the block index, exact scalar tau symbol sequence and witness identity. The second commits the full 36-coordinate witness object. These values are the canonical bridge into State Memory:
+
+```text
+frame_commitment -> StateMemory.carrier_commitment
+witness_commitment -> StateMemory.t36_witness_commitment
+```
+
 ## Identity separation
 
 ```text
 FILE_ID != CONTENT_COMMITMENT != CHECKPOINT_OBJECT_ID
+TAU_FRAME_COMMITMENT != T36_WITNESS_COMMITMENT
 ```
 
 `FILE_ID` is genesis-anchored logical identity. `CONTENT_COMMITMENT` identifies current content. `CHECKPOINT_OBJECT_ID` identifies one State Memory generation and its lineage.
@@ -50,17 +65,19 @@ An uncommitted liminal tail is excluded from recovery. M8 identity continuity re
 
 ## GREMLIN isomorphic codec compilation
 
-GREMLIN consumes the shared invariant across these domains:
+The codec is authored as two relational fragments sharing the same invariant and one exact join node:
 
 ```text
-PNCS TAU FRAME
-  <-> PNCS T36 WITNESS
-  <-> PNV-State-Memory LIMINAL SEGMENT
-  <-> BioOS PNLF FILE
-  <-> PNH5 compatibility view
+Fragment A:
+PNCS TAU FRAME <-> PNCS T36 WITNESS <-> PNV-State-Memory LIMINAL SEGMENT
+
+Fragment B:
+PNV-State-Memory LIMINAL SEGMENT <-> BioOS PNLF FILE <-> PNH5 VIEW
 ```
 
-The existing relational-isomorphism compiler materializes content-addressed KAKU candidates, one RADICAL dependency graph, deterministic OPERATORS and a PNV conformance program. `ISOMORPHIC_TO`, `BINDS` and `MAPS_TO` lower to the deterministic `COMPOSITION` subset.
+GREMLIN applies `merge_relational_isomorphisms()` on the shared `K.LIMINAL.SEGMENT` node. Conflicting shared KAKU nodes, relation IDs or invariant identities fail closed before compilation.
+
+The merged relational graph then enters the existing relational-isomorphism compiler, which materializes content-addressed KAKU candidates, one RADICAL dependency graph, deterministic OPERATORS and a PNV conformance program. `ISOMORPHIC_TO`, `BINDS` and `MAPS_TO` lower to the deterministic `COMPOSITION` subset.
 
 GREMLIN output remains `CANDIDATE_ONLY`; runtime execution authority and canon write authority remain false. Candidate conformance execution is READ_ONLY.
 

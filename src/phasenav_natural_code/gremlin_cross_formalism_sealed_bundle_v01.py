@@ -164,7 +164,7 @@ def _verify_bank_manifest(manifest: Mapping[str, object]) -> Mapping[str, object
     return compiled_entries
 
 
-def _verify_internal_holonomy(bundle: Mapping[str, object]) -> None:
+def _verify_internal_holonomy(bundle: Mapping[str, object], *, deterministic_replay: bool = False) -> None:
     caller = _require_mapping(bundle.get("caller_provenance"), "caller_provenance")
     generation_binding = caller.get("generation_binding")
     identity = caller.get("identity")
@@ -181,6 +181,44 @@ def _verify_internal_holonomy(bundle: Mapping[str, object]) -> None:
         raise CrossFormalismBundleError("bundle entry keysets do not agree")
     if manifest.get("entry_count") != len(keyset):
         raise CrossFormalismBundleError("bundle entry count does not agree with bank manifest")
+
+    if deterministic_replay:
+        replay_compiled = compile_cross_formalism_candidates(
+            generation_binding=generation_binding,  # type: ignore[arg-type]
+            identity=identity,  # type: ignore[arg-type]
+            authority=authority,  # type: ignore[arg-type]
+            authoring_root=None,
+        )
+        replay_manifest = dict(replay_compiled.manifest)
+        if dict(manifest) != replay_manifest:
+            raise CrossFormalismBundleError("deterministic replay bank manifest mismatch")
+        replay_payload = _candidate_payload(replay_compiled)
+        if dict(candidate_payload) != dict(replay_payload):
+            raise CrossFormalismBundleError("deterministic replay candidate payload mismatch")
+
+        replay_validation = validate_cross_formalism_candidates(replay_compiled)
+        replay_validation_summary: dict[str, Mapping[str, object]] = {}
+        for replay_iso_id, result in sorted(replay_validation.items()):
+            if result.receipt["effect_boundary"]["external_effects"] is not False:
+                raise CrossFormalismBundleError(
+                    f"deterministic replay crossed external effect boundary: {replay_iso_id}"
+                )
+            if result.program.mode != "READ_ONLY":
+                raise CrossFormalismBundleError(
+                    f"deterministic replay left READ_ONLY mode: {replay_iso_id}"
+                )
+            if result.program.epistemic != "CHYBA":
+                raise CrossFormalismBundleError(
+                    f"deterministic replay left CHYBA epistemic mode: {replay_iso_id}"
+                )
+            replay_validation_summary[replay_iso_id] = {
+                "external_effects": False,
+                "mode": result.program.mode,
+                "epistemic": result.program.epistemic,
+                "receipt_sha256": replay_compiled.compilations[replay_iso_id].receipt["receipt_sha256"],
+            }
+        if dict(validation) != replay_validation_summary:
+            raise CrossFormalismBundleError("deterministic replay validation summary mismatch")
 
     for iso_id in sorted(keyset):
         payload = _require_mapping(candidate_payload[iso_id], f"candidate_payload[{iso_id}]")
@@ -361,7 +399,7 @@ def verify_sealed_cross_formalism_bundle(bundle: Mapping[str, object]) -> bool:
     if _sha256(body) != expected:
         raise CrossFormalismBundleError("sealed bundle commitment mismatch")
 
-    _verify_internal_holonomy(bundle)
+    _verify_internal_holonomy(bundle, deterministic_replay=True)
     return True
 
 

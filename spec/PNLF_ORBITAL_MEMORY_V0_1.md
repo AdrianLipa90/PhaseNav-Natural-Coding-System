@@ -96,6 +96,7 @@ schema_binding           = exact schema/profile identifier
 storage_profile          = e.g. PNLF_NATIVE / PNH5_V0_1
 mass_model_id            = semantic/orbital mass model identifier
 orbit_quantizer_id       = geometry -> O0..O8 profile identifier
+proper_time_model_id     = model/kernel provenance for tau
 t36_basis_id             = T36 witness basis
 lineage_head             = current admitted checkpoint ID or null
 ```
@@ -109,7 +110,7 @@ Each admitted checkpoint carries an `orbital_state`:
 ```text
 attractor_id
 orbital_band             O0..O8
-r_phase                  finite phase distance
+r_phase                  finite phase distance in [0,pi]
 phase                    finite wrapped phase
 E_bind                   finite binding-energy coordinate
 L_phase                  finite phase angular-momentum coordinate
@@ -120,6 +121,7 @@ proper_time              finite non-negative tau
 memory_affinity          finite value in [0,1]
 mass_model_id
 orbit_quantizer_id
+proper_time_model_id
 ```
 
 PNLF records the coordinates and the model/profile identifiers that produced them. It does not require one universal semantic-gravity constant or one universal shell-capacity rule.
@@ -289,13 +291,15 @@ A conforming implementation MUST reject:
 3. a segment whose left pilot is not an admitted checkpoint;
 4. a closed ADMITTED segment without a right checkpoint;
 5. an orbital band outside `O0..O8`;
-6. non-finite orbital coordinates;
+6. non-finite orbital coordinates or `r_phase` outside `[0,pi]`;
 7. an orbital transition that overwrites the predecessor checkpoint;
 8. a recall operation that mutates the recalled checkpoint;
 9. conflation of `FILE_ID`, `CONTENT_COMMITMENT`, and `CHECKPOINT_OBJECT_ID`;
 10. a candidate object claiming independent runtime execution or canon-write authority;
 11. a liminal advance that overwrites a previous segment revision instead of linking a new `segment_commitment`;
-12. an OPEN segment whose `tau_cursor < tau_start`, or a closed segment whose `tau_end != tau_cursor`.
+12. an OPEN segment whose `tau_cursor < tau_start`, or a closed segment whose `tau_end != tau_cursor`;
+13. a checkpoint/segment whose mass, orbit-quantizer, or proper-time model differs from its PNLF header without an explicit lineage/profile transition;
+14. `STATE_COMMIT` when the right checkpoint tau differs from the current liminal `tau_cursor`.
 
 ## 14. Initial compatibility mapping
 
@@ -310,6 +314,7 @@ CIEL shell 0..8     -> PNLF O0..O8 through explicit compatibility quantizer
 CIEL phase trace    -> PNLF Lambda(tau) / T36 trajectory witness
 CIEL consolidation -> PNLF consolidation witness
 CIEL retrieval      -> PNLF ORBIT_RECALL transition
+PNCS time binding   -> PNLF proper_time + proper_time_model_id
 ```
 
 This mapping preserves the existing orbital-memory mechanism while moving persistence, lineage and transition semantics into PNLF.

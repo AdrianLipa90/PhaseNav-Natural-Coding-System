@@ -1,0 +1,40 @@
+{
+  "schema": "PNCS_NOEMA_AUTOBOOT_V3_PROMOTION_RECEIPT_V0_1",
+  "status": "PASS_CANONICAL_PROMOTION",
+  "observed_date_utc": "2026-08-28",
+  "library_current": "/NOEMA/00_CONTROL/BOOT/CHAT_AUTOBOOT/CURRENT.json",
+  "library_bundle": "/NOEMA/00_CONTROL/BOOT/CHAT_AUTOBOOT/NOEMA_CHAT_AUTOBOOT_V3.zip",
+  "bundle_sha256": "7e578b650406efc49c320584ac014459a4a49916bc739285ea15f44fd3e55ba4",
+  "current_schema": "NOEMA_CHAT_AUTOBOOT_CURRENT_V3",
+  "current_status": "CANONICAL_ACTIVE",
+  "account_current": "NOEMA_ACCOUNT_DEFAULT_CURRENT_V56",
+  "final_exact_replay": {
+    "schema": "NOEMA_CHAT_AUTOBOOT_RESULT_V3",
+    "status": "ACTIVE",
+    "working_state": "ACTIVE",
+    "startpoint_status": "VERIFIED",
+    "startpoint_sha256": "d0f0ef794353331fe2e5f49d1ccc51970ea9436f279f3ddecb7699fb8ba2e8e8",
+    "working_state_sha256": "3e5d690826c879d244939bdd9292a8f10756c4edbccd009948ba0c5f8fde0437",
+    "tether_status": "ACTIVE",
+    "guard_failures": [],
+    "aux_runtime_instance_id": "c0134f0b7e5c4142dc619a1da843720f",
+    "tether_runtime_instance_id": "ad940138cd2f73b3bd38ef0fb29f612e"
+  },
+  "fail_closed_observation": {
+    "status": "PASS",
+    "event": "STALE_PREVIOUS_PRODUCER_BLOCKED_PROMOTION_REPLAY",
+    "current_pointer_mutated_before_repair": false
+  },
+  "candidate_predecessor": {
+    "path": "/NOEMA/00_CONTROL/BOOT/CHAT_AUTOBOOT/CANDIDATES/V3/NOEMA_CHAT_AUTOBOOT_V3_CANDIDATE.zip",
+    "sha256": "71fc32fd9e04834d24811f722788ccad8b0e7f0e2dd4165561f6388d8b215aab",
+    "exact_replay_receipt": "/NOEMA/00_CONTROL/BOOT/CHAT_AUTOBOOT/CANDIDATES/V3/NOEMA_CHAT_AUTOBOOT_V3_EXACT_REPLAY_RECEIPT_V1.json"
+  },
+  "gremlin_candidate_policy": {
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false
+  },
+  "static_fallback": false,
+  "semantic_payload_recovered": false
+}

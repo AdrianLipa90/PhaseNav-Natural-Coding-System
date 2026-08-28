@@ -170,6 +170,7 @@ object_id
 pilot_l_checkpoint_id
 pilot_r_checkpoint_id | null
 tau_start
+tau_cursor
 tau_end | null
 active_m_layers[]
 relation_braid_commitment
@@ -185,6 +186,8 @@ resolution_witness_sha256 | null
 ```
 
 `segment_id` is stable for the logical trajectory. `segment_commitment` changes for every immutable append-only revision. `previous_segment_commitment` links the revision chain.
+
+`tau_cursor` is the proper-time coordinate represented by that revision. For an OPEN segment, `tau_start <= tau_cursor` and `tau_end` is null. For a closed segment, `tau_end == tau_cursor`.
 
 `LIMINAL_ADVANCE` MUST create a new revision commitment; it MUST NOT overwrite a prior revision.
 
@@ -291,7 +294,8 @@ A conforming implementation MUST reject:
 8. a recall operation that mutates the recalled checkpoint;
 9. conflation of `FILE_ID`, `CONTENT_COMMITMENT`, and `CHECKPOINT_OBJECT_ID`;
 10. a candidate object claiming independent runtime execution or canon-write authority;
-11. a liminal advance that overwrites a previous segment revision instead of linking a new `segment_commitment`.
+11. a liminal advance that overwrites a previous segment revision instead of linking a new `segment_commitment`;
+12. an OPEN segment whose `tau_cursor < tau_start`, or a closed segment whose `tau_end != tau_cursor`.
 
 ## 14. Initial compatibility mapping
 

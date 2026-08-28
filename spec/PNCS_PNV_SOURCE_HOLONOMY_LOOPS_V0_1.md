@@ -1,10 +1,10 @@
 # PNCS PNV Source Holonomy Loops v0.1
 
-Status: `SEVEN_REFERENCE_SOURCE_LOOPS_IMPLEMENTED / IDT_RFC_INTERFACE_EXPLICIT / PHYSICAL_PROMOTION_GATES_OPEN`
+Status: `EIGHT_REFERENCE_SOURCE_LOOPS_IMPLEMENTED / IDT_RFC_INTERFACE_EXPLICIT / PHYSICAL_PROMOTION_GATES_OPEN`
 
 ## Purpose
 
-This contract instantiates `PNCS_PNV_INFORMATION_HOLONOMY_V0_1` for the source-factorization, phase-energy, Noether-carrier, conserved-current and scalar-field/rotor reduction layers at the IDT ↔ RFC interface.
+This contract instantiates `PNCS_PNV_INFORMATION_HOLONOMY_V0_1` for the source-factorization, phase-energy, Noether-carrier, conserved-current, scalar-field/rotor reduction and gauge-covariant phase-pullback layers at the IDT ↔ RFC interface.
 
 Each reference loop compiles into explicit KAKU law gates, one RADICAL, native PNV OPERATOR candidates, a pure execution trace, an information-holonomy audit receipt and inverse lineage back to explicit content/evidence.
 
@@ -18,6 +18,7 @@ The canonical sequence is:
 5. SOURCE.PHASE_NOETHER.COLLECTIVE_CARRIER.ROUNDTRIP
 6. SOURCE.PHASE_NOETHER.RFC_CONSERVED_CURRENT.ROUNDTRIP
 7. SOURCE.PHASE_NOETHER.ROTOR_INERTIA.REDUCTION.ROUNDTRIP
+8. SOURCE.PHASE.NOETHER.GAUGE_COVARIANT_PULLBACK.ROUNDTRIP
 ```
 
 ## 1. Extensive carrier ↔ normalized profile
@@ -50,7 +51,7 @@ rho_Q = (epsilon_Q/c^2) j_Q
 j'_Q = (c^2/epsilon_Q) rho_Q
 ```
 
-This loop consumes the energy-per-carrier normalization; it does not promote the physical carrier identity.
+This loop consumes the energy-per-carrier normalization after its upstream carrier gate.
 
 ## 4. Euler/Berry phase-intention charge-energy loop
 
@@ -75,7 +76,7 @@ Delta_I_01Z = |I_A/I_phi - 1|
 epsilon_N^EB = H_Phi^EB/Q_theta
 ```
 
-This layer keeps the finite Noether charge distinct from both `J_I^EB` and `P_Phi^EB` until a coefficient reduction is admitted.
+This layer keeps the finite Noether charge, intention charge and rotor kinetic carrier separately typed until their declared reduction gates are admitted.
 
 ## 6. Noether ↔ RFC conserved-current loop
 
@@ -107,7 +108,7 @@ The executable bound coordinate is
 Delta_bound = max(0, Delta_Sigma-(Delta_J+Delta_V)).
 ```
 
-Integrated equality alone is insufficient for local-current promotion. The canonical anti-false-positive witness
+Integrated equality is therefore supplemented by the local-current audit. The canonical anti-false-positive witness
 
 ```text
 V=(1,1)
@@ -115,7 +116,7 @@ j_theta=(1,3)
 j_Q=(2,2)
 ```
 
-has `Q_theta=Q_Sigma=4` and `Delta_Sigma=0`, but `Delta_J=0.5`.
+has `Q_theta=Q_Sigma=4` and `Delta_Sigma=0`, together with `Delta_J=0.5`.
 
 ## 7. Scalar-field ↔ canonical-rotor coefficient reduction
 
@@ -144,7 +145,7 @@ The executable reduction coordinates are
 Delta_I_reduction = |I_phi-I_A|/I_A
 Delta_coefficient = |I_phi/2-C_A|/C_A
 Delta_Q_reduction = |P_Phi-Q_theta|/Q_theta
-Delta_epsilon_reduction = |epsilon_N-(D_tau chi)/2| / ((D_tau chi)/2).
+Delta_epsilon_reduction = |epsilon_N-(D_tau_chi)/2| / ((D_tau_chi)/2).
 ```
 
 For one common positive covariant phase rate they obey
@@ -164,13 +165,83 @@ P_Phi = Q_theta
 epsilon_N = (1/2) D_tau chi.
 ```
 
-The implementation does not assign `I_phi=I_A`; `I_phi` is an independent input and the equality is audited against `I_A=2 sum A_a^2 V_a`.
+`I_phi` remains an independent executable input; equality is audited against `I_A=2 sum A_a^2 V_a`.
 
 Admission requires explicit equality of the field/rotor phase-mode ID, covariant-rate ID, measure ID and ordered collective support.
 
+## 8. Gauge-covariant field ↔ rotor pullback
+
+The admitted Berry convention
+
+```text
+A_B = i <u|du>
+```
+
+implies under `u -> exp(i lambda) u`
+
+```text
+A' = A - d lambda.
+```
+
+For the local phase coordinate `theta -> theta + lambda`, the gauge-invariant one-form is
+
+```text
+Dtheta = d theta + A_ABE.
+```
+
+The executable loop derives the field pullback rate independently:
+
+```text
+r_field = sum_a (partial_a theta + A_a^ABE) qdot^a
+```
+
+and compares it with independent rotor and normal-projection rates:
+
+```text
+r_rotor = D_tau chi
+r_n     = n_mu D^mu theta.
+```
+
+The finite field and rotor generators are
+
+```text
+Q_theta = I_A r_n
+P_Phi   = I_phi r_rotor.
+```
+
+The loop audits
+
+```text
+Delta_gauge
+Delta_I_reduction
+Delta_rate
+Delta_normal
+Delta_Q
+Delta_epsilon
+Delta_factorization
+Delta_action
+```
+
+with the exact moment-map factorization
+
+```text
+Q_theta/P_Phi = (I_A/I_phi) (r_n/r_rotor).
+```
+
+On the common zero-defect surface,
+
+```text
+I_A = I_phi
+r_n = r_field = r_rotor
+Q_theta = P_Phi
+epsilon_N = (1/2) D_tau chi.
+```
+
+The implementation also applies a nontrivial gauge-shift probe and records the opposite-sign residual, so the admitted `d theta + A_ABE` convention is tested rather than selected by the final charge equality.
+
 ## Holonomy audit
 
-All seven loops are compiled and audited through `PNCS_PNV_INFORMATION_HOLONOMY_V0_1`. Receipts contain state defect, invariant defects, native execution provenance and inverse lineage.
+All eight loops are compiled and audited through `PNCS_PNV_INFORMATION_HOLONOMY_V0_1`. Receipts carry state defect, invariant defects, native execution provenance and inverse lineage.
 
 Exact round-trip controls target
 
@@ -184,12 +255,11 @@ GREMLIN may generate and encode law candidates and their KAKU/RADICAL/OPERATOR s
 
 ## Current source frontier
 
-The scalar-field/rotor coefficient equality is conditionally exact after the common collective phase/rate/measure/support reduction gate. The next physical promotion surface is therefore concentrated on:
+The common-`U(1)` gauge-covariant field↔rotor pullback is now formalized conditionally on the declared bundle, patch, ABE-connection, measure, support and normal-flow admissions. The next measured promotion surface is concentrated on:
 
 ```text
-field phase mode <-> rotor chi mode
-field covariant phase rate <-> rotor D_tau chi
-common measure/support
+physical realization of the common U(1) bundle/patch/ABE connection
+normal-flow/slice realization
 J_Q^mu <-> J_theta^mu
 Q_Sigma <-> Q_theta
 p_IDT <-> p_Q

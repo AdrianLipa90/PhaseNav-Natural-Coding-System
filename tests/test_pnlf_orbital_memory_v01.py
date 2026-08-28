@@ -18,11 +18,21 @@ from phasenav_natural_code.pnlf_orbital_memory_v01 import (
 )
 
 
+TIME_MODEL = "pncs:orch-time-kernel:test:v1"
+
+
 def d(ch: str) -> str:
     return ch * 64
 
 
-def orbital(tau: float, band: str = "O4", *, mass_model: str = "pncs:test-mass:v1", quantizer: str = "pnlf:test-quantizer:v1") -> OrbitalState:
+def orbital(
+    tau: float,
+    band: str = "O4",
+    *,
+    mass_model: str = "pncs:test-mass:v1",
+    quantizer: str = "pnlf:test-quantizer:v1",
+    time_model: str = TIME_MODEL,
+) -> OrbitalState:
     return OrbitalState(
         attractor_id="identity:test",
         orbital_band=band,
@@ -37,6 +47,7 @@ def orbital(tau: float, band: str = "O4", *, mass_model: str = "pncs:test-mass:v
         memory_affinity=0.75,
         mass_model_id=mass_model,
         orbit_quantizer_id=quantizer,
+        proper_time_model_id=time_model,
     )
 
 
@@ -50,6 +61,7 @@ def header() -> PNLFHeader:
         storage_profile="PNLF_NATIVE",
         mass_model_id="pncs:test-mass:v1",
         orbit_quantizer_id="pnlf:test-quantizer:v1",
+        proper_time_model_id=TIME_MODEL,
         t36_basis_id="pncs:t36:test-basis:v1",
     )
 
@@ -193,12 +205,12 @@ def test_rejection_closes_without_right_checkpoint():
     assert rejected.tau_end == 0.25
 
 
-def test_header_binds_object_mass_model_and_quantizer():
+def test_header_binds_object_mass_model_quantizer_and_time_model():
     h = header()
     cp = checkpoint(0.0)
     validate_checkpoint_against_header(h, cp)
 
-    wrong = PNLFHeader(
+    wrong_mass = PNLFHeader(
         file_id="pnlf:file:test-lineage-2",
         object_id=h.object_id,
         genesis_anchor=d("a"),
@@ -207,10 +219,26 @@ def test_header_binds_object_mass_model_and_quantizer():
         storage_profile=h.storage_profile,
         mass_model_id="other-mass-model",
         orbit_quantizer_id=h.orbit_quantizer_id,
+        proper_time_model_id=h.proper_time_model_id,
         t36_basis_id=h.t36_basis_id,
     )
     with pytest.raises(PNLFOrbitalMemoryError, match="mass model"):
-        validate_checkpoint_against_header(wrong, cp)
+        validate_checkpoint_against_header(wrong_mass, cp)
+
+    wrong_time = PNLFHeader(
+        file_id="pnlf:file:test-lineage-3",
+        object_id=h.object_id,
+        genesis_anchor=d("a"),
+        basis_id=h.basis_id,
+        schema_binding=h.schema_binding,
+        storage_profile=h.storage_profile,
+        mass_model_id=h.mass_model_id,
+        orbit_quantizer_id=h.orbit_quantizer_id,
+        proper_time_model_id="pncs:orch-time-kernel:other:v1",
+        t36_basis_id=h.t36_basis_id,
+    )
+    with pytest.raises(PNLFOrbitalMemoryError, match="proper-time model"):
+        validate_checkpoint_against_header(wrong_time, cp)
 
 
 def test_segment_header_validation_and_tau_frame():
@@ -239,6 +267,7 @@ def test_segment_header_validation_and_tau_frame():
     assert frame["lambda"]["segment_id"] == advanced.segment_id
     assert frame["lambda"]["tau"] == 0.5
     assert frame["t36"] == d("6")
+    assert frame["proper_time_model_id"] == TIME_MODEL
 
 
 def test_orbital_state_rejects_non_circular_phase_distance():
@@ -257,6 +286,7 @@ def test_orbital_state_rejects_non_circular_phase_distance():
             memory_affinity=0.5,
             mass_model_id="pncs:test-mass:v1",
             orbit_quantizer_id="pnlf:test-quantizer:v1",
+            proper_time_model_id=TIME_MODEL,
         )
 
 

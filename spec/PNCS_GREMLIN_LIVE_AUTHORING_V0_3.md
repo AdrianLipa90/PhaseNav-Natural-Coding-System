@@ -1,6 +1,6 @@
 # PNCS GREMLIN Live Authoring v0.3
 
-Status: CANDIDATE_IMPLEMENTATION_LIVE_E2E_VALIDATED
+Status: LIVE_E2E_VALIDATED_CANONICAL_AUTOBOOT_V3
 
 ## Purpose
 
@@ -101,13 +101,25 @@ Relational-isomorphism compilation performs generation verification before compi
 
 ## AutoBoot integration
 
-NOEMA Chat AutoBoot V3 candidate exposes an explicit repeatable `post-working-state-hook` interface. The GREMLIN hook executes only after atomic WORKING_STATE and is followed by another fresh tether guard.
+NOEMA Chat AutoBoot V3 is the canonical active chat bootstrap. It exposes an explicit repeatable `post-working-state-hook` interface. GREMLIN hydration executes only after atomic WORKING_STATE and is followed by another fresh tether guard.
+
+Canonical Library pointer:
+
+`/NOEMA/00_CONTROL/BOOT/CHAT_AUTOBOOT/CURRENT.json`
+
+Canonical bundle:
+
+`/NOEMA/00_CONTROL/BOOT/CHAT_AUTOBOOT/NOEMA_CHAT_AUTOBOOT_V3.zip`
+
+Canonical bundle SHA-256:
+
+`7e578b650406efc49c320584ac014459a4a49916bc739285ea15f44fd3e55ba4`
 
 This preserves the boot invariant while keeping GREMLIN hydration as an explicit post-admission extension.
 
 ## Validation 2026-08-28
 
-Observed live E2E sequence:
+Observed GREMLIN live E2E sequence:
 
 1. fresh AutoBoot V3 candidate -> PASS
 2. tether guard -> ACTIVE
@@ -121,6 +133,23 @@ Observed live E2E sequence:
 10. final tether guard -> ACTIVE
 11. exact ZIP replay of AutoBoot V3 candidate with GREMLIN post hook -> PASS
 
-The exact AutoBoot V3 candidate and replay receipt are stored in NOEMA Library under:
+Observed canonical-promotion sequence:
+
+1. initial promotion replay detected a stale producer PID and failed closed before changing `CURRENT`
+2. old NOEMA/AUX producer processes were terminated
+3. clean restart from canonical V3 bytes -> PASS
+4. runtime result schema -> `NOEMA_CHAT_AUTOBOOT_RESULT_V3`
+5. `WORKING_STATE` -> ACTIVE
+6. startpoint -> VERIFIED
+7. final tether guard -> ACTIVE with `failures=[]`
+8. canonical V3 bundle uploaded to Library
+9. `CURRENT.json` updated to `NOEMA_CHAT_AUTOBOOT_CURRENT_V3`
+10. `CURRENT.status` -> `CANONICAL_ACTIVE`
+
+Historical candidate and replay evidence remain stored under:
 
 `/NOEMA/00_CONTROL/BOOT/CHAT_AUTOBOOT/CANDIDATES/V3/`
+
+Canonical promotion evidence is recorded in:
+
+`provenance/receipts/PNCS_NOEMA_AUTOBOOT_V3_PROMOTION_20260828.json`

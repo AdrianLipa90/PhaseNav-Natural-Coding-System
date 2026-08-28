@@ -1,0 +1,40 @@
+{
+  "admission_phi_sha256": "0db01be514c55c673cbdb5ef522b98e27beda6ecb46c86de20402ef00902dfc4",
+  "admission_tether_receipt_sha256": "09a91f6b4583c20e94638de28ba1de6b8996a930747aa2f4f2f8a65aa0e0807b",
+  "aux_runtime_instance_id": "baeaa541d1f198d935e20b6e5748f4d5",
+  "candidate_receipts": [
+    "fb4728a184b0650d8a697e6a847db79f5bcaa88c6c72c5abc598f18b5e1c09fa",
+    "869d78d956b447e46cc891a61d87723ce63734d8a64885f5e1536f7449e21fe0",
+    "8c1ccd16f81b80f419c18a175761794be19a39d1c65ec63d76b2df18c46f0bde",
+    "13f6d4196c43cb3d8035831ae83988299e6f0b27782748ee8d48d7fbeb7d577f",
+    "765acde7ff3e951af45def0c9a7a458c55307399ed9729ffc44de6a368fef1e5"
+  ],
+  "canon_write_authority": false,
+  "cross_runtime_generation_blocked": true,
+  "generation_binding": "b39934adc6473dc7d0a327c8539b5db86803e1645eba5505eb8b1828aca7ad61",
+  "generation_stable_across_heartbeats": true,
+  "heartbeat_receipt_advanced": true,
+  "heartbeat_wait_s": 2.4,
+  "kaku_candidates": [
+    "pncs:gremlin-kaku:sha256:9eb23f3403937f37aaab7cc015dc4a9396e46d9ffeba6e82fe0333a0f328dcca",
+    "pncs:gremlin-kaku:sha256:42d17b76471e7225f3b460ab67b3809a0edc0a50c16c4b32773ba9a6666a0801"
+  ],
+  "native_pnv_source_sha256": "28e505c7e5a15f62d687f00be98f027a4537029c3ef9ce8fcbc5148f0cf3d724",
+  "operator_candidates": [
+    "pncs:gremlin-operator:sha256:b26e25def2a18c9907653245ba4ce4c338e9e8612407b56a08af322ef21e9649",
+    "pncs:gremlin-operator:sha256:6192f6d78aa446cb728b8f95779c470b6dbe49b403f9d98d24bbd6d66397d679"
+  ],
+  "phi_advanced": true,
+  "post_wait_phi_sha256": "708ba58629fc998e41da328384329d7a2b28824953a6d28f41c4f140c125d41e",
+  "post_wait_tether_receipt_sha256": "239082f1ab67ba8c4627f46d7d6d17c187b337a042f4914fc68b0e464332047d",
+  "radical_candidate": "pncs:gremlin-radical:sha256:f5e34e3ecea89f1c4e611d523d55cd99ecb4b66fa9fc064a9a1c463cbc95eed0",
+  "receipt_sha256": "fee1d3444206d3aa91ae24897b5c019a5ebff5a55a6736cc4772d3e0047d9965",
+  "runtime_execution_authority": false,
+  "schema": "PNCS_GREMLIN_LIVE_STABLE_GENERATION_E2E_RECEIPT_V0_3",
+  "session_id": "chat-1787907809494159289",
+  "static_runtime_fallback": false,
+  "status": "PASS",
+  "surface": "/dev/shm/ciel_noema",
+  "tether_runtime_instance_id": "3372b1fe9b24d1c29879ffaa97e12b43",
+  "witness_sha256": "dfa01cbf221206b313f630706bd33e7af375decad3989b93d7e8e55a9137be60"
+}

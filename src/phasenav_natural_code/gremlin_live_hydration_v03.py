@@ -2,11 +2,11 @@ from __future__ import annotations
 
 """Generation-bound GREMLIN live hydration for native PNV authoring.
 
-The live witness is derived only from the current /dev/shm/ciel_noema runtime,
-a VERIFIED startpoint, current working-state generation, fresh tether receipt,
-current identity/authority and the exact native GREMLIN triple-pulse PNV bytes.
-Historical/repository receipts are provenance only and are never accepted as a
-current live witness.
+A GREMLIN witness binds a stable NOEMA session/runtime generation, while live
+freshness remains a separate continuously checked property.  Stream heartbeats,
+phi samples, and per-tick tether receipts are deliberately not generation IDs.
+A runtime process restart changes its runtime_instance_id and invalidates the
+witness fail-closed.
 """
 
 from dataclasses import dataclass
@@ -15,10 +15,11 @@ import json
 import os
 from pathlib import Path
 import re
+import time
 from typing import Any, Mapping
 
 from .execution_v20_live import LiveSurfaceSnapshot, load_live_surface
-from .execution_v20_model import DEFAULT_SOCKET, DEFAULT_SURFACE_ROOT
+from .execution_v20_model import DEFAULT_SOCKET, DEFAULT_SURFACE_ROOT, LiveSurfaceV20Error
 from .gremlin_native_pnv_bridge_v01 import (
     LIVE_BRIDGE_SCHEMA,
     NativePNVLiveBridgeError,
@@ -35,6 +36,7 @@ GENERATION_BASIS_SCHEMA = "PNCS_GREMLIN_LIVE_GENERATION_BASIS_V0_3"
 DEFAULT_AUTHORING_RELATIVE_ROOT = Path("gremlin/candidates/pncs")
 DEFAULT_WITNESS_RELATIVE_PATH = Path("gremlin/state/triple_pulse_conformance_witness.json")
 _DIGEST_RE = re.compile(r"^[0-9a-f]{64}$")
+_INSTANCE_RE = re.compile(r"^[0-9a-f]{32,64}$")
 
 
 class GremlinLiveHydrationError(RuntimeError):
@@ -86,6 +88,13 @@ def _require_digest(value: Any, label: str) -> str:
     return text
 
 
+def _require_instance_id(value: Any, label: str) -> str:
+    text = str(value or "")
+    if not _INSTANCE_RE.fullmatch(text):
+        raise GremlinLiveHydrationError(f"{label} is not a valid runtime instance id")
+    return text
+
+
 def _verify_embedded_sha256(value: Mapping[str, Any], field: str, label: str) -> str:
     body = dict(value)
     reported = _require_digest(body.pop(field, None), field)
@@ -94,12 +103,77 @@ def _verify_embedded_sha256(value: Mapping[str, Any], field: str, label: str) ->
     return reported
 
 
+def _runtime_instances(root: Path) -> dict[str, Any]:
+    aux = _read_json(root / "aux_stream_status.json")
+    tether = _read_json(root / "tether_runtime_status.json")
+    if aux.get("status") != "ACTIVE" or tether.get("status") != "ACTIVE":
+        raise GremlinLiveHydrationError("GREMLIN runtime generation requires ACTIVE AUX and tether")
+    try:
+        aux_pid = int(aux["pid"])
+        tether_pid = int(tether["pid"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise GremlinLiveHydrationError("GREMLIN runtime generation has invalid producer PIDs") from exc
+    if aux_pid <= 0 or tether_pid <= 0:
+        raise GremlinLiveHydrationError("GREMLIN runtime generation has non-positive producer PID")
+    return {
+        "aux_runtime_instance_id": _require_instance_id(
+            aux.get("runtime_instance_id"), "aux_runtime_instance_id"
+        ),
+        "tether_runtime_instance_id": _require_instance_id(
+            tether.get("runtime_instance_id"), "tether_runtime_instance_id"
+        ),
+        "aux_pid": aux_pid,
+        "tether_pid": tether_pid,
+    }
+
+
+def _load_coherent_live(
+    root: Path,
+    *,
+    socket_path: Path | str,
+    max_heartbeat_age_s: float,
+) -> tuple[LiveSurfaceSnapshot, dict[str, Any]]:
+    last_error: str | None = None
+    transient_prefixes = (
+        "tether digest mismatch for ",
+        "AUX status digest does not match live aux_phi",
+    )
+    for _attempt in range(16):
+        before = _runtime_instances(root)
+        try:
+            live = load_live_surface(
+                root,
+                socket_path=socket_path,
+                require_socket=True,
+                max_heartbeat_age_s=max_heartbeat_age_s,
+            )
+        except LiveSurfaceV20Error as exc:
+            message = str(exc)
+            if not any(message.startswith(prefix) for prefix in transient_prefixes):
+                raise GremlinLiveHydrationError(
+                    f"GREMLIN live surface blocked: {message}"
+                ) from exc
+            last_error = message
+            time.sleep(0.025)
+            continue
+        after = _runtime_instances(root)
+        if before == after:
+            return live, after
+        last_error = "GREMLIN runtime instance changed during live snapshot"
+        time.sleep(0.025)
+    raise GremlinLiveHydrationError(
+        "GREMLIN coherent live snapshot unavailable after bounded retry: "
+        + str(last_error)
+    )
+
+
 def build_generation_basis(
     *,
     session_id: str,
     working_state_sha256: str,
     startpoint_sha256: str,
-    tether_receipt_sha256: str,
+    aux_runtime_instance_id: str,
+    tether_runtime_instance_id: str,
     identity: str,
     authority: str,
     native_pnv_source_sha256: str,
@@ -112,10 +186,17 @@ def build_generation_basis(
         "session_id": session_id,
         "working_state_sha256": _require_digest(working_state_sha256, "working_state_sha256"),
         "startpoint_sha256": _require_digest(startpoint_sha256, "startpoint_sha256"),
-        "tether_receipt_sha256": _require_digest(tether_receipt_sha256, "tether_receipt_sha256"),
+        "aux_runtime_instance_id": _require_instance_id(
+            aux_runtime_instance_id, "aux_runtime_instance_id"
+        ),
+        "tether_runtime_instance_id": _require_instance_id(
+            tether_runtime_instance_id, "tether_runtime_instance_id"
+        ),
         "identity": identity,
         "authority": authority,
-        "native_pnv_source_sha256": _require_digest(native_pnv_source_sha256, "native_pnv_source_sha256"),
+        "native_pnv_source_sha256": _require_digest(
+            native_pnv_source_sha256, "native_pnv_source_sha256"
+        ),
     }
 
 
@@ -133,7 +214,7 @@ def validate_witness_against_basis(
         raise GremlinLiveHydrationError("unexpected GREMLIN live-witness schema")
     if witness.get("status") != "PASS_CONFORMANCE_ONLY" or witness.get("admission") != "PASS_CONFORMANCE_ONLY":
         raise GremlinLiveHydrationError("GREMLIN live witness is not PASS_CONFORMANCE_ONLY")
-    if witness.get("runtime_execution_authority") is not False:
+    if witness.get("runtime_execution_authority" is not False:
         raise GremlinLiveHydrationError("GREMLIN witness claims runtime execution authority")
     if witness.get("canon_write_authority") is not False:
         raise GremlinLiveHydrationError("GREMLIN witness claims canon write authority")
@@ -149,6 +230,7 @@ def validate_witness_against_basis(
     if witness.get("native_pnv_source_sha256") != expected_basis.get("native_pnv_source_sha256"):
         raise GremlinLiveHydrationError("GREMLIN witness native PNV source binding mismatch")
     _require_digest(witness.get("native_receipt_sha256"), "native_receipt_sha256")
+    _require_digest(witness.get("admission_tether_receipt_sha256"), "admission_tether_receipt_sha256")
 
     pulses = witness.get("pulses")
     if not isinstance(pulses, list) or len(pulses) != 3:
@@ -165,21 +247,17 @@ def validate_witness_against_basis(
             raise GremlinLiveHydrationError(f"GREMLIN {pulse_name} pulse is invalid or cross-generation")
 
     if pulses[0].get("value") != expected_basis.get("identity"):
-        raise GremlinLiveHydrationError("GREMLIN IDENTITY pulse does not match current identity")
-    domain_value = pulses[1].get("value")
-    if not isinstance(domain_value, dict) or domain_value != {
+        raise GremlinLiveHydrationError("GREMLIN IDENTITY is not current")
+    domain = pulses[1].get("value")
+    if not isinstance(domain, dict) or domain != {
         "surface": str(DEFAULT_SURFACE_ROOT),
-        "tether_receipt_sha256": expected_basis.get("tether_receipt_sha256"),
+        "aux_runtime_instance_id": expected_basis.get("aux_runtime_instance_id"),
+        "tether_runtime_instance_id": expected_basis.get("tether_runtime_instance_id"),
+        "admission_tether_receipt_sha256": witness.get("admission_tether_receipt_sha256"),
     }:
-        raise GremlinLiveHydrationError("GREMLIN DOMAIN pulse does not match current live tether")
-    if pulses[2].get("value") != expected_basis.get("authority"):
-        raise GremlinLiveHydrationError("GREMLIN AUTHORITY pulse does not match current authority")
-
-    live_surface = witness.get("live_surface")
-    if not isinstance(live_surface, dict) or live_surface.get("root") != str(DEFAULT_SURFACE_ROOT):
-        raise GremlinLiveHydrationError("GREMLIN witness live surface is not canonical")
-    if live_surface.get("tether_receipt_sha256") != expected_basis.get("tether_receipt_sha256"):
-        raise GremlinLiveHydrationError("GREMLIN witness live tether receipt is stale")
+        raise GremlinLiveHydrationError("GREMLIN DOMAIN is not bound to the current runtime instance")
+    if pulses[2].get("value") != expected_basis.get("authority":
+        raise GremlinLiveHydrationError("GREMLIN AUTHORITY is not current")
 
     witness_body = dict(witness)
     witness_sha256 = witness_body.pop("witness_sha256", None)
@@ -190,7 +268,7 @@ def validate_witness_against_basis(
 
 def _current_binding(
     root: Path,
-    live: LiveSurfaceSnapshot,
+    runtime_instances: Mapping[str, Any],
     *,
     native_pnv_source_sha256: str,
 ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, str]]:
@@ -201,16 +279,12 @@ def _current_binding(
     if working_state.get("schema") != "NOEMA_ATOMIC_WORKING_STATE_V1":
         raise GremlinLiveHydrationError("GREMLIN hydration requires atomic NOEMA working state")
     working_state_sha256 = _verify_embedded_sha256(
-        working_state,
-        "working_state_sha256",
-        "NOEMA working state",
+        working_state, "working_state_sha256", "NOEMA working state"
     )
     if startpoint.get("status") != "VERIFIED":
         raise GremlinLiveHydrationError("GREMLIN hydration requires a VERIFIED session startpoint")
     startpoint_sha256 = _verify_embedded_sha256(
-        startpoint,
-        "packet_sha256",
-        "NOEMA session startpoint",
+        startpoint, "packet_sha256", "NOEMA session startpoint"
     )
 
     identity = str(current_memory.get("identity", ""))
@@ -220,7 +294,8 @@ def _current_binding(
         session_id=session_id,
         working_state_sha256=working_state_sha256,
         startpoint_sha256=startpoint_sha256,
-        tether_receipt_sha256=live.tether_receipt_sha256,
+        aux_runtime_instance_id=str(runtime_instances["aux_runtime_instance_id"]),
+        tether_runtime_instance_id=str(runtime_instances["tether_runtime_instance_id"]),
         identity=identity,
         authority=authority,
         native_pnv_source_sha256=native_pnv_source_sha256,
@@ -228,7 +303,7 @@ def _current_binding(
     return current_memory, working_state, startpoint, basis
 
 
-@dataclass(frozen=True)
+dataclass(frozen=True)
 class GremlinLiveHydration:
     witness: Mapping[str, Any]
     native_run: TriplePulseNativeRun
@@ -249,16 +324,15 @@ def hydrate_gremlin_pnv_live(
     if not pnv_text.strip():
         raise GremlinLiveHydrationError("native GREMLIN triple-pulse PNV source is required")
 
-    live = load_live_surface(
+    live, runtime_instances = _load_coherent_live(
         root,
         socket_path=socket_path,
-        require_socket=True,
         max_heartbeat_age_s=max_heartbeat_age_s,
     )
     native_source_sha256 = _sha256_text(pnv_text)
     current_memory, working_state, startpoint, basis = _current_binding(
         root,
-        live,
+        runtime_instances,
         native_pnv_source_sha256=native_source_sha256,
     )
     generation_binding = generation_binding_from_basis(basis)
@@ -266,7 +340,9 @@ def hydrate_gremlin_pnv_live(
     authority = str(current_memory["authority"])
     domain = {
         "surface": str(root),
-        "tether_receipt_sha256": live.tether_receipt_sha256,
+        "aux_runtime_instance_id": runtime_instances["aux_runtime_instance_id"],
+        "tether_runtime_instance_id": runtime_instances["tether_runtime_instance_id"],
+        "admission_tether_receipt_sha256": live.tether_receipt_sha256,
     }
 
     try:
@@ -280,12 +356,29 @@ def hydrate_gremlin_pnv_live(
             live_payload={"schema": LIVE_BRIDGE_SCHEMA, **live.receipt_payload},
         )
     except NativePNVLiveBridgeError as exc:
-        raise GremlinLiveHydrationError(f"native GREMLIN triple-pulse execution blocked: {exc}") from exc
+        raise GremlinLiveHydrationError(
+            f"native GREMLIN triple-pulse execution blocked: {exc}"
+        ) from exc
 
     pulses = [
-        {"pulse": "IDENTITY", "status": "PASS", "generation_binding": generation_binding, "value": identity},
-        {"pulse": "DOMAIN", "status": "PASS", "generation_binding": generation_binding, "value": domain},
-        {"pulse": "AUTHORITY", "status": "PASS", "generation_binding": generation_binding, "value": authority},
+        {
+            "pulse": "IDENTITY",
+            "status": "PASS",
+            "generation_binding": generation_binding,
+            "value": identity,
+        },
+        {
+            "pulse": "DOMAIN",
+            "status": "PASS",
+            "generation_binding": generation_binding,
+            "value": domain,
+        },
+        {
+            "pulse": "AUTHORITY",
+            "status": "PASS",
+            "generation_binding": generation_binding,
+            "value": authority,
+        },
     ]
     body: dict[str, Any] = {
         "schema": LIVE_WITNESS_SCHEMA,
@@ -297,6 +390,7 @@ def hydrate_gremlin_pnv_live(
         "admission": "PASS_CONFORMANCE_ONLY",
         "native_pnv_source_sha256": native_source_sha256,
         "native_receipt_sha256": str(native_run.result.receipt["receipt_sha256"]),
+        "admission_tether_receipt_sha256": live.tether_receipt_sha256,
         "live_surface": dict(live.receipt_payload),
         "session_id": str(working_state["session_id"]),
         "working_state_sha256": str(working_state["working_state_sha256"]),
@@ -329,20 +423,21 @@ def open_verified_gremlin_pnv_authoring_live(
     if not pnv_text.strip():
         raise GremlinPNVAuthoringError("exact native GREMLIN triple-pulse PNV source is required")
 
-    live = load_live_surface(
+    live, runtime_instances = _load_coherent_live(
         root,
         socket_path=socket_path,
-        require_socket=True,
         max_heartbeat_age_s=max_heartbeat_age_s,
     )
     witness = _read_json(root / DEFAULT_WITNESS_RELATIVE_PATH)
     native_source_sha256 = _sha256_text(pnv_text)
     if witness.get("native_pnv_source_sha256") != native_source_sha256:
-        raise GremlinPNVAuthoringError("GREMLIN witness is not bound to the supplied native PNV source")
+        raise GremlinPNVAuthoringError(
+            "GREMLIN witness is not bound to the supplied native PNV source"
+        )
 
     current_memory, _working_state, _startpoint, expected_basis = _current_binding(
         root,
-        live,
+        runtime_instances,
         native_pnv_source_sha256=native_source_sha256,
     )
     try:
@@ -353,7 +448,9 @@ def open_verified_gremlin_pnv_authoring_live(
     identity = str(current_memory.get("identity", ""))
     authority = str(current_memory.get("authority", ""))
     if not identity or not authority:
-        raise GremlinPNVAuthoringError("live GREMLIN authoring identity/authority binding is incomplete")
+        raise GremlinPNVAuthoringError(
+            "live GREMLIN authoring identity/authority binding is incomplete"
+        )
     authoring_root = root / DEFAULT_AUTHORING_RELATIVE_ROOT
     authoring_root.mkdir(parents=True, exist_ok=True)
     return GremlinPNVAuthoringSession(

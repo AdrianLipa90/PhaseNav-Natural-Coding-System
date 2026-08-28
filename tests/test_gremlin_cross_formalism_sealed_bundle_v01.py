@@ -37,7 +37,7 @@ def test_sealed_bundle_binds_entire_candidate_package_and_provenance(sealed_bund
     assert len(sealed_bundle["bundle_sha256"]) == 64
 
     for iso_id, validation in sealed_bundle["validation"].items():
-        assert validation["external_effects"] == []
+        assert validation["external_effects"] is False
         assert validation["mode"] == "READ_ONLY"
         assert validation["epistemic"] == "CHYBA"
         assert validation["receipt_sha256"] == sealed_bundle["candidate_payload"][iso_id]["receipt"]["receipt_sha256"]
@@ -71,6 +71,12 @@ def test_invalid_generation_binding_fails_before_compilation():
     with pytest.raises(CrossFormalismBundleError, match="hexadecimal"):
         compile_sealed_cross_formalism_bundle(
             generation_binding="z" * 64,
+            identity=BASE["identity"],
+            authority=BASE["authority"],
+        )
+    with pytest.raises(CrossFormalismBundleError, match="hexadecimal string"):
+        compile_sealed_cross_formalism_bundle(
+            generation_binding=None,
             identity=BASE["identity"],
             authority=BASE["authority"],
         )

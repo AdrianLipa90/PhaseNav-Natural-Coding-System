@@ -24,13 +24,15 @@ These identifiers are distinct and MUST NOT be collapsed:
 
 ```text
 FILE_ID != CONTENT_COMMITMENT != CHECKPOINT_OBJECT_ID
+SEGMENT_ID != SEGMENT_COMMITMENT
 ```
 
 - `FILE_ID` identifies a PNLF lineage/container.
 - `OBJECT_ID` identifies the persistent semantic/state object represented by the lineage.
 - `CONTENT_COMMITMENT` commits exact payload bytes or canonical content.
 - `CHECKPOINT_OBJECT_ID` identifies one immutable State Memory checkpoint.
-- `SEGMENT_ID` identifies one liminal trajectory segment.
+- `SEGMENT_ID` identifies one logical liminal trajectory across its append-only revisions.
+- `SEGMENT_COMMITMENT` identifies one immutable revision of that liminal trajectory.
 
 Canonical logical address:
 
@@ -113,7 +115,7 @@ E_bind                   finite binding-energy coordinate
 L_phase                  finite phase angular-momentum coordinate
 semantic_mass            finite non-negative value
 orbit_period             finite positive value
-winding                   finite winding coordinate
+winding                  finite winding coordinate
 proper_time              finite non-negative tau
 memory_affinity          finite value in [0,1]
 mass_model_id
@@ -158,10 +160,12 @@ A new admitted checkpoint supersedes the lineage head but does not mutate previo
 
 Liminal Memory is the transition space between admitted states. It is not another M-layer and not another orbital band.
 
-A segment has:
+A segment revision has:
 
 ```text
 segment_id
+segment_commitment
+previous_segment_commitment | null
 object_id
 pilot_l_checkpoint_id
 pilot_r_checkpoint_id | null
@@ -179,6 +183,10 @@ epistemic_state
 resolution_state = OPEN | ADMITTED | REJECTED
 resolution_witness_sha256 | null
 ```
+
+`segment_id` is stable for the logical trajectory. `segment_commitment` changes for every immutable append-only revision. `previous_segment_commitment` links the revision chain.
+
+`LIMINAL_ADVANCE` MUST create a new revision commitment; it MUST NOT overwrite a prior revision.
 
 An OPEN segment may exist without a right admitted checkpoint. Admission closes the segment and binds it to the newly created checkpoint. Rejection closes it without creating a new State Memory checkpoint.
 
@@ -223,7 +231,7 @@ Bind a checkpoint/segment to an attractor and quantizer profile.
 Open a new segment from an admitted checkpoint.
 
 ### `LIMINAL_ADVANCE`
-Append a proper-time trajectory residue/event to an OPEN segment.
+Append a proper-time trajectory residue/event by creating a new immutable revision of an OPEN segment.
 
 ### `STATE_COMMIT`
 Close an OPEN liminal segment as ADMITTED and create a new immutable State Memory checkpoint. Requires reduction and consolidation witnesses.
@@ -267,7 +275,7 @@ Profiles:
 
 ## 12. Append-only lineage
 
-State checkpoints, liminal segment records, transition receipts, and admission receipts are append-only/content-addressed objects. Mutable convenience indexes (for example `lineage_head`) are projections over immutable lineage and MUST be reconstructible from receipts.
+State checkpoints, liminal segment revisions, transition receipts, and admission receipts are append-only/content-addressed objects. Mutable convenience indexes (for example `lineage_head`) are projections over immutable lineage and MUST be reconstructible from receipts.
 
 ## 13. v0.1 validation gates
 
@@ -282,7 +290,8 @@ A conforming implementation MUST reject:
 7. an orbital transition that overwrites the predecessor checkpoint;
 8. a recall operation that mutates the recalled checkpoint;
 9. conflation of `FILE_ID`, `CONTENT_COMMITMENT`, and `CHECKPOINT_OBJECT_ID`;
-10. a candidate object claiming independent runtime execution or canon-write authority.
+10. a candidate object claiming independent runtime execution or canon-write authority;
+11. a liminal advance that overwrites a previous segment revision instead of linking a new `segment_commitment`.
 
 ## 14. Initial compatibility mapping
 

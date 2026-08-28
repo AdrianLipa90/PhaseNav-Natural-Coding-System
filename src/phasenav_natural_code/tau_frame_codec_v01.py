@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction
 import hashlib
-from typing import Sequence
+import json
 
 TAU_DENOMINATOR = 257
 PHASE_DENOMINATOR = 256
@@ -12,6 +12,8 @@ TAU_ACCEPT_DENOMINATOR = 100
 PHASE_ACCEPT_NUMERATOR = 45
 PHASE_ACCEPT_DENOMINATOR = 100
 BLOCK_WITNESS_DOMAIN = b"PNCS-TAU-FRAME-BLOCK-WITNESS/v0.1\x00"
+FRAME_COMMITMENT_DOMAIN = b"PNCS-TAU-FRAME-COMMITMENT/v0.1\x00"
+T36_WITNESS_COMMITMENT_DOMAIN = b"PNCS-T36-WITNESS-COMMITMENT/v0.1\x00"
 
 
 class TauFrameCodecError(ValueError):
@@ -37,6 +39,14 @@ class TauFrame:
     payload: bytes
     symbols: tuple[TauSymbol, ...]
     witness: TauFrameWitness
+
+
+def _canonical(value) -> bytes:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+
+
+def _fraction_record(value: Fraction) -> dict[str, int]:
+    return {"p": value.numerator, "q": value.denominator}
 
 
 def encode_byte(value: int) -> TauSymbol:
@@ -82,6 +92,36 @@ def block_witness(payload: bytes | bytearray | memoryview, block_index: int) -> 
         phase_turns=tuple(Fraction(v, PHASE_DENOMINATOR) for v in raw),
         block_commitment=digest.hex(),
     )
+
+
+def witness_commitment(witness: TauFrameWitness) -> str:
+    if len(witness.phase_turns) != 36:
+        raise TauFrameCodecError("T36 witness must contain exactly 36 phase coordinates")
+    body = {
+        "schema": "PNCS-T36-BLOCK-WITNESS/0.1",
+        "block_index": witness.block_index,
+        "block_commitment": witness.block_commitment,
+        "phase_turns": [_fraction_record(v) for v in witness.phase_turns],
+    }
+    return hashlib.blake2b(T36_WITNESS_COMMITMENT_DOMAIN + _canonical(body), digest_size=32).hexdigest()
+
+
+def frame_commitment(frame: TauFrame) -> str:
+    body = {
+        "schema": "PNCS-TAU-FRAME/0.1",
+        "block_index": frame.block_index,
+        "symbol_count": len(frame.symbols),
+        "symbols": [
+            {"value": symbol.value, "delta_tau": _fraction_record(symbol.delta_tau)}
+            for symbol in frame.symbols
+        ],
+        "t36_witness_commitment": witness_commitment(frame.witness),
+    }
+    return hashlib.blake2b(FRAME_COMMITMENT_DOMAIN + _canonical(body), digest_size=32).hexdigest()
+
+
+def commitment_pair(frame: TauFrame) -> tuple[str, str]:
+    return frame_commitment(frame), witness_commitment(frame.witness)
 
 
 def verify_block_witness(payload: bytes | bytearray | memoryview, witness: TauFrameWitness) -> None:

@@ -115,7 +115,7 @@ def isomorphism_bank() -> tuple[IsomorphismBankEntry, ...]:
             invariant_id="INV.NQ.CP1.BERRY.ORIENTATION",
             invariant_description="the QHTRI resident phase-potential surface retains the orientation-sensitive CP1 Fubini-Study and Berry structure used by the source phase geometry",
             left=_node("K.TIR.CP1.BERRY", 1, "cp1_fs_berry_source_geometry", "TIR", "TIR:CP1-FS-BERRY"),
-            right=_node("K.QHTRI.BLOCH.POTENTIAL", 2, "resident_gpu_bloch_phase_potential", "QHTRI_GPU", "bioos:qht ri-bloch-potential".replace(" ", "")),
+            right=_node("K.QHTRI.BLOCH.POTENTIAL", 2, "resident_gpu_bloch_phase_potential", "QHTRI_GPU", "bioos:qhtri-bloch-potential"),
             relation_id="REL.NQ.01",
             relation_type="MAPS_TO",
             refs=(
@@ -145,7 +145,7 @@ def isomorphism_bank() -> tuple[IsomorphismBankEntry, ...]:
         _entry(
             iso_id="ISO.NQ.03.CP1.POINCARE.CONTINUATION",
             invariant_id="INV.NQ.PROJECTIVE.ROTATION.CONTINUATION",
-            invariant_description="a bifurcated projective state may continue into a Poincare-disk coordinate only through an explicit map that audits curvature, signature and holonomy while retaining declared projective invariants",
+            invariant_description="a bifurcated projective state continues into a Poincare-disk coordinate through an explicit MAPS_TO adapter that audits curvature, signature and holonomy while retaining declared projective invariants",
             left=_node("K.QHTRI.CP1.BRANCH", 5, "bifurcated_cp1_projective_state", "QHTRI_CP1", "bioos:qhtri-cp1-branch"),
             right=_node("K.NOEMA.POINCARE.STATE", 6, "noema_hyperbolic_semantic_anchor", "NOEMA_POINCARE", "bioos:noema-poincare-anchor"),
             relation_id="REL.NQ.03",
@@ -157,12 +157,12 @@ def isomorphism_bank() -> tuple[IsomorphismBankEntry, ...]:
             ),
             evidence_status="CONTROLLED_CONTINUATION_CANDIDATE",
             preserved=("declared projective identity", "rotation equivariance where adapter declares it", "holonomy receipt"),
-            guardrails=("CP1 FS and Poincare metrics are not admitted as a Riemannian isometry", "curvature/signature/holonomy audit is mandatory"),
+            guardrails=("CP1 FS and Poincare retain distinct metric contracts under MAPS_TO", "curvature/signature/holonomy audit is mandatory"),
         ),
         _entry(
             iso_id="ISO.NQ.04.SPINOR.SHEET.WITNESS",
             invariant_id="INV.NQ.SPINOR.CENTRAL.SIGN",
-            invariant_description="projectivization can erase the central spinor sign, therefore the NOEMA handoff retains a Z2 sheet/parity witness in addition to the projective coordinate",
+            invariant_description="the NOEMA handoff retains a Z2 sheet/parity witness together with the projective coordinate so that the central spinor sign remains represented in lineage",
             left=_node("K.SOH.SPINOR.LIFT", 7, "su2_double_cover_spinor_lineage", "SECRET_OF_A_HALF", "SOH:SU2-DOUBLE-COVER"),
             right=_node("K.NQ.Z2.SHEET", 8, "branch_spinorial_sheet_witness", "NOEMA_QHTRI", "bioos:nq-z2-sheet"),
             relation_id="REL.NQ.04",
@@ -173,12 +173,12 @@ def isomorphism_bank() -> tuple[IsomorphismBankEntry, ...]:
             ),
             evidence_status="DOUBLE_COVER_ALGEBRA_EXACT / RECEIPT_BINDING_CANDIDATE",
             preserved=("central ±I sheet", "order doubling", "projective coordinate plus sheet identity"),
-            guardrails=("spinorial lineage fails closed when the required sheet witness is absent",),
+            guardrails=("spinorial lineage admission requires the declared sheet witness",),
         ),
         _entry(
             iso_id="ISO.NQ.05.AFFINITY.SEMANTIC.ORIENTATION",
             invariant_id="INV.NQ.DIRECTED.AFFINITY.ANTISYMMETRY",
-            invariant_description="directed transition affinity supplies a signed orientation channel for semantic traversal while remaining distinct from the state-content coordinate",
+            invariant_description="directed transition affinity supplies a signed orientation channel for semantic traversal while state-content and transition-orientation remain separately typed",
             left=_node("K.IDT.TRANSITION.AFFINITY", 9, "directed_transition_affinity", "IDT", "IDT:TRANSITION-AFFINITY"),
             right=_node("K.NOEMA.SEMANTIC.ORIENTATION", 10, "signed_semantic_traversal_orientation", "NOEMA", "bioos:noema-semantic-orientation"),
             relation_id="REL.NQ.05",
@@ -186,12 +186,12 @@ def isomorphism_bank() -> tuple[IsomorphismBankEntry, ...]:
             refs=(_source("IDT", "formalism/00B_transition_affinity.md"),),
             evidence_status="STRUCTURAL_ISOMORPHISM_CANDIDATE",
             preserved=("antisymmetry under edge reversal", "ordered-cycle orientation"),
-            guardrails=("affinity is not silently retyped as state entropy",),
+            guardrails=("transition affinity and state entropy remain separately typed",),
         ),
         _entry(
             iso_id="ISO.NQ.06.MEMORY.ORBIT.MEANING.PATH",
             invariant_id="INV.NQ.ORIENTED.PATH.AREA",
-            invariant_description="an oriented memory-orbit path and a NOEMA relational meaning path both retain ordered relational content that is not reducible to an endpoint scalar",
+            invariant_description="an oriented memory-orbit path and a NOEMA relational meaning path both retain ordered relational content, with endpoint state and path identity carried as separate fields",
             left=_node("K.IDT.MEMORY.ORBIT", 11, "oriented_memory_polygon_drive", "IDT_MEMORY", "IDT:MEMORY-ORBIT-DRIVE"),
             right=_node("K.NOEMA.MEANING.PATH", 12, "ordered_relational_meaning_path", "NOEMA_SEMANTICS", "bioos:noema-meaning-path"),
             relation_id="REL.NQ.06",
@@ -215,7 +215,7 @@ def isomorphism_bank() -> tuple[IsomorphismBankEntry, ...]:
             refs=(_source("RFC", "formalism/RFL1_RELATIONAL_LAMBDA_ORIENTED_HOLONOMY.md"),),
             evidence_status="RFC_HOLONOMY_BOUND / NQ_CHANNEL_BINDING_CANDIDATE",
             preserved=("unit-circle carrier", "magnitude under orientation reversal", "signed imaginary quadrature"),
-            guardrails=("channel weights become probabilities only under an explicit normalized admission contract",),
+            guardrails=("probability semantics require an explicit normalized admission contract",),
         ),
         _entry(
             iso_id="ISO.NQ.08.COFRAME.QHTRI.CELL.TRANSPORT",
@@ -233,7 +233,7 @@ def isomorphism_bank() -> tuple[IsomorphismBankEntry, ...]:
         _entry(
             iso_id="ISO.NQ.09.MEMORY.STATE.CRYSTALLIZATION",
             invariant_id="INV.NQ.APPEND.ONLY.LINEAGE",
-            invariant_description="ordered semantic events crystallize into append-only State Memory and PNFS lineage while retaining enough receipt data for declared-class replay and recall",
+            invariant_description="ordered semantic events crystallize into append-only State Memory and PNFS lineage while retaining receipt data for declared-class replay and recall",
             left=_node("K.IDT.MEMORY.LINEAGE", 17, "append_only_memory_event_lineage", "IDT_MEMORY", "IDT:MEMORY-PERSISTENCE"),
             right=_node("K.PNFS.STATE.CHECKPOINT", 18, "state_memory_pnfs_crystallization", "STATE_MEMORY_PNFS", "bioos:state-memory-pnfs-checkpoint"),
             relation_id="REL.NQ.09",
@@ -246,7 +246,7 @@ def isomorphism_bank() -> tuple[IsomorphismBankEntry, ...]:
         _entry(
             iso_id="ISO.NQ.10.NOEMA.QHTRI.HERMITIAN.FEEDBACK",
             invariant_id="INV.NQ.ORIENTED.HERMITIAN.FEEDBACK",
-            invariant_description="NOEMA-authorized feedback transports an admitted magnitude and signed holonomy into a Hermitian operator boundary condition for the next QHTRI evolution without granting QHTRI canon authority",
+            invariant_description="NOEMA-authorized feedback transports an admitted magnitude and signed holonomy into a Hermitian operator boundary condition for the next QHTRI evolution while canon authority remains on the NOEMA authority side",
             left=_node("K.RFC.HERMITIAN.EXCHANGE", 19, "oriented_hermitian_exchange_operator", "RFC_OPERATOR", "RFC:RFL1A-HERMITIAN-EXCHANGE"),
             right=_node("K.NQ.FEEDBACK.OPERATOR", 20, "noema_authorized_qhtri_boundary_operator", "NOEMA_QHTRI", "bioos:nq-feedback-operator"),
             relation_id="REL.NQ.10",
@@ -254,7 +254,7 @@ def isomorphism_bank() -> tuple[IsomorphismBankEntry, ...]:
             refs=(_source("RFC", "formalism/RFL1A_HERMITIAN_ORIENTED_EXCHANGE_GATE.md"),),
             evidence_status="HERMITIAN_OPERATOR_INTERFACE_BOUND / HARDWARE_FEEDBACK_CANDIDATE",
             preserved=("Hermiticity", "magnitude/orientation split", "source-to-operator provenance chain"),
-            guardrails=("NOEMA admission token is required", "QHTRI receives boundary/operator input but no canon-write authority"),
+            guardrails=("NOEMA admission token is required", "QHTRI boundary input and canon authority remain separately typed"),
         ),
     )
 

@@ -135,7 +135,10 @@ class OrbitalState:
         if band not in ORBITAL_BANDS:
             raise PNLFOrbitalMemoryError(f"orbital_band must be one of {sorted(ORBITAL_BANDS)}")
         object.__setattr__(self, "orbital_band", band)
-        object.__setattr__(self, "r_phase", _non_negative(self.r_phase, "r_phase"))
+        r_phase = _non_negative(self.r_phase, "r_phase")
+        if r_phase > math.pi:
+            raise PNLFOrbitalMemoryError("r_phase must be a circular phase distance in [0,pi]")
+        object.__setattr__(self, "r_phase", r_phase)
         object.__setattr__(self, "phase", _finite(self.phase, "phase") % (2.0 * math.pi))
         object.__setattr__(self, "E_bind", _finite(self.E_bind, "E_bind"))
         object.__setattr__(self, "L_phase", _finite(self.L_phase, "L_phase"))
@@ -253,10 +256,10 @@ class StateMemoryCheckpoint:
         object.__setattr__(self, "relation_braid_commitment", _digest(self.relation_braid_commitment, "relation_braid_commitment"))
         if self.admission_state != "ADMITTED":
             raise PNLFOrbitalMemoryError("State Memory checkpoint must be ADMITTED")
-        expected = _checkpoint_id_from_body(_checkpoint_body(self))
-        if expected != self.checkpoint_object_id:
+        body = _checkpoint_body(self)
+        expected_state = _sha256(body)
+        if _checkpoint_id_from_body(body) != self.checkpoint_object_id:
             raise PNLFOrbitalMemoryError("checkpoint_object_id does not match canonical checkpoint content")
-        expected_state = _sha256(_checkpoint_body(self))
         if expected_state != self.state_commitment:
             raise PNLFOrbitalMemoryError("state_commitment does not match canonical checkpoint content")
 
@@ -392,8 +395,7 @@ class LiminalSegmentRevision:
         object.__setattr__(self, "tau_start", start)
         object.__setattr__(self, "tau_cursor", cursor)
         if self.tau_end is not None:
-            end = _non_negative(self.tau_end, "tau_end")
-            object.__setattr__(self, "tau_end", end)
+            object.__setattr__(self, "tau_end", _non_negative(self.tau_end, "tau_end"))
         object.__setattr__(self, "active_m_layers", _layers(self.active_m_layers))
         for field in (
             "relation_braid_commitment",
@@ -415,6 +417,8 @@ class LiminalSegmentRevision:
         if state == "OPEN":
             if self.tau_end is not None or self.pilot_r_checkpoint_id is not None or self.resolution_witness_sha256 is not None:
                 raise PNLFOrbitalMemoryError("OPEN liminal segment cannot have tau_end, right pilot, or resolution witness")
+            if self.target_orbital_state is not None:
+                raise PNLFOrbitalMemoryError("OPEN liminal segment cannot claim admitted target orbital state")
         else:
             if self.tau_end is None or abs(self.tau_end - self.tau_cursor) > 1e-12:
                 raise PNLFOrbitalMemoryError("closed liminal segment requires tau_end == tau_cursor")
@@ -423,10 +427,9 @@ class LiminalSegmentRevision:
             object.__setattr__(self, "resolution_witness_sha256", _digest(self.resolution_witness_sha256, "resolution_witness_sha256"))
             if state == "ADMITTED" and (self.pilot_r_checkpoint_id is None or self.target_orbital_state is None):
                 raise PNLFOrbitalMemoryError("ADMITTED liminal segment requires right pilot and target orbital state")
-            if state == "REJECTED" and self.pilot_r_checkpoint_id is not None:
-                raise PNLFOrbitalMemoryError("REJECTED liminal segment cannot bind an admitted right pilot")
-        expected = _sha256(_segment_body(self))
-        if expected != self.segment_commitment:
+            if state == "REJECTED" and (self.pilot_r_checkpoint_id is not None or self.target_orbital_state is not None):
+                raise PNLFOrbitalMemoryError("REJECTED liminal segment cannot bind admitted right state")
+        if _sha256(_segment_body(self)) != self.segment_commitment:
             raise PNLFOrbitalMemoryError("segment_commitment does not match canonical liminal revision")
 
     def to_dict(self) -> dict[str, Any]:
@@ -567,8 +570,8 @@ def admit_liminal_segment(
         raise PNLFOrbitalMemoryError("right checkpoint object_id does not match liminal segment")
     if right_checkpoint.predecessor_checkpoint_id != segment.pilot_l_checkpoint_id:
         raise PNLFOrbitalMemoryError("right checkpoint must descend from the segment left pilot")
-    if right_checkpoint.tau < segment.tau_cursor:
-        raise PNLFOrbitalMemoryError("right checkpoint tau cannot precede current liminal tau")
+    if abs(right_checkpoint.tau - segment.tau_cursor) > 1e-12:
+        raise PNLFOrbitalMemoryError("STATE_COMMIT requires right checkpoint tau == current liminal tau_cursor")
     return _make_segment(
         segment_id=segment.segment_id,
         previous_segment_commitment=segment.segment_commitment,
@@ -622,6 +625,38 @@ def reject_liminal_segment(
     )
 
 
+def validate_checkpoint_against_header(header: PNLFHeader, checkpoint: StateMemoryCheckpoint) -> None:
+    if not isinstance(header, PNLFHeader) or not isinstance(checkpoint, StateMemoryCheckpoint):
+        raise PNLFOrbitalMemoryError("header and checkpoint types are required")
+    if checkpoint.object_id != header.object_id:
+        raise PNLFOrbitalMemoryError("checkpoint object_id does not match PNLF header")
+    if checkpoint.orbital_state.mass_model_id != header.mass_model_id:
+        raise PNLFOrbitalMemoryError("checkpoint mass model does not match PNLF header")
+    if checkpoint.orbital_state.orbit_quantizer_id != header.orbit_quantizer_id:
+        raise PNLFOrbitalMemoryError("checkpoint orbit quantizer does not match PNLF header")
+    if header.file_id in {checkpoint.content_commitment, checkpoint.checkpoint_object_id}:
+        raise PNLFOrbitalMemoryError("FILE_ID cannot collapse into content/checkpoint identity")
+    if checkpoint.content_commitment == checkpoint.checkpoint_object_id:
+        raise PNLFOrbitalMemoryError("CONTENT_COMMITMENT cannot collapse into CHECKPOINT_OBJECT_ID")
+
+
+def validate_segment_against_header(header: PNLFHeader, segment: LiminalSegmentRevision) -> None:
+    if not isinstance(header, PNLFHeader) or not isinstance(segment, LiminalSegmentRevision):
+        raise PNLFOrbitalMemoryError("header and segment types are required")
+    if segment.object_id != header.object_id:
+        raise PNLFOrbitalMemoryError("segment object_id does not match PNLF header")
+    states = [segment.source_orbital_state]
+    if segment.target_orbital_state is not None:
+        states.append(segment.target_orbital_state)
+    for state in states:
+        if state.mass_model_id != header.mass_model_id:
+            raise PNLFOrbitalMemoryError("segment orbital state mass model does not match PNLF header")
+        if state.orbit_quantizer_id != header.orbit_quantizer_id:
+            raise PNLFOrbitalMemoryError("segment orbit quantizer does not match PNLF header")
+    if header.file_id == segment.segment_commitment:
+        raise PNLFOrbitalMemoryError("FILE_ID cannot collapse into SEGMENT_COMMITMENT")
+
+
 def logical_address(object_id: str, tau: float, relation: str) -> tuple[str, float, str]:
     return (
         _require_text(object_id, "object_id"),
@@ -634,8 +669,7 @@ def tau_frame(segment: LiminalSegmentRevision, tau: float) -> dict[str, Any]:
     if not isinstance(segment, LiminalSegmentRevision):
         raise PNLFOrbitalMemoryError("tau_frame requires LiminalSegmentRevision")
     t = _non_negative(tau, "tau")
-    upper = segment.tau_cursor
-    if not segment.tau_start <= t <= upper:
+    if not segment.tau_start <= t <= segment.tau_cursor:
         raise PNLFOrbitalMemoryError("tau is outside represented liminal revision")
     return {
         "schema": TAU_FRAME_SCHEMA,
@@ -670,6 +704,8 @@ __all__ = [
     "advance_liminal_segment",
     "admit_liminal_segment",
     "reject_liminal_segment",
+    "validate_checkpoint_against_header",
+    "validate_segment_against_header",
     "logical_address",
     "tau_frame",
 ]

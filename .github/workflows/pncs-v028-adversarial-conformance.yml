@@ -1,12 +1,6 @@
 name: PNCS v0.28 adversarial conformance
 
 on:
-  push:
-    branches:
-      - feat/pncs-v0.28-release-closure
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       run_self_hosted_pure:
@@ -19,12 +13,22 @@ on:
         required: false
         default: false
         type: boolean
+      run_macos_mirror:
+        description: Run complete v0.28 pure closure mirror on macOS
+        required: false
+        default: false
+        type: boolean
+      emit_manifest:
+        description: Emit short-lived v0.28 manifest candidate
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -122,13 +126,12 @@ jobs:
           tests/test_repository_conformance_v28.py
 
   closure-macos-fallback:
-    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance' }}
+    if: ${{ inputs.run_macos_mirror == true }}
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -168,7 +171,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: pncs-v028-macos-closure
-          retention-days: 7
+          retention-days: 1
           path: |
             MANIFEST.sha256.json
             MANIFEST.sha256.json.sha256
@@ -177,13 +180,12 @@ jobs:
           if-no-files-found: error
 
   pure-self-hosted-mirror:
-    if: ${{ (github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance') || (github.event_name == 'workflow_dispatch' && inputs.run_self_hosted_pure == true) }}
+    if: ${{ inputs.run_self_hosted_pure == true }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -208,13 +210,12 @@ jobs:
           tests/test_repository_conformance_v28.py
 
   manifest-candidate:
-    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance' }}
+    if: ${{ inputs.emit_manifest == true }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: Generate authoritative tracked-tree manifest candidate
         run: python3 scripts/regenerate_manifest.py --root .
       - name: Verify generated manifest candidate
@@ -227,7 +228,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: pncs-v028-manifest-candidate
-          retention-days: 7
+          retention-days: 1
           path: |
             MANIFEST.sha256.json
             MANIFEST.sha256.json.sha256
@@ -236,13 +237,12 @@ jobs:
           if-no-files-found: error
 
   live-dev-shm:
-    if: ${{ (github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance') || (github.event_name == 'workflow_dispatch' && inputs.run_live == true) }}
+    if: ${{ inputs.run_live == true }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'

@@ -16,7 +16,7 @@ A local reference interval gives the affine-invariant ratio:
 r_b = Delta_tau_data / Delta_tau_reference = 1 + b/257
 ```
 
-Under `tau' = a*tau + c`, with `a > 0`, the ratio is invariant. Laboratory wall-clock is realization evidence and is excluded from semantic content identity.
+Under `tau' = a*tau + c`, with `a > 0`, the ratio is invariant. Laboratory wall-clock is realization evidence and scalar tau is the semantic content parameter.
 
 ## TAU FRAME
 
@@ -43,6 +43,30 @@ frame_commitment -> StateMemory.carrier_commitment
 witness_commitment -> StateMemory.t36_witness_commitment
 ```
 
+## Exact PNH5 TAU FRAME realization
+
+`PNCS_PNH5_TAU_FRAME_REALIZATION_V0_1` is the binary realization adapter owned by PNCS. Each exact tau symbol is stored through its integer numerator on the fixed `1/257` grid:
+
+```text
+Delta_tau = numerator / 257
+numerator = 257 + byte
+```
+
+The record layout is:
+
+```text
+PTF1 magic                 4 bytes
+block_index                uint32 LE
+symbol_count               uint32 LE
+frame_commitment           32 bytes
+witness_commitment         32 bytes
+tau numerators             uint16 LE * symbol_count
+T36 witness lane           36 bytes on the exact 1/256 grid
+record seal                32 bytes BLAKE2b-256
+```
+
+Unpack reconstructs the exact rational tau symbols and full T36 witness, then re-verifies the PNCS frame commitment, witness commitment and block commitment.
+
 ## Identity separation
 
 ```text
@@ -65,7 +89,7 @@ An uncommitted liminal tail is excluded from recovery. M8 identity continuity re
 
 ## GREMLIN isomorphic codec compilation
 
-The codec is authored as two relational fragments sharing the same invariant and one exact join node:
+The codec is authored as three relational fragments sharing one invariant:
 
 ```text
 Fragment A:
@@ -73,15 +97,23 @@ PNCS TAU FRAME <-> PNCS T36 WITNESS <-> PNV-State-Memory LIMINAL SEGMENT
 
 Fragment B:
 PNV-State-Memory LIMINAL SEGMENT <-> BioOS PNLF FILE <-> PNH5 VIEW
+
+Fragment C:
+PNH5 VIEW <-> PNH5 CONTAINER
 ```
 
-GREMLIN applies `merge_relational_isomorphisms()` on the shared `K.LIMINAL.SEGMENT` node. Conflicting shared KAKU nodes, relation IDs or invariant identities fail closed before compilation.
+GREMLIN applies `merge_relational_isomorphisms()` through two exact join nodes:
 
-The merged relational graph then enters the existing relational-isomorphism compiler, which materializes content-addressed KAKU candidates, one RADICAL dependency graph, deterministic OPERATORS and a PNV conformance program. `ISOMORPHIC_TO`, `BINDS` and `MAPS_TO` lower to the deterministic `COMPOSITION` subset.
+```text
+K.LIMINAL.SEGMENT
+K.PNH5.VIEW
+```
+
+Conflicting shared KAKU nodes, relation IDs or invariant identities fail closed before compilation. The merged graph contains six KAKU nodes and enters the existing relational-isomorphism compiler, which materializes one RADICAL dependency graph, deterministic OPERATORS and a PNV conformance program. `ISOMORPHIC_TO`, `BINDS` and `MAPS_TO` lower to the deterministic `COMPOSITION` subset.
 
 GREMLIN output remains `CANDIDATE_ONLY`; runtime execution authority and canon write authority remain false. Candidate conformance execution is READ_ONLY.
 
-## Tested candidate gates
+## Executed candidate evidence
 
 The development receipts preceding repository integration record:
 
@@ -93,4 +125,15 @@ PNLF_BLOCK_FILE_E2E_RECEIPT_V0_4            6/6 PASS
 TOTAL                                      30/30 PASS
 ```
 
-Evidence status: local executable candidate. Physical carrier validation is a separate gate.
+The first real `.pnh5` container execution additionally completed:
+
+```text
+2477 source bytes
+-> 39 exact TAU FRAME records
+-> 15447-byte PNH5 container
+-> reopen
+-> exact decode
+-> identical SHA-256
+```
+
+Evidence status: LOCAL_EXECUTABLE_CANDIDATE. Physical carrier validation is a separate gate.

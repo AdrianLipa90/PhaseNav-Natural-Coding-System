@@ -6,9 +6,11 @@ on:
       - feat/pncs-tau-liminal-file-v0.1
     paths:
       - 'src/phasenav_natural_code/tau_frame_codec_v01.py'
+      - 'src/phasenav_natural_code/pnh5_tau_realization_v01.py'
       - 'src/phasenav_natural_code/gremlin_tau_codec_v01.py'
       - 'src/phasenav_natural_code/gremlin_isomorphic_codec_merge_v01.py'
       - 'tests/test_tau_frame_codec_v01.py'
+      - 'tests/test_pnh5_tau_realization_v01.py'
       - 'tests/test_gremlin_tau_codec_v01.py'
       - 'tests/test_gremlin_isomorphic_codec_merge_v01.py'
       - 'spec/PNCS_TAU_LIMINAL_FILE_CODEC_V0_1.md'
@@ -16,9 +18,11 @@ on:
   pull_request:
     paths:
       - 'src/phasenav_natural_code/tau_frame_codec_v01.py'
+      - 'src/phasenav_natural_code/pnh5_tau_realization_v01.py'
       - 'src/phasenav_natural_code/gremlin_tau_codec_v01.py'
       - 'src/phasenav_natural_code/gremlin_isomorphic_codec_merge_v01.py'
       - 'tests/test_tau_frame_codec_v01.py'
+      - 'tests/test_pnh5_tau_realization_v01.py'
       - 'tests/test_gremlin_tau_codec_v01.py'
       - 'tests/test_gremlin_isomorphic_codec_merge_v01.py'
       - 'spec/PNCS_TAU_LIMINAL_FILE_CODEC_V0_1.md'
@@ -39,4 +43,4 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -e . pytest
-      - run: python -m pytest -q tests/test_tau_frame_codec_v01.py tests/test_gremlin_tau_codec_v01.py tests/test_gremlin_isomorphic_codec_merge_v01.py tests/test_gremlin_relational_compiler_v01.py
+      - run: python -m pytest -q tests/test_tau_frame_codec_v01.py tests/test_pnh5_tau_realization_v01.py tests/test_gremlin_tau_codec_v01.py tests/test_gremlin_isomorphic_codec_merge_v01.py tests/test_gremlin_relational_compiler_v01.py

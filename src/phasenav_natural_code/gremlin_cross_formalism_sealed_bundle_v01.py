@@ -35,15 +35,17 @@ def _sha256(value: Any) -> str:
 
 
 def _validate_provenance(generation_binding: str, identity: str, authority: str) -> None:
+    if not isinstance(generation_binding, str):
+        raise CrossFormalismBundleError("generation_binding must be a hexadecimal string")
     if len(generation_binding) != 64:
         raise CrossFormalismBundleError("generation_binding must be a 64-character hexadecimal commitment")
     try:
         int(generation_binding, 16)
     except ValueError as exc:
         raise CrossFormalismBundleError("generation_binding must be hexadecimal") from exc
-    if not identity.strip():
+    if not isinstance(identity, str) or not identity.strip():
         raise CrossFormalismBundleError("identity is required")
-    if not authority.strip():
+    if not isinstance(authority, str) or not authority.strip():
         raise CrossFormalismBundleError("authority is required")
 
 
@@ -72,8 +74,8 @@ def compile_sealed_cross_formalism_bundle(
     """Compile and validate the whole GREMLIN bank before producing one sealed authoring bundle."""
     _validate_provenance(generation_binding, identity, authority)
 
-    # Deliberately compile in memory. Durable publication occurs only after every
-    # candidate has compiled and the full bank has passed READ_ONLY validation.
+    # Compile in memory. Durable publication occurs only after every candidate
+    # has compiled and the full bank has passed READ_ONLY validation.
     compiled = compile_cross_formalism_candidates(
         generation_binding=generation_binding,
         identity=identity,
@@ -87,14 +89,14 @@ def compile_sealed_cross_formalism_bundle(
     validation_summary: dict[str, Mapping[str, object]] = {}
     for iso_id, result in sorted(validation.items()):
         external_effects = result.receipt["effect_boundary"]["external_effects"]
-        if external_effects:
+        if external_effects is not False:
             raise CrossFormalismBundleError(f"external effect boundary violated by {iso_id}")
         if result.program.mode != "READ_ONLY":
             raise CrossFormalismBundleError(f"compiled candidate left READ_ONLY mode: {iso_id}")
         if result.program.epistemic != "CHYBA":
             raise CrossFormalismBundleError(f"compiled candidate left CHYBA epistemic mode: {iso_id}")
         validation_summary[iso_id] = {
-            "external_effects": [],
+            "external_effects": False,
             "mode": result.program.mode,
             "epistemic": result.program.epistemic,
             "receipt_sha256": compiled.compilations[iso_id].receipt["receipt_sha256"],
@@ -140,12 +142,10 @@ def verify_sealed_cross_formalism_bundle(bundle: Mapping[str, object]) -> bool:
 
 
 def write_sealed_cross_formalism_bundle(bundle: Mapping[str, object], path: Path | str) -> Path:
-    """Persist exactly one verified package using temp+fsync+atomic replace."""
+    """Persist one verified package with fsync and atomic create-once publication."""
     verify_sealed_cross_formalism_bundle(bundle)
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
-    if target.exists():
-        raise CrossFormalismBundleError(f"sealed bundle target already exists: {target}")
 
     payload = _canonical_bytes(bundle) + b"\n"
     temporary_name: str | None = None
@@ -161,8 +161,16 @@ def write_sealed_cross_formalism_bundle(bundle: Mapping[str, object], path: Path
             handle.write(payload)
             handle.flush()
             os.fsync(handle.fileno())
-        os.replace(temporary_name, target)
+
+        # Same-directory hard-link publication is atomic and fails if another
+        # writer has already claimed the final create-once path.
+        try:
+            os.link(temporary_name, target)
+        except FileExistsError as exc:
+            raise CrossFormalismBundleError(f"sealed bundle target already exists: {target}") from exc
+        os.unlink(temporary_name)
         temporary_name = None
+
         directory_fd = os.open(target.parent, os.O_RDONLY)
         try:
             os.fsync(directory_fd)

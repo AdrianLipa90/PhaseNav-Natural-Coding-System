@@ -1,0 +1,38 @@
+name: PNCS Tau Liminal File v0.1
+
+on:
+  push:
+    branches:
+      - feat/pncs-tau-liminal-file-v0.1
+    paths:
+      - 'src/phasenav_natural_code/tau_frame_codec_v01.py'
+      - 'src/phasenav_natural_code/gremlin_tau_codec_v01.py'
+      - 'tests/test_tau_frame_codec_v01.py'
+      - 'tests/test_gremlin_tau_codec_v01.py'
+      - 'spec/PNCS_TAU_LIMINAL_FILE_CODEC_V0_1.md'
+      - '.github/workflows/pncs-tau-liminal-file-v01.yml'
+  pull_request:
+    paths:
+      - 'src/phasenav_natural_code/tau_frame_codec_v01.py'
+      - 'src/phasenav_natural_code/gremlin_tau_codec_v01.py'
+      - 'tests/test_tau_frame_codec_v01.py'
+      - 'tests/test_gremlin_tau_codec_v01.py'
+      - 'spec/PNCS_TAU_LIMINAL_FILE_CODEC_V0_1.md'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e . pytest
+      - run: python -m pytest -q tests/test_tau_frame_codec_v01.py tests/test_gremlin_tau_codec_v01.py tests/test_gremlin_relational_compiler_v01.py

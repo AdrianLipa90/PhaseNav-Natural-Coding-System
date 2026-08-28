@@ -1,0 +1,34 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PNCS v0.30 ordered semantic path bridge witness.
+# NEW_PNV_OPCODES 0
+# Semantic authority: typed PNCS content IDs + registered Definition CIDs.
+# Geometry authority: canonical PNV Native Function DB V2 typed T^36 paths.
+# Operational surface: /dev/shm/ciel_noema
+
+OP V30.SEMANTIC.SOURCE SOURCE typed_semantic_content_id
+OP V30.HOOK.IDENTITY IDENTITY registered_hook_definition
+OP V30.SEQUENCE.ORDER ORDER ordered_semantic_content_id
+OP V30.PATH.TRANSFORM TRANSFORM ordered_t36_transition_witness
+OP V30.PATH.COMPOSE COMPOSITION V30.SEQUENCE.ORDER V30.PATH.TRANSFORM
+OP V30.RESULT.RETURN RETURN trajectory_id
+
+# Native geometry functions are typed canonical library functions:
+# pnv.torus.normalize
+# pnv.torus.delta
+# pnv.torus.geodesic
+# pnv.path.length_l2
+# pnv.orbit.arc_sample
+# pnv.path.compose
+
+# HTRI admission requires live /dev/shm validation after compile.
+# STATIC_RUNTIME_FALLBACK FALSE
+# SEMANTIC_IDENTITY_FROM_VECTOR_SIMILARITY FALSE
+# OPERATOR_PRESENCE_IS_EXECUTION_AUTHORITY FALSE
+# NEW_PNV_OPCODES 0
+
+ASSERT V30.HOOK.IDENTITY
+ASSERT V30.PATH.COMPOSE
+EMIT V30.RESULT.RETURN

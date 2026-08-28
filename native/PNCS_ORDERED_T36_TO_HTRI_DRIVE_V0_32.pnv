@@ -1,0 +1,35 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PNCS v0.32 ordered T^36 -> HTRI/QHTRI drive witness.
+# Semantic authority remains typed content + ordered composition.
+# Runtime validation uses a read-only live-derived copy.
+
+OP V32.SOURCE SOURCE typed_semantic_t36_trajectory
+OP V32.IDENTITY IDENTITY V32.SOURCE
+
+OP V32.ORDER ORDER semantic_target_before semantic_target_after
+OP V32.CONTROL.TRANSFORM TRANSFORM ordered_t36_target exact_one_step_inverse_dynamics_control
+OP V32.CONTROL.COMPOSE COMPOSITION V32.ORDER V32.CONTROL.TRANSFORM
+
+OP V32.HTRI.TRANSFORM TRANSFORM controlled_phase_step path_conditioned_signed_g
+OP V32.QHTRI.TRANSFORM TRANSFORM path_conditioned_signed_g qhtri_v3_graph_hamiltonian
+OP V32.TIME.ORDER ORDER H_k H_k_plus_1
+OP V32.TIME.COMPOSE COMPOSITION V32.TIME.ORDER V32.QHTRI.TRANSFORM
+
+# Existing execution law:
+#   U_k = exp(-i H_k dt)
+#   U_total,k = U_k U_total,k-1
+# Reference dt = 0.01
+# SEMANTIC_AUTHORITY TYPED_CONTENT_AND_ORDER
+# RUNTIME_ROLE READ_ONLY_LIVE_DERIVED_COPY
+# DRIVE_ROLE EXACT_ONE_STEP_INVERSE_DYNAMICS_REFERENCE
+# TERMINAL_DIAGNOSTIC LOW_TERMINAL_STATE_SEPARATION_AT_SEVEN_NATIVE_TICKS
+# NEXT_GATE BOUNDED_MULTI_TICK_TARGET_TRACKING
+# NEW_PNV_OPCODES 0
+
+ASSERT V32.IDENTITY
+ASSERT V32.CONTROL.COMPOSE
+ASSERT V32.TIME.COMPOSE
+EMIT V32.TIME.COMPOSE

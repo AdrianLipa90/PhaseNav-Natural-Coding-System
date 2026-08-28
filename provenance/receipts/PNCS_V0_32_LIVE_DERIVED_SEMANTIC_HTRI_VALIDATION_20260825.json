@@ -1,0 +1,72 @@
+{
+  "schema": "PNCS_V0_32_LIVE_DERIVED_SEMANTIC_HTRI_VALIDATION_V1",
+  "date": "2026-08-25",
+  "status": "PASS_MODEL_LEVEL_CONTROLLED_HTRI_QHTRI_REFERENCE",
+  "branch": "feat/pncs-v0.30-ordered-semantic-path-bridge",
+  "contract_id": "PNCS_ORDERED_T36_TO_HTRI_DRIVE_V0_32",
+  "semantic_authority": "TYPED_CONTENT_AND_ORDER",
+  "runtime_role": "READ_ONLY_LIVE_DERIVED_COPY",
+  "drive_role": "EXACT_ONE_STEP_INVERSE_DYNAMICS_REFERENCE",
+  "runtime": {
+    "root": "/dev/shm/ciel_noema",
+    "status": "ACTIVE",
+    "tick": 80605,
+    "dt": 0.01,
+    "kappa": 0.009193150006360484,
+    "write_to_live_surface": false
+  },
+  "live_hashes": {
+    "phi": "28d688c2850d8a224d655ec1a6676966f0d74e2a365c5ddf7da3e6ffcc2f4280",
+    "omega": "a78b037500632b283fa2ea665f9f169129c0aa7a1dd3ad8410a61933fa0acc69",
+    "g": "07b27311a4f952483da30979d1f9d5fa84daedb0bee8e7ac3b73b4b391c42a7a",
+    "flavor": "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+    "tau": "5239adcb95f0a6161ecec0c138596d74df5f5ce7a8888f0933b8b2280f39a4b5",
+    "gravity": "97163757a9ab579c20c420c06d6049423a90c0463dd6db06cdacea454361d2cc"
+  },
+  "source_blobs": {
+    "semantic_htri_drive_v32.py": "1a8f7c9b44f06c1ddbe81f378cec0c6bab9ecc0c",
+    "test_semantic_htri_drive_v32.py": "ea2f23b8b8307a287305186e643dfaaf46159ced",
+    "PNCS_ORDERED_T36_TO_HTRI_DRIVE_V0_32.md": "ba4b6fe3a7ee4ba8a954518f35a990ce07109aab",
+    "PNCS_ORDERED_T36_TO_HTRI_DRIVE_V0_32.pnv": "5d5d4498c3106b3fa5cff1fc1825c07ef3a4cfd3"
+  },
+  "controls": {
+    "original_semantic_id": "pncs:semantic-sequence:sha256:10bfff43632c51df63e8a9e0f0d414ddba13b3e5acb476d4be1eca5c86f17e0d",
+    "reverse_semantic_id": "pncs:semantic-sequence:sha256:6710d44c3b522a35c2e8c88c1d35eec58aa410c5998d58fa58429b8aaa816e02",
+    "shuffle_semantic_id": "pncs:semantic-sequence:sha256:8f3fb35a3cdab26ebbef81fa595e84189a1ec9f3eaa551677694bd2410265878",
+    "original_final_g_sha256": "eef223cdf802affae8bbd6fa7661bd6c5424091983e4a4efff0f269b4a975bee",
+    "reverse_final_g_sha256": "e44c992d2072dfd31869319e3e690bc4aff6f4d557069e07b32327813664235b",
+    "shuffle_final_g_sha256": "5440b5f462baf8c96be2b8ac980c53f2ec29919b4d36716ae342bb1d5da0a00d",
+    "original_U_total_sha256": "b00de52d3bbc827cdfb9a1b2cb0796bb4664de174dd1f7ad81cd9d6185d504ce",
+    "reverse_U_total_sha256": "c59a90a3fa8b86b22d6f7d2cd62f69083f1e3a2ed6480bdbfe8b9d365a06bb50",
+    "shuffle_U_total_sha256": "62764b17062c68fcf31af5d7718935a46d34bd1b3e538c04cf234b331480508c",
+    "execution_ids_distinct": true,
+    "final_g_hashes_distinct": true,
+    "time_ordered_unitary_hashes_distinct": true
+  },
+  "numeric_gates": {
+    "max_target_residual_rad": 1.7763568394002505e-15,
+    "max_hermiticity_error": 0.0,
+    "max_cumulative_unitarity_error": 8.43769498715119e-15,
+    "exact_target_hit": "PASS",
+    "hermiticity": "PASS",
+    "time_ordered_unitarity": "PASS"
+  },
+  "terminal_state_diagnostic": {
+    "classification": "LOW_TERMINAL_STATE_SEPARATION_AT_SEVEN_NATIVE_TICKS",
+    "original_reverse_fidelity": 0.999999998099381,
+    "original_shuffle_fidelity": 0.9999999987493857,
+    "reverse_shuffle_fidelity": 0.9999999990993804,
+    "trajectory_authority": "ORDERED_PATH"
+  },
+  "control_effort": {
+    "max_control_abs": 356.7130687245258,
+    "max_per_step_control_l2": 1266.7526785660878,
+    "next_gate": "BOUNDED_MULTI_TICK_TARGET_TRACKING"
+  },
+  "new_pnv_opcodes": 0,
+  "hosted_ci": {
+    "status": "BLOCKED_INFRASTRUCTURE",
+    "classification": "HOSTED_RUNNER_PRE_STEP_FAILURE"
+  },
+  "reference_validation_receipt_sha256": "a96b87460009b31a5ba85307dcee9427274f2d95eca7e114762f4d40df4a12e0"
+}

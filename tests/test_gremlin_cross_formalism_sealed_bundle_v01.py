@@ -33,6 +33,24 @@ def _reseal(bundle):
     return bundle
 
 
+def _reseal_bank_manifest(bundle):
+    manifest = bundle["bank_manifest"]
+    bank_body = {
+        key: value
+        for key, value in manifest.items()
+        if key not in {"manifest_sha256", "compilation_schema", "compiled_entries"}
+    }
+    raw = json.dumps(
+        bank_body,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")
+    manifest["manifest_sha256"] = hashlib.sha256(raw).hexdigest()
+    return _reseal(bundle)
+
+
 @pytest.fixture(scope="module")
 def sealed_bundle():
     return compile_sealed_cross_formalism_bundle(**BASE)
@@ -80,7 +98,7 @@ def test_rehashed_pnv_tamper_fails_internal_holonomy(sealed_bundle):
     iso_id = sorted(tampered["candidate_payload"])[0]
     tampered["candidate_payload"][iso_id]["pnv_text"] += "\n# forged-and-resealed"
     _reseal(tampered)
-    with pytest.raises(CrossFormalismBundleError, match="PNV source no longer matches operator candidates"):
+    with pytest.raises(CrossFormalismBundleError, match="deterministic replay candidate payload mismatch"):
         verify_sealed_cross_formalism_bundle(tampered)
 
 
@@ -88,7 +106,7 @@ def test_rehashed_caller_provenance_tamper_fails_candidate_binding(sealed_bundle
     tampered = deepcopy(sealed_bundle)
     tampered["caller_provenance"]["identity"] = "FORGED_IDENTITY"
     _reseal(tampered)
-    with pytest.raises(CrossFormalismBundleError, match="candidate identity does not match caller provenance"):
+    with pytest.raises(CrossFormalismBundleError, match="deterministic replay bank manifest mismatch|candidate identity does not match caller provenance"):
         verify_sealed_cross_formalism_bundle(tampered)
 
 
@@ -98,7 +116,7 @@ def test_rehashed_candidate_envelope_tamper_fails_content_address(sealed_bundle)
     kaku_id = sorted(tampered["candidate_payload"][iso_id]["kaku_candidates"])[0]
     tampered["candidate_payload"][iso_id]["kaku_candidates"][kaku_id]["content"]["semantic_mass"] += 0.125
     _reseal(tampered)
-    with pytest.raises(CrossFormalismBundleError, match="candidate content hash mismatch"):
+    with pytest.raises(CrossFormalismBundleError, match="deterministic replay candidate payload mismatch"):
         verify_sealed_cross_formalism_bundle(tampered)
 
 
@@ -107,7 +125,15 @@ def test_rehashed_receipt_tamper_fails_receipt_commitment(sealed_bundle):
     iso_id = sorted(tampered["candidate_payload"])[0]
     tampered["candidate_payload"][iso_id]["receipt"]["pnv_graph_sha256"] = "0" * 64
     _reseal(tampered)
-    with pytest.raises(CrossFormalismBundleError, match="compilation receipt commitment mismatch"):
+    with pytest.raises(CrossFormalismBundleError, match="deterministic replay candidate payload mismatch"):
+        verify_sealed_cross_formalism_bundle(tampered)
+
+
+def test_rehashed_source_bank_forgery_fails_deterministic_replay(sealed_bundle):
+    tampered = deepcopy(sealed_bundle)
+    tampered["bank_manifest"]["source_pins"]["TIR"]["commit"] = "0" * 40
+    _reseal_bank_manifest(tampered)
+    with pytest.raises(CrossFormalismBundleError, match="deterministic replay bank manifest mismatch"):
         verify_sealed_cross_formalism_bundle(tampered)
 
 

@@ -11,10 +11,10 @@ from .gremlin_pnv_authoring_v02 import (
     build_kaku_candidate,
     build_operator_candidate,
     build_radical_candidate,
-    open_gremlin_pnv_authoring_live,
     persist_candidate,
     render_operator_program,
 )
+from .gremlin_live_hydration_v03 import open_verified_gremlin_pnv_authoring_live
 from .model import Kaku, RadicalGraph, Relation
 from .native_pnv_exec_v01 import NativePNVExecutionResult, execute_pnv, parse_pnv
 
@@ -320,9 +320,16 @@ def compile_relational_isomorphism_live(
     spec: RelationalIsomorphism,
     *,
     session: GremlinPNVAuthoringSession | None = None,
+    pnv_text: str | None = None,
     relation_opcode_overrides: Mapping[str, str] | None = None,
 ) -> RelationalCompilation:
-    live = session or open_gremlin_pnv_authoring_live()
+    if session is None:
+        if not pnv_text or not pnv_text.strip():
+            raise GremlinRelationalCompilerError(
+                "verified GREMLIN authoring session or exact triple-pulse PNV source is required"
+            )
+        session = open_verified_gremlin_pnv_authoring_live(pnv_text)
+    live = session
     compilation = compile_relational_isomorphism(
         spec,
         generation_binding=live.generation_binding,

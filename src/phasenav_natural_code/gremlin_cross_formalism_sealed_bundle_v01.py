@@ -190,10 +190,10 @@ def _verify_internal_holonomy(bundle: Mapping[str, object], *, deterministic_rep
             authoring_root=None,
         )
         replay_manifest = dict(replay_compiled.manifest)
-        if dict(manifest) != replay_manifest:
+        if _canonical_bytes(manifest) != _canonical_bytes(replay_manifest):
             raise CrossFormalismBundleError("deterministic replay bank manifest mismatch")
         replay_payload = _candidate_payload(replay_compiled)
-        if dict(candidate_payload) != dict(replay_payload):
+        if _canonical_bytes(candidate_payload) != _canonical_bytes(replay_payload):
             raise CrossFormalismBundleError("deterministic replay candidate payload mismatch")
 
         replay_validation = validate_cross_formalism_candidates(replay_compiled)
@@ -217,7 +217,7 @@ def _verify_internal_holonomy(bundle: Mapping[str, object], *, deterministic_rep
                 "epistemic": result.program.epistemic,
                 "receipt_sha256": replay_compiled.compilations[replay_iso_id].receipt["receipt_sha256"],
             }
-        if dict(validation) != replay_validation_summary:
+        if _canonical_bytes(validation) != _canonical_bytes(replay_validation_summary):
             raise CrossFormalismBundleError("deterministic replay validation summary mismatch")
 
     for iso_id in sorted(keyset):

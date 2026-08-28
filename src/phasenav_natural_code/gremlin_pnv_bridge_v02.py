@@ -9,7 +9,8 @@ resolves relation atoms through explicit semantic bindings plus exact PNCS
 realization/mass/vector evidence, exposes candidate inverse lineage, and provides
 an executable physical-law frame with information-holonomy receipts and source-law
 round-trip templates including Euler-closed, collective Noether, Noether↔RFC
-conserved-current, and scalar-field↔rotor collective-reduction gates.
+conserved-current, scalar-field↔rotor collective-reduction, and gauge-covariant
+field↔rotor pullback gates.
 """
 
 from .gremlin_native_pnv_bridge_v01 import (
@@ -139,6 +140,16 @@ from .pnv_scalar_field_rotor_reduction_v01 import (
     scalar_field_rotor_reduction_invariants,
     scalar_field_rotor_reduction_transforms,
 )
+from .pnv_gauge_covariant_phase_pullback_v01 import (
+    GAUGE_COVARIANT_PULLBACK_CONTRACT,
+    GAUGE_COVARIANT_PULLBACK_LOOP_ID,
+    PNVGaugeCovariantPhasePullbackError,
+    build_gauge_covariant_phase_pullback_loop,
+    gauge_covariant_phase_pullback_defects,
+    gauge_covariant_phase_pullback_invariants,
+    gauge_covariant_phase_pullback_transforms,
+    make_gauge_covariant_phase_pullback_state,
+)
 
 BRIDGE_SCHEMA = "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2"
 
@@ -199,6 +210,8 @@ __all__ = [
     "NOETHER_RFC_CURRENT_LOOP_ID",
     "SCALAR_FIELD_ROTOR_CONTRACT",
     "SCALAR_FIELD_ROTOR_LOOP_ID",
+    "GAUGE_COVARIANT_PULLBACK_CONTRACT",
+    "GAUGE_COVARIANT_PULLBACK_LOOP_ID",
     "C_LIGHT_EXACT",
     "NativePNVLiveBridgeError",
     "GremlinPNVAuthoringError",
@@ -211,6 +224,7 @@ __all__ = [
     "PNVNoetherCollectiveError",
     "PNVNoetherRFCCurrentError",
     "PNVScalarFieldRotorReductionError",
+    "PNVGaugeCovariantPhasePullbackError",
     "TriplePulseNativeRun",
     "BelzebubNativeRun",
     "GremlinPNVAuthoringSession",
@@ -286,4 +300,9 @@ __all__ = [
     "scalar_field_rotor_reduction_transforms",
     "scalar_field_rotor_reduction_invariants",
     "scalar_field_rotor_reduction_defects",
+    "make_gauge_covariant_phase_pullback_state",
+    "build_gauge_covariant_phase_pullback_loop",
+    "gauge_covariant_phase_pullback_transforms",
+    "gauge_covariant_phase_pullback_invariants",
+    "gauge_covariant_phase_pullback_defects",
 ]

@@ -5,14 +5,17 @@ import pytest
 from phasenav_natural_code.tau_frame_codec_v01 import (
     TauFrameCodecError,
     block_witness,
+    commitment_pair,
     decode_exact_delta_tau,
     decode_frame,
     encode_byte,
     encode_frame,
+    frame_commitment,
     tau_accept_radius,
     tau_spacing,
     verify_affine_invariance,
     verify_block_witness,
+    witness_commitment,
 )
 
 
@@ -36,9 +39,23 @@ def test_frame_roundtrip_and_whole_lane_witness():
     assert frame.witness.block_index == 7
 
 
-def test_block_index_changes_witness():
-    payload = b"same-content"
-    assert block_witness(payload, 1).phase_turns != block_witness(payload, 2).phase_turns
+def test_frame_and_witness_commitments_are_distinct_and_deterministic():
+    frame = encode_frame(b"BioOS-PNLF", 9)
+    fc1, wc1 = commitment_pair(frame)
+    fc2, wc2 = commitment_pair(encode_frame(b"BioOS-PNLF", 9))
+    assert (fc1, wc1) == (fc2, wc2)
+    assert fc1 == frame_commitment(frame)
+    assert wc1 == witness_commitment(frame.witness)
+    assert fc1 != wc1
+    assert len(fc1) == len(wc1) == 64
+
+
+def test_block_index_changes_frame_and_witness_commitments():
+    a = encode_frame(b"same-content", 1)
+    b = encode_frame(b"same-content", 2)
+    assert block_witness(a.payload, 1).phase_turns != block_witness(b.payload, 2).phase_turns
+    assert frame_commitment(a) != frame_commitment(b)
+    assert witness_commitment(a.witness) != witness_commitment(b.witness)
 
 
 def test_witness_tamper_fails_closed():

@@ -29,10 +29,10 @@ def test_bank_is_pinned_bounded_and_complete():
     assert len(manifest["manifest_sha256"]) == 64
 
 
-def test_cp1_poincare_entry_carries_non_isometry_firewall():
+def test_cp1_poincare_entry_carries_distinct_metric_contracts():
     entry = next(x for x in isomorphism_bank() if x.spec.isomorphism_id == "ISO.NQ.03.CP1.POINCARE.CONTINUATION")
     text = " ".join(entry.guardrails).lower()
-    assert "not admitted as a riemannian isometry" in text
+    assert "distinct metric contracts under maps_to" in text
     assert "curvature/signature/holonomy audit" in text
     assert entry.spec.edges[0].relation_type == "MAPS_TO"
 
@@ -40,7 +40,7 @@ def test_cp1_poincare_entry_carries_non_isometry_firewall():
 def test_spinorial_sheet_is_required_by_bank():
     entry = next(x for x in isomorphism_bank() if x.spec.isomorphism_id == "ISO.NQ.04.SPINOR.SHEET.WITNESS")
     assert "central ±I sheet" in entry.preserved_structure
-    assert any("fails closed" in guard for guard in entry.guardrails)
+    assert any("requires the declared sheet witness" in guard for guard in entry.guardrails)
 
 
 def test_bifurcation_preserves_magnitude_and_reverses_orientation():

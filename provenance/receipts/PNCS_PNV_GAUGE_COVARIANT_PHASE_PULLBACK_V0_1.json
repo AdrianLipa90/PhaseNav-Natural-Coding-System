@@ -8,111 +8,22 @@
   "loop_id": "SOURCE.PHASE.NOETHER.GAUGE_COVARIANT_PULLBACK.ROUNDTRIP",
   "information_holonomy_contract": "PNCS_PNV_INFORMATION_HOLONOMY_V0_1",
   "bridge_contract": "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2",
-  "gauge_convention": {
-    "berry_connection": "A_B=i<u|du>",
-    "section_transform": "u'=exp(i lambda)u",
-    "connection_transform": "A'=A-dlambda",
-    "phase_transform": "theta'=theta+lambda",
-    "gauge_invariant_phase_one_form": "Dtheta=dtheta+A_ABE",
-    "rotor_covariant_rate": "D_tau_chi=dot_chi+A_ABE_a qdot^a"
-  },
-  "pullback_theorem": {
-    "common_local_fiber_coordinate": "chi(tau)=theta(q(tau))+chi_0",
-    "identity": "q^*(Dtheta)=D_tau_chi dtau",
-    "field_pullback_rate": "r_field=sum_a(partial_a theta+A_a^ABE)qdot^a",
-    "normal_rate": "r_n=n_mu D^mu theta",
-    "rotor_rate": "r_rotor=D_tau chi"
-  },
-  "generator_reduction": {
-    "C_A": "sum_a A_a^2 V_a",
-    "I_A": "2 C_A",
-    "Q_theta": "I_A r_n",
-    "P_Phi": "I_phi r_rotor",
-    "H_Phi": "P_Phi^2/(2 I_phi)",
-    "epsilon_N": "H_Phi/Q_theta",
-    "moment_map_factorization": "Q_theta/P_Phi=(I_A/I_phi)(r_n/r_rotor)",
-    "exact_zero_defect_consequence": "I_A=I_phi and r_n=r_field=r_rotor => Q_theta=P_Phi and epsilon_N=r_rotor/2"
-  },
-  "audited_defects": [
-    "Delta_gauge",
-    "Delta_I_reduction",
-    "Delta_rate",
-    "Delta_normal",
-    "Delta_Q",
-    "Delta_epsilon",
-    "Delta_factorization",
-    "Delta_action"
-  ],
-  "admission_ids": [
-    "bundle_id",
-    "phase_patch_id",
-    "ABE_connection_id",
-    "measure_id",
-    "ordered_collective_support"
-  ],
-  "gauge_sign_discrimination": {
-    "nontrivial_probe_required": true,
-    "admitted_combination": "dtheta+A_ABE",
-    "opposite_sign_residual_recorded": true
-  },
-  "transforms": [
-    "gauge_phase.bind_common_u1_generator",
-    "gauge_phase.reconstruct_pullback_input"
-  ],
-  "focused_checks": {
-    "module_unit_roundtrip_adversarial": 13,
-    "unified_bridge_export": 1,
-    "total": 14
-  },
+  "gauge_convention": {"berry_connection":"A_B=i<u|du>","section_transform":"u'=exp(i lambda)u","connection_transform":"A'=A-dlambda","phase_transform":"theta'=theta+lambda","gauge_invariant_phase_one_form":"Dtheta=dtheta+A_ABE","rotor_covariant_rate":"D_tau_chi=dot_chi+A_ABE_a qdot^a"},
+  "pullback_theorem": {"common_local_fiber_coordinate":"chi(tau)=theta(q(tau))+chi_0","identity":"q^*(Dtheta)=D_tau_chi dtau","field_pullback_rate":"r_field=sum_a(partial_a theta+A_a^ABE)qdot^a","normal_rate":"r_n=n_mu D^mu theta","rotor_rate":"r_rotor=D_tau chi"},
+  "generator_reduction": {"C_A":"sum_a A_a^2 V_a","I_A":"2 C_A","Q_theta":"I_A r_n","P_Phi":"I_phi r_rotor","H_Phi":"P_Phi^2/(2 I_phi)","epsilon_N":"H_Phi/Q_theta","moment_map_factorization":"Q_theta/P_Phi=(I_A/I_phi)(r_n/r_rotor)","exact_zero_defect_consequence":"I_A=I_phi and r_n=r_field=r_rotor => Q_theta=P_Phi and epsilon_N=r_rotor/2"},
+  "audited_defects": ["Delta_gauge","Delta_I_reduction","Delta_rate","Delta_normal","Delta_Q","Delta_epsilon","Delta_factorization","Delta_action"],
+  "admission_ids": ["bundle_id","phase_patch_id","ABE_connection_id","measure_id","ordered_collective_support"],
+  "gauge_sign_discrimination": {"nontrivial_probe_required":true,"admitted_combination":"dtheta+A_ABE","opposite_sign_residual_recorded":true},
+  "transforms": ["gauge_phase.bind_common_u1_generator","gauge_phase.reconstruct_pullback_input"],
+  "focused_checks": {"module_unit_roundtrip_adversarial":13,"unified_bridge_export":1,"total":14},
   "cross_repository_reference_execution": {
-    "idt": {
-      "tested_commit": "ac3151933eba6960def114fd1548df70abab4a6d",
-      "workflow_run_id": 33128706242,
-      "workflow_job_id": 98712901979,
-      "passed": 381,
-      "failed": 0,
-      "status": "PASS"
-    },
-    "rfc": {
-      "tested_commit": "a33967d93f6eeb5595575b39716120a67343e506",
-      "workflow_run_id": 33128745489,
-      "workflow_job_id": 98713029820,
-      "passed": 73,
-      "failed": 0,
-      "status": "PASS"
-    }
+    "idt": {"tested_commit":"8fa5b2b403cbc7a1fa0974cadd814955579e7aca","workflow_run_id":33129313162,"workflow_job_id":98714848215,"passed":382,"failed":0,"status":"PASS"},
+    "rfc": {"tested_commit":"e14a2ca01659a2552d2c19fe48adb0f81afe6e8a","workflow_run_id":33129392820,"workflow_job_id":98715102216,"passed":74,"failed":0,"status":"PASS"}
   },
-  "static_api_audit": {
-    "issue_found": "initial builder passed unsupported evidence_refs to HolonomyInvariant",
-    "classification": "IMPLEMENTATION_ERROR_FOUND_BEFORE_RUNNER_EXECUTION",
-    "fixed_commit": "b741460dba15d979a6387305daf93f476becb54e",
-    "base_api_signature": "HolonomyInvariant(invariant_id, mode='EXACT', tolerance=0.0)",
-    "post_fix_state": "ALIGNED_WITH_INFORMATION_HOLONOMY_API"
-  },
-  "pncs_ci": {
-    "workflow": "PNCS GREMLIN PNV authoring",
-    "run_id": 33129045847,
-    "job_id": 98713992469,
-    "head_sha": "b741460dba15d979a6387305daf93f476becb54e",
-    "conclusion": "failure",
-    "steps": null,
-    "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
-    "code_test_failure_observed": false
-  },
-  "noema": {
-    "guard_schema": "noema.aux-tether-guard/v2",
-    "surface_root": "/dev/shm/ciel_noema",
-    "tether_status": "ACTIVE",
-    "failures": []
-  },
-  "physical_frontier": [
-    "physical realization of the common U(1) bundle/patch/ABE connection",
-    "normal-flow/slice realization",
-    "J_Q^mu <-> J_theta^mu",
-    "Q_Sigma <-> Q_theta",
-    "p_IDT <-> p_Q",
-    "source coupling/universality"
-  ],
+  "static_api_audit": {"issue_found":"initial builder passed unsupported evidence_refs to HolonomyInvariant","classification":"IMPLEMENTATION_ERROR_FOUND_BEFORE_RUNNER_EXECUTION","fixed_commit":"b741460dba15d979a6387305daf93f476becb54e","base_api_signature":"HolonomyInvariant(invariant_id, mode='EXACT', tolerance=0.0)","post_fix_state":"ALIGNED_WITH_INFORMATION_HOLONOMY_API"},
+  "pncs_ci": {"workflow":"PNCS GREMLIN PNV authoring","run_id":33129045847,"job_id":98713992469,"head_sha":"b741460dba15d979a6387305daf93f476becb54e","conclusion":"failure","steps":null,"classification":"CI_EXECUTION_UNRESOLVED_PRE_TEST","code_test_failure_observed":false},
+  "noema": {"guard_schema":"noema.aux-tether-guard/v2","surface_root":"/dev/shm/ciel_noema","tether_status":"ACTIVE","failures":[]},
+  "physical_frontier": ["physical realization of the common U(1) bundle/patch/ABE connection","normal-flow/slice realization","J_Q^mu <-> J_theta^mu","Q_Sigma <-> Q_theta","p_IDT <-> p_Q","source coupling/universality"],
   "epistemic_state": "CHYBA",
   "promotion_state": "CANDIDATE_ONLY",
   "runtime_execution_authority": false,

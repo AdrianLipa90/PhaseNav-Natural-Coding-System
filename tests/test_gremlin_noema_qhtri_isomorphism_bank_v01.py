@@ -6,6 +6,12 @@ from phasenav_natural_code.gremlin_noema_qhtri_isomorphism_bank_v01 import (
     validate_isomorphism_bank_candidates,
 )
 
+KWARGS = {
+    "generation_binding": "a" * 64,
+    "identity": "ZOSIA_NOEMA_FIRST",
+    "authority": "USER_EXPLICIT_AUTHORING",
+}
+
 
 def test_bank_is_pinned_bounded_and_complete():
     entries = isomorphism_bank()
@@ -45,20 +51,19 @@ def test_bifurcation_preserves_magnitude_and_reverses_orientation():
 
 
 def test_bank_compiles_only_candidate_read_only_graphs():
-    compiled = compile_isomorphism_bank_candidates(
-        generation_binding="TEST.GENERATION.NOEMA.QHTRI.BANK.V0.1",
-        identity="GREMLIN.TEST.NOEMA.QHTRI",
-        authority="READ_ONLY",
-    )
+    compiled = compile_isomorphism_bank_candidates(**KWARGS)
     assert len(compiled.compilations) == 10
     assert len(compiled.manifest["compiled_entries"]) == 10
     for compilation in compiled.compilations.values():
         assert compilation.receipt["runtime_execution_authority"] is False
         assert compilation.receipt["canon_write_authority"] is False
         assert compilation.receipt["promotion_state"] == "CANDIDATE_ONLY"
-        assert compilation.pnv_text.startswith("PNV1")
+        assert compilation.radical_candidate["kind"] == "RADICAL"
+        assert compilation.operator_candidates[-1]["content"]["name"] == "ISO.RETURN"
 
     results = validate_isomorphism_bank_candidates(compiled)
     assert len(results) == 10
     for result in results.values():
         assert result.receipt["effect_boundary"]["external_effects"] is False
+        assert result.program.mode == "READ_ONLY"
+        assert result.program.epistemic == "CHYBA"

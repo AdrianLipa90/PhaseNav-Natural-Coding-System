@@ -34,9 +34,16 @@ from .gremlin_pnv_authoring_v02 import (
     build_kaku_candidate,
     build_operator_candidate,
     build_radical_candidate,
-    open_gremlin_pnv_authoring_live,
     persist_candidate,
     render_operator_program,
+)
+from .gremlin_live_hydration_v03 import (
+    GENERATION_BASIS_SCHEMA,
+    LIVE_WITNESS_SCHEMA,
+    GremlinLiveHydration,
+    GremlinLiveHydrationError,
+    hydrate_gremlin_pnv_live,
+    open_verified_gremlin_pnv_authoring_live,
 )
 from .gremlin_relational_compiler_v01 import (
     COMPILER_SCHEMA as RELATIONAL_COMPILER_SCHEMA,
@@ -154,12 +161,34 @@ from .pnv_gauge_covariant_phase_pullback_v01 import (
 BRIDGE_SCHEMA = "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2"
 
 
+def open_gremlin_pnv_authoring_live(
+    pnv_text: str,
+    **kwargs,
+) -> GremlinPNVAuthoringSession:
+    """Public live authoring entry point; always verifies the v0.3 witness."""
+    return open_verified_gremlin_pnv_authoring_live(pnv_text, **kwargs)
+
+
+def _resolve_verified_live_session(
+    session: GremlinPNVAuthoringSession | None,
+    pnv_text: str | None,
+) -> GremlinPNVAuthoringSession:
+    if session is not None:
+        return session
+    if not pnv_text or not pnv_text.strip():
+        raise GremlinPNVAuthoringError(
+            "verified GREMLIN authoring session or exact triple-pulse PNV source is required"
+        )
+    return open_verified_gremlin_pnv_authoring_live(pnv_text)
+
+
 def persist_gremlin_candidate_inverse_lineage_live(
     lineage: GremlinCandidateInverseLineage,
     *,
     session: GremlinPNVAuthoringSession | None = None,
+    pnv_text: str | None = None,
 ) -> str:
-    live = session or open_gremlin_pnv_authoring_live()
+    live = _resolve_verified_live_session(session, pnv_text)
     return persist_gremlin_candidate_inverse_lineage(lineage, authoring_root=live.authoring_root)
 
 
@@ -167,8 +196,9 @@ def compile_information_holonomy_loop_live(
     loop: InformationHolonomyLoop,
     *,
     session: GremlinPNVAuthoringSession | None = None,
+    pnv_text: str | None = None,
 ) -> RelationalCompilation:
-    live = session or open_gremlin_pnv_authoring_live()
+    live = _resolve_verified_live_session(session, pnv_text)
     return compile_information_holonomy_loop(
         loop,
         generation_binding=live.generation_binding,
@@ -182,8 +212,9 @@ def persist_information_holonomy_audit_live(
     audit: InformationHolonomyAudit,
     *,
     session: GremlinPNVAuthoringSession | None = None,
+    pnv_text: str | None = None,
 ) -> str:
-    live = session or open_gremlin_pnv_authoring_live()
+    live = _resolve_verified_live_session(session, pnv_text)
     return persist_information_holonomy_audit(audit, authoring_root=live.authoring_root)
 
 
@@ -194,6 +225,8 @@ __all__ = [
     "AUTHORING_SCHEMA",
     "CANDIDATE_SCHEMA",
     "AUTHORING_RECEIPT_SCHEMA",
+    "LIVE_WITNESS_SCHEMA",
+    "GENERATION_BASIS_SCHEMA",
     "RELATIONAL_COMPILER_SCHEMA",
     "RELATIONAL_COMPILATION_RECEIPT_SCHEMA",
     "RELATION_MINING_ADAPTER_SCHEMA",
@@ -215,6 +248,7 @@ __all__ = [
     "C_LIGHT_EXACT",
     "NativePNVLiveBridgeError",
     "GremlinPNVAuthoringError",
+    "GremlinLiveHydrationError",
     "GremlinRelationalCompilerError",
     "GremlinRelationMiningAdapterError",
     "GremlinKakuResolverError",
@@ -228,6 +262,7 @@ __all__ = [
     "TriplePulseNativeRun",
     "BelzebubNativeRun",
     "GremlinPNVAuthoringSession",
+    "GremlinLiveHydration",
     "RelationalNode",
     "RelationalEdge",
     "RelationalIsomorphism",
@@ -247,12 +282,14 @@ __all__ = [
     "compare_triple_pulse_harness",
     "execute_belzebub",
     "execute_belzebub_live",
+    "hydrate_gremlin_pnv_live",
     "build_kaku_candidate",
     "build_radical_candidate",
     "build_operator_candidate",
     "persist_candidate",
     "render_operator_program",
     "open_gremlin_pnv_authoring_live",
+    "open_verified_gremlin_pnv_authoring_live",
     "compile_relational_isomorphism",
     "compile_relational_isomorphism_live",
     "validate_compiled_relational_candidate",

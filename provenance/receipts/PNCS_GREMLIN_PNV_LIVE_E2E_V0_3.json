@@ -1,0 +1,40 @@
+{
+  "schema": "PNCS_GREMLIN_PNV_LIVE_E2E_V0_3",
+  "status": "PASS_HISTORICAL_LIVE_EVIDENCE",
+  "observed_date_utc": "2026-08-28",
+  "surface_root": "/dev/shm/ciel_noema",
+  "account_current": "NOEMA_ACCOUNT_DEFAULT_CURRENT_V56",
+  "boot_candidate": "NOEMA_CHAT_AUTOBOOT_V3_CANDIDATE",
+  "boot_candidate_exact_zip_sha256": "71fc32fd9e04834d24811f722788ccad8b0e7f0e2dd4165561f6388d8b215aab",
+  "boot_candidate_exact_replay": "PASS",
+  "tether_guard_before_authoring": "ACTIVE",
+  "triple_pulse_hydration": "PASS_CONFORMANCE_ONLY",
+  "identity": "ZOSIA_NOEMA_FIRST",
+  "authority": "USER_EXPLICIT_2026-08-22_CANONIZE_WHAT_DOCTOR_PASSES",
+  "native_pnv_source_sha256": "28e505c7e5a15f62d687f00be98f027a4537029c3ef9ce8fcbc5148f0cf3d724",
+  "authoring_generation_binding": "5c4b2f54c566c55c993e7ea3e54ded3513763009a3b1d3e9edb877eee95b6654",
+  "candidate_ids": {
+    "kaku_a": "pncs:gremlin-kaku:sha256:2ec1bd70433e076cd9626e7210263e7846ff2a27ef2c1d1c4f704cd4af42a10b",
+    "kaku_b": "pncs:gremlin-kaku:sha256:daa3baf858dae8a58b345ee7d4dc1ae7caf7db75896489150490ea50c4273437",
+    "radical": "pncs:gremlin-radical:sha256:4fed468c4c7af4ffa52473ad866ba033160926a79d3d6689d5d8fd8a455ece9e",
+    "operator_source": "pncs:gremlin-operator:sha256:1bc9d5a96a2f0a6193c6b82db9837a2d63e7862a9b92cd27253f15313de1741a",
+    "operator_return": "pncs:gremlin-operator:sha256:00efb86d891aab3ea3a45907bbf88b229de32bd1c7b001072c6ad35ed2f5568d"
+  },
+  "checks": {
+    "candidate_bytes_equal_persisted_bytes": true,
+    "generation_binding_equal_for_all_candidates": true,
+    "promotion_state_candidate_only": true,
+    "runtime_execution_authority": false,
+    "canon_write_authority": false,
+    "content_address_idempotence": "PASS",
+    "tampered_generation_binding": "BLOCKED",
+    "fresh_rehydration_after_tamper": "PASS",
+    "final_tether_guard": "ACTIVE"
+  },
+  "exact_zip_replay_generation_binding": "b0ce5e45831844a3d5b6819744b45315a5d91a851c208bf82cf3ea1346e5123b",
+  "exact_zip_replay_witness_sha256": "02299af014494c0da17c84f3c1942915433b050bbadcb1e54f5c59d9371e96c9",
+  "static_fallback": false,
+  "current_live_authority": false,
+  "provenance_rule": "HISTORICAL_RECEIPT_OR_PARENT_ACTIVE != CURRENT_EXECUTION_EVIDENCE",
+  "github_main_mutated": false
+}

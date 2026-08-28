@@ -1,0 +1,33 @@
+{
+  "schema": "PNCS_PNV_SOURCE_HOLONOMY_LOOPS_IMPLEMENTATION_RECEIPT_V0_1",
+  "status": "EIGHT_SOURCE_LOOPS_IMPLEMENTED__IDT_RFC_REFERENCE_PASS__PNCS_CI_EXECUTION_UNRESOLVED_PRE_TEST",
+  "branch": "feat/gremlin-pnv-authoring-v0.2",
+  "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
+  "executable_code_snapshot": "b741460dba15d979a6387305daf93f476becb54e",
+  "source_holonomy_contract": "PNCS_PNV_SOURCE_HOLONOMY_LOOPS_V0_1",
+  "information_holonomy_contract": "PNCS_PNV_INFORMATION_HOLONOMY_V0_1",
+  "bridge_contract": "PNCS_GREMLIN_NATIVE_PNV_BRIDGE_V0_2",
+  "additional_contracts": ["PNCS_PNV_NOETHER_COLLECTIVE_CARRIER_V0_1","PNCS_PNV_NOETHER_RFC_CURRENT_BINDING_V0_1","PNCS_PNV_SCALAR_FIELD_ROTOR_INERTIA_REDUCTION_V0_1","PNCS_PNV_GAUGE_COVARIANT_PHASE_PULLBACK_V0_1"],
+  "loops": [
+    {"loop_id":"SOURCE.CARRIER.NORMALIZATION.ROUNDTRIP","gate_state":"REFERENCE_EXACT_CONTROL"},
+    {"loop_id":"SOURCE.CARRIER.Q0_OCCUPATION.ROUNDTRIP","gate_state":"Q0_CONDITIONAL"},
+    {"loop_id":"SOURCE.CARRIER.EPSILON_MASS_DENSITY.ROUNDTRIP","gate_state":"EPSILON_Q_DOWNSTREAM_CONDITIONAL_CONSUMER"},
+    {"loop_id":"SOURCE.PHASE_INTENTION.EULER_CHARGE_ENERGY.ROUNDTRIP","gate_state":"EULER_CLOSED_PHASE_ENERGY_CANDIDATE"},
+    {"loop_id":"SOURCE.PHASE_NOETHER.COLLECTIVE_CARRIER.ROUNDTRIP","gate_state":"FINITE_NOETHER_CARRIER_TYPED"},
+    {"loop_id":"SOURCE.PHASE_NOETHER.RFC_CONSERVED_CURRENT.ROUNDTRIP","gate_state":"EXACT_CURRENT_MEASURE_FALSIFICATION_GATE"},
+    {"loop_id":"SOURCE.PHASE_NOETHER.ROTOR_INERTIA.REDUCTION.ROUNDTRIP","gate_state":"CONDITIONAL_EXACT_COLLECTIVE_COEFFICIENT_REDUCTION"},
+    {"loop_id":"SOURCE.PHASE.NOETHER.GAUGE_COVARIANT_PULLBACK.ROUNDTRIP","gate_state":"CONDITIONAL_EXACT_COMMON_U1_GAUGE_PULLBACK"}
+  ],
+  "scalar_field_rotor_reduction": {"C_A":"sum A_a^2 V_a","I_A":"2 C_A","Delta_I_01Z":"abs(I_A/I_phi-1)","Delta_I_reduction":"abs(I_phi-I_A)/I_A","Delta_coefficient":"abs(I_phi/2-C_A)/C_A","Delta_Q_reduction":"abs(P_Phi-Q_theta)/Q_theta","Delta_epsilon_reduction":"abs(epsilon_N-(D_tau_chi)/2)/((D_tau_chi)/2)","exact_identity":"common positive D_tau_chi => Delta_I_reduction=Delta_coefficient=Delta_Q_reduction=Delta_epsilon_reduction","exact_consequence":"I_phi=I_A => P_Phi=Q_theta and epsilon_N=(1/2)D_tau_chi"},
+  "gauge_covariant_pullback": {"connection_transform":"A'=A-dlambda","phase_transform":"theta'=theta+lambda","gauge_invariant_one_form":"Dtheta=dtheta+A_ABE","field_pullback_rate":"r_field=sum(partial_a theta+A_a^ABE)qdot^a","normal_rate":"r_n=n_mu D^mu theta","rotor_rate":"r_rotor=D_tau chi","Q_theta":"I_A r_n","P_Phi":"I_phi r_rotor","moment_map_factorization":"Q_theta/P_Phi=(I_A/I_phi)(r_n/r_rotor)","audited_defects":["Delta_gauge","Delta_I_reduction","Delta_rate","Delta_normal","Delta_Q","Delta_epsilon","Delta_factorization","Delta_action"],"exact_consequence":"common zero-defect surface => Q_theta=P_Phi and epsilon_N=(1/2)D_tau_chi"},
+  "tests_authored": {"first_four_source_loops_including_bridge":16,"noether_collective_including_bridge":10,"noether_rfc_current_including_bridge":16,"scalar_field_rotor_reduction_including_bridge":12,"gauge_covariant_pullback_including_bridge":14,"total_focused_source_law_checks":68},
+  "cross_repository_reference_execution": {
+    "idt": {"tested_commit":"8fa5b2b403cbc7a1fa0974cadd814955579e7aca","workflow_run_id":33129313162,"workflow_job_id":98714848215,"passed":382,"failed":0,"status":"PASS"},
+    "rfc": {"tested_commit":"e14a2ca01659a2552d2c19fe48adb0f81afe6e8a","workflow_run_id":33129392820,"workflow_job_id":98715102216,"passed":74,"failed":0,"status":"PASS"}
+  },
+  "noema": {"guard_schema":"noema.aux-tether-guard/v2","surface_root":"/dev/shm/ciel_noema","tether_status":"ACTIVE","failures":[]},
+  "ci": {"workflow":"PNCS GREMLIN PNV authoring","run_id":33129045847,"job_id":98713992469,"head_sha":"b741460dba15d979a6387305daf93f476becb54e","conclusion":"failure","steps":null,"classification":"CI_EXECUTION_UNRESOLVED_PRE_TEST","code_test_failure_observed":false},
+  "authority": {"epistemic_state":"CHYBA","promotion_state":"CANDIDATE_ONLY","runtime_execution_authority":false,"canon_write_authority":false},
+  "physical_frontier": ["physical realization of the common U(1) bundle/patch/ABE connection","normal-flow/slice realization","J_Q^mu <-> J_theta^mu","Q_Sigma <-> Q_theta","p_IDT <-> p_Q","source coupling/universality"],
+  "main_mutated": false
+}

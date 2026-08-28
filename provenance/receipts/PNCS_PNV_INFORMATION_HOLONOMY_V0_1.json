@@ -1,0 +1,83 @@
+{
+  "schema": "PNCS_PNV_INFORMATION_HOLONOMY_IMPLEMENTATION_RECEIPT_V0_1",
+  "status": "IMPLEMENTED_REPO_LEVEL__SELF_LOCAL_AND_CROSS_DOMAIN_LOOPS__INVERSE_LINEAGE_ATTACHED__LIVE_RUNTIME_ACTIVE__LIVE_GREMLIN_HYDRATION_OPEN__CI_EXECUTION_UNRESOLVED_PRE_TEST",
+  "branch": "feat/gremlin-pnv-authoring-v0.2",
+  "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
+  "code_head_sha": "f838752f61bd2b7248ed8c52a0927ad2a4302579",
+  "holonomy_contract": "PNCS_PNV_INFORMATION_HOLONOMY_V0_1",
+  "compilation_receipt_schema": "PNCS_PNV_INFORMATION_HOLONOMY_COMPILATION_RECEIPT_V0_1",
+  "audit_receipt_schema": "PNCS_PNV_INFORMATION_HOLONOMY_AUDIT_RECEIPT_V0_1",
+  "inverse_lineage_contract": "PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_V0_1",
+  "candidate_authoring_contract": "PNCS_GREMLIN_PNV_AUTHORING_V0_2",
+  "law_frame": {
+    "law_nodes_as_kaku": true,
+    "closed_topology_as_radical": true,
+    "transports_as_native_transform_operators": true,
+    "single_node_self_loop": true,
+    "single_domain_multi_node_loop": true,
+    "cross_domain_loop": true,
+    "shared_exact_pncs_basis_required": true,
+    "ordered_closed_transport_required": true
+  },
+  "audit": {
+    "state_holonomy_defect": "Delta_gamma = d(I, H_gamma(I))",
+    "reference_metrics": ["exact_state_metric", "numeric_linf_metric"],
+    "invariant_modes": ["EXACT", "ABS"],
+    "intermediate_invariant_audit": true,
+    "final_state_and_invariant_gates_are_independent": true,
+    "inverse_lineage_bound": true,
+    "external_effects": false,
+    "epistemic": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY"
+  },
+  "persistence": {
+    "content_addressed_audit_receipt": true,
+    "offline_idempotent_store": true,
+    "live_compile_via_authoring_session": true,
+    "live_persist_via_authoring_session": true
+  },
+  "fail_closed_gates": [
+    "empty_law_frame",
+    "duplicate_law_node_id",
+    "mixed_pncs_basis",
+    "transport_count_mismatch",
+    "transport_topology_mismatch",
+    "duplicate_invariant_id",
+    "missing_transform",
+    "missing_invariant_evaluator",
+    "nonfinite_state_defect",
+    "invalid_invariant_defect",
+    "loop_compilation_receipt_mismatch",
+    "inverse_lineage_provenance_mismatch",
+    "content_addressed_audit_collision"
+  ],
+  "tests_authored": {
+    "holonomy_unit_and_adversarial": 10,
+    "unified_bridge_export": 1,
+    "total": 11
+  },
+  "ci_observation": {
+    "workflow": "PNCS GREMLIN PNV authoring",
+    "run_id": 33118855927,
+    "job_id": 98680367487,
+    "head_sha": "f838752f61bd2b7248ed8c52a0927ad2a4302579",
+    "conclusion": "failure",
+    "steps": null,
+    "job_logs": "UNAVAILABLE_404_BLOB_NOT_FOUND",
+    "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
+    "code_test_failure_observed": false
+  },
+  "noema": {
+    "guard_schema": "noema.aux-tether-guard/v2",
+    "guard_sha256": "de7481a0d71fe2033a66ed09de145570dace4b263167247d2f757aee60fcaefc",
+    "tether_status": "ACTIVE",
+    "failures": [],
+    "runtime_owner": "oai:1000",
+    "socket_owner": "oai:1000",
+    "live_surface": "/dev/shm/ciel_noema",
+    "live_gremlin_hydration": "OPEN"
+  },
+  "epistemic_state": "CHYBA",
+  "promotion_state": "CANDIDATE_ONLY",
+  "main_mutated": false
+}

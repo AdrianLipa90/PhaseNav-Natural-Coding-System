@@ -1,0 +1,107 @@
+{
+  "schema": "PNCS_PNV_NOETHER_RFC_CURRENT_BINDING_IMPLEMENTATION_RECEIPT_V0_1",
+  "status": "IMPLEMENTED_EXACT_DEFECT_BOUND_CANDIDATE_CURRENT_BINDING__IDT_RFC_REFERENCE_PASS__PNCS_CI_EXECUTION_UNRESOLVED_PRE_TEST",
+  "branch": "feat/gremlin-pnv-authoring-v0.2",
+  "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
+  "code_snapshot": "ae08bb9df367926322ce5ec74a9382135cba61f6",
+  "contract": "PNCS_PNV_NOETHER_RFC_CURRENT_BINDING_V0_1",
+  "semantic_loop": "SOURCE.PHASE_NOETHER.RFC_CONSERVED_CURRENT.ROUNDTRIP",
+  "equations": [
+    "Q_theta=sum_a V_theta,a*j_theta,a",
+    "Q_Sigma=sum_a V_Q,a*j_Q,a",
+    "Delta_J=sum_a V_Q,a*abs(j_Q,a-j_theta,a)/Q_theta",
+    "Delta_V=sum_a abs(V_Q,a-V_theta,a)*abs(j_theta,a)/Q_theta",
+    "Delta_Sigma=abs(Q_Sigma-Q_theta)/Q_theta",
+    "Delta_bound=max(0,Delta_Sigma-(Delta_J+Delta_V))",
+    "Delta_F=abs(F_side)",
+    "Delta_Sigma<=Delta_J+Delta_V"
+  ],
+  "semantic_gates": {
+    "slice_id": "EXPLICIT",
+    "measure_id_equality": "FAIL_CLOSED_EXACT",
+    "normal_orientation_equality": "FAIL_CLOSED_EXACT",
+    "ordered_cell_id_equality": "FAIL_CLOSED_EXACT",
+    "cell_volume_binding": "CONDITIONAL_MEASURED_BY_Delta_V",
+    "local_current_binding": "CONDITIONAL_MEASURED_BY_Delta_J",
+    "total_charge_binding": "CONDITIONAL_MEASURED_BY_Delta_Sigma",
+    "defect_triangle_bound": "EXACT_FAIL_CLOSED",
+    "side_flux_binding": "CONDITIONAL_ZERO_MEASURED_BY_Delta_F"
+  },
+  "law_nodes": [
+    "LAW.NOETHER.LOCAL_NORMAL_CURRENT",
+    "LAW.SOURCE.COMMON_SLICE_MEASURE",
+    "LAW.RFC.CONSERVED_LOCAL_CURRENT"
+  ],
+  "invariants": [
+    "SOURCE.NOETHER_TOTAL_CHARGE",
+    "SOURCE.RFC_TOTAL_CHARGE",
+    "SOURCE.COMMON_MEASURE_DEFECT",
+    "SOURCE.LOCAL_CURRENT_BINDING_DEFECT",
+    "SOURCE.TOTAL_CHARGE_BINDING_DEFECT",
+    "SOURCE.CURRENT_MEASURE_BOUND_MARGIN",
+    "SOURCE.NOETHER_PROFILE_NORM",
+    "SOURCE.RFC_PROFILE_NORM",
+    "SOURCE.SIDE_FLUX_DEFECT"
+  ],
+  "anti_false_positive_witness": {
+    "volumes": [1.0, 1.0],
+    "j_theta": [1.0, 3.0],
+    "j_Q": [2.0, 2.0],
+    "Q_theta": 4.0,
+    "Q_Sigma": 4.0,
+    "Delta_Sigma": 0.0,
+    "Delta_J": 0.5,
+    "Delta_V": 0.0,
+    "expected_binding": "FAIL_LOCAL_CURRENT"
+  },
+  "tests_authored": {
+    "current_binding_unit_roundtrip_and_adversarial": 15,
+    "unified_bridge_export": 1,
+    "total": 16
+  },
+  "ci": {
+    "workflow": "PNCS GREMLIN PNV authoring",
+    "run_id": 33124207227,
+    "job_id": 98698284462,
+    "head_sha": "ae08bb9df367926322ce5ec74a9382135cba61f6",
+    "conclusion": "failure",
+    "steps": [],
+    "runner_id": 0,
+    "classification": "CI_EXECUTION_UNRESOLVED_PRE_TEST",
+    "code_test_failure_observed": false
+  },
+  "peer_reference_execution": {
+    "idt": {
+      "repository": "AdrianLipa90/Informational-Dynamics-of-Time",
+      "branch": "feat/idt-rfc-normalized-shape-holonomy-v0.1",
+      "tested_commit": "2f773e6c9cba613c953234ae3a4565c04ee8742f",
+      "workflow_run_id": 33124801663,
+      "workflow_job_id": 98700227772,
+      "passed": 366,
+      "failed": 0,
+      "status": "PASS"
+    },
+    "rfc": {
+      "repository": "AdrianLipa90/Relational-Field-Closure",
+      "branch": "feat/rfc-gremlin-pnv-holonomy-v0.1",
+      "tested_commit": "1d80be7b6ba23e31d0e7481877074ff79862683e",
+      "workflow_run_id": 33124840639,
+      "workflow_job_id": 98700357919,
+      "passed": 58,
+      "failed": 0,
+      "status": "PASS"
+    }
+  },
+  "physical_promotion": {
+    "Q_Sigma_to_Q_theta": "OPEN_MEASURED_BINDING",
+    "epsilon_Q_to_epsilon_N_EB": "OPEN_DOWNSTREAM_OF_CARRIER_PROMOTION",
+    "p_IDT_to_p_Q": "OPEN_STATE_SPACE_BINDING"
+  },
+  "authority": {
+    "epistemic_state": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false
+  },
+  "main_mutated": false
+}

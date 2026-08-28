@@ -1,0 +1,66 @@
+{
+  "schema": "PNCS_GREMLIN_KAKU_RESOLVER_IMPLEMENTATION_RECEIPT_V0_1",
+  "status": "IMPLEMENTED_EXACT_RESOLVER__CI_RUNNER_UNAVAILABLE__LIVE_GREMLIN_HYDRATION_OPEN",
+  "branch": "feat/gremlin-pnv-authoring-v0.2",
+  "base_main_sha": "83a06b9398bab09052c2c2124974897cc31a461f",
+  "resolver_contract": "PNCS_GREMLIN_KAKU_RESOLVER_V0_1",
+  "resolution_receipt_schema": "PNCS_GREMLIN_KAKU_RESOLUTION_RECEIPT_V0_1",
+  "relation_mining_ledger_schema": "PNCS_RELATION_MINING_LEDGER_V0_3",
+  "relation_mining_adapter_contract": "PNCS_GREMLIN_RELATION_MINING_ADAPTER_V0_1",
+  "relational_compiler_contract": "PNCS_GREMLIN_RELATIONAL_ISOMORPHISM_COMPILER_V0_1",
+  "semantic_authority": "EXPLICIT_ATOM_CONTENT_BINDING",
+  "resolution_chain": [
+    "GREMLIN_ATOM",
+    "EXPLICIT_ATOM_CONTENT_BINDING",
+    "PNCS_EXACT_36D_REALIZATION_V0_18",
+    "PNCS_SEMANTIC_MASS_BINDING_V0_19",
+    "EXACT_VECTOR36_WITH_SOURCE_REF",
+    "KAKU",
+    "RELATION_MINING_ADAPTER",
+    "RELATIONAL_COMPILER",
+    "NATIVE_PNV_CANDIDATE"
+  ],
+  "authority_flags": {
+    "nearest_neighbor_resolution": false,
+    "vector_to_semantics_inference": false,
+    "phase_to_semantics_inference": false,
+    "mass_to_semantics_inference": false,
+    "automatic_canon_promotion": false,
+    "automatic_runtime_execution_authority": false
+  },
+  "fail_closed_gates": [
+    "relation_mining_ledger_schema_mismatch",
+    "duplicate_atom_binding",
+    "unbound_atom",
+    "missing_realization_binding",
+    "missing_mass_binding",
+    "atom_content_mismatch",
+    "mass_realization_mismatch",
+    "mass_content_mismatch",
+    "vector_phase_basis_mismatch",
+    "invalid_relation_mining_chain_selection"
+  ],
+  "tests_authored": {
+    "resolver_unit_tests": 10,
+    "resolver_to_compiler_pipeline_tests": 1,
+    "unified_bridge_export_tests": 1,
+    "total": 12
+  },
+  "ci_observation": {
+    "workflow": "PNCS GREMLIN PNV authoring",
+    "run_id": 33116110328,
+    "job_id": 98671055969,
+    "head_sha": "64eae3033381874f885b1645f50047b3a87a2cb4",
+    "conclusion": "failure",
+    "runner_id": 0,
+    "runner_name": "",
+    "executed_steps": 0,
+    "classification": "CI_RUNNER_UNAVAILABLE_BEFORE_TEST_EXECUTION",
+    "code_test_failure_observed": false
+  },
+  "live_surface": "/dev/shm/ciel_noema",
+  "live_gremlin_hydration": "OPEN",
+  "epistemic_state": "CHYBA",
+  "promotion_state": "CANDIDATE_ONLY",
+  "main_mutated": false
+}

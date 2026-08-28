@@ -86,6 +86,14 @@ def _require_digest(value: Any, label: str) -> str:
     return text
 
 
+def _verify_embedded_sha256(value: Mapping[str, Any], field: str, label: str) -> str:
+    body = dict(value)
+    reported = _require_digest(body.pop(field, None), field)
+    if reported != _sha256(body):
+        raise GremlinLiveHydrationError(f"{label} content hash mismatch")
+    return reported
+
+
 def build_generation_basis(
     *,
     session_id: str,
@@ -123,7 +131,7 @@ def validate_witness_against_basis(
 ) -> str:
     if witness.get("schema") != LIVE_WITNESS_SCHEMA:
         raise GremlinLiveHydrationError("unexpected GREMLIN live-witness schema")
-    if witness.get("status") != "PASS_CONFORMANCE_ONLY":
+    if witness.get("status") != "PASS_CONFORMANCE_ONLY" or witness.get("admission") != "PASS_CONFORMANCE_ONLY":
         raise GremlinLiveHydrationError("GREMLIN live witness is not PASS_CONFORMANCE_ONLY")
     if witness.get("runtime_execution_authority") is not False:
         raise GremlinLiveHydrationError("GREMLIN witness claims runtime execution authority")
@@ -138,6 +146,9 @@ def validate_witness_against_basis(
     expected_binding = generation_binding_from_basis(expected_basis)
     if witness.get("generation_binding") != expected_binding:
         raise GremlinLiveHydrationError("GREMLIN generation binding does not match current live basis")
+    if witness.get("native_pnv_source_sha256") != expected_basis.get("native_pnv_source_sha256"):
+        raise GremlinLiveHydrationError("GREMLIN witness native PNV source binding mismatch")
+    _require_digest(witness.get("native_receipt_sha256"), "native_receipt_sha256")
 
     pulses = witness.get("pulses")
     if not isinstance(pulses, list) or len(pulses) != 3:
@@ -152,6 +163,23 @@ def validate_witness_against_basis(
             or pulse.get("generation_binding") != expected_binding
         ):
             raise GremlinLiveHydrationError(f"GREMLIN {pulse_name} pulse is invalid or cross-generation")
+
+    if pulses[0].get("value") != expected_basis.get("identity"):
+        raise GremlinLiveHydrationError("GREMLIN IDENTITY pulse does not match current identity")
+    domain_value = pulses[1].get("value")
+    if not isinstance(domain_value, dict) or domain_value != {
+        "surface": str(DEFAULT_SURFACE_ROOT),
+        "tether_receipt_sha256": expected_basis.get("tether_receipt_sha256"),
+    }:
+        raise GremlinLiveHydrationError("GREMLIN DOMAIN pulse does not match current live tether")
+    if pulses[2].get("value") != expected_basis.get("authority"):
+        raise GremlinLiveHydrationError("GREMLIN AUTHORITY pulse does not match current authority")
+
+    live_surface = witness.get("live_surface")
+    if not isinstance(live_surface, dict) or live_surface.get("root") != str(DEFAULT_SURFACE_ROOT):
+        raise GremlinLiveHydrationError("GREMLIN witness live surface is not canonical")
+    if live_surface.get("tether_receipt_sha256") != expected_basis.get("tether_receipt_sha256"):
+        raise GremlinLiveHydrationError("GREMLIN witness live tether receipt is stale")
 
     witness_body = dict(witness)
     witness_sha256 = witness_body.pop("witness_sha256", None)
@@ -170,16 +198,24 @@ def _current_binding(
     working_state = _read_json(root / "working_state.json")
     startpoint = _read_json(root / "session/startpoint.json")
 
+    if working_state.get("schema") != "NOEMA_ATOMIC_WORKING_STATE_V1":
+        raise GremlinLiveHydrationError("GREMLIN hydration requires atomic NOEMA working state")
+    working_state_sha256 = _verify_embedded_sha256(
+        working_state,
+        "working_state_sha256",
+        "NOEMA working state",
+    )
+    if startpoint.get("status") != "VERIFIED":
+        raise GremlinLiveHydrationError("GREMLIN hydration requires a VERIFIED session startpoint")
+    startpoint_sha256 = _verify_embedded_sha256(
+        startpoint,
+        "packet_sha256",
+        "NOEMA session startpoint",
+    )
+
     identity = str(current_memory.get("identity", ""))
     authority = str(current_memory.get("authority", ""))
     session_id = str(working_state.get("session_id", ""))
-    working_state_sha256 = str(working_state.get("working_state_sha256", ""))
-    if working_state.get("working_state") != "ACTIVE" and working_state.get("status") != "ACTIVE":
-        raise GremlinLiveHydrationError("GREMLIN hydration requires ACTIVE working state")
-    if startpoint.get("status") != "VERIFIED":
-        raise GremlinLiveHydrationError("GREMLIN hydration requires a VERIFIED session startpoint")
-    startpoint_sha256 = str(startpoint.get("packet_sha256", ""))
-
     basis = build_generation_basis(
         session_id=session_id,
         working_state_sha256=working_state_sha256,

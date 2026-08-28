@@ -25,21 +25,33 @@ jobs:
           python-version: '3.12'
       - name: Install pytest
         run: python -m pip install pytest
-      - name: Run v1 release-train corpus
+      - name: Run consolidated v0.27-v0.28-v1 release regression corpus
         env:
           PYTHONPATH: src
         run: >-
           python -m pytest -q
+          tests/test_adversarial_v28.py
+          tests/test_adversarial_authority_v28.py
+          tests/test_execution_orch_v27.py
+          tests/test_semantic_equivalence_v28.py
+          tests/test_adversarial_dynamics_v28.py
+          tests/test_orch_hydro_v27.py
+          tests/test_orch_package_v27.py
+          tests/test_hydro_time_v27.py
+          tests/test_hydro_schedule_v27.py
+          tests/test_branch_session_collision_v28.py
+          tests/test_manifest_tool_v28.py
+          tests/test_repository_conformance_v28.py
           tests/test_release_train_v1.py
           tests/test_release_train_native_v1.py
 
   manifest-and-exact-source:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -52,7 +64,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: pncs-v1-release-closure-candidate
-          retention-days: 7
+          retention-days: 1
           path: |
             MANIFEST.sha256.json
             MANIFEST.sha256.json.sha256

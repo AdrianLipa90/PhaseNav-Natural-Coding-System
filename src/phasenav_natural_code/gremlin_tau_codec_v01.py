@@ -18,6 +18,7 @@ BASIS = "pncs:t36:liminal-file-codec:v1"
 CODEC_ISOMORPHISM_ID = "ISO.PNCS.TAU.LIMINAL.FILE"
 CODEC_LEFT_FRAGMENT_ID = "ISO.PNLF.PNCS.STATE"
 CODEC_RIGHT_FRAGMENT_ID = "ISO.PNLF.STATE.BIOOS"
+CODEC_REALIZATION_FRAGMENT_ID = "ISO.PNLF.PNH5.REALIZATION"
 CODEC_INVARIANT_ID = "INV.CONTENT.IDENTITY.TAU.T36.STATE"
 CODEC_INVARIANT_DESCRIPTION = (
     "logical file content is transported through exact scalar tau frames, "
@@ -83,20 +84,21 @@ def _nodes() -> dict[str, RelationalNode]:
             "PNH5_COMPAT",
             "bioos:pnh5-view-v0.1",
         ),
+        "K.PNH5.CONTAINER": RelationalNode(
+            _kaku("K.PNH5.CONTAINER", 6, "exact_binary_realization_container"),
+            "PNH5_BINARY_REALIZATION",
+            "bioos:pnh5-container-v0.1",
+        ),
     }
 
 
-def tau_codec_fragments() -> tuple[RelationalIsomorphism, RelationalIsomorphism]:
+def tau_codec_fragments() -> tuple[RelationalIsomorphism, RelationalIsomorphism, RelationalIsomorphism]:
     nodes = _nodes()
     left = RelationalIsomorphism(
         isomorphism_id=CODEC_LEFT_FRAGMENT_ID,
         invariant_id=CODEC_INVARIANT_ID,
         invariant_description=CODEC_INVARIANT_DESCRIPTION,
-        nodes=(
-            nodes["K.TAU.FRAME"],
-            nodes["K.T36.WITNESS"],
-            nodes["K.LIMINAL.SEGMENT"],
-        ),
+        nodes=(nodes["K.TAU.FRAME"], nodes["K.T36.WITNESS"], nodes["K.LIMINAL.SEGMENT"]),
         edges=(
             RelationalEdge("REL.TAU.T36", "K.TAU.FRAME", "K.T36.WITNESS", "BINDS"),
             RelationalEdge("REL.TAU.LIMINAL", "K.TAU.FRAME", "K.LIMINAL.SEGMENT", "ISOMORPHIC_TO"),
@@ -107,26 +109,27 @@ def tau_codec_fragments() -> tuple[RelationalIsomorphism, RelationalIsomorphism]
         isomorphism_id=CODEC_RIGHT_FRAGMENT_ID,
         invariant_id=CODEC_INVARIANT_ID,
         invariant_description=CODEC_INVARIANT_DESCRIPTION,
-        nodes=(
-            nodes["K.LIMINAL.SEGMENT"],
-            nodes["K.PNLF.FILE"],
-            nodes["K.PNH5.VIEW"],
-        ),
+        nodes=(nodes["K.LIMINAL.SEGMENT"], nodes["K.PNLF.FILE"], nodes["K.PNH5.VIEW"]),
         edges=(
             RelationalEdge("REL.LIMINAL.FILE", "K.LIMINAL.SEGMENT", "K.PNLF.FILE", "ISOMORPHIC_TO"),
             RelationalEdge("REL.FILE.PNH5", "K.PNLF.FILE", "K.PNH5.VIEW", "MAPS_TO"),
         ),
         evidence_refs=(*EVIDENCE_REFS, "fragment:state-memory-bioos"),
     )
-    return left, right
+    realization = RelationalIsomorphism(
+        isomorphism_id=CODEC_REALIZATION_FRAGMENT_ID,
+        invariant_id=CODEC_INVARIANT_ID,
+        invariant_description=CODEC_INVARIANT_DESCRIPTION,
+        nodes=(nodes["K.PNH5.VIEW"], nodes["K.PNH5.CONTAINER"]),
+        edges=(RelationalEdge("REL.PNH5.CONTAINER", "K.PNH5.VIEW", "K.PNH5.CONTAINER", "MAPS_TO"),),
+        evidence_refs=("contract:PNCS_PNH5_TAU_FRAME_REALIZATION_V0_1", "contract:BIOOS_PNH5_CONTAINER_V0_1"),
+    )
+    return left, right, realization
 
 
 def tau_codec_isomorphism() -> RelationalIsomorphism:
-    left, right = tau_codec_fragments()
-    return merge_relational_isomorphisms(
-        (left, right),
-        merged_isomorphism_id=CODEC_ISOMORPHISM_ID,
-    )
+    fragments = tau_codec_fragments()
+    return merge_relational_isomorphisms(fragments, merged_isomorphism_id=CODEC_ISOMORPHISM_ID)
 
 
 def compile_tau_codec_candidate(
@@ -147,7 +150,11 @@ def compile_tau_codec_candidate(
     manifest = {
         "schema": "PNCS_GREMLIN_TAU_CODEC_MANIFEST_V0_1",
         "isomorphism_id": merged.isomorphism_id,
-        "source_isomorphism_fragments": [CODEC_LEFT_FRAGMENT_ID, CODEC_RIGHT_FRAGMENT_ID],
+        "source_isomorphism_fragments": [
+            CODEC_LEFT_FRAGMENT_ID,
+            CODEC_RIGHT_FRAGMENT_ID,
+            CODEC_REALIZATION_FRAGMENT_ID,
+        ],
         "invariant_id": CODEC_INVARIANT_ID,
         "kaku_candidate_ids": {
             key: value["candidate_id"] for key, value in sorted(compilation.kaku_candidates.items())
@@ -157,10 +164,11 @@ def compile_tau_codec_candidate(
         "pnv_source_sha256": compilation.receipt["pnv_source_sha256"],
         "pnv_graph_sha256": compilation.receipt["pnv_graph_sha256"],
         "isomorphic_merge_applied": True,
-        "shared_merge_node": "K.LIMINAL.SEGMENT",
+        "shared_merge_nodes": ["K.LIMINAL.SEGMENT", "K.PNH5.VIEW"],
         "tau_is_content_carrier": True,
         "t36_is_whole_lane_witness": True,
         "state_memory_is_consolidation_boundary": True,
+        "pnh5_binary_realization_bound": True,
         "file_identity_distinct_from_content_and_checkpoint": True,
         "wall_clock_in_semantic_identity": False,
         "runtime_execution_authority": False,

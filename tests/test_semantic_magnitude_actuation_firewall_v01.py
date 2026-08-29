@@ -10,6 +10,7 @@ from phasenav_natural_code.semantic_magnitude_actuation_firewall_v01 import (
     source_factor_q_bna,
 )
 from phasenav_natural_code.semantic_orbital_carrier_v01 import (
+    DEFAULT_BANDS,
     OrbitQuantizerProfile,
     SemanticCarrierSample,
     bind_semantic_sample,
@@ -41,6 +42,7 @@ def _quantizer() -> OrbitQuantizerProfile:
     return OrbitQuantizerProfile(
         "Q.MAGNITUDE.FIREWALL",
         (-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0),
+        DEFAULT_BANDS,
     )
 
 

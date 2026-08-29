@@ -7,6 +7,7 @@ import pytest
 
 from phasenav_natural_code.semantic_htri_drive_v32 import DriveSnapshot
 from phasenav_natural_code.semantic_orbital_carrier_v01 import (
+    DEFAULT_BANDS,
     OrbitQuantizerProfile,
     SemanticCarrierSample,
     bind_semantic_sample,
@@ -47,6 +48,7 @@ def _quantizer() -> OrbitQuantizerProfile:
     return OrbitQuantizerProfile(
         "Q.SEM.HTRI.TEST",
         (-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0),
+        DEFAULT_BANDS,
     )
 
 

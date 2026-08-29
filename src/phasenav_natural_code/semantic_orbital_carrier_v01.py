@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping
 
 from .pnlf_orbital_memory_v01 import ORBITAL_BANDS, OrbitalState
 
@@ -119,7 +119,7 @@ class SemanticCarrierSample:
 class OrbitQuantizerProfile:
     quantizer_id: str
     boundaries: tuple[float, ...]
-    bands: tuple[str, ...] = DEFAULT_BANDS
+    bands: tuple[str, ...]
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "quantizer_id", _text("quantizer_id", self.quantizer_id))

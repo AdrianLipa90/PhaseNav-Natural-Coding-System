@@ -4,6 +4,7 @@ import pytest
 
 from phasenav_natural_code.pnlf_orbital_memory_v01 import OrbitalState
 from phasenav_natural_code.semantic_orbital_carrier_v01 import (
+    DEFAULT_BANDS,
     OrbitQuantizerProfile,
     SemanticCarrierSample,
     bind_orbital_state_sample,
@@ -24,6 +25,7 @@ def _quantizer() -> OrbitQuantizerProfile:
     return OrbitQuantizerProfile(
         "Q.TRAJ.TEST",
         (-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0),
+        DEFAULT_BANDS,
     )
 
 
@@ -74,7 +76,6 @@ def test_constant_frequency_full_turns_are_exactly_phase_rate_consistent():
 
 def test_trapezoidal_frequency_profile_integrates_linear_rate_exactly():
     left = SemanticOrbitalTrajectoryPoint(_binding(t=0.0, phi=0.0, omega=2.0), 0.0)
-    # Integral of linearly interpolated omega from 2 to 4 across dt=1 is 3.
     right = SemanticOrbitalTrajectoryPoint(_binding(t=1.0, phi=3.0, omega=4.0), 0.0)
     segment = trajectory_segments((left, right))[0]
     assert segment["integrated_phase_from_omega"] == pytest.approx(3.0)

@@ -1,7 +1,7 @@
 {
   "schema": "PNCS_VALIDATION_RECEIPT_V0_1",
   "gate": "PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1",
-  "status": "REFERENCE_CANDIDATE / HOSTED_CI_INFRA_BLOCKED_BEFORE_STEPS",
+  "status": "REFERENCE_CANDIDATE / HOSTED_CI_INFRA_BLOCKED / SELF_HOSTED_CI_PENDING_RUNNER",
   "base_main": "7a54596c1794be29e0b85f5c363213cc81eb87d7",
   "formula": "S(t)=[B(t)*omega(t)*N(t)/A_R]*(phi(t)+kappa)",
   "kappa": "ln(2)/(24*pi)",
@@ -17,7 +17,10 @@
     "A_R is nonzero",
     "kappa=ln(2)/(24*pi)",
     "PNLF orbital period projection omega=2*pi/orbit_period",
-    "semantic value is assigned through an explicit nine-band quantizer profile"
+    "semantic orbit quantizer requires exactly eight strictly increasing boundaries",
+    "semantic orbit quantizer requires an explicit ordered nine-element permutation of O0..O8",
+    "no implicit semantic-value to orbital-band direction is supplied by the carrier API",
+    "thresholds, band ordering and quantizer id are deterministic provenance"
   ],
   "authority": {
     "semantic_authority": "EXPLICIT_KAKU_CONTENT_BINDING",
@@ -36,5 +39,9 @@
     "job_steps": null,
     "comparison_run": 33244626295,
     "comparison_observation": "existing PNCS workflow jobs also ended before steps with steps=null"
+  },
+  "self_hosted_ci": {
+    "workflow": "PNCS Semantic Orbital Carrier v0.1",
+    "status": "PENDING_RUNNER_ASSIGNMENT"
   }
 }

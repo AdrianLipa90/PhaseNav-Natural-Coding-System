@@ -267,3 +267,29 @@ jobs:
         env:
           PYTHONPATH: src
         run: python -m pytest -q tests/live
+
+  libpnv36-rust-self-hosted:
+    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'feat/libpnv36-rust-v0.1' }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify pinned Rust toolchain
+        working-directory: native/libpnv36-rs
+        run: |
+          rustc --version
+          cargo --version
+          python3 -c "import subprocess; v=subprocess.check_output(['rustc','--version'], text=True).split()[1]; assert v == '1.98.0', v"
+      - name: Test strict Phi36 core
+        working-directory: native/libpnv36-rs
+        run: cargo test --release
+      - name: Build shared library
+        working-directory: native/libpnv36-rs
+        run: cargo build --release
+      - name: Verify canonical Linux shared-library artifact and ABI symbols
+        working-directory: native/libpnv36-rs
+        run: |
+          test -f target/release/libpnv36.so
+          nm -D --defined-only target/release/libpnv36.so | grep -E 'pnv36_(abi_version|phi_bytes|has_avx2|distance_radians_strict)'

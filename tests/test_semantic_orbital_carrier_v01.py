@@ -4,6 +4,7 @@ import pytest
 
 from phasenav_natural_code.pnlf_orbital_memory_v01 import OrbitalState
 from phasenav_natural_code.semantic_orbital_carrier_v01 import (
+    DEFAULT_BANDS,
     KAPPA,
     OrbitQuantizerProfile,
     SemanticCarrierSample,
@@ -21,6 +22,7 @@ def _quantizer(*, quantizer_id: str = "Q.SEM.TEST") -> OrbitQuantizerProfile:
     return OrbitQuantizerProfile(
         quantizer_id=quantizer_id,
         boundaries=(-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0),
+        bands=DEFAULT_BANDS,
     )
 
 
@@ -101,8 +103,16 @@ def test_nine_band_quantizer_is_explicit_and_deterministic():
     assert q.quantize(10.0) == "O8"
 
 
+def test_quantizer_requires_explicit_band_order():
+    with pytest.raises(TypeError):
+        OrbitQuantizerProfile(  # type: ignore[call-arg]
+            quantizer_id="Q.MISSING.BANDS",
+            boundaries=(-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0),
+        )
+
+
 def test_quantizer_accepts_explicit_band_order():
-    reversed_bands = tuple(reversed(tuple(f"O{i}" for i in range(9))))
+    reversed_bands = tuple(reversed(DEFAULT_BANDS))
     q = OrbitQuantizerProfile(
         quantizer_id="Q.REVERSED",
         boundaries=(-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0),
@@ -114,9 +124,9 @@ def test_quantizer_accepts_explicit_band_order():
 
 def test_invalid_quantizer_profiles_fail_closed():
     with pytest.raises(SemanticOrbitalCarrierError):
-        OrbitQuantizerProfile("Q.BAD", (0.0, 1.0))
+        OrbitQuantizerProfile("Q.BAD", (0.0, 1.0), DEFAULT_BANDS)
     with pytest.raises(SemanticOrbitalCarrierError):
-        OrbitQuantizerProfile("Q.BAD", (0, 1, 2, 3, 4, 5, 6, 6))
+        OrbitQuantizerProfile("Q.BAD", (0, 1, 2, 3, 4, 5, 6, 6), DEFAULT_BANDS)
     with pytest.raises(SemanticOrbitalCarrierError):
         OrbitQuantizerProfile(
             "Q.BAD",

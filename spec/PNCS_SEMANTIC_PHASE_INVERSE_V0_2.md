@@ -1,0 +1,228 @@
+# PNCS Semantic Phase Inverse v0.2
+
+Status: `CANDIDATE / EXACT_NONZERO_CARRIER_INVERSE / CANONICAL_PHASE_WINDING_SPLIT / ORBIT_PLACEMENT_COMPOSITION / GREMLIN_CANDIDATE_ONLY`
+
+RF/PNCS source parent: `PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1`.
+
+## 1. Parent semantic carrier
+
+The parent contract is
+
+\[
+\boxed{
+\mathcal S(t)
+=\frac{B(t)\omega(t)N(t)}{A_R}
+\bigl(\phi(t)+\kappa\bigr),
+\qquad
+\kappa=\frac{\ln2}{24\pi}.
+}
+\]
+
+Define
+
+\[
+\boxed{
+C(t):=\frac{B(t)\omega(t)N(t)}{A_R}.
+}
+\]
+
+Then
+
+\[
+\mathcal S(t)=C(t)(\phi(t)+\kappa).
+\]
+
+## 2. Exact inverse on the identifiable branch
+
+For
+
+\[
+\boxed{C(t)\ne0,}
+\]
+
+the lifted phase is uniquely fixed by the carried semantic value:
+
+\[
+\boxed{
+\phi_{lift}(t)
+=\frac{\mathcal S(t)}{C(t)}-\kappa
+=\frac{A_R\mathcal S(t)}{B(t)\omega(t)N(t)}-\kappa.
+}
+\]
+
+Substitution gives the exact roundtrip
+
+\[
+\boxed{
+C(t)\bigl(\phi_{lift}(t)+\kappa\bigr)=\mathcal S(t).
+}
+\]
+
+Thus semantic value, together with the admitted carrier coordinates, fixes one lifted phase coordinate without an auxiliary phase-fitting law.
+
+## 3. Canonical wrapped phase and winding
+
+Let
+
+\[
+\tau:=2\pi.
+\]
+
+For every finite lifted phase define
+
+\[
+\boxed{
+w=\left\lfloor\frac{\phi_{lift}}{2\pi}\right\rfloor\in\mathbb Z,
+}
+\]
+
+and
+
+\[
+\boxed{
+\phi_{wrap}=\phi_{lift}-2\pi w,
+\qquad
+0\le\phi_{wrap}<2\pi.
+}
+\]
+
+Therefore
+
+\[
+\boxed{
+\phi_{lift}=\phi_{wrap}+2\pi w.
+}
+\]
+
+The semantic value is exactly recoverable from the wrapped representation:
+
+\[
+\boxed{
+\mathcal S
+=C\bigl(\phi_{wrap}+2\pi w+\kappa\bigr).
+}
+\]
+
+The winding coordinate is therefore part of the lossless semantic phase code whenever a wrapped phase representation is used.
+
+## 4. Zero-carrier identifiability firewall
+
+When
+
+\[
+C=0,
+\]
+
+the parent equation becomes
+
+\[
+\mathcal S=0.
+\]
+
+Two distinct cases are kept separate:
+
+```text
+C = 0 and S != 0  -> INCONSISTENT_ZERO_CARRIER
+C = 0 and S = 0   -> NON_IDENTIFIABLE_PHASE
+C != 0            -> UNIQUE_LIFTED_PHASE
+```
+
+A unique phase encoder is emitted only on `C != 0`.
+
+## 5. Orbit placement
+
+The parent v0.1 contract supplies an explicit semantic-value orbital quantizer
+
+\[
+\mathcal S\xrightarrow{Q_{orbit}}O_i,
+\qquad i\in\{0,\ldots,8\}.
+\]
+
+v0.2 composes the exact inverse with that quantizer:
+
+\[
+\boxed{
+\mathcal S
+\longmapsto
+\left(
+O_i,
+\phi_{wrap},
+w
+\right).
+}
+\]
+
+The complete placement receipt also carries
+
+```text
+B
+omega
+N
+A_R
+kappa
+C
+semantic_value
+orbit_quantizer_id
+```
+
+so the phase/orbit code can be replayed exactly.
+
+## 6. Distinct source and placement phase profiles
+
+The parent PNLF adapter uses the stored wrapped `OrbitalState.phase` as one source-phase profile and records PNLF winding separately.
+
+v0.2 defines a semantic-value inverse profile in which
+
+```text
+semantic target S
+ -> unique lifted phase when C != 0
+ -> canonical wrapped phase + integer winding
+```
+
+These profiles remain explicitly identified in receipts. A physical model may bind them through a later equality/transport gate.
+
+## 7. KAKU / RADICAL use
+
+For one explicit KAKU/content identity, the candidate encoder is
+
+```text
+content_id + KAKU id
+ -> carrier coordinates B,omega,N,A_R
+ -> semantic target S
+ -> exact phi_lift
+ -> phi_wrap + winding
+ -> explicit orbit quantizer
+ -> O_i
+```
+
+RADICAL composition consumes these per-KAKU codes through a separately identified composition/operator profile.
+
+## 8. GREMLIN boundary
+
+GREMLIN may propose candidate placements, but the deterministic receipt retains
+
+```text
+semantic_authority = EXPLICIT_KAKU_CONTENT_BINDING
+epistemic_state = CHYBA
+promotion_state = CANDIDATE_ONLY
+runtime_execution_authority = false
+canon_write_authority = false
+```
+
+## 9. Validation gates
+
+Reference tests verify:
+
+1. exact phase inversion for positive and negative carrier prefactors;
+2. semantic roundtrip through lifted phase;
+3. canonical wrapped phase in `[0,2pi)`;
+4. exact integer winding decomposition for positive and negative lifted phases;
+5. exact roundtrip from wrapped phase plus winding;
+6. distinction between inconsistent and non-identifiable zero-carrier cases;
+7. composition with explicit `O0..O8` quantizer provenance;
+8. deterministic receipt hashing;
+9. fail-closed non-finite inputs and malformed winding values.
+
+Reference implementation: `src/phasenav_natural_code/semantic_phase_inverse_v02.py`.
+Reference tests: `tests/test_semantic_phase_inverse_v02.py`.
+Validation receipt: `provenance/receipts/PNCS_SEMANTIC_PHASE_INVERSE_V0_2.json`.

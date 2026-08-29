@@ -1,0 +1,39 @@
+{
+  "schema": "PNCS_VALIDATION_RECEIPT_V0_1",
+  "gate": "PNCS_SEMANTIC_ORBITAL_HTRI_BOUNDED_TRACK_V0_1",
+  "status": "REFERENCE_CANDIDATE_SELF_HOSTED_CI_PENDING",
+  "parents": [
+    "PNCS Semantic Orbital -> HTRI Bridge v0.1",
+    "PNCS_BOUNDED_MULTI_TICK_HTRI_DRIVE_V0_33",
+    "semantic_htri_bounded_v33.track_target"
+  ],
+  "exact_contract": [
+    "semantic target36 and derived DriveSnapshot are constructed through the same v0.1 explicit lane profile",
+    "parent v0.33 track_target is reused without bounded-control law modification",
+    "u_max/tolerance_rad/dt are positive finite",
+    "max_ticks and settle_consecutive are positive integers with settle_consecutive <= max_ticks",
+    "bounded control max_abs <= declared u_max",
+    "PASS_TARGET_SETTLED and FAIL_TARGET_SETTLING_TIMEOUT remain distinct parent statuses",
+    "source DriveSnapshot remains immutable",
+    "semantic magnitude -> HTRI actuation remains OPEN_SOURCE_BINDING"
+  ],
+  "parent_reference_examples": {
+    "u_max_1": "FAIL_TARGET_SETTLING_TIMEOUT",
+    "u_max_400": "PASS_TARGET_SETTLED",
+    "source": "tests/test_semantic_htri_bounded_v33.py at PNCS main 7a54596c1794be29e0b85f5c363213cc81eb87d7"
+  },
+  "authority": {
+    "epistemic_state": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false,
+    "live_surface_writes": 0
+  },
+  "reference_implementation": "src/phasenav_natural_code/semantic_orbital_htri_bounded_v01.py",
+  "reference_tests": "tests/test_semantic_orbital_htri_bounded_v01.py",
+  "parent_regression_tests": "tests/test_semantic_htri_bounded_v33.py",
+  "self_hosted_ci": {
+    "workflow": "PNCS Semantic Orbital Carrier v0.1",
+    "status": "PENDING_RUNNER_ASSIGNMENT"
+  }
+}

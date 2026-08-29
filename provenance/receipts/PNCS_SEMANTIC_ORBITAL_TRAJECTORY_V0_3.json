@@ -1,0 +1,43 @@
+{
+  "schema": "PNCS_VALIDATION_RECEIPT_V0_1",
+  "gate": "PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_3",
+  "status": "REFERENCE_CANDIDATE / STACKED_ON_V0_2_SELF_HOSTED_GATE",
+  "stack_parent": "feat/pncs-semantic-phase-inverse-v0.2",
+  "stack_parent_head": "acb48299c1301ba64dadf2ab538741dac9fe4cd5",
+  "trajectory": "Gamma_S=(X_0,...,X_n), t_(i+1)>t_i",
+  "sample_coordinates": [
+    "t",
+    "semantic_value",
+    "B",
+    "omega",
+    "N",
+    "A_R",
+    "orbital_band",
+    "wrapped_phase",
+    "winding"
+  ],
+  "transition_contract": {
+    "same_band": "INTRABAND_PHASE_TRANSPORT",
+    "lower_target_band_index": "ORBIT_PROMOTE_CANDIDATE",
+    "higher_target_band_index": "ORBIT_DEMOTE_CANDIDATE"
+  },
+  "pnlf_candidate_verbs": {
+    "ORBIT_PROMOTE_CANDIDATE": "PNLF.ORBIT_PROMOTE",
+    "ORBIT_DEMOTE_CANDIDATE": "PNLF.ORBIT_DEMOTE",
+    "INTRABAND_PHASE_TRANSPORT": null
+  },
+  "authority": {
+    "epistemic_state": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false,
+    "state_memory_write_authority": false
+  },
+  "reference_implementation": "src/phasenav_natural_code/semantic_orbital_trajectory_v03.py",
+  "reference_tests": "tests/test_semantic_orbital_trajectory_v03.py",
+  "ci": {
+    "profile": "SELF_HOSTED_PURE_CONFORMANCE",
+    "run": null,
+    "conclusion": "PENDING"
+  }
+}

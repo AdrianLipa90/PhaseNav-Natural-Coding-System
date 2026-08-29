@@ -1,0 +1,38 @@
+{
+  "schema": "PNCS_VALIDATION_RECEIPT_V0_1",
+  "gate": "PNCS_SEMANTIC_ORBITAL_HTRI_BRIDGE_V0_1",
+  "status": "REFERENCE_CANDIDATE_SELF_HOSTED_CI_PENDING",
+  "parent_contract": "PNCS_ORDERED_T36_TO_HTRI_DRIVE_V0_32",
+  "parent_main": "7a54596c1794be29e0b85f5c363213cc81eb87d7",
+  "parents": [
+    "PNCS Semantic Orbital Carrier v0.1",
+    "PNCS v0.32 DriveSnapshot",
+    "PNCS v0.32 controlled_step exact one-step inverse dynamics"
+  ],
+  "exact_contract": [
+    "explicit kaku_id -> unique lane 0..35 mapping",
+    "assigned target lane phase = semantic phi mod 2*pi",
+    "unassigned target phases preserve source snapshot exactly",
+    "ASSIGN_SAMPLE_OMEGA assigns semantic omega only to explicit lanes",
+    "PRESERVE_SNAPSHOT_OMEGA preserves the complete source omega vector",
+    "unassigned frequencies preserve source snapshot exactly",
+    "g/flavor/tau/gravity remain unchanged in the derived input snapshot",
+    "existing semantic_htri_drive_v32.controlled_step is reused without control-law modification",
+    "B/N/A_R/semantic_value remain explicit provenance coordinates in v0.1",
+    "live surface writes = 0"
+  ],
+  "authority": {
+    "semantic_authority": "EXPLICIT_KAKU_CONTENT_AND_LANE_BINDING",
+    "epistemic_state": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false
+  },
+  "reference_implementation": "src/phasenav_natural_code/semantic_orbital_htri_bridge_v01.py",
+  "reference_tests": "tests/test_semantic_orbital_htri_bridge_v01.py",
+  "parent_regression_tests": "tests/test_semantic_htri_drive_v32.py",
+  "self_hosted_ci": {
+    "workflow": "PNCS Semantic Orbital Carrier v0.1",
+    "status": "PENDING_RUNNER_ASSIGNMENT"
+  }
+}

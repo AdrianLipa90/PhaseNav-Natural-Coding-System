@@ -149,7 +149,7 @@ def test_fpdg_pain_candidate_reaches_radical_native_pnv_and_executes_read_only()
     assert compiled.receipt["promotion_state"] == "CANDIDATE_ONLY"
     assert compiled.receipt["runtime_execution_authority"] is False
     assert compiled.receipt["canon_write_authority"] is False
-    assert compiled.radical_candidate["candidate_type"] == "RADICAL"
+    assert compiled.radical_candidate["kind"] == "RADICAL"
     assert "MODE READ_ONLY" in compiled.pnv_text
     assert execution.receipt["effect_boundary"]["external_effects"] is False
     assert execution.receipt["unknown_semantics_fail_closed"] is True

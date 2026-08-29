@@ -9,6 +9,7 @@ use core::cmp::Ordering;
 pub const DIM: usize = 36;
 pub const TAU: f64 = core::f64::consts::TAU;
 pub const PI: f64 = core::f64::consts::PI;
+pub const ABI_VERSION: u32 = 1;
 
 #[repr(C, align(32))]
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -107,8 +108,8 @@ unsafe fn square_lanes_avx2(x: &[f64; DIM]) -> [f64; DIM] {
 #[cfg(target_arch = "x86_64")]
 #[inline]
 fn l2_sq_avx2_strict(x: &[f64; DIM]) -> f64 {
-    // Vector multiplication is lane-local. The reduction is then performed in
-    // canonical scalar index order to preserve the strict reduction ordering.
+    // Multiplication is lane-local. Reduction stays in canonical scalar index
+    // order so the strict path keeps the reference reduction ordering.
     let squared = unsafe { square_lanes_avx2(x) };
     let mut sum = 0.0;
     let mut i = 0;
@@ -171,6 +172,65 @@ pub fn nearest_k_radians_strict(
     Ok(scored)
 }
 
+#[no_mangle]
+pub extern "C" fn pnv36_abi_version() -> u32 {
+    ABI_VERSION
+}
+
+#[no_mangle]
+pub extern "C" fn pnv36_phi_bytes() -> usize {
+    core::mem::size_of::<Phi36>()
+}
+
+#[no_mangle]
+pub extern "C" fn pnv36_has_avx2() -> u32 {
+    #[cfg(target_arch = "x86_64")]
+    {
+        return u32::from(std::is_x86_feature_detected!("avx2"));
+    }
+    #[allow(unreachable_code)]
+    0
+}
+
+/// C ABI entrypoint for strict 36D wrapped radial distance.
+///
+/// Return codes: 0=PASS, 2=null pointer, 3=non-finite input.
+///
+/// # Safety
+/// `a` and `b` must each point to at least 36 readable `f64` values and `out`
+/// must point to one writable `f64` value.
+#[no_mangle]
+pub unsafe extern "C" fn pnv36_distance_radians_strict(
+    a: *const f64,
+    b: *const f64,
+    out: *mut f64,
+) -> i32 {
+    if a.is_null() || b.is_null() || out.is_null() {
+        return 2;
+    }
+
+    let mut aa = [0.0; DIM];
+    let mut bb = [0.0; DIM];
+    unsafe {
+        core::ptr::copy_nonoverlapping(a, aa.as_mut_ptr(), DIM);
+        core::ptr::copy_nonoverlapping(b, bb.as_mut_ptr(), DIM);
+    }
+
+    let aa = match Phi36::new(aa) {
+        Ok(v) => v,
+        Err(_) => return 3,
+    };
+    let bb = match Phi36::new(bb) {
+        Ok(v) => v,
+        Err(_) => return 3,
+    };
+
+    unsafe {
+        *out = distance_radians_strict(&aa, &bb);
+    }
+    0
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -189,6 +249,7 @@ mod tests {
     fn phi36_is_exactly_288_bytes_and_32_aligned() {
         assert_eq!(core::mem::size_of::<Phi36>(), 288);
         assert_eq!(core::mem::align_of::<Phi36>(), 32);
+        assert_eq!(pnv36_phi_bytes(), 288);
     }
 
     #[test]
@@ -202,7 +263,11 @@ mod tests {
     fn wrapped_delta_is_symmetric_in_magnitude() {
         let a = sample(0.1);
         let b = sample(5.9);
-        assert_eq!(a.wrapped_delta_radians(&b), b.wrapped_delta_radians(&a));
+        let ab = a.wrapped_delta_radians(&b);
+        let ba = b.wrapped_delta_radians(&a);
+        for i in 0..DIM {
+            assert!((ab.x[i] - ba.x[i]).abs() <= f64::EPSILON * 4.0);
+        }
     }
 
     #[test]
@@ -230,5 +295,17 @@ mod tests {
         let got = nearest_k_radians_strict(&target, &[c0, c1, c2], 2).unwrap();
         assert_eq!(got[0].0, 1);
         assert_eq!(got[1].0, 2);
+    }
+
+    #[test]
+    fn ffi_distance_matches_native_path() {
+        let a = sample(0.2);
+        let b = sample(1.1);
+        let mut out = -1.0;
+        let status = unsafe {
+            pnv36_distance_radians_strict(a.x.as_ptr(), b.x.as_ptr(), &mut out)
+        };
+        assert_eq!(status, 0);
+        assert_eq!(out.to_bits(), distance_radians_strict(&a, &b).to_bits());
     }
 }

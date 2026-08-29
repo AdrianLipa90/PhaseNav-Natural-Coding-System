@@ -9,12 +9,14 @@ on:
       - 'src/phasenav_natural_code/semantic_radical_oscillator_v01.py'
       - 'src/phasenav_natural_code/semantic_orbital_trajectory_v01.py'
       - 'src/phasenav_natural_code/semantic_orbital_htri_bridge_v01.py'
+      - 'src/phasenav_natural_code/semantic_magnitude_actuation_firewall_v01.py'
       - 'src/phasenav_natural_code/pnlf_orbital_memory_v01.py'
       - 'src/phasenav_natural_code/semantic_htri_drive_v32.py'
       - 'tests/test_semantic_orbital_carrier_v01.py'
       - 'tests/test_semantic_radical_oscillator_v01.py'
       - 'tests/test_semantic_orbital_trajectory_v01.py'
       - 'tests/test_semantic_orbital_htri_bridge_v01.py'
+      - 'tests/test_semantic_magnitude_actuation_firewall_v01.py'
       - 'tests/test_semantic_htri_drive_v32.py'
       - 'tests/test_pnlf_orbital_memory_v01.py'
       - 'tests/test_gremlin_kaku_resolver_v01.py'
@@ -22,10 +24,12 @@ on:
       - 'spec/PNCS_SEMANTIC_RADICAL_OSCILLATOR_V0_1.md'
       - 'spec/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_1.md'
       - 'spec/PNCS_SEMANTIC_ORBITAL_HTRI_BRIDGE_V0_1.md'
+      - 'spec/PNCS_SEMANTIC_MAGNITUDE_ACTUATION_FIREWALL_V0_1.md'
       - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1.json'
       - 'provenance/receipts/PNCS_SEMANTIC_RADICAL_OSCILLATOR_V0_1.json'
       - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_1.json'
       - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_HTRI_BRIDGE_V0_1.json'
+      - 'provenance/receipts/PNCS_SEMANTIC_MAGNITUDE_ACTUATION_FIREWALL_V0_1.json'
       - '.github/workflows/pncs-semantic-orbital-carrier-v01.yml'
   pull_request:
     paths:
@@ -33,12 +37,14 @@ on:
       - 'src/phasenav_natural_code/semantic_radical_oscillator_v01.py'
       - 'src/phasenav_natural_code/semantic_orbital_trajectory_v01.py'
       - 'src/phasenav_natural_code/semantic_orbital_htri_bridge_v01.py'
+      - 'src/phasenav_natural_code/semantic_magnitude_actuation_firewall_v01.py'
       - 'src/phasenav_natural_code/pnlf_orbital_memory_v01.py'
       - 'src/phasenav_natural_code/semantic_htri_drive_v32.py'
       - 'tests/test_semantic_orbital_carrier_v01.py'
       - 'tests/test_semantic_radical_oscillator_v01.py'
       - 'tests/test_semantic_orbital_trajectory_v01.py'
       - 'tests/test_semantic_orbital_htri_bridge_v01.py'
+      - 'tests/test_semantic_magnitude_actuation_firewall_v01.py'
       - 'tests/test_semantic_htri_drive_v32.py'
       - 'tests/test_pnlf_orbital_memory_v01.py'
       - 'tests/test_gremlin_kaku_resolver_v01.py'
@@ -46,10 +52,12 @@ on:
       - 'spec/PNCS_SEMANTIC_RADICAL_OSCILLATOR_V0_1.md'
       - 'spec/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_1.md'
       - 'spec/PNCS_SEMANTIC_ORBITAL_HTRI_BRIDGE_V0_1.md'
+      - 'spec/PNCS_SEMANTIC_MAGNITUDE_ACTUATION_FIREWALL_V0_1.md'
       - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1.json'
       - 'provenance/receipts/PNCS_SEMANTIC_RADICAL_OSCILLATOR_V0_1.json'
       - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_1.json'
       - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_HTRI_BRIDGE_V0_1.json'
+      - 'provenance/receipts/PNCS_SEMANTIC_MAGNITUDE_ACTUATION_FIREWALL_V0_1.json'
 
 permissions:
   contents: read
@@ -70,7 +78,7 @@ jobs:
         run: python3 --version
       - name: Install reference dependencies
         run: python3 -m pip install pytest numpy
-      - name: Run semantic orbital carrier, trajectory, HTRI bridge, RADICAL oscillator and parent regressions
+      - name: Run semantic orbital stack and parent regressions
         env:
           PYTHONPATH: src
         run: >-
@@ -78,6 +86,7 @@ jobs:
           tests/test_semantic_orbital_carrier_v01.py
           tests/test_semantic_orbital_trajectory_v01.py
           tests/test_semantic_orbital_htri_bridge_v01.py
+          tests/test_semantic_magnitude_actuation_firewall_v01.py
           tests/test_semantic_radical_oscillator_v01.py
           tests/test_semantic_htri_drive_v32.py
           tests/test_pnlf_orbital_memory_v01.py

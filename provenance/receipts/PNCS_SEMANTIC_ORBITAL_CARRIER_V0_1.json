@@ -1,7 +1,7 @@
 {
   "schema": "PNCS_VALIDATION_RECEIPT_V0_1",
   "gate": "PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1",
-  "status": "REFERENCE_CANDIDATE_PENDING_HOSTED_CI",
+  "status": "REFERENCE_CANDIDATE / HOSTED_CI_INFRA_BLOCKED_BEFORE_STEPS",
   "base_main": "7a54596c1794be29e0b85f5c363213cc81eb87d7",
   "formula": "S(t)=[B(t)*omega(t)*N(t)/A_R]*(phi(t)+kappa)",
   "kappa": "ln(2)/(24*pi)",
@@ -30,7 +30,11 @@
   "reference_tests": "tests/test_semantic_orbital_carrier_v01.py",
   "hosted_ci": {
     "workflow": "PNCS Semantic Orbital Carrier v0.1",
-    "run": null,
-    "conclusion": "PENDING"
+    "run": 33258166189,
+    "conclusion": "INFRA_BLOCKED_BEFORE_STEPS",
+    "job": 99115386660,
+    "job_steps": null,
+    "comparison_run": 33244626295,
+    "comparison_observation": "existing PNCS workflow jobs also ended before steps with steps=null"
   }
 }

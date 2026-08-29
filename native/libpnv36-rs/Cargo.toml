@@ -8,6 +8,7 @@ license = "LicenseRef-Repository-License"
 publish = false
 
 [lib]
+name = "pnv36"
 path = "src/lib.rs"
 crate-type = ["rlib", "cdylib"]
 

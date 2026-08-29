@@ -1,6 +1,6 @@
 # PNCS Semantic Orbital Carrier v0.1
 
-Status: `CANDIDATE / EXACT_SEMANTIC_VALUE_EVALUATOR / ORBIT_QUANTIZER_INTEGRATION / GREMLIN_CANDIDATE_ONLY`
+Status: `CANDIDATE / EXACT_SEMANTIC_VALUE_EVALUATOR / EXPLICIT_ORBIT_QUANTIZER_INTEGRATION / GREMLIN_CANDIDATE_ONLY`
 
 ## 1. Canonical semantic carrier
 
@@ -76,7 +76,17 @@ O_i,
 }
 \]
 
-The quantizer profile carries its own identifier and ordered threshold table. The threshold table is part of provenance, so identical semantic values under different quantizer profiles remain distinguishable receipts.
+The v0.1 quantizer profile MUST explicitly carry all three items:
+
+```text
+quantizer_id
+8 strictly increasing semantic-value boundaries
+ordered 9-element permutation of O0..O8
+```
+
+The ordered band permutation is part of the source profile. The semantic carrier formula does not choose whether increasing `S(t)` corresponds to increasing band index, decreasing band index, or another admitted permutation. Therefore the API has no implicit `O0 -> O8` direction.
+
+Both threshold values and exact band ordering enter provenance. Identical semantic values evaluated under profiles with different thresholds or different band permutations remain distinguishable receipts.
 
 ## 4. Oscillator coordinates
 
@@ -91,6 +101,7 @@ N(t)
 A_R
 semantic_value
 orbit_quantizer_id
+explicit band ordering
 ```
 
 When the source is a PNLF `OrbitalState`, the standard angular-frequency projection from its positive orbital period is
@@ -112,7 +123,7 @@ explicit content binding
  -> KAKU
  -> semantic carrier sample
  -> S(t)
- -> orbit quantizer
+ -> explicit orbit quantizer profile
  -> orbital-band candidate
 ```
 
@@ -141,7 +152,7 @@ The reference implementation emits a canonical JSON receipt containing
 - carrier prefactor `C(t)`;
 - shifted phase `phi+kappa`;
 - semantic value `S(t)`;
-- orbital band and quantizer profile;
+- orbital band, quantizer identifier, thresholds and explicit band permutation;
 - PNLF source coordinates when present;
 - GREMLIN authority fields;
 - SHA-256 over canonical JSON.
@@ -154,12 +165,14 @@ The reference gate checks
 2. exact formula evaluation;
 3. exact factorization `S=C(phi+kappa)`;
 4. finite input coordinates and nonzero `A_R`;
-5. deterministic nine-band quantization from an explicit profile;
-6. PNLF `orbit_period -> omega=2pi/T` projection;
-7. preservation of wrapped phase and winding provenance;
-8. explicit KAKU/content identity fields;
-9. receipt determinism and sensitivity to quantizer provenance;
-10. GREMLIN candidate authority fields.
+5. explicit presence of a 9-band ordering together with 8 ordered thresholds;
+6. exact validation that the band ordering is a permutation of `O0..O8`;
+7. deterministic quantization under the declared profile;
+8. PNLF `orbit_period -> omega=2pi/T` projection;
+9. preservation of wrapped phase and winding provenance;
+10. explicit KAKU/content identity fields;
+11. receipt determinism and sensitivity to quantizer thresholds, id and band ordering;
+12. GREMLIN candidate authority fields.
 
 Reference implementation: `src/phasenav_natural_code/semantic_orbital_carrier_v01.py`.
 Reference tests: `tests/test_semantic_orbital_carrier_v01.py`.

@@ -1,0 +1,27 @@
+{
+  "schema": "PNCS_VALIDATION_RECEIPT_V0_1",
+  "gate": "PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_1",
+  "status": "REFERENCE_CANDIDATE_SELF_HOSTED_CI_PENDING",
+  "parent_gate": "PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1",
+  "phase_rate_profile": "TRAPEZOIDAL_PHASE_RATE_V0_1",
+  "exact_contract": [
+    "lifted_phase = phi + 2*pi*winding",
+    "delta_t = t_right - t_left > 0",
+    "integrated_phase_from_omega = 0.5*(omega_left+omega_right)*delta_t",
+    "phase_residual = delta_lifted_phase - integrated_phase_from_omega",
+    "phase_rate_consistency PASS iff max_abs_phase_residual <= explicit tolerance",
+    "one KAKU id and one content id per v0.1 trajectory"
+  ],
+  "authority": {
+    "epistemic_state": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false
+  },
+  "reference_implementation": "src/phasenav_natural_code/semantic_orbital_trajectory_v01.py",
+  "reference_tests": "tests/test_semantic_orbital_trajectory_v01.py",
+  "self_hosted_ci": {
+    "workflow": "PNCS Semantic Orbital Carrier v0.1",
+    "status": "PENDING_RUNNER_ASSIGNMENT"
+  }
+}

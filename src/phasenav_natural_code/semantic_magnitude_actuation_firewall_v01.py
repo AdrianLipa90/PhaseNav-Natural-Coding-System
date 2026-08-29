@@ -61,7 +61,7 @@ def _require_magnitude_only_pair(
         )
 
 
-def audit_magnitude_only_htiri_invariance(
+def audit_magnitude_only_htri_invariance(
     snapshot: DriveSnapshot,
     left: SemanticOrbitalBinding,
     right: SemanticOrbitalBinding,

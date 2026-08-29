@@ -7,7 +7,11 @@ from phasenav_natural_code.fpdg_gremlin_pain_ingress_v01 import (
     build_relation_mining_inputs,
 )
 from phasenav_natural_code.gremlin_relation_mining_adapter_v01 import (
+    compile_relation_mining_finding,
     relation_mining_finding_to_isomorphism,
+)
+from phasenav_natural_code.gremlin_relational_compiler_v01 import (
+    validate_compiled_relational_candidate,
 )
 from phasenav_natural_code.model import Kaku, Vector36
 
@@ -128,6 +132,27 @@ def test_result_enters_actual_gremlin_relational_adapter_after_explicit_kaku_bin
     assert {node.domain for node in iso.nodes} == {"RFC", "IDT"}
     assert sum(edge.relation_type == "ISOMORPHIC_TO" for edge in iso.edges) == 1
     assert sum(edge.relation_type == "ORDER" for edge in iso.edges) == 2
+
+
+def test_fpdg_pain_candidate_reaches_radical_native_pnv_and_executes_read_only():
+    ingress = _build()
+    compiled = compile_relation_mining_finding(
+        ingress.ledger,
+        ingress.finding,
+        kaku_by_atom=KAKU,
+        generation_binding="a" * 64,
+        identity="ZOSIA_NOEMA_FIRST",
+        authority="USER_EXPLICIT_AUTHORING",
+    )
+    execution = validate_compiled_relational_candidate(compiled)
+
+    assert compiled.receipt["promotion_state"] == "CANDIDATE_ONLY"
+    assert compiled.receipt["runtime_execution_authority"] is False
+    assert compiled.receipt["canon_write_authority"] is False
+    assert compiled.radical_candidate["candidate_type"] == "RADICAL"
+    assert "MODE READ_ONLY" in compiled.pnv_text
+    assert execution.receipt["effect_boundary"]["external_effects"] is False
+    assert execution.receipt["unknown_semantics_fail_closed"] is True
 
 
 def test_missing_claim_to_atom_binding_fails_closed():

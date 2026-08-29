@@ -9,7 +9,7 @@ For a semantic carrier sampled at time `t`, PNCS uses the user-specified value
 \[
 \boxed{
 \mathcal S(t)
-=\frac{B(t)\,\omega(t)\,N(t)}{A_R(t)}
+=\frac{B(t)\,\omega(t)\,N(t)}{A_R}
 \bigl(\phi(t)+\kappa\bigr)
 }
 \]
@@ -25,7 +25,7 @@ with the canonical PNCS/TIR constant
 The exact factorization is
 
 \[
-\mathcal C(t):=\frac{B(t)\omega(t)N(t)}{A_R(t)},
+\mathcal C(t):=\frac{B(t)\omega(t)N(t)}{A_R},
 \qquad
 \Phi_\kappa(t):=\phi(t)+\kappa,
 \]
@@ -47,7 +47,7 @@ sample time t
 B(t)
 omega(t)
 N(t)
-A_R(t)
+A_R
 phi(t)
 kappa
 semantic_value S(t)
@@ -88,7 +88,7 @@ omega(t)
 phi(t)
 B(t)
 N(t)
-A_R(t)
+A_R
 semantic_value
 orbit_quantizer_id
 ```

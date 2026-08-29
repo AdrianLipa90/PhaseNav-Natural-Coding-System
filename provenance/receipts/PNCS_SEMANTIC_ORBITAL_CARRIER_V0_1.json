@@ -1,0 +1,36 @@
+{
+  "schema": "PNCS_VALIDATION_RECEIPT_V0_1",
+  "gate": "PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1",
+  "status": "REFERENCE_CANDIDATE_PENDING_HOSTED_CI",
+  "base_main": "7a54596c1794be29e0b85f5c363213cc81eb87d7",
+  "formula": "S(t)=[B(t)*omega(t)*N(t)/A_R]*(phi(t)+kappa)",
+  "kappa": "ln(2)/(24*pi)",
+  "parents": [
+    "PNCS GREMLIN explicit atom->content KAKU semantic binding",
+    "PNLF orbital bands O0..O8 with explicit orbit_quantizer_id",
+    "PNLF OrbitalState phase/orbit_period/winding coordinates"
+  ],
+  "exact_contract": [
+    "carrier_prefactor=B*omega*N/A_R",
+    "phase_plus_kappa=phi+kappa",
+    "semantic_value=carrier_prefactor*phase_plus_kappa",
+    "A_R is nonzero",
+    "kappa=ln(2)/(24*pi)",
+    "PNLF orbital period projection omega=2*pi/orbit_period",
+    "semantic value is assigned through an explicit nine-band quantizer profile"
+  ],
+  "authority": {
+    "semantic_authority": "EXPLICIT_KAKU_CONTENT_BINDING",
+    "epistemic_state": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false
+  },
+  "reference_implementation": "src/phasenav_natural_code/semantic_orbital_carrier_v01.py",
+  "reference_tests": "tests/test_semantic_orbital_carrier_v01.py",
+  "hosted_ci": {
+    "workflow": "PNCS Semantic Orbital Carrier v0.1",
+    "run": null,
+    "conclusion": "PENDING"
+  }
+}

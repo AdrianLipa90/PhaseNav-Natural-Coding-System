@@ -1,0 +1,41 @@
+{
+  "schema": "PNCS_VALIDATION_RECEIPT_V0_1",
+  "gate": "PNCS_SEMANTIC_RADICAL_OSCILLATOR_V0_1",
+  "status": "REFERENCE_CANDIDATE_SELF_HOSTED_CI_PENDING",
+  "parent_gate": "PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1",
+  "base_main": "7a54596c1794be29e0b85f5c363213cc81eb87d7",
+  "parents": [
+    "PNCS KAKU and RadicalGraph typed model",
+    "PNCS Semantic Orbital Carrier v0.1",
+    "GREMLIN KAKU -> RADICAL -> OPERATORS candidate compiler boundary"
+  ],
+  "exact_contract": [
+    "one semantic-orbital binding for every RADICAL KAKU id",
+    "delta_phi_ab = phi_b - phi_a",
+    "delta_phase_plus_kappa_ab = delta_phi_ab",
+    "delta_omega_ab = omega_b - omega_a",
+    "delta_semantic_value_ab = S_b - S_a",
+    "source and target orbital bands are preserved on each relation receipt",
+    "RADICAL scalar aggregation exists only through an explicit aggregation_profile_id",
+    "S_R = sum_a w_a S_a for the reference explicit linear aggregation profile",
+    "UNIT_SUM requires sum_a w_a = 1"
+  ],
+  "authority": {
+    "aggregation_authority": "EXPLICIT_PROFILE_ONLY",
+    "epistemic_state": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false
+  },
+  "reference_implementation": "src/phasenav_natural_code/semantic_radical_oscillator_v01.py",
+  "reference_tests": "tests/test_semantic_radical_oscillator_v01.py",
+  "hosted_ci_context": {
+    "github_hosted_runner_allocation": "ACCOUNT_QUOTA_BLOCKED_BEFORE_CHECKOUT",
+    "semantic_carrier_initial_run": 33258166189,
+    "semantic_carrier_initial_job": 99115386660
+  },
+  "self_hosted_ci": {
+    "workflow": "PNCS Semantic Orbital Carrier v0.1",
+    "status": "PENDING_RUNNER_ASSIGNMENT"
+  }
+}

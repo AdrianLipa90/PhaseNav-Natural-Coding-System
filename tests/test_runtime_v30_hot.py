@@ -9,6 +9,7 @@ import pytest
 
 from phasenav_natural_code.runtime_v25_core import PersistentRuntimeV25Error
 from phasenav_natural_code.runtime_v25_resident import PersistentProgramRuntime
+from phasenav_natural_code.runtime_v25_resident_model import _json_bytes
 from phasenav_natural_code.runtime_v30_hot import FileStamp, PersistentHotRuntimeV30, ResidentHotAdmissionToken
 
 H = "1" * 64
@@ -23,7 +24,7 @@ def _write_json(path: Path, obj: dict) -> None:
     path.write_text(json.dumps(obj, sort_keys=True), encoding="utf-8")
 
 
-def _fixture(tmp_path: Path):
+def _fixture(tmp_path: Path, *, persist_token: bool = True):
     root = tmp_path / "surface"
     base = PersistentProgramRuntime(root, socket_path=tmp_path / "unused.sock", require_socket=False, require_canonical_root=False, max_heartbeat_age_s=2.0)
     hot = PersistentHotRuntimeV30(base)
@@ -66,12 +67,46 @@ def _fixture(tmp_path: Path):
     })
     stamps = {name: FileStamp.read(path) for name, path in paths.items()}
     token = ResidentHotAdmissionToken(handle_id, program_id, control_definition_id, generation_id, admission_id, generation, stamps)
+    if persist_token:
+        token_path = hot._token_path(token)
+        token_path.parent.mkdir(parents=True, exist_ok=True)
+        token_path.write_bytes(_json_bytes({**token.payload, "token_id": token.token_id}))
     return hot, token, paths, root
 
 
 def test_hot_guard_accepts_unchanged_live_generation(tmp_path: Path):
     hot, token, _, _ = _fixture(tmp_path)
     hot.guard(token)
+
+
+def test_hot_guard_rejects_unissued_forged_token(tmp_path: Path):
+    hot, token, _, _ = _fixture(tmp_path, persist_token=False)
+    with pytest.raises(PersistentRuntimeV25Error, match="no persisted full-admission issuance record"):
+        hot.guard(token)
+
+
+def test_hot_guard_rejects_persisted_token_record_tamper(tmp_path: Path):
+    hot, token, _, _ = _fixture(tmp_path)
+    hot._token_path(token).write_text('{"tampered":true}\n', encoding="utf-8")
+    with pytest.raises(PersistentRuntimeV25Error, match="persisted hot token record mismatch"):
+        hot.guard(token)
+
+
+def test_hot_token_snapshots_mutable_generation_payload(tmp_path: Path):
+    hot, token, _, _ = _fixture(tmp_path)
+    before = token.token_id
+    token.generation_payload["account_current"] = "/MUTATED"  # type: ignore[index]
+    token.generation_payload["current_pointer_sha256"] = "f" * 64  # type: ignore[index]
+    assert token.token_id == before
+    hot.guard(token)
+
+
+def test_hot_guard_ignores_mutated_stamp_mapping_and_still_detects_authority_change(tmp_path: Path):
+    hot, token, paths, _ = _fixture(tmp_path)
+    paths["operator_registry"].write_text('{"op":"TAMPER"}\n', encoding="utf-8")
+    token.source_stamps["operator_registry"] = FileStamp.read(paths["operator_registry"])  # type: ignore[index]
+    with pytest.raises(PersistentRuntimeV25Error, match="authority-file change: operator_registry"):
+        hot.guard(token)
 
 
 def test_hot_guard_rejects_operator_registry_change(tmp_path: Path):

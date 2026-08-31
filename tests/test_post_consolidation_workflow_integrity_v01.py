@@ -56,6 +56,22 @@ def test_post_consolidation_feature_workflows_target_main_not_deleted_branches()
             assert deleted_branch not in text
 
 
+def test_newly_consolidated_layers_remain_in_ci_coverage():
+    native = _workflow("pncs-native-pnv-exec.yml")
+    assert "tests/test_dncrypt_native_pncs_v04_causality.py" in native
+    assert "native/programs/DNCRYPT_NATIVE_PNCS_V0_4.pnv" in native
+
+    gremlin = _workflow("pncs-gremlin-pnv-authoring.yml")
+    for test_path in (
+        "tests/test_gremlin_cross_formalism_bank_v02.py",
+        "tests/test_gremlin_cross_formalism_sealed_bundle_v01.py",
+        "tests/test_gremlin_cross_formalism_round28_v01.py",
+        "tests/test_gremlin_round28_sealed_bundle_v01.py",
+        "tests/test_fpdg_gremlin_pain_ingress_v01.py",
+    ):
+        assert test_path in gremlin
+
+
 def test_v1_release_closure_runs_this_regression_guard():
     text = _workflow("pncs-v1-release-closure.yml")
     assert "tests/test_post_consolidation_workflow_integrity_v01.py" in text

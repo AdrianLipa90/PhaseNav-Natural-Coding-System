@@ -117,6 +117,7 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
         "src/phasenav_natural_code/semantic_orbital_htri_bridge_v01.py",
         "src/phasenav_natural_code/semantic_orbital_htri_bounded_v01.py",
         "src/phasenav_natural_code/semantic_magnitude_actuation_firewall_v01.py",
+        "src/phasenav_natural_code/pnlf_orbital_memory_v01.py",
         "tests/test_semantic_orbital_carrier_v01.py",
         "tests/test_semantic_orbital_carrier_admission_v01.py",
         "tests/test_semantic_actuation_radical_admission_v01.py",
@@ -126,11 +127,14 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
         "tests/test_semantic_htri_bounded_v33.py",
         "tests/test_semantic_orbital_htri_bridge_v01.py",
         "tests/test_semantic_orbital_htri_bounded_v01.py",
+        "tests/test_pnlf_orbital_memory_v01.py",
+        "tests/test_pnlf_orbital_memory_admission_v01.py",
         "spec/PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1.md",
         "spec/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_1.md",
         "spec/PNCS_SEMANTIC_HTRI_INPUT_ADMISSION_V0_1.md",
         "spec/PNCS_SEMANTIC_MAGNITUDE_ACTUATION_FIREWALL_V0_1.md",
         "spec/PNCS_SEMANTIC_RADICAL_OSCILLATOR_V0_1.md",
+        "spec/PNCS_PNLF_ORBITAL_MEMORY_ADMISSION_V0_1.md",
     ):
         assert path in semantic
 
@@ -206,6 +210,7 @@ def test_v1_release_closure_runs_full_post_merge_regression_surface():
         "tests/test_semantic_htri_drive_v32.py",
         "tests/test_semantic_htri_bounded_v33.py",
         "tests/test_pnlf_orbital_memory_v01.py",
+        "tests/test_pnlf_orbital_memory_admission_v01.py",
         "tests/test_semantic_phase_inverse_v02.py",
         "tests/test_semantic_orbital_trajectory_v03.py",
     ):

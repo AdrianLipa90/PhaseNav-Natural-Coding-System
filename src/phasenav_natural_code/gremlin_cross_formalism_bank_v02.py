@@ -333,6 +333,40 @@ def bank_manifest() -> Mapping[str, object]:
     return {**body, "manifest_sha256": digest}
 
 
+def _compilation_manifest(
+    compiled: Mapping[str, RelationalCompilation],
+) -> dict[str, object]:
+    return {
+        **bank_manifest(),
+        "compilation_schema": COMPILATION_SCHEMA,
+        "compiled_entries": {
+            iso_id: {
+                "receipt_sha256": compilation.receipt["receipt_sha256"],
+                "radical_candidate_id": compilation.radical_candidate["candidate_id"],
+                "pnv_graph_sha256": compilation.receipt["pnv_graph_sha256"],
+            }
+            for iso_id, compilation in sorted(compiled.items())
+        },
+    }
+
+
+def _validate_aggregate_manifest(bank: CrossFormalismCompilation) -> None:
+    if not isinstance(bank, CrossFormalismCompilation):
+        raise CrossFormalismBankError("CrossFormalismCompilation required")
+    if not isinstance(bank.compilations, Mapping):
+        raise CrossFormalismBankError("cross-formalism compilations must be a mapping")
+    expected_ids = {entry.spec.isomorphism_id for entry in cross_formalism_bank()}
+    if set(bank.compilations) != expected_ids:
+        raise CrossFormalismBankError("cross-formalism compilation keyset mismatch")
+    if any(not isinstance(item, RelationalCompilation) for item in bank.compilations.values()):
+        raise CrossFormalismBankError("cross-formalism compilation entry type mismatch")
+    if not isinstance(bank.manifest, Mapping):
+        raise CrossFormalismBankError("cross-formalism aggregate manifest must be a mapping")
+    expected = _compilation_manifest(bank.compilations)
+    if dict(bank.manifest) != expected:
+        raise CrossFormalismBankError("cross-formalism aggregate manifest mismatch")
+
+
 def compile_cross_formalism_candidates(
     *,
     generation_binding: str,
@@ -349,22 +383,14 @@ def compile_cross_formalism_candidates(
             authority=authority,
             authoring_root=authoring_root,
         )
-    manifest = {
-        **bank_manifest(),
-        "compilation_schema": COMPILATION_SCHEMA,
-        "compiled_entries": {
-            iso_id: {
-                "receipt_sha256": compilation.receipt["receipt_sha256"],
-                "radical_candidate_id": compilation.radical_candidate["candidate_id"],
-                "pnv_graph_sha256": compilation.receipt["pnv_graph_sha256"],
-            }
-            for iso_id, compilation in sorted(compiled.items())
-        },
-    }
-    return CrossFormalismCompilation(compilations=compiled, manifest=manifest)
+    return CrossFormalismCompilation(
+        compilations=compiled,
+        manifest=_compilation_manifest(compiled),
+    )
 
 
 def validate_cross_formalism_candidates(bank: CrossFormalismCompilation):
+    _validate_aggregate_manifest(bank)
     results = {}
     for iso_id, compilation in sorted(bank.compilations.items()):
         result = validate_compiled_relational_candidate(compilation)

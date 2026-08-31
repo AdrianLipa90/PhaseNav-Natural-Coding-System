@@ -7,6 +7,7 @@ on:
     paths:
       - 'native/GREMLIN_TRIPLE_PULSE_BOOT_V0_5.pnv'
       - 'scripts/noema_gremlin_post_working_state_v03.py'
+      - 'src/phasenav_natural_code/model.py'
       - 'src/phasenav_natural_code/gremlin_pnv_authoring_v02.py'
       - 'src/phasenav_natural_code/gremlin_native_pnv_bridge_v01.py'
       - 'src/phasenav_natural_code/gremlin_pnv_bridge_v02.py'
@@ -30,6 +31,7 @@ on:
       - 'src/phasenav_natural_code/gremlin_cross_formalism_sealed_bundle_v01.py'
       - 'src/phasenav_natural_code/gremlin_cross_formalism_round28_v01.py'
       - 'src/phasenav_natural_code/gremlin_round28_sealed_bundle_v01.py'
+      - 'tests/test_model_integrity_v01.py'
       - 'tests/test_gremlin_pnv_authoring_v02.py'
       - 'tests/test_gremlin_pnv_authoring_canonical_boundary_v01.py'
       - 'tests/test_gremlin_live_hydration_v03.py'
@@ -101,6 +103,7 @@ jobs:
       - run: python -m pip install -e . pytest
       - run: >-
           python -m pytest -q
+          tests/test_model_integrity_v01.py
           tests/test_gremlin_pnv_authoring_v02.py
           tests/test_gremlin_pnv_authoring_canonical_boundary_v01.py
           tests/test_gremlin_live_hydration_v03.py

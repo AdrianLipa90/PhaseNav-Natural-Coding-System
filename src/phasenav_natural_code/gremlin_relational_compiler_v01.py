@@ -44,6 +44,28 @@ class GremlinRelationalCompilerError(RuntimeError):
     pass
 
 
+def _nonempty_text(value: Any, field: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise GremlinRelationalCompilerError(
+            f"{field} must be a non-empty string"
+        )
+    return value.strip()
+
+
+def _canonical_text_tuple(values: Any, field: str) -> tuple[str, ...]:
+    if isinstance(values, (str, bytes, bytearray)):
+        raise GremlinRelationalCompilerError(
+            f"{field} must be a sequence of strings"
+        )
+    try:
+        raw = tuple(values)
+    except TypeError as exc:
+        raise GremlinRelationalCompilerError(
+            f"{field} must be a sequence of strings"
+        ) from exc
+    return tuple(sorted({_nonempty_text(value, field) for value in raw}))
+
+
 def _canonical_bytes(value: Any) -> bytes:
     try:
         return json.dumps(
@@ -64,8 +86,9 @@ def _sha256(value: Any) -> str:
 
 
 def _safe_token(value: str) -> str:
+    value = _nonempty_text(value, "canonical token source")
     out = "".join(
-        ch if ch.isalnum() else "_" for ch in str(value).upper()
+        ch if ch.isalnum() else "_" for ch in value.upper()
     ).strip("_")
     if not out:
         raise GremlinRelationalCompilerError("empty canonical token")
@@ -81,10 +104,16 @@ class RelationalNode:
     def __post_init__(self) -> None:
         if not isinstance(self.kaku, Kaku):
             raise GremlinRelationalCompilerError("RelationalNode requires Kaku")
-        if not self.domain or not self.observation_ref:
-            raise GremlinRelationalCompilerError(
-                "node domain and observation_ref are required"
-            )
+        object.__setattr__(
+            self,
+            "domain",
+            _nonempty_text(self.domain, "node domain"),
+        )
+        object.__setattr__(
+            self,
+            "observation_ref",
+            _nonempty_text(self.observation_ref, "node observation_ref"),
+        )
 
 
 @dataclass(frozen=True)
@@ -95,17 +124,26 @@ class RelationalEdge:
     relation_type: str
 
     def __post_init__(self) -> None:
-        if not all(
-            (
-                self.relation_id,
-                self.source_id,
-                self.target_id,
-                self.relation_type,
-            )
-        ):
-            raise GremlinRelationalCompilerError(
-                "relational edge fields are required"
-            )
+        object.__setattr__(
+            self,
+            "relation_id",
+            _nonempty_text(self.relation_id, "relation_id"),
+        )
+        object.__setattr__(
+            self,
+            "source_id",
+            _nonempty_text(self.source_id, "relation source_id"),
+        )
+        object.__setattr__(
+            self,
+            "target_id",
+            _nonempty_text(self.target_id, "relation target_id"),
+        )
+        object.__setattr__(
+            self,
+            "relation_type",
+            _nonempty_text(self.relation_type, "relation_type"),
+        )
 
 
 @dataclass(frozen=True)
@@ -118,31 +156,72 @@ class RelationalIsomorphism:
     evidence_refs: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        if (
-            not self.isomorphism_id
-            or not self.invariant_id
-            or not self.invariant_description
-        ):
+        object.__setattr__(
+            self,
+            "isomorphism_id",
+            _nonempty_text(self.isomorphism_id, "isomorphism_id"),
+        )
+        object.__setattr__(
+            self,
+            "invariant_id",
+            _nonempty_text(self.invariant_id, "invariant_id"),
+        )
+        object.__setattr__(
+            self,
+            "invariant_description",
+            _nonempty_text(
+                self.invariant_description,
+                "invariant_description",
+            ),
+        )
+        if isinstance(self.nodes, (str, bytes, bytearray)):
             raise GremlinRelationalCompilerError(
-                "isomorphism and invariant metadata are required"
+                "relational isomorphism nodes must be RelationalNode entries"
             )
-        if not self.nodes:
+        if isinstance(self.edges, (str, bytes, bytearray)):
+            raise GremlinRelationalCompilerError(
+                "relational isomorphism edges must be RelationalEdge entries"
+            )
+        try:
+            nodes = tuple(self.nodes)
+            edges = tuple(self.edges)
+        except TypeError as exc:
+            raise GremlinRelationalCompilerError(
+                "relational isomorphism nodes/edges must be iterable"
+            ) from exc
+        if not nodes:
             raise GremlinRelationalCompilerError(
                 "relational isomorphism requires nodes"
             )
-        node_ids = [node.kaku.kaku_id for node in self.nodes]
+        if any(not isinstance(node, RelationalNode) for node in nodes):
+            raise GremlinRelationalCompilerError(
+                "relational isomorphism nodes must be RelationalNode entries"
+            )
+        if any(not isinstance(edge, RelationalEdge) for edge in edges):
+            raise GremlinRelationalCompilerError(
+                "relational isomorphism edges must be RelationalEdge entries"
+            )
+        object.__setattr__(self, "nodes", nodes)
+        object.__setattr__(self, "edges", edges)
+        object.__setattr__(
+            self,
+            "evidence_refs",
+            _canonical_text_tuple(self.evidence_refs, "evidence_ref"),
+        )
+
+        node_ids = [node.kaku.kaku_id for node in nodes]
         if len(node_ids) != len(set(node_ids)):
             raise GremlinRelationalCompilerError("duplicate KAKU node id")
-        domains = {node.domain for node in self.nodes}
+        domains = {node.domain for node in nodes}
         if len(domains) < 2:
             raise GremlinRelationalCompilerError(
                 "relational isomorphism requires at least two domains"
             )
-        edge_ids = [edge.relation_id for edge in self.edges]
+        edge_ids = [edge.relation_id for edge in edges]
         if len(edge_ids) != len(set(edge_ids)):
             raise GremlinRelationalCompilerError("duplicate relation id")
         allowed = set(node_ids)
-        for edge in self.edges:
+        for edge in edges:
             if edge.source_id not in allowed or edge.target_id not in allowed:
                 raise GremlinRelationalCompilerError(
                     "relation endpoint missing from isomorphism nodes"
@@ -228,12 +307,27 @@ def _relation_opcode(
     relation_type: str,
     overrides: Mapping[str, str] | None,
 ) -> str:
-    relation = str(relation_type).upper()
+    relation = _nonempty_text(relation_type, "relation_type").upper()
     mapping = dict(DEFAULT_RELATION_OPCODE)
-    if overrides:
-        mapping.update(
-            {str(k).upper(): str(v).upper() for k, v in overrides.items()}
-        )
+    if overrides is not None:
+        if not isinstance(overrides, Mapping):
+            raise GremlinRelationalCompilerError(
+                "relation opcode overrides must be a mapping"
+            )
+        for key, value in overrides.items():
+            if not isinstance(key, str) or not isinstance(value, str):
+                raise GremlinRelationalCompilerError(
+                    "relation opcode override keys and values must be strings"
+                )
+            canonical_key = _nonempty_text(
+                key,
+                "relation opcode override key",
+            ).upper()
+            canonical_value = _nonempty_text(
+                value,
+                "relation opcode override value",
+            ).upper()
+            mapping[canonical_key] = canonical_value
     opcode = mapping.get(relation)
     if opcode is None:
         raise GremlinRelationalCompilerError(

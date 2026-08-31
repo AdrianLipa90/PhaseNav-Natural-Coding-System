@@ -79,14 +79,16 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
     assert "tests/test_full_program_executor_receipt_integrity_v01.py" in full_executor
 
     gremlin = _workflow("pncs-gremlin-pnv-authoring.yml")
-    for test_path in (
+    for path in (
+        "src/phasenav_natural_code/pnv_holonomy_numeric_v01.py",
+        "tests/test_pnv_holonomy_numeric_hardening_v01.py",
         "tests/test_gremlin_cross_formalism_bank_v02.py",
         "tests/test_gremlin_cross_formalism_sealed_bundle_v01.py",
         "tests/test_gremlin_cross_formalism_round28_v01.py",
         "tests/test_gremlin_round28_sealed_bundle_v01.py",
         "tests/test_fpdg_gremlin_pain_ingress_v01.py",
     ):
-        assert test_path in gremlin
+        assert path in gremlin
 
 
 def test_v1_release_closure_runs_full_post_merge_regression_surface():
@@ -102,6 +104,17 @@ def test_v1_release_closure_runs_full_post_merge_regression_surface():
         "tests/test_gremlin_inverse_lineage_v01.py",
         "tests/test_gremlin_pnv_holonomy_v01.py",
         "tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py",
+        "tests/test_pnv_holonomy_numeric_hardening_v01.py",
+        "tests/test_pnv_source_holonomy_v01.py",
+        "tests/test_pnv_noether_collective_holonomy_v01.py",
+        "tests/test_pnv_noether_rfc_current_holonomy_v01.py",
+        "tests/test_pnv_scalar_field_rotor_reduction_v01.py",
+        "tests/test_pnv_gauge_covariant_phase_pullback_v01.py",
+        "tests/test_gremlin_pnv_bridge_source_holonomy_v02.py",
+        "tests/test_gremlin_pnv_bridge_noether_collective_v02.py",
+        "tests/test_gremlin_pnv_bridge_noether_rfc_current_v02.py",
+        "tests/test_gremlin_pnv_bridge_scalar_field_rotor_v02.py",
+        "tests/test_gremlin_pnv_bridge_gauge_covariant_pullback_v02.py",
         "tests/test_dncrypt_native_pncs_v04_causality.py",
         "tests/test_fpdg_gremlin_pain_ingress_v01.py",
         "tests/test_gremlin_cross_formalism_bank_v02.py",

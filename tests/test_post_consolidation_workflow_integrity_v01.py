@@ -82,6 +82,7 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
     for path in (
         "src/phasenav_natural_code/pnv_holonomy_numeric_v01.py",
         "tests/test_gremlin_pnv_authoring_canonical_boundary_v01.py",
+        "tests/test_gremlin_relational_compiler_integrity_v01.py",
         "tests/test_pnv_holonomy_numeric_hardening_v01.py",
         "tests/test_gremlin_cross_formalism_bank_v02.py",
         "tests/test_gremlin_cross_formalism_sealed_bundle_v01.py",
@@ -104,6 +105,8 @@ def test_v1_release_closure_runs_full_post_merge_regression_surface():
         "tests/test_native_pnv_exec_v01.py",
         "tests/test_gremlin_pnv_authoring_v02.py",
         "tests/test_gremlin_pnv_authoring_canonical_boundary_v01.py",
+        "tests/test_gremlin_relational_compiler_v01.py",
+        "tests/test_gremlin_relational_compiler_integrity_v01.py",
         "tests/test_gremlin_inverse_lineage_v01.py",
         "tests/test_gremlin_pnv_holonomy_v01.py",
         "tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py",

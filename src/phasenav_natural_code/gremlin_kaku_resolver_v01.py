@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
+from numbers import Real
 from typing import Any, Iterable, Mapping
 
 from .mass_v19 import SemanticMassRegistry, materialize_kaku_mass, verify_kaku_mass
@@ -31,6 +32,15 @@ def _nonempty(value: str, field: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise GremlinKakuResolverError(f"{field} must be a non-empty string")
     return value.strip()
+
+
+def _iterable_values(values: Iterable[Any], field: str) -> tuple[Any, ...]:
+    if isinstance(values, (str, bytes, bytearray)) or isinstance(values, Mapping):
+        raise GremlinKakuResolverError(f"{field} must be an iterable container, not a string or mapping")
+    try:
+        return tuple(values)
+    except TypeError as exc:
+        raise GremlinKakuResolverError(f"{field} must be iterable") from exc
 
 
 def _vector_payload(vector: Vector36) -> dict[str, Any]:
@@ -61,12 +71,11 @@ class GremlinAtomKakuBinding:
         object.__setattr__(self, "role", _nonempty(self.role, "role"))
         if not isinstance(self.vector, Vector36):
             raise GremlinKakuResolverError("binding vector must be Vector36")
-        try:
-            polarity = float(self.polarity)
-        except (TypeError, ValueError) as exc:
-            raise GremlinKakuResolverError("polarity must be finite") from exc
+        if isinstance(self.polarity, bool) or not isinstance(self.polarity, Real):
+            raise GremlinKakuResolverError("polarity must be a finite real number")
+        polarity = float(self.polarity)
         if not math.isfinite(polarity):
-            raise GremlinKakuResolverError("polarity must be finite")
+            raise GremlinKakuResolverError("polarity must be a finite real number")
         object.__setattr__(self, "polarity", polarity)
 
     @property
@@ -158,13 +167,20 @@ class GremlinKakuResolver:
         return kaku
 
     def resolve_many(self, atoms: Iterable[str]) -> dict[str, Kaku]:
-        keys = tuple(_nonempty(atom, "atom").upper() for atom in atoms)
+        raw_atoms = _iterable_values(atoms, "atoms")
+        keys = tuple(_nonempty(atom, "atom").upper() for atom in raw_atoms)
         if not keys:
             raise GremlinKakuResolverError("resolve_many requires at least one atom")
         return {atom: self.resolve(atom) for atom in sorted(set(keys))}
 
     def deterministic_receipt(self, atoms: Iterable[str] | None = None) -> dict[str, Any]:
-        selected = sorted(self._bindings) if atoms is None else sorted(set(_nonempty(atom, "atom").upper() for atom in atoms))
+        if atoms is None:
+            selected = sorted(self._bindings)
+        else:
+            raw_atoms = _iterable_values(atoms, "atoms")
+            selected = sorted(set(_nonempty(atom, "atom").upper() for atom in raw_atoms))
+            if not selected:
+                raise GremlinKakuResolverError("deterministic_receipt requires at least one atom when atoms is provided")
         resolved = self.resolve_many(selected)
         rows = []
         for atom in selected:
@@ -204,10 +220,19 @@ def required_relation_mining_atoms(ledger: Mapping[str, Any], chain_ids: Iterabl
         raise GremlinKakuResolverError("relation-mining ledger chains required")
     by_id: dict[str, Mapping[str, Any]] = {}
     for row in chains:
-        if isinstance(row, Mapping) and isinstance(row.get("id"), str):
-            by_id[str(row["id"])] = row
+        if not isinstance(row, Mapping):
+            raise GremlinKakuResolverError("relation-mining chain row must be a mapping")
+        key = _nonempty(row.get("id"), "chain id")
+        if key in by_id:
+            raise GremlinKakuResolverError(f"duplicate relation-mining chain id: {key}")
+        by_id[key] = row
+
+    selected_chain_ids = _iterable_values(chain_ids, "chain_ids")
+    if not selected_chain_ids:
+        raise GremlinKakuResolverError("chain_ids must contain at least one chain id")
+
     atoms: set[str] = set()
-    for chain_id in chain_ids:
+    for chain_id in selected_chain_ids:
         key = _nonempty(chain_id, "chain_id")
         row = by_id.get(key)
         if row is None:
@@ -216,7 +241,7 @@ def required_relation_mining_atoms(ledger: Mapping[str, Any], chain_ids: Iterabl
         if not isinstance(raw_atoms, list) or not raw_atoms:
             raise GremlinKakuResolverError(f"relation-mining chain has no atoms: {key}")
         for atom in raw_atoms:
-            atoms.add(_nonempty(str(atom), "atom").upper())
+            atoms.add(_nonempty(atom, "atom").upper())
     if not atoms:
         raise GremlinKakuResolverError("no relation-mining atoms resolved")
     return tuple(sorted(atoms))

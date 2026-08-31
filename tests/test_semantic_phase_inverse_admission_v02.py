@@ -33,6 +33,15 @@ class _LooksTextual:
         return "SEM.LOOKS_VALID"
 
 
+class _ExecutableQuantizer:
+    def __init__(self):
+        self.called = False
+
+    def quantize(self, value):
+        self.called = True
+        return "O5"
+
+
 def _placement(**overrides):
     kwargs = dict(
         content_id="SEM.ADMISSION",
@@ -84,6 +93,13 @@ def test_direct_placement_requires_exact_orbital_band_string():
     placement = _placement()
     with pytest.raises(SemanticPhaseInverseError, match="orbital_band must be an exact string"):
         replace(placement, orbital_band=_LooksTextual())
+
+
+def test_quantizer_type_is_admitted_before_any_quantizer_execution():
+    quantizer = _ExecutableQuantizer()
+    with pytest.raises(SemanticPhaseInverseError, match="quantizer must be OrbitQuantizerProfile"):
+        _placement(quantizer=quantizer)
+    assert quantizer.called is False
 
 
 def test_legal_inverse_receipt_remains_deterministic():

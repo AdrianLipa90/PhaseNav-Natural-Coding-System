@@ -42,6 +42,17 @@ jobs:
           tests/test_gremlin_inverse_lineage_v01.py
           tests/test_gremlin_pnv_holonomy_v01.py
           tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py
+          tests/test_pnv_holonomy_numeric_hardening_v01.py
+          tests/test_pnv_source_holonomy_v01.py
+          tests/test_pnv_noether_collective_holonomy_v01.py
+          tests/test_pnv_noether_rfc_current_holonomy_v01.py
+          tests/test_pnv_scalar_field_rotor_reduction_v01.py
+          tests/test_pnv_gauge_covariant_phase_pullback_v01.py
+          tests/test_gremlin_pnv_bridge_source_holonomy_v02.py
+          tests/test_gremlin_pnv_bridge_noether_collective_v02.py
+          tests/test_gremlin_pnv_bridge_noether_rfc_current_v02.py
+          tests/test_gremlin_pnv_bridge_scalar_field_rotor_v02.py
+          tests/test_gremlin_pnv_bridge_gauge_covariant_pullback_v02.py
           tests/test_dncrypt_native_pncs_v04_causality.py
           tests/test_fpdg_gremlin_pain_ingress_v01.py
           tests/test_gremlin_cross_formalism_bank_v02.py

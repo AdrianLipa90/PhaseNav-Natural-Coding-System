@@ -1,12 +1,18 @@
 name: PNCS full ProgramUnit executor integration
 
 on:
-  push:
-    branches:
-      - feat/pncs-full-program-executor-v01
   pull_request:
     branches:
-      - feat/pncs-v029-orchorbital-harvest-hardening
+      - main
+    paths:
+      - 'src/phasenav_natural_code/full_program_executor_v01.py'
+      - 'tests/test_full_program_executor_real_integration_v01.py'
+      - 'tests/test_full_program_executor_v01.py'
+      - 'tests/test_full_program_executor_native_v01.py'
+      - 'tests/test_full_program_demo_v01.py'
+      - 'examples/pncs_full_program_demo_v01.py'
+      - 'native/experimental/PNCS_FULL_PROGRAM_EXECUTOR_V0_1.pnv'
+      - '.github/workflows/pncs-full-program-executor-integration.yml'
   workflow_dispatch:
 
 permissions:

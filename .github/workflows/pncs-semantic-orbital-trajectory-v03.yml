@@ -1,9 +1,9 @@
 name: PNCS Semantic Orbital Trajectory v0.3
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/pncs-semantic-orbital-trajectory-v0.3
+      - main
     paths:
       - 'src/phasenav_natural_code/semantic_orbital_carrier_v01.py'
       - 'src/phasenav_natural_code/semantic_phase_inverse_v02.py'
@@ -14,16 +14,7 @@ on:
       - 'spec/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_3.md'
       - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_3.json'
       - '.github/workflows/pncs-semantic-orbital-trajectory-v03.yml'
-  pull_request:
-    paths:
-      - 'src/phasenav_natural_code/semantic_orbital_carrier_v01.py'
-      - 'src/phasenav_natural_code/semantic_phase_inverse_v02.py'
-      - 'src/phasenav_natural_code/semantic_orbital_trajectory_v03.py'
-      - 'tests/test_semantic_orbital_carrier_v01.py'
-      - 'tests/test_semantic_phase_inverse_v02.py'
-      - 'tests/test_semantic_orbital_trajectory_v03.py'
-      - 'spec/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_3.md'
-      - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_3.json'
+  workflow_dispatch:
 
 permissions:
   contents: read

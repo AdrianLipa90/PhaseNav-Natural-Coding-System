@@ -15,6 +15,14 @@ from .gremlin_relational_compiler_v01 import (
     compile_relational_isomorphism,
     validate_compiled_relational_candidate,
 )
+from .gremlin_strict_admission_v01 import (
+    exact_sequence,
+    finite_complex_sequence,
+    finite_real,
+    finite_real_sequence,
+    nonnegative_real,
+    positive_real,
+)
 from .model import Kaku, Vector36
 
 BANK_SCHEMA = "PNCS_GREMLIN_CROSS_FORMALISM_ISOMORPHISM_BANK_V0_2"
@@ -367,9 +375,12 @@ def validate_cross_formalism_candidates(bank: CrossFormalismCompilation):
 
 
 def coboundary_cycle_defects(potentials: Sequence[float]) -> tuple[float, float]:
-    values = tuple(float(value) for value in potentials)
-    if len(values) < 2 or not all(math.isfinite(value) for value in values):
-        raise CrossFormalismBankError("finite cycle potentials with length >= 2 are required")
+    values = finite_real_sequence(
+        potentials,
+        "cycle potentials",
+        min_length=2,
+        error_type=CrossFormalismBankError,
+    )
     differences = tuple(values[(index + 1) % len(values)] - values[index] for index in range(len(values)))
     additive = abs(sum(differences))
     multiplicative = abs(math.prod([cmath.exp(1j * delta) for delta in differences]) - 1.0)
@@ -377,9 +388,14 @@ def coboundary_cycle_defects(potentials: Sequence[float]) -> tuple[float, float]
 
 
 def _normalize_state(state: Sequence[complex]) -> tuple[complex, ...]:
-    values = tuple(complex(value) for value in state)
+    values = finite_complex_sequence(
+        state,
+        "complex state",
+        min_length=1,
+        error_type=CrossFormalismBankError,
+    )
     norm2 = sum(abs(value) ** 2 for value in values)
-    if not values or not math.isfinite(norm2) or norm2 <= 0.0:
+    if not math.isfinite(norm2) or norm2 <= 0.0:
         raise CrossFormalismBankError("nonzero finite complex state is required")
     norm = math.sqrt(norm2)
     return tuple(value / norm for value in values)
@@ -392,23 +408,34 @@ def _inner(left: Sequence[complex], right: Sequence[complex]) -> complex:
 
 
 def bargmann_quadrilateral(states: Sequence[Sequence[complex]]) -> complex:
-    if len(states) != 4:
-        raise CrossFormalismBankError("Bargmann quadrilateral requires four states")
-    i, k, j, l = tuple(_normalize_state(state) for state in states)
+    raw_states = exact_sequence(
+        states,
+        "Bargmann states",
+        exact_length=4,
+        error_type=CrossFormalismBankError,
+    )
+    i, k, j, l = tuple(_normalize_state(state) for state in raw_states)  # type: ignore[arg-type]
     return _inner(i, k) * _inner(k, j) * _inner(j, l) * _inner(l, i)
 
 
 def rephase_state(state: Sequence[complex], phase: float) -> tuple[complex, ...]:
-    if not math.isfinite(float(phase)):
-        raise CrossFormalismBankError("finite phase is required")
-    carrier = cmath.exp(1j * float(phase))
-    return tuple(carrier * complex(value) for value in state)
+    values = finite_complex_sequence(
+        state,
+        "complex state",
+        min_length=1,
+        error_type=CrossFormalismBankError,
+    )
+    angle = finite_real(phase, "phase", error_type=CrossFormalismBankError)
+    carrier = cmath.exp(1j * angle)
+    return tuple(carrier * value for value in values)
 
 
 def spinor_central_phase(rotation_angle: float) -> complex:
-    angle = float(rotation_angle)
-    if not math.isfinite(angle):
-        raise CrossFormalismBankError("finite rotation angle is required")
+    angle = finite_real(
+        rotation_angle,
+        "rotation angle",
+        error_type=CrossFormalismBankError,
+    )
     return cmath.exp(0.5j * angle)
 
 
@@ -420,18 +447,35 @@ def shape_scale_defects(
     *,
     tolerance: float = 1e-12,
 ) -> Mapping[str, float]:
-    p = tuple(float(value) for value in shape)
-    q = tuple(float(value) for value in candidate_shape)
-    if not p or len(p) != len(q):
+    p = finite_real_sequence(
+        shape,
+        "shape",
+        min_length=1,
+        error_type=CrossFormalismBankError,
+    )
+    q = finite_real_sequence(
+        candidate_shape,
+        "candidate_shape",
+        min_length=1,
+        error_type=CrossFormalismBankError,
+    )
+    if len(p) != len(q):
         raise CrossFormalismBankError("shape vectors must be nonempty and have equal dimension")
-    if any((not math.isfinite(value)) or value <= 0.0 for value in (*p, *q)):
+    if any(value <= 0.0 for value in (*p, *q)):
         raise CrossFormalismBankError("shape coordinates must be finite and strictly positive")
-    if abs(sum(p) - 1.0) > tolerance or abs(sum(q) - 1.0) > tolerance:
+    tol = nonnegative_real(
+        tolerance,
+        "tolerance",
+        error_type=CrossFormalismBankError,
+    )
+    if abs(sum(p) - 1.0) > tol or abs(sum(q) - 1.0) > tol:
         raise CrossFormalismBankError("shape vectors must be normalized")
-    s = float(scale)
-    shat = float(candidate_scale)
-    if not math.isfinite(s) or not math.isfinite(shat) or s <= 0.0 or shat <= 0.0:
-        raise CrossFormalismBankError("scales must be finite and strictly positive")
+    s = positive_real(scale, "scale", error_type=CrossFormalismBankError)
+    shat = positive_real(
+        candidate_scale,
+        "candidate_scale",
+        error_type=CrossFormalismBankError,
+    )
     ratio = shat / s
     d_shape = sum(abs(a - b) for a, b in zip(p, q))
     d_scale = abs(1.0 - ratio)

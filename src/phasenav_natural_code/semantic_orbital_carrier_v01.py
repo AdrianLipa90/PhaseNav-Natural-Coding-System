@@ -14,6 +14,7 @@ SCHEMA = "PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1"
 FORMULA_ID = "S=(B*omega*N/A_R)*(phi+kappa)"
 KAPPA = math.log(2.0) / (24.0 * math.pi)
 ASCENDING_BAND_ORDER = tuple(f"O{i}" for i in range(9))
+DEFAULT_BANDS = ASCENDING_BAND_ORDER
 
 
 class SemanticOrbitalCarrierError(ValueError):

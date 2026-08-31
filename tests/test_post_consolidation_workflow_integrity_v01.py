@@ -47,11 +47,24 @@ def test_post_consolidation_feature_workflows_target_main_not_deleted_branches()
         ),
         "pncs-native-pnv-exec.yml": ("feat/native-pnv-exec-tool",),
         "pncs-v030-resident-hotpath.yml": ("feat/pncs-v0.30-resident-hotpath",),
+        "pncs-semantic-orbital-carrier-v01.yml": (
+            "feat/pncs-semantic-orbital-carrier-v0.1",
+        ),
+        "pncs-semantic-phase-inverse-v02.yml": (
+            "feat/pncs-semantic-phase-inverse-v0.2",
+        ),
+        "pncs-semantic-orbital-trajectory-v03.yml": (
+            "feat/pncs-semantic-orbital-trajectory-v0.3",
+        ),
+        "pncs-tau-liminal-file-v01.yml": (
+            "feat/pncs-tau-liminal-file-v0.1",
+        ),
     }
     for workflow_name, deleted_branches in cases.items():
         text = _workflow(workflow_name)
         assert "pull_request:" in text
         assert "      - main" in text
+        assert "workflow_dispatch:" in text
         for deleted_branch in deleted_branches:
             assert deleted_branch not in text
 

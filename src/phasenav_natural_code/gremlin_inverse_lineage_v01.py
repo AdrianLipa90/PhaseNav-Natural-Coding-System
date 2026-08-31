@@ -48,6 +48,21 @@ def _digest(value: Any, field: str) -> str:
     return value
 
 
+def _exact_text(value: Any, field: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise GremlinInverseLineageError(f"{field} must be a non-empty string")
+    return value
+
+
+def _exact_text_list(value: Any, field: str) -> list[str]:
+    if not isinstance(value, list):
+        raise GremlinInverseLineageError(f"{field} must be a list of strings")
+    out: list[str] = []
+    for index, item in enumerate(value):
+        out.append(_exact_text(item, f"{field}[{index}]"))
+    return out
+
+
 def _validate_candidate(candidate: Mapping[str, Any], kind: str) -> str:
     if not isinstance(candidate, Mapping):
         raise GremlinInverseLineageError(f"{kind} candidate must be a mapping")
@@ -76,6 +91,8 @@ def _validate_candidate(candidate: Mapping[str, Any], kind: str) -> str:
     )
     if candidate_id != expected:
         raise GremlinInverseLineageError(f"{kind} candidate content hash mismatch")
+    _exact_text_list(candidate.get("evidence_refs"), f"{kind} evidence_refs")
+    _exact_text_list(candidate.get("dependency_ids"), f"{kind} dependency_ids")
     return candidate_id
 
 
@@ -289,7 +306,7 @@ def _reachable_operator_names(
         args = tuple(candidate["content"].get("args", ()))
         for token in args:
             if token in index:
-                visit(str(token))
+                visit(token)
         order.append(name)
 
     for root in roots:
@@ -332,9 +349,8 @@ def _explicit_content_ids(
         role = content.get("role")
         if isinstance(role, str):
             values.append(role)
-    evidence = candidate.get("evidence_refs")
-    if isinstance(evidence, list):
-        values.extend(str(x) for x in evidence)
+    evidence = _exact_text_list(candidate.get("evidence_refs"), "candidate evidence_refs")
+    values.extend(evidence)
     found: set[str] = set()
     for value in values:
         found.update(_CONTENT_ID_RE.findall(value))
@@ -354,30 +370,41 @@ def _validate_radical_and_kaku(
         raise GremlinInverseLineageError(
             "RADICAL KAKU candidate refs required"
         )
+    exact_refs: dict[str, str] = {}
+    for node_id, candidate_id in refs.items():
+        node_text = _exact_text(node_id, "RADICAL KAKU node id")
+        candidate_text = _exact_text(candidate_id, f"RADICAL KAKU ref {node_text}")
+        if node_text in exact_refs:
+            raise GremlinInverseLineageError("duplicate RADICAL KAKU node id")
+        exact_refs[node_text] = candidate_text
+
     kaku_index: dict[str, Mapping[str, Any]] = {}
+    kaku_ids: dict[str, str] = {}
     for node_id, candidate in compilation.kaku_candidates.items():
-        _validate_candidate(candidate, "KAKU")
+        node_text = _exact_text(node_id, "compilation KAKU node id")
+        candidate_id = _validate_candidate(candidate, "KAKU")
         candidate_content = candidate.get("content")
         if (
             not isinstance(candidate_content, Mapping)
-            or candidate_content.get("kaku_id") != node_id
+            or candidate_content.get("kaku_id") != node_text
         ):
             raise GremlinInverseLineageError(
                 "KAKU candidate node id mismatch"
             )
-        kaku_index[str(node_id)] = candidate
-    if set(refs) != set(kaku_index):
+        if node_text in kaku_index:
+            raise GremlinInverseLineageError("duplicate compilation KAKU node id")
+        kaku_index[node_text] = candidate
+        kaku_ids[node_text] = candidate_id
+    if set(exact_refs) != set(kaku_index):
         raise GremlinInverseLineageError(
             "RADICAL node/KAKU candidate closure mismatch"
         )
-    for node_id, cid in refs.items():
-        if kaku_index[str(node_id)].get("candidate_id") != cid:
+    for node_id, cid in exact_refs.items():
+        if kaku_ids[node_id] != cid:
             raise GremlinInverseLineageError(
                 "RADICAL node points to wrong KAKU candidate"
             )
-    expected_dependencies = sorted(
-        str(candidate["candidate_id"]) for candidate in kaku_index.values()
-    )
+    expected_dependencies = sorted(kaku_ids.values())
     if radical.get("dependency_ids") != expected_dependencies:
         raise GremlinInverseLineageError(
             "RADICAL dependency closure mismatch"
@@ -387,14 +414,12 @@ def _validate_radical_and_kaku(
             "RADICAL candidate/compilation receipt mismatch"
         )
     receipt_nodes = compilation.receipt.get("node_candidate_ids")
-    expected_nodes = {
-        k: str(v["candidate_id"]) for k, v in sorted(kaku_index.items())
-    }
+    expected_nodes = {k: kaku_ids[k] for k in sorted(kaku_ids)}
     if not isinstance(receipt_nodes, Mapping) or dict(receipt_nodes) != expected_nodes:
         raise GremlinInverseLineageError(
             "KAKU candidate/compilation receipt mismatch"
         )
-    return radical_id, kaku_index, {str(k): str(v) for k, v in refs.items()}
+    return radical_id, kaku_index, dict(exact_refs)
 
 
 @dataclass(frozen=True)

@@ -1,6 +1,6 @@
 # PNCS Semantic Orbital Trajectory v0.3
 
-Status: `CANDIDATE / ORDERED_SEMANTIC_PHASE_TRAJECTORY / ORBIT_TRANSITION_RECEIPTS / PNLF_VERB_CANDIDATES / NO_STATE_MUTATION`
+Status: `CANDIDATE / ORDERED_SEMANTIC_PHASE_TRAJECTORY / ORBIT_TRANSITION_RECEIPTS / PNLF_VERB_CANDIDATES / IMMUTABLE_PLACEMENT_SNAPSHOT`
 
 Stack parent: `PNCS_SEMANTIC_PHASE_INVERSE_V0_2`.
 
@@ -35,7 +35,25 @@ The trajectory is
 
 All samples use one explicit orbit-quantizer profile so orbital transitions have one replayable provenance.
 
-## 2. Adjacent transition receipt
+## 2. Immutable placement snapshot
+
+The v0.3 trajectory constructor admits an explicit `list` or `tuple` of `SemanticPhasePlacement` instances and snapshots that container immediately to an immutable tuple.
+
+Therefore the trajectory commitment is bound to the placement sequence admitted at construction time:
+
+```text
+caller placement container
+ -> tuple snapshot
+ -> trajectory validation
+ -> body
+ -> trajectory_sha256
+```
+
+Later mutation of the caller-owned list leaves the stored trajectory sequence and deterministic receipt unchanged.
+
+The public builder also snapshots its supplied sequence before constructing the trajectory.
+
+## 3. Adjacent transition receipt
 
 For each ordered pair define
 
@@ -53,9 +71,9 @@ For each ordered pair define
 \Delta w_i=w_{i+1}-w_i.
 \]
 
-The transition receipt preserves both endpoints and these exact differences.
+The transition receipt preserves both endpoints and these exact differences. Derived real-valued deltas must remain finite before entering receipt construction.
 
-## 3. Orbital transition class
+## 4. Orbital transition class
 
 PNLF defines lower orbital-band index as stronger binding under the declared quantizer profile. Therefore for
 
@@ -71,6 +89,8 @@ b < a  -> ORBIT_PROMOTE_CANDIDATE
 b > a  -> ORBIT_DEMOTE_CANDIDATE
 ```
 
+Orbital-band inputs require exact string identity in the declared `O0..O8` form.
+
 The corresponding PNLF RADICAL verb candidate is recorded as
 
 ```text
@@ -79,9 +99,9 @@ ORBIT_PROMOTE_CANDIDATE   -> PNLF.ORBIT_PROMOTE
 ORBIT_DEMOTE_CANDIDATE    -> PNLF.ORBIT_DEMOTE
 ```
 
-This is a receipt classification only.
+The receipt authority for this field is classification-only.
 
-## 4. Wave-coordinate provenance
+## 5. Wave-coordinate provenance
 
 Each sample retains the exact source coordinates
 
@@ -92,9 +112,9 @@ N(t)
 A_R
 ```
 
-alongside the semantic, phase and orbital coordinates. v0.3 does not replace these source coordinates with an inferred waveform parameterization.
+alongside the semantic, phase and orbital coordinates. These coordinates preserve their parent placement values in the transition receipt.
 
-## 5. Winding transport
+## 6. Winding transport
 
 The lossless v0.2 relation
 
@@ -102,29 +122,30 @@ The lossless v0.2 relation
 \phi_{lift}=\phi_{wrap}+2\pi w
 \]
 
-is preserved at every sample. Therefore an intraband transition may still carry nonzero
+is preserved at every sample. Therefore an intraband transition may carry nonzero
 
 \[
 \Delta\phi_{lift},\qquad \Delta w.
 \]
 
-A band hold is not treated as a zero phase transition.
+Band identity and phase transport remain separately recorded coordinates.
 
-## 6. Deterministic trajectory commitment
+## 7. Deterministic trajectory commitment
 
 The trajectory receipt contains
 
 - one KAKU/content identity;
 - one quantizer profile and commitment;
+- the immutable ordered placement snapshot;
 - ordered encoded samples;
 - ordered adjacent transition receipts;
 - candidate PNLF verbs;
 - GREMLIN candidate authority fields;
 - SHA-256 over canonical JSON.
 
-Changing sample order, a source coordinate, a winding, or quantizer provenance changes the trajectory commitment.
+Changing an admitted sample order, source coordinate, winding, or quantizer provenance changes the trajectory commitment.
 
-## 7. Admission boundary
+## 8. Admission and authority boundary
 
 The trajectory is candidate data for later PNLF liminal admission. It carries
 
@@ -136,9 +157,9 @@ canon_write_authority = false
 state_memory_write_authority = false
 ```
 
-A PNLF verb candidate is not executed by this layer.
+PNLF verb candidates are emitted as explicit candidate classifications for a later admitted transition layer.
 
-## 8. Validation gates
+## 9. Validation gates
 
 Reference tests verify:
 
@@ -150,9 +171,17 @@ Reference tests verify:
 6. lower `O` index maps to promotion candidate;
 7. band hold preserves phase/winding transport;
 8. deterministic trajectory hashing and order sensitivity;
-9. fail-closed duplicate/nonmonotonic time and mixed identities;
-10. no runtime/canon/state-memory authority.
+9. duplicate/nonmonotonic-time and mixed-identity rejection;
+10. candidate authority fields;
+11. exact orbital-band string identity;
+12. explicit placement-container admission;
+13. immediate list-to-tuple snapshot at direct construction;
+14. stable receipt after mutation of the original caller list;
+15. builder-level placement snapshot preservation.
 
 Reference implementation: `src/phasenav_natural_code/semantic_orbital_trajectory_v03.py`.
-Reference tests: `tests/test_semantic_orbital_trajectory_v03.py`.
+Reference tests:
+- `tests/test_semantic_orbital_trajectory_v03.py`
+- `tests/test_semantic_orbital_trajectory_admission_v03.py`
+
 Validation receipt: `provenance/receipts/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_3.json`.

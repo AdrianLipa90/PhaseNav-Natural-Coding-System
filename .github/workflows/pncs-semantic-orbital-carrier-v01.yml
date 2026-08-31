@@ -1,9 +1,9 @@
 name: PNCS Semantic Orbital Carrier v0.1
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/pncs-semantic-orbital-carrier-v0.1
+      - main
     paths:
       - 'src/phasenav_natural_code/semantic_orbital_carrier_v01.py'
       - 'src/phasenav_natural_code/semantic_radical_oscillator_v01.py'
@@ -37,39 +37,7 @@ on:
       - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_HTRI_BOUNDED_TRACK_V0_1.json'
       - 'provenance/receipts/PNCS_SEMANTIC_MAGNITUDE_ACTUATION_FIREWALL_V0_1.json'
       - '.github/workflows/pncs-semantic-orbital-carrier-v01.yml'
-  pull_request:
-    paths:
-      - 'src/phasenav_natural_code/semantic_orbital_carrier_v01.py'
-      - 'src/phasenav_natural_code/semantic_radical_oscillator_v01.py'
-      - 'src/phasenav_natural_code/semantic_orbital_trajectory_v01.py'
-      - 'src/phasenav_natural_code/semantic_orbital_htri_bridge_v01.py'
-      - 'src/phasenav_natural_code/semantic_orbital_htri_bounded_v01.py'
-      - 'src/phasenav_natural_code/semantic_magnitude_actuation_firewall_v01.py'
-      - 'src/phasenav_natural_code/pnlf_orbital_memory_v01.py'
-      - 'src/phasenav_natural_code/semantic_htri_drive_v32.py'
-      - 'src/phasenav_natural_code/semantic_htri_bounded_v33.py'
-      - 'tests/test_semantic_orbital_carrier_v01.py'
-      - 'tests/test_semantic_radical_oscillator_v01.py'
-      - 'tests/test_semantic_orbital_trajectory_v01.py'
-      - 'tests/test_semantic_orbital_htri_bridge_v01.py'
-      - 'tests/test_semantic_orbital_htri_bounded_v01.py'
-      - 'tests/test_semantic_magnitude_actuation_firewall_v01.py'
-      - 'tests/test_semantic_htri_drive_v32.py'
-      - 'tests/test_semantic_htri_bounded_v33.py'
-      - 'tests/test_pnlf_orbital_memory_v01.py'
-      - 'tests/test_gremlin_kaku_resolver_v01.py'
-      - 'spec/PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1.md'
-      - 'spec/PNCS_SEMANTIC_RADICAL_OSCILLATOR_V0_1.md'
-      - 'spec/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_1.md'
-      - 'spec/PNCS_SEMANTIC_ORBITAL_HTRI_BRIDGE_V0_1.md'
-      - 'spec/PNCS_SEMANTIC_ORBITAL_HTRI_BOUNDED_TRACK_V0_1.md'
-      - 'spec/PNCS_SEMANTIC_MAGNITUDE_ACTUATION_FIREWALL_V0_1.md'
-      - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1.json'
-      - 'provenance/receipts/PNCS_SEMANTIC_RADICAL_OSCILLATOR_V0_1.json'
-      - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_1.json'
-      - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_HTRI_BRIDGE_V0_1.json'
-      - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_HTRI_BOUNDED_TRACK_V0_1.json'
-      - 'provenance/receipts/PNCS_SEMANTIC_MAGNITUDE_ACTUATION_FIREWALL_V0_1.json'
+  workflow_dispatch:
 
 permissions:
   contents: read

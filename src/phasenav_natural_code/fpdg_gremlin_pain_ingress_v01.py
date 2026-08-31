@@ -85,10 +85,18 @@ class FpdgPainAlignment:
         object.__setattr__(self, "left_chain_id", _nonempty(self.left_chain_id, "left_chain_id"))
         object.__setattr__(self, "right_chain_id", _nonempty(self.right_chain_id, "right_chain_id"))
         object.__setattr__(self, "relation_type", _nonempty(self.relation_type, "relation_type").upper())
-        if not isinstance(self.left_claim_index, int) or self.left_claim_index < 0:
-            raise FpdgGremlinPainIngressError("left_claim_index must be non-negative")
-        if not isinstance(self.right_claim_index, int) or self.right_claim_index < 0:
-            raise FpdgGremlinPainIngressError("right_claim_index must be non-negative")
+        if (
+            not isinstance(self.left_claim_index, int)
+            or isinstance(self.left_claim_index, bool)
+            or self.left_claim_index < 0
+        ):
+            raise FpdgGremlinPainIngressError("left_claim_index must be a non-negative integer")
+        if (
+            not isinstance(self.right_claim_index, int)
+            or isinstance(self.right_claim_index, bool)
+            or self.right_claim_index < 0
+        ):
+            raise FpdgGremlinPainIngressError("right_claim_index must be a non-negative integer")
         if self.left_chain_id == self.right_chain_id:
             raise FpdgGremlinPainIngressError("FPDG pain alignment must bind two distinct chains")
 
@@ -110,9 +118,16 @@ def _packet_chains(packet_id: str, packet: Mapping[str, Any]) -> list[dict[str, 
         if not isinstance(zone, Mapping):
             raise FpdgGremlinPainIngressError(f"{packet_id}: zone {zone_index} must be an object")
         domains_raw = zone.get("domains", [])
-        if not isinstance(domains_raw, list) or any(not isinstance(item, str) or not item for item in domains_raw):
+        if not isinstance(domains_raw, list) or any(not isinstance(item, str) for item in domains_raw):
             raise FpdgGremlinPainIngressError(f"{packet_id}: zone {zone_index} domains must be strings")
-        domains = tuple(sorted(set(domains_raw)))
+        domains = tuple(
+            sorted(
+                set(
+                    _nonempty(item, f"{packet_id}: zone {zone_index} domain")
+                    for item in domains_raw
+                )
+            )
+        )
         raw_chains = zone.get("raw_chains", [])
         if not isinstance(raw_chains, list):
             raise FpdgGremlinPainIngressError(f"{packet_id}: zone {zone_index} raw_chains must be a list")
@@ -125,8 +140,21 @@ def _packet_chains(packet_id: str, packet: Mapping[str, Any]) -> list[dict[str, 
             claims = chain.get("claims")
             if not isinstance(claims, list) or not claims:
                 raise FpdgGremlinPainIngressError(f"{packet_id}:{raw_id}: claims must be non-empty list")
-            if any(not isinstance(claim, str) or not claim for claim in claims):
+            if any(not isinstance(claim, str) for claim in claims):
                 raise FpdgGremlinPainIngressError(f"{packet_id}:{raw_id}: invalid claim id")
+            normalized_claims = tuple(
+                _nonempty(claim, f"{packet_id}:{raw_id}: claim_id") for claim in claims
+            )
+            evidence_refs_raw = zone.get("evidence_refs", [])
+            if not isinstance(evidence_refs_raw, list):
+                raise FpdgGremlinPainIngressError(
+                    f"{packet_id}: zone {zone_index} evidence_refs must be a list"
+                )
+            normalized_evidence_refs = tuple(
+                _nonempty(ref, f"{packet_id}: zone {zone_index} evidence_ref")
+                for ref in evidence_refs_raw
+                if isinstance(ref, str) and ref.strip()
+            )
             out.append(
                 {
                     "id": _namespaced_chain_id(packet_id, raw_id),
@@ -135,12 +163,8 @@ def _packet_chains(packet_id: str, packet: Mapping[str, Any]) -> list[dict[str, 
                     "zone_index": zone_index,
                     "zone_domains": domains,
                     "status": str(chain.get("status", "OBSERVED_DIAGNOSTIC_WITNESS")),
-                    "claims": tuple(claims),
-                    "evidence_refs": tuple(
-                        str(ref)
-                        for ref in zone.get("evidence_refs", [])
-                        if isinstance(ref, str) and ref
-                    ),
+                    "claims": normalized_claims,
+                    "evidence_refs": normalized_evidence_refs,
                 }
             )
     return out
@@ -173,7 +197,7 @@ def _resolve_domain(chain: Mapping[str, Any], chain_domains: Mapping[str, str]) 
         return _nonempty(str(explicit), f"chain domain {chain_id}")
     hints = tuple(chain.get("zone_domains", ()))
     if len(hints) == 1:
-        return str(hints[0])
+        return _nonempty(str(hints[0]), f"chain domain {chain_id}")
     if not hints:
         raise FpdgGremlinPainIngressError(
             f"{chain_id}: no source domain in packet; explicit chain_domains binding required"
@@ -224,6 +248,7 @@ def build_relation_mining_inputs(
     ledger_chains: list[dict[str, Any]] = []
     domain_by_chain: dict[str, str] = {}
     required_claims: set[str] = set()
+    normalized_claim_to_atom: dict[str, str] = {}
     for chain_id in selected:
         chain = chains[chain_id]
         domain = _resolve_domain(chain, chain_domains)
@@ -236,7 +261,9 @@ def build_relation_mining_inputs(
                 raise FpdgGremlinPainIngressError(
                     f"explicit claim_to_atom binding required before GREMLIN lowering: {claim}"
                 )
-            atoms.append(_nonempty(str(atom), f"claim_to_atom[{claim}]").upper())
+            normalized_atom = _nonempty(str(atom), f"claim_to_atom[{claim}]").upper()
+            normalized_claim_to_atom[claim] = normalized_atom
+            atoms.append(normalized_atom)
         ledger_chains.append(
             {
                 "id": chain_id,
@@ -313,7 +340,7 @@ def build_relation_mining_inputs(
         "packet_sha256": packet_hashes,
         "selected_chain_ids": list(selected),
         "chain_domains": {key: domain_by_chain[key] for key in sorted(domain_by_chain)},
-        "claim_to_atom": {claim: str(claim_to_atom[claim]).upper() for claim in sorted(required_claims)},
+        "claim_to_atom": {claim: normalized_claim_to_atom[claim] for claim in sorted(required_claims)},
         "alignments": [
             {
                 "left_chain_id": row.left_chain_id,

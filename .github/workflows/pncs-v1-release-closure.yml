@@ -35,6 +35,7 @@ jobs:
           tests/test_release_train_native_v1.py
           tests/test_post_consolidation_workflow_integrity_v01.py
           tests/test_manifest_tool_v28.py
+          tests/test_model_integrity_v01.py
           tests/test_full_program_executor_v01.py
           tests/test_full_program_executor_receipt_integrity_v01.py
           tests/test_runtime_v30_hot.py

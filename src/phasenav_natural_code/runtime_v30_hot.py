@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+import json
 from pathlib import Path
 from typing import Callable, Mapping
 
@@ -73,6 +74,50 @@ class ResidentHotAdmissionToken:
     resident_admission_id: str
     generation_payload: Mapping[str, object]
     source_stamps: Mapping[str, FileStamp]
+    _generation_payload_snapshot_json: str = field(init=False, repr=False, compare=False)
+    _source_stamps_snapshot: tuple[tuple[str, FileStamp], ...] = field(
+        init=False, repr=False, compare=False
+    )
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.generation_payload, Mapping):
+            raise PersistentRuntimeV25Error("hot token generation_payload must be a mapping")
+        try:
+            raw = _json_bytes(dict(self.generation_payload))
+            decoded = json.loads(raw)
+        except (TypeError, ValueError, UnicodeError, PersistentRuntimeV25Error) as exc:
+            raise PersistentRuntimeV25Error(
+                "hot token generation_payload must be canonical JSON"
+            ) from exc
+        if not isinstance(decoded, dict):
+            raise PersistentRuntimeV25Error("hot token generation_payload must be a JSON object")
+        object.__setattr__(
+            self,
+            "_generation_payload_snapshot_json",
+            json.dumps(decoded, sort_keys=True, separators=(",", ":"), ensure_ascii=False),
+        )
+
+        if not isinstance(self.source_stamps, Mapping) or not self.source_stamps:
+            raise PersistentRuntimeV25Error("hot token source_stamps must be a non-empty mapping")
+        stamp_rows: list[tuple[str, FileStamp]] = []
+        for key, stamp in self.source_stamps.items():
+            if not isinstance(key, str) or not key:
+                raise PersistentRuntimeV25Error("hot token source stamp key must be non-empty")
+            if not isinstance(stamp, FileStamp):
+                raise PersistentRuntimeV25Error("hot token source stamp must be FileStamp")
+            stamp_rows.append((key, stamp))
+        if len({key for key, _ in stamp_rows}) != len(stamp_rows):
+            raise PersistentRuntimeV25Error("hot token source stamp keys must be unique")
+        object.__setattr__(self, "_source_stamps_snapshot", tuple(sorted(stamp_rows)))
+
+    def _generation_snapshot(self) -> dict[str, object]:
+        value = json.loads(self._generation_payload_snapshot_json)
+        if not isinstance(value, dict):
+            raise PersistentRuntimeV25Error("hot token generation snapshot is invalid")
+        return value
+
+    def _stamp_snapshot(self) -> dict[str, FileStamp]:
+        return dict(self._source_stamps_snapshot)
 
     @property
     def payload(self) -> dict[str, object]:
@@ -84,9 +129,9 @@ class ResidentHotAdmissionToken:
             "control_definition_id": self.control_definition_id,
             "generation_id": self.generation_id,
             "resident_admission_id": self.resident_admission_id,
-            "generation_payload": dict(self.generation_payload),
+            "generation_payload": self._generation_snapshot(),
             "source_stamps": {
-                key: self.source_stamps[key].payload for key in sorted(self.source_stamps)
+                key: stamp.payload for key, stamp in self._source_stamps_snapshot
             },
             "scope": "CONTROL_ROOT_V0_20_ONLY",
             "external_effects": False,
@@ -125,6 +170,23 @@ class PersistentHotRuntimeV30:
             "operator_registry": self.root / "phasenav/CIELINGO_PHASENAV_OPERATOR_VECTORS.noema.jsonl",
         }
 
+    def _token_path(self, token: ResidentHotAdmissionToken) -> Path:
+        return self.runtime_root / "tokens" / f"{token.token_id.rsplit(':', 1)[-1]}.json"
+
+    def _token_record_bytes(self, token: ResidentHotAdmissionToken) -> bytes:
+        return _json_bytes({**token.payload, "token_id": token.token_id})
+
+    def _verify_issued_token(self, token: ResidentHotAdmissionToken) -> None:
+        path = self._token_path(token)
+        try:
+            observed = path.read_bytes()
+        except OSError as exc:
+            raise PersistentRuntimeV25Error(
+                "hot token has no persisted full-admission issuance record"
+            ) from exc
+        if observed != self._token_record_bytes(token):
+            raise PersistentRuntimeV25Error("persisted hot token record mismatch")
+
     def issue(self, handle_id: str) -> ResidentHotAdmissionToken:
         admission: ResidentAdmission = self.base.admit(handle_id)
         handle = admission.handle
@@ -139,16 +201,16 @@ class PersistentHotRuntimeV30:
             generation_payload=handle.generation.payload,
             source_stamps=stamps,
         )
-        path = self.runtime_root / "tokens" / f"{token.token_id.rsplit(':', 1)[-1]}.json"
-        _immutable_write(path, _json_bytes({**token.payload, "token_id": token.token_id}))
+        _immutable_write(self._token_path(token), self._token_record_bytes(token))
         return token
 
     def _check_stamps(self, token: ResidentHotAdmissionToken) -> None:
         paths = self._authority_paths(token.handle_id, token.program_id)
-        if set(paths) != set(token.source_stamps):
+        stamps = token._stamp_snapshot()
+        if set(paths) != set(stamps):
             raise PersistentRuntimeV25Error("hot token authority-file set mismatch")
         for name, path in paths.items():
-            if FileStamp.read(path) != token.source_stamps[name]:
+            if FileStamp.read(path) != stamps[name]:
                 raise PersistentRuntimeV25Error(
                     f"hot token invalidated by authority-file change: {name}"
                 )
@@ -161,6 +223,7 @@ class PersistentHotRuntimeV30:
                 "v0.30 operational runtime is fixed to /dev/shm/ciel_noema"
             )
 
+        self._verify_issued_token(token)
         try:
             binding = (self.root / "ciel_binding_status").read_text("utf-8").strip()
         except (OSError, UnicodeError) as exc:
@@ -169,7 +232,7 @@ class PersistentHotRuntimeV30:
             raise PersistentRuntimeV25Error("hotpath NOEMA↔AUX binding is not ACTIVE")
 
         self._check_stamps(token)
-        expected = dict(token.generation_payload)
+        expected = token._generation_snapshot()
 
         current = _load_json(self.root / "current_memory.json", "hot current memory")
         seal = _load_json(self.root / "session/fast_admission.json", "hot fast admission")

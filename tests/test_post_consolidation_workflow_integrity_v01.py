@@ -107,6 +107,20 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
     ):
         assert path in gremlin
 
+    semantic = _workflow("pncs-semantic-orbital-carrier-v01.yml")
+    for path in (
+        "src/phasenav_natural_code/semantic_htri_drive_v32.py",
+        "src/phasenav_natural_code/semantic_htri_bounded_v33.py",
+        "src/phasenav_natural_code/semantic_orbital_htri_bridge_v01.py",
+        "src/phasenav_natural_code/semantic_orbital_htri_bounded_v01.py",
+        "tests/test_semantic_htri_drive_v32.py",
+        "tests/test_semantic_htri_bounded_v33.py",
+        "tests/test_semantic_orbital_htri_bridge_v01.py",
+        "tests/test_semantic_orbital_htri_bounded_v01.py",
+        "spec/PNCS_SEMANTIC_HTRI_INPUT_ADMISSION_V0_1.md",
+    ):
+        assert path in semantic
+
     tau = _workflow("pncs-tau-liminal-file-v01.yml")
     for path in (
         "src/phasenav_natural_code/gremlin_tau_codec_v01.py",
@@ -168,6 +182,14 @@ def test_v1_release_closure_runs_full_post_merge_regression_surface():
         "tests/test_gremlin_round28_sealed_bundle_v01.py",
         "tests/test_gremlin_noema_qhtri_isomorphism_bank_v01.py",
         "tests/test_semantic_orbital_carrier_v01.py",
+        "tests/test_semantic_orbital_trajectory_v01.py",
+        "tests/test_semantic_orbital_htri_bridge_v01.py",
+        "tests/test_semantic_orbital_htri_bounded_v01.py",
+        "tests/test_semantic_magnitude_actuation_firewall_v01.py",
+        "tests/test_semantic_radical_oscillator_v01.py",
+        "tests/test_semantic_htri_drive_v32.py",
+        "tests/test_semantic_htri_bounded_v33.py",
+        "tests/test_pnlf_orbital_memory_v01.py",
         "tests/test_semantic_phase_inverse_v02.py",
         "tests/test_semantic_orbital_trajectory_v03.py",
     ):

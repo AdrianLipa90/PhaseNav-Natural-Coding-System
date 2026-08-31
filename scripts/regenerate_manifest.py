@@ -39,6 +39,14 @@ def _run_git(root: Path, *args: str) -> str:
     return proc.stdout.decode("utf-8", "strict").strip()
 
 
+def _decode_nul_paths(raw: bytes, label: str) -> tuple[str, ...]:
+    try:
+        paths = tuple(item.decode("utf-8", "strict") for item in raw.split(b"\0") if item)
+    except UnicodeDecodeError as exc:
+        raise ManifestError(f"{label} path is not valid UTF-8") from exc
+    return tuple(sorted(set(paths)))
+
+
 def _changed_paths(root: Path, source_commit: str) -> tuple[str, ...]:
     try:
         proc = subprocess.run(
@@ -62,11 +70,42 @@ def _changed_paths(root: Path, source_commit: str) -> tuple[str, ...]:
         if isinstance(detail, bytes):
             detail = detail.decode("utf-8", "replace")
         raise ManifestError(f"cannot compare manifest source commit to HEAD: {detail}") from exc
+    return _decode_nul_paths(proc.stdout, "changed tracked")
+
+
+def _working_tree_changed_paths(root: Path) -> tuple[str, ...]:
     try:
-        paths = tuple(item.decode("utf-8", "strict") for item in proc.stdout.split(b"\0") if item)
-    except UnicodeDecodeError as exc:
-        raise ManifestError("changed tracked path is not valid UTF-8") from exc
-    return tuple(sorted(set(paths)))
+        proc = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(root),
+                "diff",
+                "--name-only",
+                "-z",
+                "HEAD",
+                "--",
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except (OSError, subprocess.CalledProcessError) as exc:
+        detail = getattr(exc, "stderr", b"")
+        if isinstance(detail, bytes):
+            detail = detail.decode("utf-8", "replace")
+        raise ManifestError(f"cannot inspect tracked working tree: {detail}") from exc
+    return _decode_nul_paths(proc.stdout, "working-tree tracked")
+
+
+def _require_clean_declared_scope(root: Path, exclusions: Iterable[str]) -> None:
+    allowed = set(str(item) for item in exclusions)
+    dirty = tuple(path for path in _working_tree_changed_paths(root) if path not in allowed)
+    if dirty:
+        raise ManifestError(
+            "tracked working tree differs from HEAD outside declared exclusions: "
+            + ", ".join(dirty)
+        )
 
 
 def tracked_paths(root: Path) -> tuple[str, ...]:
@@ -85,13 +124,10 @@ def tracked_paths(root: Path) -> tuple[str, ...]:
     raw = proc.stdout
     if not raw:
         raise ManifestError("tracked file set is empty")
-    try:
-        paths = tuple(item.decode("utf-8", "strict") for item in raw.split(b"\0") if item)
-    except UnicodeDecodeError as exc:
-        raise ManifestError("tracked path is not valid UTF-8") from exc
-    if len(set(paths)) != len(paths):
+    paths = _decode_nul_paths(raw, "tracked")
+    if len(paths) != len(tuple(item for item in raw.split(b"\0") if item)):
         raise ManifestError("duplicate tracked path")
-    return tuple(sorted(paths))
+    return paths
 
 
 def _entry(root: Path, rel: str) -> dict[str, object]:
@@ -119,6 +155,7 @@ def _canonical_json(value: object) -> bytes:
 def build_manifest(root: Path, *, exclusions: Iterable[str] = DEFAULT_EXCLUSIONS) -> dict[str, object]:
     root = root.resolve()
     excluded = tuple(sorted(set(str(item) for item in exclusions)))
+    _require_clean_declared_scope(root, excluded)
     tracked = tracked_paths(root)
     entries = [_entry(root, rel) for rel in tracked if rel not in excluded]
     if not entries:

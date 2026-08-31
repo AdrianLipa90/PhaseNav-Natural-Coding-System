@@ -32,6 +32,7 @@ on:
       - 'src/phasenav_natural_code/gremlin_cross_formalism_sealed_bundle_v01.py'
       - 'src/phasenav_natural_code/gremlin_cross_formalism_round28_v01.py'
       - 'src/phasenav_natural_code/gremlin_round28_sealed_bundle_v01.py'
+      - 'src/phasenav_natural_code/gremlin_noema_qhtri_isomorphism_bank_v01.py'
       - 'tests/test_model_integrity_v01.py'
       - 'tests/test_gremlin_strict_admission_v01.py'
       - 'tests/test_gremlin_strict_admission_consumers_v01.py'
@@ -70,6 +71,7 @@ on:
       - 'tests/test_gremlin_cross_formalism_sealed_bundle_v01.py'
       - 'tests/test_gremlin_cross_formalism_round28_v01.py'
       - 'tests/test_gremlin_round28_sealed_bundle_v01.py'
+      - 'tests/test_gremlin_noema_qhtri_isomorphism_bank_v01.py'
       - 'tests/test_gremlin_native_pnv_bridge_v01.py'
       - 'tests/test_native_pnv_exec_v01.py'
       - 'spec/PNCS_NATIVE_PNV_EXEC_TOOL_V0_1.md'
@@ -90,6 +92,7 @@ on:
       - 'spec/PNCS_GREMLIN_CROSS_FORMALISM_ISOMORPHISM_BANK_V0_2.md'
       - 'spec/PNCS_GREMLIN_CROSS_FORMALISM_SEALED_AUTHORING_V0_1.md'
       - 'spec/PNCS_GREMLIN_CROSS_FORMALISM_ROUND28_V0_1.md'
+      - 'spec/PNCS_GREMLIN_CROSS_FORMALISM_AGGREGATE_INTEGRITY_V0_1.md'
       - '.github/workflows/pncs-gremlin-pnv-authoring.yml'
   workflow_dispatch:
 
@@ -149,5 +152,6 @@ jobs:
           tests/test_gremlin_cross_formalism_sealed_bundle_v01.py
           tests/test_gremlin_cross_formalism_round28_v01.py
           tests/test_gremlin_round28_sealed_bundle_v01.py
+          tests/test_gremlin_noema_qhtri_isomorphism_bank_v01.py
           tests/test_gremlin_native_pnv_bridge_v01.py
           tests/test_native_pnv_exec_v01.py

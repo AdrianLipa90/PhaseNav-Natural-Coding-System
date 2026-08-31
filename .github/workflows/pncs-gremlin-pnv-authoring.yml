@@ -34,6 +34,7 @@ on:
       - 'tests/test_model_integrity_v01.py'
       - 'tests/test_gremlin_pnv_authoring_v02.py'
       - 'tests/test_gremlin_pnv_authoring_canonical_boundary_v01.py'
+      - 'tests/test_gremlin_radical_candidate_integrity_v01.py'
       - 'tests/test_gremlin_live_hydration_v03.py'
       - 'tests/test_gremlin_pnv_bridge_v02.py'
       - 'tests/test_gremlin_pnv_bridge_kaku_resolver_v02.py'
@@ -107,6 +108,7 @@ jobs:
           tests/test_model_integrity_v01.py
           tests/test_gremlin_pnv_authoring_v02.py
           tests/test_gremlin_pnv_authoring_canonical_boundary_v01.py
+          tests/test_gremlin_radical_candidate_integrity_v01.py
           tests/test_gremlin_live_hydration_v03.py
           tests/test_gremlin_pnv_bridge_v02.py
           tests/test_gremlin_pnv_bridge_kaku_resolver_v02.py

@@ -20,7 +20,10 @@ class SemanticOrbitalTrajectoryError(ValueError):
 
 
 def _finite(name: str, value: float) -> float:
-    value = float(value)
+    try:
+        value = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SemanticOrbitalTrajectoryError(f"{name} must be finite") from exc
     if not math.isfinite(value):
         raise SemanticOrbitalTrajectoryError(f"{name} must be finite")
     return value
@@ -75,15 +78,18 @@ class SemanticOrbitalTransition:
 
     @property
     def delta_time(self) -> float:
-        return self.target.sample_time - self.source.sample_time
+        return _finite("delta_time", self.target.sample_time - self.source.sample_time)
 
     @property
     def delta_semantic(self) -> float:
-        return self.target.semantic_target - self.source.semantic_target
+        return _finite("delta_semantic", self.target.semantic_target - self.source.semantic_target)
 
     @property
     def delta_lifted_phase(self) -> float:
-        return self.target.phase_code.lifted_phase - self.source.phase_code.lifted_phase
+        return _finite(
+            "delta_lifted_phase",
+            self.target.phase_code.lifted_phase - self.source.phase_code.lifted_phase,
+        )
 
     @property
     def delta_winding(self) -> int:

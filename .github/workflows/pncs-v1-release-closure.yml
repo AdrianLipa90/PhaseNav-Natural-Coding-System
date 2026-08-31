@@ -78,6 +78,7 @@ jobs:
           tests/test_gremlin_cross_formalism_sealed_bundle_v01.py
           tests/test_gremlin_cross_formalism_round28_v01.py
           tests/test_gremlin_round28_sealed_bundle_v01.py
+          tests/test_gremlin_noema_qhtri_isomorphism_bank_v01.py
           tests/test_semantic_orbital_carrier_v01.py
           tests/test_semantic_orbital_trajectory_v01.py
           tests/test_semantic_orbital_htri_bridge_v01.py

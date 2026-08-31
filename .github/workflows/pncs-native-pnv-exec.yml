@@ -1,9 +1,16 @@
 name: PNCS native PNV exec
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/native-pnv-exec-tool
+      - main
+    paths:
+      - 'src/phasenav_natural_code/native_pnv_exec_v01.py'
+      - 'src/phasenav_natural_code/gremlin_native_pnv_bridge_v01.py'
+      - 'tests/test_native_pnv_exec_v01.py'
+      - 'tests/test_gremlin_native_pnv_bridge_v01.py'
+      - 'native/PNCS_NATIVE_PNV_EXEC_TOOL_V0_1.pnv'
+      - '.github/workflows/pncs-native-pnv-exec.yml'
   workflow_dispatch:
 
 permissions:

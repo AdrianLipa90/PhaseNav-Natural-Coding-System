@@ -58,6 +58,7 @@ def test_post_consolidation_feature_workflows_target_main_not_deleted_branches()
 
 def test_newly_consolidated_layers_remain_in_ci_coverage():
     native = _workflow("pncs-native-pnv-exec.yml")
+    assert "tests/test_native_pnv_exec_v01.py" in native
     assert "tests/test_dncrypt_native_pncs_v04_causality.py" in native
     assert "native/programs/DNCRYPT_NATIVE_PNCS_V0_4.pnv" in native
 
@@ -84,6 +85,10 @@ def test_v1_release_closure_runs_full_post_merge_regression_surface():
         "tests/test_full_program_executor_v01.py",
         "tests/test_full_program_executor_receipt_integrity_v01.py",
         "tests/test_runtime_v30_hot.py",
+        "tests/test_native_pnv_exec_v01.py",
+        "tests/test_gremlin_inverse_lineage_v01.py",
+        "tests/test_gremlin_pnv_holonomy_v01.py",
+        "tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py",
         "tests/test_dncrypt_native_pncs_v04_causality.py",
         "tests/test_fpdg_gremlin_pain_ingress_v01.py",
         "tests/test_gremlin_cross_formalism_bank_v02.py",

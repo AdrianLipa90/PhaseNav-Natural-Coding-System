@@ -9,7 +9,10 @@ from typing import Any, Mapping, Sequence
 
 from .gremlin_pnv_authoring_v02 import CANDIDATE_SCHEMA
 from .gremlin_relational_compiler_v01 import RelationalCompilation
-from .native_pnv_exec_v01 import NativePNVExecutionResult, RECEIPT_SCHEMA as NATIVE_RECEIPT_SCHEMA
+from .native_pnv_exec_v01 import (
+    NativePNVExecutionResult,
+    RECEIPT_SCHEMA as NATIVE_RECEIPT_SCHEMA,
+)
 
 LINEAGE_SCHEMA = "PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_V0_1"
 LINEAGE_RECEIPT_SCHEMA = "PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_RECEIPT_V0_1"
@@ -39,7 +42,9 @@ def _sha256(value: Any) -> str:
 
 def _digest(value: Any, field: str) -> str:
     if not isinstance(value, str) or not _DIGEST_RE.fullmatch(value):
-        raise GremlinInverseLineageError(f"{field} must be lowercase 64-hex SHA-256")
+        raise GremlinInverseLineageError(
+            f"{field} must be lowercase 64-hex SHA-256"
+        )
     return value
 
 
@@ -48,15 +53,27 @@ def _validate_candidate(candidate: Mapping[str, Any], kind: str) -> str:
         raise GremlinInverseLineageError(f"{kind} candidate must be a mapping")
     if candidate.get("schema") != CANDIDATE_SCHEMA or candidate.get("kind") != kind:
         raise GremlinInverseLineageError(f"{kind} candidate schema/kind mismatch")
-    if candidate.get("epistemic") != "CHYBA" or candidate.get("promotion_state") != "CANDIDATE_ONLY":
-        raise GremlinInverseLineageError(f"{kind} candidate epistemic/promotion boundary mismatch")
-    if candidate.get("runtime_execution_authority") is not False or candidate.get("canon_write_authority") is not False:
-        raise GremlinInverseLineageError(f"{kind} candidate authority boundary mismatch")
+    if (
+        candidate.get("epistemic") != "CHYBA"
+        or candidate.get("promotion_state") != "CANDIDATE_ONLY"
+    ):
+        raise GremlinInverseLineageError(
+            f"{kind} candidate epistemic/promotion boundary mismatch"
+        )
+    if (
+        candidate.get("runtime_execution_authority") is not False
+        or candidate.get("canon_write_authority") is not False
+    ):
+        raise GremlinInverseLineageError(
+            f"{kind} candidate authority boundary mismatch"
+        )
     candidate_id = candidate.get("candidate_id")
     prefix = f"pncs:gremlin-{kind.lower()}:sha256:"
     if not isinstance(candidate_id, str) or not candidate_id.startswith(prefix):
         raise GremlinInverseLineageError(f"{kind} candidate id prefix mismatch")
-    expected = prefix + _sha256({k: candidate[k] for k in candidate if k != "candidate_id"})
+    expected = prefix + _sha256(
+        {k: candidate[k] for k in candidate if k != "candidate_id"}
+    )
     if candidate_id != expected:
         raise GremlinInverseLineageError(f"{kind} candidate content hash mismatch")
     return candidate_id
@@ -70,38 +87,127 @@ def _validate_compilation_receipt(compilation: RelationalCompilation) -> str:
     body = dict(receipt)
     body.pop("receipt_sha256", None)
     if _sha256(body) != receipt_sha:
-        raise GremlinInverseLineageError("relational compilation receipt digest mismatch")
-    if receipt.get("epistemic") != "CHYBA" or receipt.get("promotion_state") != "CANDIDATE_ONLY":
-        raise GremlinInverseLineageError("relational compilation epistemic boundary mismatch")
-    if receipt.get("runtime_execution_authority") is not False or receipt.get("canon_write_authority") is not False:
-        raise GremlinInverseLineageError("relational compilation authority boundary mismatch")
+        raise GremlinInverseLineageError(
+            "relational compilation receipt digest mismatch"
+        )
+    if (
+        receipt.get("epistemic") != "CHYBA"
+        or receipt.get("promotion_state") != "CANDIDATE_ONLY"
+    ):
+        raise GremlinInverseLineageError(
+            "relational compilation epistemic boundary mismatch"
+        )
+    if (
+        receipt.get("runtime_execution_authority") is not False
+        or receipt.get("canon_write_authority") is not False
+    ):
+        raise GremlinInverseLineageError(
+            "relational compilation authority boundary mismatch"
+        )
     return receipt_sha
 
 
-def _validate_execution(compilation: RelationalCompilation, result: NativePNVExecutionResult) -> str:
+def _validate_execution(
+    compilation: RelationalCompilation,
+    result: NativePNVExecutionResult,
+) -> tuple[str, dict[str, Any], bool]:
     if not isinstance(result, NativePNVExecutionResult):
         raise GremlinInverseLineageError("NativePNVExecutionResult required")
     receipt = result.receipt
     if not isinstance(receipt, Mapping) or receipt.get("schema") != NATIVE_RECEIPT_SCHEMA:
-        raise GremlinInverseLineageError("native PNV execution receipt schema mismatch")
+        raise GremlinInverseLineageError(
+            "native PNV execution receipt schema mismatch"
+        )
     receipt_sha = _digest(receipt.get("receipt_sha256"), "native execution receipt")
     body = dict(receipt)
     body.pop("receipt_sha256", None)
     if _sha256(body) != receipt_sha:
-        raise GremlinInverseLineageError("native PNV execution receipt digest mismatch")
-    if receipt.get("program_source_sha256") != compilation.receipt.get("pnv_source_sha256"):
-        raise GremlinInverseLineageError("execution/compilation PNV source hash mismatch")
-    if receipt.get("program_graph_sha256") != compilation.receipt.get("pnv_graph_sha256"):
-        raise GremlinInverseLineageError("execution/compilation PNV graph hash mismatch")
-    if result.program.source_sha256 != receipt.get("program_source_sha256") or result.program.graph_sha256 != receipt.get("program_graph_sha256"):
-        raise GremlinInverseLineageError("execution program object/receipt hash mismatch")
+        raise GremlinInverseLineageError(
+            "native PNV execution receipt digest mismatch"
+        )
+    if receipt.get("program_source_sha256") != compilation.receipt.get(
+        "pnv_source_sha256"
+    ):
+        raise GremlinInverseLineageError(
+            "execution/compilation PNV source hash mismatch"
+        )
+    if receipt.get("program_graph_sha256") != compilation.receipt.get(
+        "pnv_graph_sha256"
+    ):
+        raise GremlinInverseLineageError(
+            "execution/compilation PNV graph hash mismatch"
+        )
+    if (
+        result.program.source_sha256 != receipt.get("program_source_sha256")
+        or result.program.graph_sha256 != receipt.get("program_graph_sha256")
+    ):
+        raise GremlinInverseLineageError(
+            "execution program object/receipt hash mismatch"
+        )
+
     effect = receipt.get("effect_boundary")
-    if not isinstance(effect, Mapping) or effect.get("external_effects") is not False:
-        raise GremlinInverseLineageError("candidate inverse lineage accepts only pure native PNV execution")
-    return receipt_sha
+    if not isinstance(effect, Mapping):
+        raise GremlinInverseLineageError(
+            "native PNV execution effect boundary required"
+        )
+    if effect.get("interpreter_external_effects") is not False:
+        raise GremlinInverseLineageError(
+            "candidate inverse lineage requires a pure native interpreter boundary"
+        )
+
+    external_effects = effect.get("external_effects")
+    effect_status = effect.get("external_effects_status")
+    callback_effects_verified = effect.get("callback_effects_verified")
+    callbacks_invoked = effect.get("callbacks_invoked")
+    if not isinstance(callbacks_invoked, list) or any(
+        not isinstance(item, str) or not item for item in callbacks_invoked
+    ):
+        raise GremlinInverseLineageError(
+            "native PNV callback effect-boundary provenance is malformed"
+        )
+
+    if external_effects is False:
+        if effect_status != "VERIFIED_NONE_WITHIN_INTERPRETER_BOUNDARY":
+            raise GremlinInverseLineageError(
+                "pure native PNV effect-boundary status mismatch"
+            )
+        if callback_effects_verified is not True or callbacks_invoked:
+            raise GremlinInverseLineageError(
+                "pure native PNV callback boundary mismatch"
+            )
+    elif external_effects is None:
+        if effect_status != "UNVERIFIED_CALLBACK_BOUNDARY":
+            raise GremlinInverseLineageError(
+                "unverified callback boundary status mismatch"
+            )
+        if callback_effects_verified is not False or not callbacks_invoked:
+            raise GremlinInverseLineageError(
+                "unverified callback boundary provenance mismatch"
+            )
+    else:
+        raise GremlinInverseLineageError(
+            "candidate inverse lineage rejects reported external effects"
+        )
+
+    callback_determinism_verified = receipt.get("callback_determinism_verified")
+    if callback_determinism_verified is not (external_effects is False):
+        raise GremlinInverseLineageError(
+            "native PNV callback determinism status mismatch"
+        )
+
+    effect_summary = {
+        "interpreter_external_effects": False,
+        "external_effects": external_effects,
+        "external_effects_status": effect_status,
+        "callback_effects_verified": callback_effects_verified,
+        "callbacks_invoked": list(callbacks_invoked),
+    }
+    return receipt_sha, effect_summary, bool(callback_determinism_verified)
 
 
-def _operator_index(compilation: RelationalCompilation) -> dict[str, Mapping[str, Any]]:
+def _operator_index(
+    compilation: RelationalCompilation,
+) -> dict[str, Mapping[str, Any]]:
     index: dict[str, Mapping[str, Any]] = {}
     radical_id = _validate_candidate(compilation.radical_candidate, "RADICAL")
     for candidate in compilation.operator_candidates:
@@ -113,14 +219,25 @@ def _operator_index(compilation: RelationalCompilation) -> dict[str, Mapping[str
         if not isinstance(name, str) or not name:
             raise GremlinInverseLineageError("OPERATOR candidate name required")
         if name in index:
-            raise GremlinInverseLineageError(f"duplicate candidate operator name: {name}")
-        if content.get("radical_candidate_id") != radical_id or candidate.get("dependency_ids") != [radical_id]:
-            raise GremlinInverseLineageError("OPERATOR candidate radical dependency mismatch")
+            raise GremlinInverseLineageError(
+                f"duplicate candidate operator name: {name}"
+            )
+        if (
+            content.get("radical_candidate_id") != radical_id
+            or candidate.get("dependency_ids") != [radical_id]
+        ):
+            raise GremlinInverseLineageError(
+                "OPERATOR candidate radical dependency mismatch"
+            )
         index[name] = candidate
         if cid not in compilation.receipt.get("operator_candidate_ids", []):
-            raise GremlinInverseLineageError("OPERATOR candidate missing from compilation receipt")
+            raise GremlinInverseLineageError(
+                "OPERATOR candidate missing from compilation receipt"
+            )
     if set(index) != {op.name for op in result_program_ops(compilation)}:
-        raise GremlinInverseLineageError("candidate operator schedule/program schedule mismatch")
+        raise GremlinInverseLineageError(
+            "candidate operator schedule/program schedule mismatch"
+        )
     return index
 
 
@@ -130,21 +247,36 @@ def result_program_ops(compilation: RelationalCompilation):
     return parse_pnv(compilation.pnv_text).ops
 
 
-def _validate_program_operator_bytes(compilation: RelationalCompilation, index: Mapping[str, Mapping[str, Any]]) -> None:
+def _validate_program_operator_bytes(
+    compilation: RelationalCompilation,
+    index: Mapping[str, Mapping[str, Any]],
+) -> None:
     for op in result_program_ops(compilation):
         candidate = index[op.name]
         content = candidate["content"]
-        if content.get("opcode") != op.opcode or tuple(content.get("args", ())) != op.args:
-            raise GremlinInverseLineageError(f"candidate/program operator mismatch: {op.name}")
+        if (
+            content.get("opcode") != op.opcode
+            or tuple(content.get("args", ())) != op.args
+        ):
+            raise GremlinInverseLineageError(
+                f"candidate/program operator mismatch: {op.name}"
+            )
 
 
-def _reachable_operator_names(result: NativePNVExecutionResult, index: Mapping[str, Mapping[str, Any]]) -> tuple[str, ...]:
+def _reachable_operator_names(
+    result: NativePNVExecutionResult,
+    index: Mapping[str, Mapping[str, Any]],
+) -> tuple[str, ...]:
     roots = tuple(result.program.emits)
     if not roots:
-        raise GremlinInverseLineageError("candidate inverse lineage requires at least one EMIT root")
+        raise GremlinInverseLineageError(
+            "candidate inverse lineage requires at least one EMIT root"
+        )
     missing = [name for name in roots if name not in index]
     if missing:
-        raise GremlinInverseLineageError(f"EMIT root missing candidate operator: {missing}")
+        raise GremlinInverseLineageError(
+            f"EMIT root missing candidate operator: {missing}"
+        )
 
     seen: set[str] = set()
     order: list[str] = []
@@ -165,25 +297,35 @@ def _reachable_operator_names(result: NativePNVExecutionResult, index: Mapping[s
     return tuple(order)
 
 
-def _trace_index(result: NativePNVExecutionResult) -> dict[str, Mapping[str, Any]]:
+def _trace_index(
+    result: NativePNVExecutionResult,
+) -> dict[str, Mapping[str, Any]]:
     trace = result.receipt.get("trace")
     if not isinstance(trace, list):
         raise GremlinInverseLineageError("native PNV trace required")
     out: dict[str, Mapping[str, Any]] = {}
     for row in trace:
         if not isinstance(row, Mapping):
-            raise GremlinInverseLineageError("native PNV trace row must be mapping")
+            raise GremlinInverseLineageError(
+                "native PNV trace row must be mapping"
+            )
         name = row.get("op")
         if not isinstance(name, str) or name in out:
-            raise GremlinInverseLineageError("native PNV trace operator identity invalid")
+            raise GremlinInverseLineageError(
+                "native PNV trace operator identity invalid"
+            )
         _digest(row.get("result_sha256"), "trace result digest")
         out[name] = row
     if set(out) != {op.name for op in result.program.ops}:
-        raise GremlinInverseLineageError("native PNV trace/program operator set mismatch")
+        raise GremlinInverseLineageError(
+            "native PNV trace/program operator set mismatch"
+        )
     return out
 
 
-def _explicit_content_ids(candidate: Mapping[str, Any]) -> tuple[str, ...]:
+def _explicit_content_ids(
+    candidate: Mapping[str, Any],
+) -> tuple[str, ...]:
     values: list[str] = []
     content = candidate.get("content")
     if isinstance(content, Mapping):
@@ -199,7 +341,9 @@ def _explicit_content_ids(candidate: Mapping[str, Any]) -> tuple[str, ...]:
     return tuple(sorted(found))
 
 
-def _validate_radical_and_kaku(compilation: RelationalCompilation) -> tuple[str, dict[str, Mapping[str, Any]], dict[str, str]]:
+def _validate_radical_and_kaku(
+    compilation: RelationalCompilation,
+) -> tuple[str, dict[str, Mapping[str, Any]], dict[str, str]]:
     radical = compilation.radical_candidate
     radical_id = _validate_candidate(radical, "RADICAL")
     content = radical.get("content")
@@ -207,28 +351,49 @@ def _validate_radical_and_kaku(compilation: RelationalCompilation) -> tuple[str,
         raise GremlinInverseLineageError("RADICAL candidate content required")
     refs = content.get("kaku_candidate_ids")
     if not isinstance(refs, Mapping) or not refs:
-        raise GremlinInverseLineageError("RADICAL KAKU candidate refs required")
+        raise GremlinInverseLineageError(
+            "RADICAL KAKU candidate refs required"
+        )
     kaku_index: dict[str, Mapping[str, Any]] = {}
-    by_candidate_id: dict[str, Mapping[str, Any]] = {}
     for node_id, candidate in compilation.kaku_candidates.items():
-        cid = _validate_candidate(candidate, "KAKU")
-        if candidate.get("content", {}).get("kaku_id") != node_id:
-            raise GremlinInverseLineageError("KAKU candidate node id mismatch")
+        _validate_candidate(candidate, "KAKU")
+        candidate_content = candidate.get("content")
+        if (
+            not isinstance(candidate_content, Mapping)
+            or candidate_content.get("kaku_id") != node_id
+        ):
+            raise GremlinInverseLineageError(
+                "KAKU candidate node id mismatch"
+            )
         kaku_index[str(node_id)] = candidate
-        by_candidate_id[cid] = candidate
     if set(refs) != set(kaku_index):
-        raise GremlinInverseLineageError("RADICAL node/KAKU candidate closure mismatch")
+        raise GremlinInverseLineageError(
+            "RADICAL node/KAKU candidate closure mismatch"
+        )
     for node_id, cid in refs.items():
         if kaku_index[str(node_id)].get("candidate_id") != cid:
-            raise GremlinInverseLineageError("RADICAL node points to wrong KAKU candidate")
-    expected_dependencies = sorted(str(candidate["candidate_id"]) for candidate in kaku_index.values())
+            raise GremlinInverseLineageError(
+                "RADICAL node points to wrong KAKU candidate"
+            )
+    expected_dependencies = sorted(
+        str(candidate["candidate_id"]) for candidate in kaku_index.values()
+    )
     if radical.get("dependency_ids") != expected_dependencies:
-        raise GremlinInverseLineageError("RADICAL dependency closure mismatch")
+        raise GremlinInverseLineageError(
+            "RADICAL dependency closure mismatch"
+        )
     if compilation.receipt.get("radical_candidate_id") != radical_id:
-        raise GremlinInverseLineageError("RADICAL candidate/compilation receipt mismatch")
+        raise GremlinInverseLineageError(
+            "RADICAL candidate/compilation receipt mismatch"
+        )
     receipt_nodes = compilation.receipt.get("node_candidate_ids")
-    if not isinstance(receipt_nodes, Mapping) or dict(receipt_nodes) != {k: str(v["candidate_id"]) for k, v in sorted(kaku_index.items())}:
-        raise GremlinInverseLineageError("KAKU candidate/compilation receipt mismatch")
+    expected_nodes = {
+        k: str(v["candidate_id"]) for k, v in sorted(kaku_index.items())
+    }
+    if not isinstance(receipt_nodes, Mapping) or dict(receipt_nodes) != expected_nodes:
+        raise GremlinInverseLineageError(
+            "KAKU candidate/compilation receipt mismatch"
+        )
     return radical_id, kaku_index, {str(k): str(v) for k, v in refs.items()}
 
 
@@ -240,6 +405,8 @@ class GremlinCandidateInverseLineage:
     operator_rows: tuple[Mapping[str, Any], ...]
     radical_row: Mapping[str, Any]
     kaku_rows: tuple[Mapping[str, Any], ...]
+    execution_effect_boundary: Mapping[str, Any]
+    callback_determinism_verified: bool
 
     @property
     def inverse_chain(self) -> list[Mapping[str, Any]]:
@@ -273,13 +440,18 @@ class GremlinCandidateInverseLineage:
             "radical_row": dict(self.radical_row),
             "kaku_rows": [dict(row) for row in self.kaku_rows],
             "explicit_content_ids": explicit_content_ids,
-            "v22_join_state": "CONTENT_ID_AVAILABLE" if explicit_content_ids else "CONTENT_ID_OPEN",
+            "v22_join_state": (
+                "CONTENT_ID_AVAILABLE" if explicit_content_ids else "CONTENT_ID_OPEN"
+            ),
+            "execution_effect_boundary": dict(self.execution_effect_boundary),
             "epistemic": "CHYBA",
             "promotion_state": "CANDIDATE_ONLY",
             "runtime_execution_authority": False,
             "canon_write_authority": False,
             "numeric_realization_is_semantic_authority": False,
-            "deterministic_fields_only": True,
+            "deterministic_fields_only": self.callback_determinism_verified,
+            "deterministic_serialization": True,
+            "callback_determinism_verified": self.callback_determinism_verified,
         }
 
     @property
@@ -289,7 +461,11 @@ class GremlinCandidateInverseLineage:
     @property
     def receipt(self) -> dict[str, Any]:
         body = {**self.payload, "lineage_id": self.lineage_id}
-        return {**body, "receipt_schema": LINEAGE_RECEIPT_SCHEMA, "receipt_sha256": _sha256(body)}
+        return {
+            **body,
+            "receipt_schema": LINEAGE_RECEIPT_SCHEMA,
+            "receipt_sha256": _sha256(body),
+        }
 
 
 def resolve_gremlin_candidate_inverse_lineage(
@@ -299,7 +475,9 @@ def resolve_gremlin_candidate_inverse_lineage(
     if not isinstance(compilation, RelationalCompilation):
         raise GremlinInverseLineageError("RelationalCompilation required")
     compilation_sha = _validate_compilation_receipt(compilation)
-    execution_sha = _validate_execution(compilation, result)
+    execution_sha, effect_boundary, callback_determinism_verified = (
+        _validate_execution(compilation, result)
+    )
     operator_index = _operator_index(compilation)
     _validate_program_operator_bytes(compilation, operator_index)
     trace = _trace_index(result)
@@ -310,7 +488,11 @@ def resolve_gremlin_candidate_inverse_lineage(
     for name in reversed(reachable):
         candidate = operator_index[name]
         content = candidate["content"]
-        deps = [token for token in content.get("args", []) if token in operator_index]
+        deps = [
+            token
+            for token in content.get("args", [])
+            if token in operator_index
+        ]
         operator_rows.append(
             {
                 "level": "OPERATOR",
@@ -332,7 +514,9 @@ def resolve_gremlin_candidate_inverse_lineage(
         "basis_id": radical_content["basis_id"],
         "kaku_candidate_ids": dict(radical_refs),
         "relations": list(radical_content.get("relations", [])),
-        "evidence_refs": list(compilation.radical_candidate.get("evidence_refs", [])),
+        "evidence_refs": list(
+            compilation.radical_candidate.get("evidence_refs", [])
+        ),
     }
 
     kaku_rows: list[Mapping[str, Any]] = []
@@ -346,17 +530,26 @@ def resolve_gremlin_candidate_inverse_lineage(
                 "candidate_id": candidate["candidate_id"],
                 "basis_id": content["basis_id"],
                 "role": content["role"],
-                "explicit_content_ids": list(_explicit_content_ids(candidate)),
+                "explicit_content_ids": list(
+                    _explicit_content_ids(candidate)
+                ),
                 "evidence_refs": list(candidate.get("evidence_refs", [])),
             }
         )
 
     emitted_receipt = result.receipt.get("emitted")
     if not isinstance(emitted_receipt, list):
-        raise GremlinInverseLineageError("native PNV emitted receipt required")
-    expected_emitted = [[name, _sha256(result.emitted[name])] for name in result.program.emits]
+        raise GremlinInverseLineageError(
+            "native PNV emitted receipt required"
+        )
+    expected_emitted = [
+        [name, _sha256(result.emitted[name])]
+        for name in result.program.emits
+    ]
     if emitted_receipt != expected_emitted:
-        raise GremlinInverseLineageError("native PNV emitted value/receipt mismatch")
+        raise GremlinInverseLineageError(
+            "native PNV emitted value/receipt mismatch"
+        )
 
     return GremlinCandidateInverseLineage(
         compilation_receipt_sha256=compilation_sha,
@@ -365,6 +558,8 @@ def resolve_gremlin_candidate_inverse_lineage(
         operator_rows=tuple(operator_rows),
         radical_row=radical_row,
         kaku_rows=tuple(kaku_rows),
+        execution_effect_boundary=effect_boundary,
+        callback_determinism_verified=callback_determinism_verified,
     )
 
 
@@ -374,7 +569,9 @@ def persist_gremlin_candidate_inverse_lineage(
     authoring_root: Path | str,
 ) -> str:
     if not isinstance(lineage, GremlinCandidateInverseLineage):
-        raise GremlinInverseLineageError("GremlinCandidateInverseLineage required")
+        raise GremlinInverseLineageError(
+            "GremlinCandidateInverseLineage required"
+        )
     root = Path(authoring_root) / "lineage"
     root.mkdir(parents=True, exist_ok=True)
     digest = lineage.lineage_id.rsplit(":", 1)[-1]
@@ -385,5 +582,7 @@ def persist_gremlin_candidate_inverse_lineage(
             handle.write(raw)
     except FileExistsError:
         if target.read_bytes() != raw:
-            raise GremlinInverseLineageError("content-addressed inverse-lineage collision")
+            raise GremlinInverseLineageError(
+                "content-addressed inverse-lineage collision"
+            )
     return str(target)

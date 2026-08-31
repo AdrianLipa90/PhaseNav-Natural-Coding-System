@@ -12,6 +12,15 @@ from .gremlin_pnv_holonomy_v01 import (
     information_transport_connection,
 )
 from .model import Kaku
+from .pnv_holonomy_numeric_v01 import (
+    checked_abs_difference_ratio,
+    checked_difference,
+    checked_product,
+    checked_ratio,
+    checked_sum,
+    finite_float,
+    finite_tree,
+)
 
 GAUGE_COVARIANT_PULLBACK_CONTRACT = "PNCS_PNV_GAUGE_COVARIANT_PHASE_PULLBACK_V0_1"
 GAUGE_COVARIANT_PULLBACK_LOOP_ID = "SOURCE.PHASE.NOETHER.GAUGE_COVARIANT_PULLBACK.ROUNDTRIP"
@@ -22,13 +31,7 @@ class PNVGaugeCovariantPhasePullbackError(PNVInformationHolonomyError):
 
 
 def _finite(value: Any, field: str) -> float:
-    try:
-        out = float(value)
-    except (TypeError, ValueError) as exc:
-        raise PNVGaugeCovariantPhasePullbackError(f"{field} must be finite") from exc
-    if not math.isfinite(out):
-        raise PNVGaugeCovariantPhasePullbackError(f"{field} must be finite")
-    return out
+    return finite_float(value, field, PNVGaugeCovariantPhasePullbackError)
 
 
 def _positive(value: Any, field: str) -> float:
@@ -65,6 +68,26 @@ def _refs(values: Sequence[str]) -> tuple[str, ...]:
     return tuple(sorted({str(value) for value in values if str(value)}))
 
 
+def _field_coefficient(amplitudes: Sequence[float], volumes: Sequence[float]) -> float:
+    terms = []
+    for index, (amplitude, volume) in enumerate(zip(amplitudes, volumes)):
+        a_sq = checked_product(
+            amplitude,
+            amplitude,
+            field=f"C_A.amplitude_squared[{index}]",
+            error_type=PNVGaugeCovariantPhasePullbackError,
+        )
+        terms.append(
+            checked_product(
+                a_sq,
+                volume,
+                field=f"C_A.term[{index}]",
+                error_type=PNVGaugeCovariantPhasePullbackError,
+            )
+        )
+    return checked_sum(terms, "C_A", PNVGaugeCovariantPhasePullbackError)
+
+
 def make_gauge_covariant_phase_pullback_state(
     *,
     field_bundle_id: str,
@@ -98,7 +121,9 @@ def make_gauge_covariant_phase_pullback_state(
         "rotor_measure_id": str(rotor_measure_id),
     }
     if any(not value for value in identifiers.values()):
-        raise PNVGaugeCovariantPhasePullbackError("bundle, patch, connection and measure identifiers are required")
+        raise PNVGaugeCovariantPhasePullbackError(
+            "bundle, patch, connection and measure identifiers are required"
+        )
 
     field_cells = _ids(field_cell_ids, "field_cell_ids")
     rotor_cells = _ids(rotor_cell_ids, "rotor_cell_ids")
@@ -106,17 +131,25 @@ def make_gauge_covariant_phase_pullback_state(
     connection = _vector(connection_components, "connection_components")
     gauge_shift = _vector(gauge_shift_components, "gauge_shift_components")
     velocity = _vector(trajectory_velocity, "trajectory_velocity")
-    if not (len(gradients) == len(connection) == len(gauge_shift) == len(velocity)):
-        raise PNVGaugeCovariantPhasePullbackError("phase/connection/gauge/trajectory coordinate dimensions differ")
+    if not (
+        len(gradients) == len(connection) == len(gauge_shift) == len(velocity)
+    ):
+        raise PNVGaugeCovariantPhasePullbackError(
+            "phase/connection/gauge/trajectory coordinate dimensions differ"
+        )
     if max(abs(value) for value in gauge_shift) <= 0.0:
         raise PNVGaugeCovariantPhasePullbackError("nontrivial gauge probe required")
 
     amps = tuple(_nonnegative(value, "field amplitude") for value in amplitudes)
     vols = tuple(_positive(value, "field volume") for value in volumes)
     if len(field_cells) != len(amps) or len(field_cells) != len(vols):
-        raise PNVGaugeCovariantPhasePullbackError("field cell/amplitude/volume support mismatch")
+        raise PNVGaugeCovariantPhasePullbackError(
+            "field cell/amplitude/volume support mismatch"
+        )
     if len(rotor_cells) != len(field_cells):
-        raise PNVGaugeCovariantPhasePullbackError("field/rotor support cardinality mismatch")
+        raise PNVGaugeCovariantPhasePullbackError(
+            "field/rotor support cardinality mismatch"
+        )
 
     return {
         "schema": "PNCS_GAUGE_COVARIANT_PHASE_PULLBACK_STATE_V0_1",
@@ -170,57 +203,214 @@ def _require_common_ids(raw: Mapping[str, Any]) -> None:
         if raw[left] != raw[right]:
             raise PNVGaugeCovariantPhasePullbackError(message)
     if raw["field_cell_ids"] != raw["rotor_cell_ids"]:
-        raise PNVGaugeCovariantPhasePullbackError("field and rotor collective supports differ")
+        raise PNVGaugeCovariantPhasePullbackError(
+            "field and rotor collective supports differ"
+        )
 
 
 def _derived(state: Mapping[str, Any]) -> dict[str, Any]:
     raw = _raw(state)
     _require_common_ids(raw)
 
-    grad = tuple(float(v) for v in raw["phase_gradients"])
-    conn = tuple(float(v) for v in raw["connection_components"])
-    shift = tuple(float(v) for v in raw["gauge_shift_components"])
-    velocity = tuple(float(v) for v in raw["trajectory_velocity"])
+    grad = tuple(_finite(v, "phase_gradients") for v in raw["phase_gradients"])
+    conn = tuple(_finite(v, "connection_components") for v in raw["connection_components"])
+    shift = tuple(_finite(v, "gauge_shift_components") for v in raw["gauge_shift_components"])
+    velocity = tuple(_finite(v, "trajectory_velocity") for v in raw["trajectory_velocity"])
 
-    transformed_grad = tuple(g + lam for g, lam in zip(grad, shift))
-    transformed_conn = tuple(a - lam for a, lam in zip(conn, shift))
-    covariant_before = tuple(g + a for g, a in zip(grad, conn))
-    covariant_after = tuple(g + a for g, a in zip(transformed_grad, transformed_conn))
-    delta_gauge = max(abs(a - b) for a, b in zip(covariant_before, covariant_after))
+    transformed_grad = tuple(
+        checked_sum(
+            (g, lam),
+            f"transformed_phase_gradients[{index}]",
+            PNVGaugeCovariantPhasePullbackError,
+        )
+        for index, (g, lam) in enumerate(zip(grad, shift))
+    )
+    transformed_conn = tuple(
+        checked_difference(
+            a,
+            lam,
+            f"transformed_connection_components[{index}]",
+            PNVGaugeCovariantPhasePullbackError,
+        )
+        for index, (a, lam) in enumerate(zip(conn, shift))
+    )
+    covariant_before = tuple(
+        checked_sum(
+            (g, a),
+            f"covariant_before[{index}]",
+            PNVGaugeCovariantPhasePullbackError,
+        )
+        for index, (g, a) in enumerate(zip(grad, conn))
+    )
+    covariant_after = tuple(
+        checked_sum(
+            (g, a),
+            f"covariant_after[{index}]",
+            PNVGaugeCovariantPhasePullbackError,
+        )
+        for index, (g, a) in enumerate(zip(transformed_grad, transformed_conn))
+    )
+    delta_gauge = max(
+        abs(
+            checked_difference(
+                a,
+                b,
+                f"Delta_gauge[{index}]",
+                PNVGaugeCovariantPhasePullbackError,
+            )
+        )
+        for index, (a, b) in enumerate(zip(covariant_before, covariant_after))
+    )
 
-    opposite_before = tuple(g - a for g, a in zip(grad, conn))
-    opposite_after = tuple(g - a for g, a in zip(transformed_grad, transformed_conn))
-    opposite_sign_residual = max(abs(a - b) for a, b in zip(opposite_before, opposite_after))
+    opposite_before = tuple(
+        checked_difference(
+            g,
+            a,
+            f"opposite_before[{index}]",
+            PNVGaugeCovariantPhasePullbackError,
+        )
+        for index, (g, a) in enumerate(zip(grad, conn))
+    )
+    opposite_after = tuple(
+        checked_difference(
+            g,
+            a,
+            f"opposite_after[{index}]",
+            PNVGaugeCovariantPhasePullbackError,
+        )
+        for index, (g, a) in enumerate(zip(transformed_grad, transformed_conn))
+    )
+    opposite_sign_residual = max(
+        abs(
+            checked_difference(
+                a,
+                b,
+                f"opposite_sign_residual[{index}]",
+                PNVGaugeCovariantPhasePullbackError,
+            )
+        )
+        for index, (a, b) in enumerate(zip(opposite_before, opposite_after))
+    )
     if opposite_sign_residual <= 0.0:
-        raise PNVGaugeCovariantPhasePullbackError("gauge probe does not discriminate the admitted connection sign")
+        raise PNVGaugeCovariantPhasePullbackError(
+            "gauge probe does not discriminate the admitted connection sign"
+        )
 
+    pullback_terms = [
+        checked_product(
+            component,
+            speed,
+            field=f"field_pullback_rate.term[{index}]",
+            error_type=PNVGaugeCovariantPhasePullbackError,
+        )
+        for index, (component, speed) in enumerate(zip(covariant_before, velocity))
+    ]
     field_pullback_rate = _positive(
-        sum(component * speed for component, speed in zip(covariant_before, velocity)),
+        checked_sum(
+            pullback_terms,
+            "field_pullback_rate",
+            PNVGaugeCovariantPhasePullbackError,
+        ),
         "field_pullback_rate",
     )
-    normal_rate = float(raw["field_normal_rate"])
-    rotor_rate = float(raw["rotor_rate"])
+    normal_rate = _positive(raw["field_normal_rate"], "field_normal_rate")
+    rotor_rate = _positive(raw["rotor_rate"], "rotor_rate")
 
-    amps = tuple(float(v) for v in raw["amplitudes"])
-    vols = tuple(float(v) for v in raw["volumes"])
-    c_a = sum((a * a) * v for a, v in zip(amps, vols))
-    i_a = 2.0 * c_a
+    amps = tuple(_nonnegative(v, "field amplitude") for v in raw["amplitudes"])
+    vols = tuple(_positive(v, "field volume") for v in raw["volumes"])
+    c_a = _field_coefficient(amps, vols)
+    i_a = checked_product(
+        2.0,
+        c_a,
+        field="I_A",
+        error_type=PNVGaugeCovariantPhasePullbackError,
+    )
     if i_a <= 0.0:
-        raise PNVGaugeCovariantPhasePullbackError("field inertia I_A must be strictly positive")
-    i_phi = float(raw["I_phi"])
+        raise PNVGaugeCovariantPhasePullbackError(
+            "field inertia I_A must be strictly positive"
+        )
+    i_phi = _positive(raw["I_phi"], "I_phi")
 
-    q_theta = i_a * normal_rate
-    p_phi = i_phi * rotor_rate
-    h_phi = p_phi * p_phi / (2.0 * i_phi)
-    epsilon_n = h_phi / q_theta
-    half_rate = rotor_rate / 2.0
+    q_theta = checked_product(
+        i_a,
+        normal_rate,
+        field="Q_theta",
+        error_type=PNVGaugeCovariantPhasePullbackError,
+    )
+    p_phi = checked_product(
+        i_phi,
+        rotor_rate,
+        field="P_Phi",
+        error_type=PNVGaugeCovariantPhasePullbackError,
+    )
+    h_phi = checked_ratio(
+        checked_product(
+            p_phi,
+            p_phi,
+            field="P_Phi_squared",
+            error_type=PNVGaugeCovariantPhasePullbackError,
+        ),
+        checked_product(
+            2.0,
+            i_phi,
+            field="2I_phi",
+            error_type=PNVGaugeCovariantPhasePullbackError,
+        ),
+        "H_Phi",
+        PNVGaugeCovariantPhasePullbackError,
+    )
+    epsilon_n = checked_ratio(
+        h_phi,
+        q_theta,
+        "epsilon_N",
+        PNVGaugeCovariantPhasePullbackError,
+    )
+    half_rate = checked_ratio(
+        rotor_rate,
+        2.0,
+        "half_rotor_rate",
+        PNVGaugeCovariantPhasePullbackError,
+    )
 
-    moment_map_ratio = q_theta / p_phi
-    factorized_ratio = (i_a / i_phi) * (normal_rate / rotor_rate)
-    field_action = c_a * field_pullback_rate * field_pullback_rate
-    rotor_action = 0.5 * i_phi * rotor_rate * rotor_rate
+    moment_map_ratio = checked_ratio(
+        q_theta,
+        p_phi,
+        "moment_map_ratio",
+        PNVGaugeCovariantPhasePullbackError,
+    )
+    factorized_ratio = checked_product(
+        checked_ratio(
+            i_a,
+            i_phi,
+            "factorized_inertia_ratio",
+            PNVGaugeCovariantPhasePullbackError,
+        ),
+        checked_ratio(
+            normal_rate,
+            rotor_rate,
+            "factorized_rate_ratio",
+            PNVGaugeCovariantPhasePullbackError,
+        ),
+        field="factorized_moment_map_ratio",
+        error_type=PNVGaugeCovariantPhasePullbackError,
+    )
+    field_action = checked_product(
+        c_a,
+        field_pullback_rate,
+        field_pullback_rate,
+        field="field_phase_action",
+        error_type=PNVGaugeCovariantPhasePullbackError,
+    )
+    rotor_action = checked_product(
+        0.5,
+        i_phi,
+        rotor_rate,
+        rotor_rate,
+        field="rotor_phase_action",
+        error_type=PNVGaugeCovariantPhasePullbackError,
+    )
 
-    return {
+    values = {
         "transformed_phase_gradients": list(transformed_grad),
         "transformed_connection_components": list(transformed_conn),
         "gauge_probe_norm": max(abs(v) for v in shift),
@@ -237,18 +427,58 @@ def _derived(state: Mapping[str, Any]) -> dict[str, Any]:
         "H_Phi": h_phi,
         "epsilon_N": epsilon_n,
         "half_rotor_rate": half_rate,
-        "Delta_I_reduction": abs(i_phi - i_a) / i_a,
-        "Delta_rate": abs(field_pullback_rate - rotor_rate) / rotor_rate,
-        "Delta_normal": abs(normal_rate - field_pullback_rate) / field_pullback_rate,
-        "Delta_Q": abs(q_theta - p_phi) / p_phi,
-        "Delta_epsilon": abs(epsilon_n - half_rate) / half_rate,
+        "Delta_I_reduction": checked_abs_difference_ratio(
+            i_phi, i_a, i_a, "Delta_I_reduction", PNVGaugeCovariantPhasePullbackError
+        ),
+        "Delta_rate": checked_abs_difference_ratio(
+            field_pullback_rate,
+            rotor_rate,
+            rotor_rate,
+            "Delta_rate",
+            PNVGaugeCovariantPhasePullbackError,
+        ),
+        "Delta_normal": checked_abs_difference_ratio(
+            normal_rate,
+            field_pullback_rate,
+            field_pullback_rate,
+            "Delta_normal",
+            PNVGaugeCovariantPhasePullbackError,
+        ),
+        "Delta_Q": checked_abs_difference_ratio(
+            q_theta, p_phi, p_phi, "Delta_Q", PNVGaugeCovariantPhasePullbackError
+        ),
+        "Delta_epsilon": checked_abs_difference_ratio(
+            epsilon_n,
+            half_rate,
+            half_rate,
+            "Delta_epsilon",
+            PNVGaugeCovariantPhasePullbackError,
+        ),
         "moment_map_ratio": moment_map_ratio,
         "factorized_moment_map_ratio": factorized_ratio,
-        "Delta_factorization": abs(moment_map_ratio - factorized_ratio),
+        "Delta_factorization": abs(
+            checked_difference(
+                moment_map_ratio,
+                factorized_ratio,
+                "Delta_factorization",
+                PNVGaugeCovariantPhasePullbackError,
+            )
+        ),
         "field_phase_action": field_action,
         "rotor_phase_action": rotor_action,
-        "Delta_action": abs(field_action - rotor_action) / rotor_action,
+        "Delta_action": checked_abs_difference_ratio(
+            field_action,
+            rotor_action,
+            rotor_action,
+            "Delta_action",
+            PNVGaugeCovariantPhasePullbackError,
+        ),
     }
+    return finite_tree(
+        values,
+        "gauge_covariant_pullback_derived",
+        PNVGaugeCovariantPhasePullbackError,
+    )
 
 
 def gauge_covariant_phase_pullback_defects(state: Mapping[str, Any]) -> dict[str, float]:
@@ -263,7 +493,7 @@ def gauge_covariant_phase_pullback_defects(state: Mapping[str, Any]) -> dict[str
         "Delta_factorization",
         "Delta_action",
     )
-    return {name: float(values[name]) for name in names}
+    return {name: _finite(values[name], name) for name in names}
 
 
 def gauge_covariant_phase_pullback_transforms(*, tolerance: float = 1e-12) -> dict[str, Any]:
@@ -283,7 +513,7 @@ def gauge_covariant_phase_pullback_transforms(*, tolerance: float = 1e-12) -> di
         raw = _raw(state)
         values = _derived(raw)
         for name in defect_names:
-            if float(values[name]) > eps:
+            if _finite(values[name], name) > eps:
                 raise PNVGaugeCovariantPhasePullbackError(
                     f"{name} {values[name]!r} exceeds tolerance {eps!r}"
                 )
@@ -301,12 +531,21 @@ def gauge_covariant_phase_pullback_transforms(*, tolerance: float = 1e-12) -> di
             observed = state.get(key)
             if isinstance(expected, list):
                 if list(observed or ()) != expected:
-                    raise PNVGaugeCovariantPhasePullbackError(f"{key} changed before reverse pullback audit")
+                    raise PNVGaugeCovariantPhasePullbackError(
+                        f"{key} changed before reverse pullback audit"
+                    )
             else:
-                if not math.isclose(_finite(observed, key), float(expected), rel_tol=1e-12, abs_tol=1e-15):
-                    raise PNVGaugeCovariantPhasePullbackError(f"{key} changed before reverse pullback audit")
+                if not math.isclose(
+                    _finite(observed, key),
+                    _finite(expected, key),
+                    rel_tol=1e-12,
+                    abs_tol=1e-15,
+                ):
+                    raise PNVGaugeCovariantPhasePullbackError(
+                        f"{key} changed before reverse pullback audit"
+                    )
         for name in defect_names:
-            if float(values[name]) > eps:
+            if _finite(values[name], name) > eps:
                 raise PNVGaugeCovariantPhasePullbackError(
                     f"{name} {values[name]!r} exceeds tolerance {eps!r}"
                 )
@@ -333,7 +572,7 @@ def _value(name: str):
     def evaluate(state: Mapping[str, Any]) -> float:
         if name in state:
             return _finite(state[name], name)
-        return float(_derived(state)[name])
+        return _finite(_derived(state)[name], name)
     return evaluate
 
 
@@ -360,7 +599,9 @@ def gauge_covariant_phase_pullback_invariants() -> dict[str, Any]:
 
 def _law_node(law_id: str, domain: str, kaku: Kaku, refs: Sequence[str]) -> LawFrameNode:
     if not isinstance(kaku, Kaku):
-        raise PNVGaugeCovariantPhasePullbackError("gauge-covariant pullback law gate requires Kaku")
+        raise PNVGaugeCovariantPhasePullbackError(
+            "gauge-covariant pullback law gate requires Kaku"
+        )
     return LawFrameNode(law_id, domain, kaku, _refs(refs))
 
 
@@ -381,8 +622,18 @@ def build_gauge_covariant_phase_pullback_loop(
         "gate:common_measure_support:CONDITIONAL",
         "gate:normal_flow_alignment:CONDITIONAL",
     ))
-    field = _law_node("LAW.NOETHER.GAUGE_COVARIANT_SCALAR_PHASE", "EULER_NOETHER_FIELD", field_kaku, refs)
-    rotor = _law_node("LAW.PHASE.GAUGE_COVARIANT_CANONICAL_ROTOR", "IDT_PHASE_HAMILTONIAN", rotor_kaku, refs)
+    field = _law_node(
+        "LAW.NOETHER.GAUGE_COVARIANT_SCALAR_PHASE",
+        "EULER_NOETHER_FIELD",
+        field_kaku,
+        refs,
+    )
+    rotor = _law_node(
+        "LAW.PHASE.GAUGE_COVARIANT_CANONICAL_ROTOR",
+        "IDT_PHASE_HAMILTONIAN",
+        rotor_kaku,
+        refs,
+    )
     return InformationHolonomyLoop(
         loop_id=GAUGE_COVARIANT_PULLBACK_LOOP_ID,
         connection=information_transport_connection(

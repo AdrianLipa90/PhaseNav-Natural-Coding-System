@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
+from numbers import Real
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
@@ -19,6 +20,11 @@ from .gremlin_pnv_authoring_v02 import (
     render_operator_program,
 )
 from .gremlin_relational_compiler_v01 import RelationalCompilation
+from .gremlin_strict_admission_v01 import (
+    GremlinStrictAdmissionError,
+    finite_real,
+    nonnegative_real,
+)
 from .model import Kaku, RadicalGraph, Relation
 from .native_pnv_exec_v01 import NativePNVExecutionResult, execute_pnv, parse_pnv
 
@@ -72,14 +78,18 @@ def _sha256(value: Any) -> str:
     return hashlib.sha256(_canonical_bytes(value)).hexdigest()
 
 
+def _finite_numeric(value: Any, field: str) -> float:
+    try:
+        return finite_real(value, field)
+    except GremlinStrictAdmissionError as exc:
+        raise PNVInformationHolonomyError(f"{field} must be finite numeric") from exc
+
+
 def _finite_nonnegative(value: Any, field: str) -> float:
     try:
-        out = float(value)
-    except (TypeError, ValueError, OverflowError) as exc:
+        return nonnegative_real(value, field)
+    except GremlinStrictAdmissionError as exc:
         raise PNVInformationHolonomyError(f"{field} must be finite non-negative") from exc
-    if not math.isfinite(out) or out < 0.0:
-        raise PNVInformationHolonomyError(f"{field} must be finite non-negative")
-    return out
 
 
 def _nonempty(value: str, field: str) -> str:
@@ -89,7 +99,8 @@ def _nonempty(value: str, field: str) -> str:
 
 
 def _safe_token(value: str) -> str:
-    token = "".join(ch if ch.isalnum() else "_" for ch in str(value).upper()).strip("_")
+    text = _nonempty(value, "token").upper()
+    token = "".join(ch if ch.isalnum() else "_" for ch in text).strip("_")
     if not token:
         raise PNVInformationHolonomyError("empty canonical token")
     return token
@@ -100,17 +111,11 @@ def exact_state_metric(left: Any, right: Any) -> float:
 
 
 def numeric_linf_metric(left: Any, right: Any) -> float:
-    if isinstance(left, (int, float)) and not isinstance(left, bool):
-        if not isinstance(right, (int, float)) or isinstance(right, bool):
+    if isinstance(left, Real) and not isinstance(left, bool):
+        if not isinstance(right, Real) or isinstance(right, bool):
             raise PNVInformationHolonomyError("numeric L-inf metric type mismatch")
-        try:
-            a, b = float(left), float(right)
-        except (TypeError, ValueError, OverflowError) as exc:
-            raise PNVInformationHolonomyError(
-                "numeric L-inf metric requires finite values"
-            ) from exc
-        if not math.isfinite(a) or not math.isfinite(b):
-            raise PNVInformationHolonomyError("numeric L-inf metric requires finite values")
+        a = _finite_numeric(left, "numeric L-inf left")
+        b = _finite_numeric(right, "numeric L-inf right")
         defect = abs(a - b)
         if not math.isfinite(defect):
             raise PNVInformationHolonomyError("numeric L-inf metric overflowed")
@@ -123,21 +128,14 @@ def numeric_linf_metric(left: Any, right: Any) -> float:
                 "numeric L-inf metric requires equal non-empty sequences"
             )
         defects = []
-        for a_raw, b_raw in zip(left, right):
-            if isinstance(a_raw, bool) or isinstance(b_raw, bool):
-                raise PNVInformationHolonomyError(
-                    "numeric L-inf metric rejects boolean coordinates"
-                )
+        for index, (a_raw, b_raw) in enumerate(zip(left, right)):
             try:
-                a, b = float(a_raw), float(b_raw)
-            except (TypeError, ValueError, OverflowError) as exc:
+                a = finite_real(a_raw, f"numeric L-inf left[{index}]")
+                b = finite_real(b_raw, f"numeric L-inf right[{index}]")
+            except GremlinStrictAdmissionError as exc:
                 raise PNVInformationHolonomyError(
-                    "numeric L-inf metric requires numeric coordinates"
+                    "numeric L-inf metric requires finite numeric coordinates"
                 ) from exc
-            if not math.isfinite(a) or not math.isfinite(b):
-                raise PNVInformationHolonomyError(
-                    "numeric L-inf metric requires finite coordinates"
-                )
             defect = abs(a - b)
             if not math.isfinite(defect):
                 raise PNVInformationHolonomyError("numeric L-inf metric overflowed")
@@ -263,7 +261,7 @@ class HolonomyInvariant:
         object.__setattr__(
             self, "invariant_id", _nonempty(self.invariant_id, "invariant_id")
         )
-        mode = str(self.mode).upper()
+        mode = _nonempty(self.mode, "invariant mode").upper()
         if mode not in {"EXACT", "ABS"}:
             raise PNVInformationHolonomyError("invariant mode must be EXACT or ABS")
         object.__setattr__(self, "mode", mode)
@@ -561,14 +559,11 @@ def _invariant_defect(mode: str, baseline: Any, current: Any) -> float:
     if mode == "EXACT":
         return exact_state_metric(baseline, current)
     if mode == "ABS":
-        if isinstance(baseline, bool) or isinstance(current, bool):
-            raise PNVInformationHolonomyError("ABS invariant requires numeric scalar")
         try:
-            left, right = float(baseline), float(current)
-        except (TypeError, ValueError, OverflowError) as exc:
-            raise PNVInformationHolonomyError("ABS invariant requires numeric scalar") from exc
-        if not math.isfinite(left) or not math.isfinite(right):
-            raise PNVInformationHolonomyError("ABS invariant requires finite scalar")
+            left = finite_real(baseline, "ABS invariant baseline")
+            right = finite_real(current, "ABS invariant current")
+        except GremlinStrictAdmissionError as exc:
+            raise PNVInformationHolonomyError("ABS invariant requires finite numeric scalar") from exc
         defect = abs(left - right)
         if not math.isfinite(defect):
             raise PNVInformationHolonomyError("ABS invariant defect overflowed")

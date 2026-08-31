@@ -23,6 +23,7 @@ def _quantizer() -> OrbitQuantizerProfile:
     return OrbitQuantizerProfile(
         quantizer_id="Q.SEM.PHASE.TEST",
         boundaries=(-8.0, -4.0, -2.0, -1.0, 0.0, 1.0, 2.0, 4.0),
+        bands=tuple(f"O{i}" for i in range(9)),
     )
 
 
@@ -163,6 +164,30 @@ def test_receipt_is_deterministic():
     b = encode_semantic_phase_placement(**kwargs).deterministic_receipt()
     assert a == b
     assert len(a["receipt_sha256"]) == 64
+
+
+@pytest.mark.parametrize(
+    "content_id,kaku_id",
+    [
+        ("", "K.VALID"),
+        ("   ", "K.VALID"),
+        ("SEM.VALID", ""),
+        ("SEM.VALID", "   "),
+    ],
+)
+def test_empty_semantic_identity_fails_closed(content_id, kaku_id):
+    with pytest.raises(SemanticPhaseInverseError, match="must be non-empty"):
+        encode_semantic_phase_placement(
+            content_id=content_id,
+            kaku_id=kaku_id,
+            sample_time=1.0,
+            semantic_target=0.6,
+            B=2.0,
+            omega=1.5,
+            N=3.0,
+            A_R=2.5,
+            quantizer=_quantizer(),
+        )
 
 
 def test_invalid_phase_code_inputs_fail_closed():

@@ -1,112 +1,70 @@
 # PNCS PNV Information Holonomy v0.1
 
-Status: `EXECUTABLE_LAW_FRAME_IMPLEMENTED / HOLONOMY_AUDIT_IMPLEMENTED / INVERSE_LINEAGE_ATTACHED / LIVE_GREMLIN_HYDRATION_OPEN`
+Status: `EXECUTABLE_LAW_FRAME_IMPLEMENTED / HOLONOMY_AUDIT_IMPLEMENTED / INVERSE_LINEAGE_ATTACHED / CALLBACK_BOUNDARY_EXPLICIT`
 
 ## Purpose
 
-This contract turns the physical-law scaffold into an executable PNV object.
-
-An admitted law frame is represented by a directed closed path
-
-```text
-law node -> transport -> law node -> ... -> starting law node
-```
-
-with law nodes materialized as exact PNCS KAKU candidates, the frame topology materialized as one RADICAL candidate, and each information transport materialized as a native PNV `TRANSFORM` OPERATOR candidate.
-
-The resulting program measures information holonomy rather than relying on document-level consistency alone.
+This contract materializes an admitted physical-law frame as an executable closed PNV transport path. Law nodes are KAKU candidates, the closed topology is one RADICAL candidate, transports are PNV OPERATOR candidates, and the resulting audit measures state and invariant holonomy while preserving inverse provenance.
 
 ## Mathematical object
 
-For a closed ordered path
+For
 
 ```math
-\gamma:\;v_0\to v_1\to\cdots\to v_{n-1}\to v_0
+\gamma:v_0\to v_1\to\cdots\to v_{n-1}\to v_0
 ```
 
-with transport maps \(T_i:v_i\to v_{i+1}\), define
+with transport maps \(T_i\), define
 
 ```math
-\mathcal H_\gamma
-= T_{n-1}\circ\cdots\circ T_1\circ T_0.
+\mathcal H_\gamma=T_{n-1}\circ\cdots\circ T_0,
+\qquad
+\Delta_\gamma=d(I,\mathcal H_\gamma(I)).
 ```
 
-For initial information state \(I\), the state holonomy defect is
+The state gate passes when
 
 ```math
-\Delta_\gamma
-= d\!\left(I,\mathcal H_\gamma(I)\right).
+\Delta_\gamma\le\varepsilon_\gamma.
 ```
 
-The audit receives an explicit metric \(d\) and tolerance. A zero-tolerance exact control loop passes its state gate when
+For every declared invariant \(F_j\), the audit records
 
 ```math
-\Delta_\gamma=0.
+\Delta_{\gamma,j}^{\max}
+=\max_k d_j(F_j(I_0),F_j(I_k))
 ```
 
-Tolerance-controlled loops pass when
+and requires the declared invariant tolerance.
 
-```math
-\Delta_\gamma\le \varepsilon_\gamma.
-```
+## Law-frame topology
 
-## Physical-law frame
-
-A law-frame node is:
+A law node carries:
 
 ```text
-LawFrameNode(
-  law_id,
-  domain,
-  Kaku,
-  evidence_refs
-)
+law_id
+domain
+Kaku
+evidence_refs
 ```
 
-`domain` identifies the source formalism/repository/sector, for example `IDT`, `RFC`, `TIR`, `NOETHER`, or another admitted frame namespace.
-
-The law frame supports:
-
-- local self-loops,
-- local multi-node loops inside one domain,
-- cross-domain loops such as IDT ↔ RFC,
-- larger closed paths through several admitted physical-law gates.
-
-All KAKU nodes in one compiled loop share one exact PNCS basis.
-
-## Closed transport topology
-
-An ordered transport is:
+A transport carries:
 
 ```text
-LawTransport(
-  edge_id,
-  source_node_id,
-  target_node_id,
-  transform_name,
-  evidence_refs
-)
+edge_id
+source_node_id
+target_node_id
+transform_name
+evidence_refs
 ```
 
-For ordered nodes \(v_0,\ldots,v_{n-1}\), transport \(i\) is required to bind
+For ordered nodes, transport `i` must bind `v_i -> v_(i+1 mod n)`. The number of transports equals the number of nodes. All KAKU nodes in one loop share one exact PNCS basis.
 
-```text
-v_i -> v_(i+1 mod n)
-```
-
-and the number of transports equals the number of nodes.
-
-A one-node loop therefore has the exact topology
-
-```text
-v_0 -> v_0
-```
-
-with one admitted transform.
+Identifiers and evidence references are normalized as non-empty strings. Duplicate node or invariant identities fail closed.
 
 ## PNV lowering
 
-Compilation produces a native PNV1 candidate program:
+The compiler lowers the loop to:
 
 ```text
 PNV 1
@@ -115,190 +73,82 @@ MODE READ_ONLY
 OP HOL.START SOURCE holonomy.input
 OP HOL.EDGE.000 TRANSFORM HOL.START <T0>
 ...
-OP HOL.EDGE.NNN TRANSFORM HOL.EDGE.<NNN-1> <TN>
 OP HOL.RETURN RETURN HOL.EDGE.NNN
 EMIT HOL.RETURN
 ```
 
-Only the already admitted native PNV vocabulary is used. Transport semantics are injected explicitly through the native executor transform registry.
+Transport semantics are explicit Python callbacks admitted through the native PNV transform registry.
 
-The execution effect boundary remains pure:
+## Effect-boundary accounting
 
-```text
-external_effects = false
-```
+The native interpreter separately proves that its own shell/subprocess/network/Git/device/arbitrary-filesystem boundary remains closed. The transform callbacks, state metric, and invariant evaluators are callable semantics outside that observable interpreter boundary.
 
-## Candidate graph
-
-Every law node is written as a content-addressed KAKU candidate.
-
-The RADICAL records the closed law-frame topology with relations:
+Therefore a holonomy audit containing those callbacks records:
 
 ```text
-LAW_TRANSPORT:<transform_name>
+external_effects = null
+external_effects_status = UNVERIFIED_CALLBACK_BOUNDARY
+callback_effects_verified = false
+deterministic_fields_only = false
+deterministic_serialization = true
+callback_determinism_verified = false
 ```
 
-Every `HOL.EDGE.*` OPERATOR binds the same RADICAL candidate and records the transport evidence.
-
-The compilation receipt binds:
-
-- ordered law-frame nodes,
-- domains,
-- KAKU candidate IDs,
-- RADICAL candidate ID,
-- OPERATOR candidate IDs,
-- ordered transport plan,
-- declared invariants,
-- PNV source SHA-256,
-- PNV graph SHA-256.
-
-Compilation remains under:
+The receipt also preserves:
 
 ```text
-EPISTEMIC CHYBA
-promotion_state = CANDIDATE_ONLY
-runtime_execution_authority = false
-canon_write_authority = false
+native_execution_external_effects
+native_execution_external_effects_status
+native_callbacks_invoked
+audit_callbacks_invoked
 ```
 
-## Invariant audit
-
-A loop may declare independent invariants:
-
-```text
-HolonomyInvariant(
-  invariant_id,
-  mode,
-  tolerance
-)
-```
-
-v0.1 admits two defect modes:
-
-```text
-EXACT
-ABS
-```
-
-For invariant observable \(F_j\), the audit evaluates every execution stage
-
-```math
-F_j(I_0),\;F_j(I_1),\;\ldots,\;F_j(I_n)
-```
-
-and records the largest defect from the initial value:
-
-```math
-\Delta_{\gamma,j}^{\max}
-=\max_k d_j\!\left(F_j(I_0),F_j(I_k)\right).
-```
-
-This separates final loop closure from intermediate invariant preservation. A loop can therefore return to the initial state while still exposing an invariant defect at an intermediate law gate.
-
-The audit status is `PASS` when both conditions hold:
-
-```math
-\Delta_\gamma\le\varepsilon_\gamma
-```
-
-and, for every declared invariant \(j\),
-
-```math
-\Delta_{\gamma,j}^{\max}\le\varepsilon_j.
-```
-
-Otherwise the audit receipt records `FAIL` while the candidate remains `CANDIDATE_ONLY`.
+This keeps the measured interpreter boundary and the unverified callback boundary separate in one content-addressed provenance object.
 
 ## Metrics
 
-v0.1 provides two reference metrics:
+Reference metrics are:
 
 ```text
 exact_state_metric
 numeric_linf_metric
 ```
 
-`exact_state_metric` compares canonical serialized state bytes.
+`exact_state_metric` compares the canonical finite JSON state domain. Tuple/list representations of the same JSON array therefore share one exact state identity.
 
-For finite numeric scalar/vector state,
+For finite scalar or flat vector state:
 
 ```math
 d_\infty(x,y)=\max_i|x_i-y_i|.
 ```
 
-Custom metrics are explicit callables and carry an explicit `metric_id` in the receipt.
+Subtraction overflow and non-finite defects fail closed. Custom metrics require an explicit non-empty `metric_id`.
+
+Metric and invariant-evaluator exceptions are converted into controlled `PNVInformationHolonomyError` failures.
 
 ## Inverse provenance
 
-Every completed holonomy audit invokes
+Every completed audit invokes `PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_V0_1` and binds:
 
 ```text
-PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_V0_1
+native execution receipt
+-> emitted OPERATOR root
+-> dependent OPERATOR candidates
+-> RADICAL
+-> KAKU candidates
+-> explicit content/evidence provenance
 ```
 
-and binds:
+The inverse lineage preserves the native execution effect-boundary status. Callback uncertainty is therefore carried backward with the measured result rather than rewritten as a purity claim.
 
-```text
-inverse_lineage_id
-inverse_lineage_receipt_sha256
-```
+## Receipt
 
-The measured defect can therefore be traced backward:
-
-```text
-HOLONOMY RESULT
-  -> HOL.RETURN
-  -> HOL.EDGE.* OPERATOR candidates
-  -> RADICAL
-  -> law KAKU candidates
-  -> explicit content IDs / evidence refs
-```
-
-This is the provenance path required for later IDT/RFC/TIR law-frame receipts.
-
-## First physical-law loops
-
-The contract is suitable for exact control loops such as:
-
-```text
-Q_a
-  -> p_a = Q_a / Q_total
-  -> Q'_a = Q_total p_a
-  -> Q_a
-```
-
-conditional discrete carrier loops:
-
-```text
-Q_a
-  -> n_a = Q_a / q0
-  -> Q'_a = q0 n_a
-  -> Q_a
-```
-
-and conditional energy-density loops:
-
-```text
-j_Q
-  -> rho_Q = (epsilon_Q / c^2) j_Q
-  -> j'_Q = (c^2 / epsilon_Q) rho_Q
-  -> j_Q.
-```
-
-These loops can be local to one formalism or span IDT/RFC law nodes. OPEN physical bindings remain explicit loop gates rather than being silently promoted by the holonomy engine.
-
-## Information-holonomy receipt
-
-The audit receipt schema is:
-
-```text
-PNCS_PNV_INFORMATION_HOLONOMY_AUDIT_RECEIPT_V0_1
-```
-
-and records:
+`PNCS_PNV_INFORMATION_HOLONOMY_AUDIT_RECEIPT_V0_1` records at least:
 
 ```text
 loop_id
+connection_id
+connection_sha256
 compilation_receipt_sha256
 native_execution_receipt_sha256
 inverse_lineage_id
@@ -308,68 +158,17 @@ state_tolerance
 state_defect
 invariant_results
 status
-epistemic
-promotion_state
-external_effects
+epistemic = CHYBA
+promotion_state = CANDIDATE_ONLY
+runtime_execution_authority = false
+canon_write_authority = false
+effect_boundary
 ```
 
-The receipt itself is content-addressed by SHA-256.
-
-## Persistence
-
-Repository/conformance persistence stores:
-
-```text
-<authoring_root>/holonomy/<receipt_sha256>.json
-```
-
-with idempotent content-addressed writes.
-
-The unified GREMLIN ↔ PNV bridge exposes live wrappers:
-
-```text
-compile_information_holonomy_loop_live()
-persist_information_holonomy_audit_live()
-```
-
-which resolve a `GremlinPNVAuthoringSession` before using the canonical live authoring root.
-
-Operational live persistence remains gated by the hydrated GREMLIN state witness under:
-
-```text
-/dev/shm/ciel_noema/gremlin
-```
+The receipt is SHA-256 content-addressed and can be persisted idempotently under `<authoring_root>/holonomy/`.
 
 ## Fail-closed gates
 
-The v0.1 law-frame audit rejects malformed or incomplete objects at the following boundaries:
+The audit rejects malformed law-frame objects, empty identifiers, duplicate identities, mixed PNCS basis, topology mismatch, missing transforms/evaluators, callback exceptions, non-finite or overflowing defects, compilation/loop mismatch, inverse-lineage mismatch, noncanonical receipt values, and content-addressed persistence collisions.
 
-- empty law frame,
-- duplicate law-node identities,
-- mixed PNCS basis,
-- transport-count/topology mismatch,
-- duplicate invariant identity,
-- missing admitted transform,
-- missing invariant evaluator,
-- invalid/non-finite metric defect,
-- invalid invariant defect,
-- compilation/loop receipt mismatch,
-- inverse-lineage provenance mismatch,
-- content-addressed audit collision.
-
-## Architecture
-
-The resulting PNCS architecture is:
-
-```text
-GREMLIN
-  -> relational candidate discovery
-  -> exact KAKU resolution
-  -> RADICAL / OPERATOR authoring
-  -> PNV law-frame execution
-  -> information-holonomy audit
-  -> inverse lineage
-  -> admission / physical-law gate
-```
-
-This implements the physical-law scaffold as an executable connection with measurable holonomy rather than a document-only dependency graph.
+Operational live persistence remains bound to the admitted GREMLIN live authoring surface under `/dev/shm/ciel_noema/gremlin`. Compilation and audit remain `CHYBA / CANDIDATE_ONLY` with no automatic canon-write authority.

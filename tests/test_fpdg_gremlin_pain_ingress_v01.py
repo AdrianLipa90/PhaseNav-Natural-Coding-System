@@ -194,6 +194,52 @@ def test_alignment_must_cross_distinct_domains():
         )
 
 
+def test_whitespace_cannot_fabricate_distinct_source_domains():
+    packets = {
+        "current": _packet("RFC", "CURRENT.PATH", ["RFC.A", "RFC.B"]),
+        "history": _packet(" RFC ", "HISTORICAL.PATH", ["IDT.X", "IDT.Y"]),
+    }
+    with pytest.raises(FpdgGremlinPainIngressError, match="at least two explicit source domains"):
+        build_relation_mining_inputs(
+            packets,
+            claim_to_atom=CLAIM_TO_ATOM,
+            alignments=ALIGNMENTS,
+            finding_id="SAME.DOMAIN.WHITESPACE",
+            invariant_id="INV.SAME.DOMAIN.WHITESPACE",
+            invariant_description="whitespace must not fabricate a second domain",
+        )
+
+
+def test_alignment_boolean_indexes_fail_closed():
+    with pytest.raises(FpdgGremlinPainIngressError, match="non-negative integer"):
+        FpdgPainAlignment(CHAIN_A, True, CHAIN_B, 1)
+    with pytest.raises(FpdgGremlinPainIngressError, match="non-negative integer"):
+        FpdgPainAlignment(CHAIN_A, 1, CHAIN_B, False)
+
+
+def test_claim_to_atom_receipt_matches_normalized_ledger_atom():
+    bindings = dict(CLAIM_TO_ATOM)
+    bindings["RFC.A"] = "  transform  "
+    ingress = _build(claim_to_atom=bindings)
+    assert ingress.receipt["claim_to_atom"]["RFC.A"] == "TRANSFORM"
+    chain = next(row for row in ingress.ledger["chains"] if row["id"] == CHAIN_A)
+    assert chain["atoms"][0] == ingress.receipt["claim_to_atom"]["RFC.A"]
+
+
+def test_whitespace_only_claim_id_fails_closed():
+    packets = dict(PACKETS)
+    packets["current"] = _packet("RFC", "CURRENT.PATH", ["   ", "RFC.B"])
+    with pytest.raises(FpdgGremlinPainIngressError, match="claim_id must be a non-empty string"):
+        build_relation_mining_inputs(
+            packets,
+            claim_to_atom=CLAIM_TO_ATOM,
+            alignments=ALIGNMENTS,
+            finding_id="BAD.CLAIM",
+            invariant_id="INV.BAD.CLAIM",
+            invariant_description="must fail",
+        )
+
+
 def test_integration_only_packet_cannot_be_fabricated_into_relation_chain():
     packet = _packet("RFC", "TEMP", ["RFC.A"])
     packet["zones"] = []

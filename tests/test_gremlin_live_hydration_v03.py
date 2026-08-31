@@ -3,6 +3,7 @@ import json
 
 import pytest
 
+import phasenav_natural_code.gremlin_live_hydration_v03 as live_hydration
 from phasenav_natural_code.gremlin_live_hydration_v03 import (
     GENERATION_BASIS_SCHEMA,
     LIVE_WITNESS_SCHEMA,
@@ -137,6 +138,53 @@ def test_generation_basis_rejects_missing_or_malformed_runtime_instance_ids():
         _basis(aux_runtime_instance_id="not-an-instance")
     with pytest.raises(GremlinLiveHydrationError, match="tether_runtime_instance_id"):
         _basis(tether_runtime_instance_id="")
+
+
+def test_generation_basis_rejects_implicit_string_coercion():
+    with pytest.raises(GremlinLiveHydrationError, match="identity"):
+        _basis(identity=7)
+    with pytest.raises(GremlinLiveHydrationError, match="session_id"):
+        _basis(session_id=True)
+    with pytest.raises(GremlinLiveHydrationError, match="working_state_sha256"):
+        _basis(working_state_sha256=123)
+
+
+def test_generation_binding_rejects_extra_or_noncanonical_basis_fields():
+    basis = _basis()
+    with_extra = {**basis, "unexpected": "field"}
+    with pytest.raises(GremlinLiveHydrationError, match="keyset mismatch"):
+        generation_binding_from_basis(with_extra)
+
+    noncanonical = dict(basis)
+    noncanonical["identity"] = f" {IDENTITY} "
+    with pytest.raises(GremlinLiveHydrationError, match="not canonical"):
+        generation_binding_from_basis(noncanonical)
+
+
+def test_runtime_producer_pid_rejects_bool_and_string_coercion(tmp_path):
+    def write_status(name, *, pid, instance):
+        (tmp_path / name).write_text(
+            json.dumps(
+                {
+                    "status": "ACTIVE",
+                    "pid": pid,
+                    "runtime_instance_id": instance,
+                }
+            ),
+            encoding="utf-8",
+        )
+
+    for bad_pid in (True, "123"):
+        write_status("aux_stream_status.json", pid=bad_pid, instance=AUX_INSTANCE)
+        write_status("tether_runtime_status.json", pid=456, instance=TETHER_INSTANCE)
+        with pytest.raises(GremlinLiveHydrationError, match="AUX producer PID"):
+            live_hydration._runtime_instances(tmp_path)
+
+
+def test_native_pnv_source_hash_preserves_exact_source_bytes():
+    assert live_hydration._sha256_text("MODE READ_ONLY\n") != live_hydration._sha256_text(
+        "MODE READ_ONLY\n\n"
+    )
 
 
 def test_witness_cannot_claim_execution_or_canon_authority():

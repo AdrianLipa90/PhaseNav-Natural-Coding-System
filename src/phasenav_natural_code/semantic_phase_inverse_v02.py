@@ -36,6 +36,13 @@ def _finite(name: str, value: float) -> float:
     return value
 
 
+def _text(name: str, value: str) -> str:
+    value = str(value).strip()
+    if not value:
+        raise SemanticPhaseInverseError(f"{name} must be non-empty")
+    return value
+
+
 def inverse_status(
     semantic_target: float,
     B: float,
@@ -158,6 +165,8 @@ class SemanticPhasePlacement:
     orbital_band: str
 
     def __post_init__(self) -> None:
+        object.__setattr__(self, "content_id", _text("content_id", self.content_id))
+        object.__setattr__(self, "kaku_id", _text("kaku_id", self.kaku_id))
         if not isinstance(self.phase_code, CanonicalPhaseSplit):
             raise SemanticPhaseInverseError("phase_code must be CanonicalPhaseSplit")
         if not isinstance(self.quantizer, OrbitQuantizerProfile):

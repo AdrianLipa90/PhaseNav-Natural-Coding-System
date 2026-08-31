@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 from numbers import Real
+from types import MappingProxyType
 from typing import Any, Mapping
 
 from .model import RadicalGraph
@@ -160,7 +161,7 @@ class RadicalAggregationProfile:
             clean[key] = _finite(f"weight[{key}]", raw_value)
         if not clean:
             raise SemanticRadicalOscillatorError("aggregation weights must be non-empty")
-        object.__setattr__(self, "weights", clean)
+        object.__setattr__(self, "weights", MappingProxyType(dict(clean)))
 
     def validated_weights(self, radical: RadicalGraph) -> dict[str, float]:
         if not isinstance(radical, RadicalGraph):

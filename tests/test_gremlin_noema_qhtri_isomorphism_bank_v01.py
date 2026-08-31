@@ -1,5 +1,8 @@
+import pytest
+
 from phasenav_natural_code.gremlin_noema_qhtri_isomorphism_bank_v01 import (
     SOURCE_PINS,
+    NoemaQhtriBankCompilation,
     bank_manifest,
     compile_isomorphism_bank_candidates,
     isomorphism_bank,
@@ -67,3 +70,33 @@ def test_bank_compiles_only_candidate_read_only_graphs():
         assert result.receipt["effect_boundary"]["external_effects"] is False
         assert result.program.mode == "READ_ONLY"
         assert result.program.epistemic == "CHYBA"
+
+
+def test_direct_validator_rejects_tampered_aggregate_commitment():
+    compiled = compile_isomorphism_bank_candidates(**KWARGS)
+    manifest = dict(compiled.manifest)
+    compiled_entries = {
+        key: dict(value)
+        for key, value in manifest["compiled_entries"].items()
+    }
+    first_id = sorted(compiled_entries)[0]
+    compiled_entries[first_id]["receipt_sha256"] = "0" * 64
+    manifest["compiled_entries"] = compiled_entries
+    tampered = NoemaQhtriBankCompilation(
+        compilations=compiled.compilations,
+        manifest=manifest,
+    )
+    with pytest.raises(RuntimeError, match="aggregate manifest mismatch"):
+        validate_isomorphism_bank_candidates(tampered)
+
+
+def test_direct_validator_rejects_missing_leaf_before_execution():
+    compiled = compile_isomorphism_bank_candidates(**KWARGS)
+    leaves = dict(compiled.compilations)
+    leaves.pop(sorted(leaves)[0])
+    incomplete = NoemaQhtriBankCompilation(
+        compilations=leaves,
+        manifest=compiled.manifest,
+    )
+    with pytest.raises(RuntimeError, match="compilation keyset mismatch"):
+        validate_isomorphism_bank_candidates(incomplete)

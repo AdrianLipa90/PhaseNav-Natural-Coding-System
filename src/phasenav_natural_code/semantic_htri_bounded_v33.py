@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import math
+from numbers import Real
 from typing import Mapping, Sequence
 
 import numpy as np
@@ -36,6 +37,48 @@ class SemanticHTRIBoundedV33Error(SemanticHTRIDriveV32Error):
     pass
 
 
+def _positive_real(name: str, value: object) -> float:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise SemanticHTRIBoundedV33Error(f"{name} must be positive finite real")
+    out = float(value)
+    if not math.isfinite(out) or out <= 0.0:
+        raise SemanticHTRIBoundedV33Error(f"{name} must be positive finite real")
+    return out
+
+
+def _positive_int(name: str, value: object) -> int:
+    if isinstance(value, bool) or not isinstance(value, (int, np.integer)):
+        raise SemanticHTRIBoundedV33Error(f"{name} must be a positive integer")
+    out = int(value)
+    if out < 1:
+        raise SemanticHTRIBoundedV33Error(f"{name} must be a positive integer")
+    return out
+
+
+def _unitary_matrix(value: object) -> np.ndarray:
+    try:
+        raw = np.asarray(value)
+    except (TypeError, ValueError) as exc:
+        raise SemanticHTRIBoundedV33Error(
+            "U_total must be a finite numeric shape (36,36)"
+        ) from exc
+    if raw.dtype.kind not in {"i", "u", "f", "c"} or raw.shape != (N, N):
+        raise SemanticHTRIBoundedV33Error(
+            "U_total must be a finite numeric shape (36,36)"
+        )
+    try:
+        out = raw.astype(np.complex128, copy=True)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SemanticHTRIBoundedV33Error(
+            "U_total must be a finite numeric shape (36,36)"
+        ) from exc
+    if not np.isfinite(out).all():
+        raise SemanticHTRIBoundedV33Error(
+            "U_total must be a finite numeric shape (36,36)"
+        )
+    return out
+
+
 @dataclass(frozen=True)
 class BoundedStep:
     phi_next: np.ndarray
@@ -54,10 +97,10 @@ def bounded_step(
     u_max: float,
     dt: float = DEFAULT_DT,
 ) -> BoundedStep:
-    if not math.isfinite(u_max) or u_max <= 0.0:
-        raise SemanticHTRIBoundedV33Error("u_max must be positive finite")
-    if not math.isfinite(dt) or dt <= 0.0:
-        raise SemanticHTRIBoundedV33Error("dt must be positive finite")
+    if not isinstance(snapshot, DriveSnapshot):
+        raise SemanticHTRIBoundedV33Error("snapshot must be DriveSnapshot")
+    u_value = _positive_real("u_max", u_max)
+    dt_value = _positive_real("dt", dt)
 
     phi = snapshot.phi.copy()
     omega = snapshot.omega.copy()
@@ -86,8 +129,8 @@ def bounded_step(
 
     activity = (float(flavor[2]) + float(flavor[4]) * 0.5 + (1.0 - float(flavor[3])) * 0.3) / 1.8
     activity = min(max(activity, 0.0), 1.0)
-    hebb_step = 0.01 * dt * 10.0
-    decay_step = 0.001 * dt * 10.0
+    hebb_step = 0.01 * dt_value * 10.0
+    decay_step = 0.001 * dt_value * 10.0
     dg = hebb_step * (activity - 0.5) * np.cos(diff) - decay_step * (g - _EYE_N * 0.1)
     g += dg
     np.clip(g, -1.0, 1.0, out=g)
@@ -102,7 +145,7 @@ def bounded_step(
     dist = np.abs(np.angle(np.exp(1j * (ch_mean - global_mean))))
     weak = (ch_coh < 0.5) & (dist > 0.5)
     if weak.any():
-        boost = 0.01 * (0.5 - ch_coh) * dist * dt * 10.0
+        boost = 0.01 * (0.5 - ch_coh) * dist * dt_value * 10.0
         wc = np.flatnonzero(weak)
         rows = _CH_ROWS[wc].ravel()
         cols = _CH_COLS[wc].ravel()
@@ -111,7 +154,7 @@ def bounded_step(
 
     phi_base = phi.copy()
     if global_R > 0.7:
-        push = 0.005 * (global_R - 0.7) * dt * 10.0
+        push = 0.005 * (global_R - 0.7) * dt_value * 10.0
         ch_target = (ch_mean + math.pi) % TAU
         target_osc = np.repeat(ch_target, 3)
         phi_base += push * np.angle(np.exp(1j * (target_osc - phi_base)))
@@ -119,26 +162,26 @@ def bounded_step(
 
     desired = wrap_delta(target, phi_base)
     base_velocity = effective_omega + coupling
-    exact_control = desired / dt - base_velocity
-    control = np.clip(exact_control, -u_max, u_max)
-    phi_next = (phi_base + dt * (base_velocity + control)) % TAU
+    exact_control = desired / dt_value - base_velocity
+    control = np.clip(exact_control, -u_value, u_value)
+    phi_next = (phi_base + dt_value * (base_velocity + control)) % TAU
     residual = wrap_delta(target, phi_next)
 
     dphi = wrap_delta(phi_next, phi_base)
-    semantic_density = min(10.0, float(np.mean(np.abs(dphi)) / dt))
+    semantic_density = min(10.0, float(np.mean(np.abs(dphi)) / dt_value))
     gravity_next = gravity.copy()
     gravity_next[0] = semantic_density
     gravity_next[1] = 1.0 + math.tanh(semantic_density * 0.5) * 9.0
     gravity_next[2] = gravity_next[2] * 0.99 + semantic_density * 0.01
 
     H, hmeta = qhtri_graph_hamiltonian(omega, g)
-    saturation = np.abs(exact_control) > u_max
+    saturation = np.abs(exact_control) > u_value
     receipt = {
         "schema": STEP_SCHEMA,
         "contract_id": CONTRACT_ID,
         "source_snapshot_id": snapshot.snapshot_id,
-        "dt": float(dt),
-        "u_max": float(u_max),
+        "dt": dt_value,
+        "u_max": u_value,
         "target_phase36_sha256": array_sha(target),
         "phi_next_sha256": array_sha(phi_next),
         "g_next_sha256": array_sha(g),
@@ -176,22 +219,25 @@ def track_target(
     dt: float = DEFAULT_DT,
     U_total: np.ndarray | None = None,
 ) -> TargetTrack:
-    if not math.isfinite(tolerance_rad) or tolerance_rad <= 0.0:
-        raise SemanticHTRIBoundedV33Error("tolerance_rad must be positive finite")
-    if max_ticks < 1 or settle_consecutive < 1:
-        raise SemanticHTRIBoundedV33Error("tick counts must be positive")
-    if settle_consecutive > max_ticks:
+    if not isinstance(initial, DriveSnapshot):
+        raise SemanticHTRIBoundedV33Error("initial must be DriveSnapshot")
+    u_value = _positive_real("u_max", u_max)
+    tolerance_value = _positive_real("tolerance_rad", tolerance_rad)
+    dt_value = _positive_real("dt", dt)
+    max_ticks_value = _positive_int("max_ticks", max_ticks)
+    settle_value = _positive_int("settle_consecutive", settle_consecutive)
+    if settle_value > max_ticks_value:
         raise SemanticHTRIBoundedV33Error("settle_consecutive exceeds max_ticks")
 
     state = initial
-    total = np.eye(N, dtype=np.complex128) if U_total is None else np.asarray(U_total, dtype=np.complex128).copy()
+    total = np.eye(N, dtype=np.complex128) if U_total is None else _unitary_matrix(U_total)
     consecutive = 0
     first_settle: int | None = None
     ticks: list[dict[str, object]] = []
 
-    for tick_index in range(1, max_ticks + 1):
-        step = bounded_step(state, target36, u_max=u_max, dt=dt)
-        U = unitary(step.H, dt)
+    for tick_index in range(1, max_ticks_value + 1):
+        step = bounded_step(state, target36, u_max=u_value, dt=dt_value)
+        U = unitary(step.H, dt_value)
         total = U @ total
         unit_err = float(np.max(np.abs(total.conj().T @ total - np.eye(N))))
         rec = dict(step.receipt)
@@ -200,10 +246,10 @@ def track_target(
         ticks.append(rec)
 
         residual = float(step.receipt["max_target_residual_rad"])
-        if residual <= tolerance_rad:
+        if residual <= tolerance_value:
             consecutive += 1
-            if consecutive == settle_consecutive:
-                first_settle = tick_index - settle_consecutive + 1
+            if consecutive == settle_value:
+                first_settle = tick_index - settle_value + 1
         else:
             consecutive = 0
 
@@ -225,10 +271,10 @@ def track_target(
         "contract_id": CONTRACT_ID,
         "status": status,
         "initial_snapshot_id": initial.snapshot_id,
-        "u_max": float(u_max),
-        "tolerance_rad": float(tolerance_rad),
-        "max_ticks": int(max_ticks),
-        "settle_consecutive": int(settle_consecutive),
+        "u_max": u_value,
+        "tolerance_rad": tolerance_value,
+        "max_ticks": max_ticks_value,
+        "settle_consecutive": settle_value,
         "settling_tick": first_settle,
         "ticks_used": len(ticks),
         "last_max_target_residual_rad": float(ticks[-1]["max_target_residual_rad"]),
@@ -249,8 +295,19 @@ def execute_bounded_trajectory(
     settle_consecutive: int = REFERENCE_SETTLE_CONSECUTIVE,
     dt: float = DEFAULT_DT,
 ) -> dict[str, object]:
+    if not isinstance(initial, DriveSnapshot):
+        raise SemanticHTRIBoundedV33Error("initial must be DriveSnapshot")
     if not isinstance(trajectory, SemanticTrajectory36):
         raise SemanticHTRIBoundedV33Error("SemanticTrajectory36 required")
+    u_value = _positive_real("u_max", u_max)
+    tolerance_value = _positive_real("tolerance_rad", tolerance_rad)
+    max_ticks_value = _positive_int("max_ticks_per_target", max_ticks_per_target)
+    settle_value = _positive_int("settle_consecutive", settle_consecutive)
+    dt_value = _positive_real("dt", dt)
+    if settle_value > max_ticks_value:
+        raise SemanticHTRIBoundedV33Error(
+            "settle_consecutive exceeds max_ticks_per_target"
+        )
 
     state = initial
     U_total = np.eye(N, dtype=np.complex128)
@@ -261,11 +318,11 @@ def execute_bounded_trajectory(
         tr = track_target(
             state,
             address.phase36,
-            u_max=u_max,
-            tolerance_rad=tolerance_rad,
-            max_ticks=max_ticks_per_target,
-            settle_consecutive=settle_consecutive,
-            dt=dt,
+            u_max=u_value,
+            tolerance_rad=tolerance_value,
+            max_ticks=max_ticks_value,
+            settle_consecutive=settle_value,
+            dt=dt_value,
             U_total=U_total,
         )
         rec = dict(tr.receipt)
@@ -292,11 +349,11 @@ def execute_bounded_trajectory(
         "initial_snapshot_id": initial.snapshot_id,
         "trajectory_id": trajectory.trajectory_id,
         "ordered_semantic_id": trajectory.ordered_semantic_id,
-        "u_max": float(u_max),
-        "tolerance_rad": float(tolerance_rad),
-        "max_ticks_per_target": int(max_ticks_per_target),
-        "settle_consecutive": int(settle_consecutive),
-        "dt": float(dt),
+        "u_max": u_value,
+        "tolerance_rad": tolerance_value,
+        "max_ticks_per_target": max_ticks_value,
+        "settle_consecutive": settle_value,
+        "dt": dt_value,
         "targets_completed": sum(r["status"] == "PASS_TARGET_SETTLED" for r in target_receipts),
         "total_ticks": sum(int(r["ticks_used"]) for r in target_receipts),
         "target_receipts": target_receipts,

@@ -93,7 +93,9 @@ jobs:
           tests/test_pnlf_orbital_memory_v01.py
           tests/test_pnlf_orbital_memory_admission_v01.py
           tests/test_semantic_phase_inverse_v02.py
+          tests/test_semantic_phase_inverse_admission_v02.py
           tests/test_semantic_orbital_trajectory_v03.py
+          tests/test_semantic_orbital_trajectory_admission_v03.py
       - name: Generate authoritative tracked-tree manifest candidate
         run: python scripts/regenerate_manifest.py --root .
       - name: Verify generated manifest candidate

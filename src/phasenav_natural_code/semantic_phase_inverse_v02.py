@@ -30,7 +30,10 @@ class SemanticPhaseInverseError(ValueError):
 
 
 def _finite(name: str, value: float) -> float:
-    value = float(value)
+    try:
+        value = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SemanticPhaseInverseError(f"{name} must be finite") from exc
     if not math.isfinite(value):
         raise SemanticPhaseInverseError(f"{name} must be finite")
     return value
@@ -41,6 +44,19 @@ def _text(name: str, value: str) -> str:
     if not value:
         raise SemanticPhaseInverseError(f"{name} must be non-empty")
     return value
+
+
+def _compose_lifted_phase(wrapped_phase: float, winding: int) -> float:
+    wrapped = _finite("wrapped_phase", wrapped_phase)
+    if not isinstance(winding, int) or isinstance(winding, bool):
+        raise SemanticPhaseInverseError("winding must be an integer")
+    if not 0.0 <= wrapped < TAU:
+        raise SemanticPhaseInverseError("wrapped_phase must lie in [0,2*pi)")
+    try:
+        lifted = wrapped + TAU * winding
+    except OverflowError as exc:
+        raise SemanticPhaseInverseError("lifted_phase must be finite") from exc
+    return _finite("lifted_phase", lifted)
 
 
 def inverse_status(
@@ -80,7 +96,7 @@ def lifted_phase_from_semantic_value(
     if prefactor == 0.0:
         status = NON_IDENTIFIABLE_PHASE if target == 0.0 else INCONSISTENT_ZERO_CARRIER
         raise SemanticPhaseInverseError(status)
-    return (target / prefactor) - kappa
+    return _finite("lifted_phase", (target / prefactor) - kappa)
 
 
 @dataclass(frozen=True)
@@ -92,11 +108,7 @@ class CanonicalPhaseSplit:
     def __post_init__(self) -> None:
         lifted = _finite("lifted_phase", self.lifted_phase)
         wrapped = _finite("wrapped_phase", self.wrapped_phase)
-        if not isinstance(self.winding, int) or isinstance(self.winding, bool):
-            raise SemanticPhaseInverseError("winding must be an integer")
-        if not 0.0 <= wrapped < TAU:
-            raise SemanticPhaseInverseError("wrapped_phase must lie in [0,2*pi)")
-        reconstructed = wrapped + TAU * self.winding
+        reconstructed = _compose_lifted_phase(wrapped, self.winding)
         if not math.isclose(reconstructed, lifted, rel_tol=0.0, abs_tol=2.0e-12):
             raise SemanticPhaseInverseError("lifted phase does not match wrapped phase plus winding")
         object.__setattr__(self, "lifted_phase", lifted)
@@ -125,12 +137,7 @@ def canonical_phase_split(lifted_phase: float) -> CanonicalPhaseSplit:
 
 
 def lifted_phase_from_split(wrapped_phase: float, winding: int) -> float:
-    wrapped = _finite("wrapped_phase", wrapped_phase)
-    if not isinstance(winding, int) or isinstance(winding, bool):
-        raise SemanticPhaseInverseError("winding must be an integer")
-    if not 0.0 <= wrapped < TAU:
-        raise SemanticPhaseInverseError("wrapped_phase must lie in [0,2*pi)")
-    return wrapped + TAU * winding
+    return _compose_lifted_phase(wrapped_phase, winding)
 
 
 def semantic_value_from_phase_code(
@@ -202,7 +209,10 @@ class SemanticPhasePlacement:
         return bind_semantic_sample(sample, self.quantizer).deterministic_receipt()
 
     def body(self) -> dict[str, Any]:
-        prefactor = carrier_prefactor(self.B, self.omega, self.N, self.A_R)
+        try:
+            prefactor = carrier_prefactor(self.B, self.omega, self.N, self.A_R)
+        except SemanticOrbitalCarrierError as exc:
+            raise SemanticPhaseInverseError(str(exc)) from exc
         return {
             "schema": SCHEMA,
             "parent_schema": "PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1",

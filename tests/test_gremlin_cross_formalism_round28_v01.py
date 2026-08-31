@@ -1,3 +1,4 @@
+from dataclasses import replace
 import math
 
 import pytest
@@ -109,3 +110,29 @@ def test_all_round28_entries_compile_to_read_only_chyba_candidates():
         assert result.receipt["effect_boundary"]["external_effects"] is False
         assert result.program.mode == "READ_ONLY"
         assert result.program.epistemic == "CHYBA"
+
+
+def test_round28_direct_validator_rejects_tampered_aggregate_manifest():
+    compiled = compile_round28_candidates(**KWARGS)
+    manifest = dict(compiled.manifest)
+    entries = {
+        iso_id: dict(row)
+        for iso_id, row in manifest["compiled_entries"].items()
+    }
+    target = sorted(entries)[0]
+    entries[target]["pnv_graph_sha256"] = "0" * 64
+    manifest["compiled_entries"] = entries
+    broken = replace(compiled, manifest=manifest)
+
+    with pytest.raises(Round28Error, match="aggregate manifest mismatch"):
+        validate_round28_candidates(broken)
+
+
+def test_round28_direct_validator_rejects_missing_leaf_compilation():
+    compiled = compile_round28_candidates(**KWARGS)
+    reduced = dict(compiled.compilations)
+    reduced.pop(sorted(reduced)[0])
+    broken = replace(compiled, compilations=reduced)
+
+    with pytest.raises(Round28Error, match="compilation keyset mismatch"):
+        validate_round28_candidates(broken)

@@ -38,6 +38,10 @@ jobs:
           tests/test_full_program_executor_v01.py
           tests/test_full_program_executor_receipt_integrity_v01.py
           tests/test_runtime_v30_hot.py
+          tests/test_native_pnv_exec_v01.py
+          tests/test_gremlin_inverse_lineage_v01.py
+          tests/test_gremlin_pnv_holonomy_v01.py
+          tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py
           tests/test_dncrypt_native_pncs_v04_causality.py
           tests/test_fpdg_gremlin_pain_ingress_v01.py
           tests/test_gremlin_cross_formalism_bank_v02.py

@@ -1,8 +1,11 @@
+import pytest
+
 from phasenav_natural_code.gremlin_tau_codec_v01 import (
     CODEC_INVARIANT_ID,
     CODEC_LEFT_FRAGMENT_ID,
     CODEC_REALIZATION_FRAGMENT_ID,
     CODEC_RIGHT_FRAGMENT_ID,
+    GremlinTauCodecError,
     compile_tau_codec_candidate,
     tau_codec_fragments,
     tau_codec_isomorphism,
@@ -67,6 +70,8 @@ def test_GREMLIN_builds_kaku_radical_and_operators_for_merged_codec():
     assert candidate.codec_manifest["promotion_state"] == "CANDIDATE_ONLY"
     assert candidate.codec_manifest["runtime_execution_authority"] is False
     assert candidate.codec_manifest["canon_write_authority"] is False
+    assert candidate.codec_manifest["compilation_receipt_sha256"] == compilation.receipt["receipt_sha256"]
+    assert len(candidate.codec_manifest["manifest_sha256"]) == 64
 
 
 def test_isomorphic_edges_lower_to_composition():
@@ -88,9 +93,26 @@ def test_compiled_codec_executes_only_in_conformance_mode():
     assert result.program.epistemic == "CHYBA"
 
 
+def test_tau_codec_manifest_field_tamper_fails_closed():
+    candidate = compile_tau_codec_candidate(**KWARGS)
+    assert isinstance(candidate.codec_manifest, dict)
+    candidate.codec_manifest["pnh5_binary_realization_bound"] = False
+    with pytest.raises(GremlinTauCodecError, match="manifest no longer matches"):
+        validate_tau_codec_candidate(candidate)
+
+
+def test_tau_codec_manifest_commitment_tamper_fails_closed():
+    candidate = compile_tau_codec_candidate(**KWARGS)
+    assert isinstance(candidate.codec_manifest, dict)
+    candidate.codec_manifest["manifest_sha256"] = "0" * 64
+    with pytest.raises(GremlinTauCodecError, match="manifest commitment mismatch"):
+        validate_tau_codec_candidate(candidate)
+
+
 def test_content_addressed_codec_authoring_is_idempotent(tmp_path):
     first = compile_tau_codec_candidate(authoring_root=tmp_path, **KWARGS)
     second = compile_tau_codec_candidate(authoring_root=tmp_path, **KWARGS)
     assert first.compilation.receipt["receipt_sha256"] == second.compilation.receipt["receipt_sha256"]
+    assert first.codec_manifest["manifest_sha256"] == second.codec_manifest["manifest_sha256"]
     assert len(list((tmp_path / "kaku").glob("*.json"))) == 6
     assert len(list((tmp_path / "radical").glob("*.json"))) == 1

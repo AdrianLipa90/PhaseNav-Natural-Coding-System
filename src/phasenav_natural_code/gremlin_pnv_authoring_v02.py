@@ -11,7 +11,7 @@ from typing import Any, Iterable, Mapping, Sequence
 
 from .execution_v20_live import load_live_surface
 from .execution_v20_model import DEFAULT_SOCKET, DEFAULT_SURFACE_ROOT
-from .model import Kaku, RadicalGraph
+from .model import Kaku, RadicalGraph, Relation
 from .native_pnv_exec_v01 import SUPPORTED_OPCODES, parse_pnv
 
 AUTHORING_SCHEMA = "PNCS_GREMLIN_PNV_AUTHORING_V0_2"
@@ -35,10 +35,11 @@ def _nonempty_text(value: Any, field: str) -> str:
 def _canonical_refs(values: Sequence[str], field: str) -> list[str]:
     if isinstance(values, (str, bytes, bytearray)):
         raise GremlinPNVAuthoringError(f"{field} must be a sequence of strings")
-    out: set[str] = set()
-    for value in values:
-        out.add(_nonempty_text(value, field))
-    return sorted(out)
+    try:
+        raw = tuple(values)
+    except TypeError as exc:
+        raise GremlinPNVAuthoringError(f"{field} must be a sequence of strings") from exc
+    return sorted({_nonempty_text(value, field) for value in raw})
 
 
 def _jsonable(value: Any) -> Any:
@@ -85,12 +86,29 @@ def _typed_candidate_id(kind: str, payload: Mapping[str, Any]) -> str:
 
 
 def _digest_from_candidate_id(candidate_id: str) -> str:
+    if not isinstance(candidate_id, str):
+        raise GremlinPNVAuthoringError("candidate_id must be a string")
     digest = candidate_id.rsplit(":", 1)[-1]
     if not _DIGEST_RE.fullmatch(digest):
         raise GremlinPNVAuthoringError(
             "candidate_id does not terminate in canonical SHA-256"
         )
     return digest
+
+
+def _typed_dependency_ref(candidate_id: Any, kind: str, field: str) -> str:
+    value = _nonempty_text(candidate_id, field)
+    prefix = f"pncs:gremlin-{kind.lower()}:sha256:"
+    if not value.startswith(prefix):
+        raise GremlinPNVAuthoringError(
+            f"{field} must reference a GREMLIN {kind} candidate"
+        )
+    _digest_from_candidate_id(value)
+    if len(value) != len(prefix) + 64:
+        raise GremlinPNVAuthoringError(
+            f"{field} must terminate in exactly one SHA-256 digest"
+        )
+    return value
 
 
 def _candidate_envelope(
@@ -105,9 +123,7 @@ def _candidate_envelope(
 ) -> dict[str, Any]:
     kind = _nonempty_text(kind, "kind").upper()
     if kind not in {"KAKU", "RADICAL", "OPERATOR"}:
-        raise GremlinPNVAuthoringError(
-            f"unsupported GREMLIN authoring kind: {kind}"
-        )
+        raise GremlinPNVAuthoringError(f"unsupported GREMLIN authoring kind: {kind}")
     generation_binding = _nonempty_text(generation_binding, "generation_binding")
     identity = _nonempty_text(identity, "identity")
     authority = _nonempty_text(authority, "authority")
@@ -163,6 +179,61 @@ def build_kaku_candidate(
     )
 
 
+def _validated_radical_snapshot(radical: RadicalGraph) -> tuple[list[str], list[Relation]]:
+    radical_id = _nonempty_text(radical.radical_id, "RADICAL graph id")
+    basis_id = _nonempty_text(radical.basis_id, "RADICAL graph basis_id")
+    if radical_id != radical.radical_id or basis_id != radical.basis_id:
+        raise GremlinPNVAuthoringError(
+            "RADICAL graph identity must already be canonical"
+        )
+    if not isinstance(radical.nodes, dict):
+        raise GremlinPNVAuthoringError("RADICAL graph node integrity requires a dict")
+    node_ids: list[str] = []
+    for node_id, node in radical.nodes.items():
+        if (
+            not isinstance(node_id, str)
+            or not isinstance(node, Kaku)
+            or node_id != node.kaku_id
+            or node.vector.basis_id != basis_id
+        ):
+            raise GremlinPNVAuthoringError(
+                "RADICAL graph node integrity mismatch"
+            )
+        node_ids.append(node_id)
+    if len(node_ids) != len(set(node_ids)):
+        raise GremlinPNVAuthoringError("RADICAL graph duplicate node id")
+
+    if not isinstance(radical.edges, list):
+        raise GremlinPNVAuthoringError("RADICAL graph relation integrity requires a list")
+    relations: list[Relation] = []
+    relation_ids: set[str] = set()
+    allowed = set(node_ids)
+    for edge in radical.edges:
+        if not isinstance(edge, Relation):
+            raise GremlinPNVAuthoringError(
+                "RADICAL graph relation integrity mismatch"
+            )
+        if edge.source_id not in allowed or edge.target_id not in allowed:
+            raise GremlinPNVAuthoringError(
+                "RADICAL graph relation integrity endpoint mismatch"
+            )
+        if edge.relation_id in relation_ids:
+            raise GremlinPNVAuthoringError(
+                f"RADICAL graph duplicate relation id: {edge.relation_id}"
+            )
+        relation_ids.add(edge.relation_id)
+        relations.append(edge)
+    return sorted(node_ids), sorted(
+        relations,
+        key=lambda edge: (
+            edge.relation_id,
+            edge.source_id,
+            edge.target_id,
+            edge.relation_type,
+        ),
+    )
+
+
 def build_radical_candidate(
     radical: RadicalGraph,
     *,
@@ -174,6 +245,8 @@ def build_radical_candidate(
 ) -> dict[str, Any]:
     if not isinstance(radical, RadicalGraph):
         raise GremlinPNVAuthoringError("RadicalGraph instance required")
+    if not isinstance(kaku_candidate_ids, Mapping):
+        raise GremlinPNVAuthoringError("kaku_candidate_ids must be a mapping")
     if any(
         not isinstance(key, str) or not isinstance(value, str)
         for key, value in kaku_candidate_ids.items()
@@ -181,14 +254,16 @@ def build_radical_candidate(
         raise GremlinPNVAuthoringError(
             "kaku_candidate_ids must map string node ids to string candidate ids"
         )
-    node_ids = sorted(radical.nodes)
+
+    node_ids, relations = _validated_radical_snapshot(radical)
     if set(node_ids) != set(kaku_candidate_ids):
         raise GremlinPNVAuthoringError(
             "RADICAL must bind exactly one candidate KAKU for every graph node"
         )
     refs = {
-        node_id: _nonempty_text(
+        node_id: _typed_dependency_ref(
             kaku_candidate_ids[node_id],
+            "KAKU",
             "KAKU candidate id",
         )
         for node_id in node_ids
@@ -204,15 +279,7 @@ def build_radical_candidate(
                 "target_id": edge.target_id,
                 "relation_type": edge.relation_type,
             }
-            for edge in sorted(
-                radical.edges,
-                key=lambda e: (
-                    e.relation_id,
-                    e.source_id,
-                    e.target_id,
-                    e.relation_type,
-                ),
-            )
+            for edge in relations
         ],
     }
     return _candidate_envelope(
@@ -245,14 +312,13 @@ def build_operator_candidate(
         raise GremlinPNVAuthoringError("operator opcode must be a string")
     opcode = opcode.upper()
     if opcode not in SUPPORTED_OPCODES:
-        raise GremlinPNVAuthoringError(
-            f"unsupported native PNV opcode: {opcode}"
-        )
+        raise GremlinPNVAuthoringError(f"unsupported native PNV opcode: {opcode}")
     if isinstance(args, (str, bytes, bytearray)):
-        raise GremlinPNVAuthoringError(
-            "operator args must be a sequence of strings"
-        )
-    canonical_args = tuple(args)
+        raise GremlinPNVAuthoringError("operator args must be a sequence of strings")
+    try:
+        canonical_args = tuple(args)
+    except TypeError as exc:
+        raise GremlinPNVAuthoringError("operator args must be a sequence of strings") from exc
     if (
         not canonical_args
         or any(
@@ -268,16 +334,11 @@ def build_operator_candidate(
         )
     dependencies: list[str] = []
     if radical_candidate_id is not None:
-        if (
-            not isinstance(radical_candidate_id, str)
-            or not radical_candidate_id.startswith(
-                "pncs:gremlin-radical:sha256:"
-            )
-        ):
-            raise GremlinPNVAuthoringError(
-                "radical_candidate_id must reference a GREMLIN RADICAL candidate"
-            )
-        _digest_from_candidate_id(radical_candidate_id)
+        radical_candidate_id = _typed_dependency_ref(
+            radical_candidate_id,
+            "RADICAL",
+            "radical_candidate_id",
+        )
         dependencies.append(radical_candidate_id)
     content = {
         "name": name,
@@ -305,9 +366,7 @@ def render_operator_program(
 ) -> str:
     rows = list(operator_candidates)
     if not rows:
-        raise GremlinPNVAuthoringError(
-            "at least one OPERATOR candidate is required"
-        )
+        raise GremlinPNVAuthoringError("at least one OPERATOR candidate is required")
     if not isinstance(mode, str):
         raise GremlinPNVAuthoringError("mode must be a string")
     lines = ["PNV 1", "EPISTEMIC CHYBA", f"MODE {mode}"]
@@ -329,9 +388,7 @@ def render_operator_program(
             )
         content = candidate.get("content")
         if not isinstance(content, Mapping):
-            raise GremlinPNVAuthoringError(
-                "operator candidate content is invalid"
-            )
+            raise GremlinPNVAuthoringError("operator candidate content is invalid")
         name = content.get("name")
         opcode = content.get("opcode")
         args = content.get("args")
@@ -340,13 +397,8 @@ def render_operator_program(
                 "operator candidate name/opcode must be strings"
             )
         if name in names:
-            raise GremlinPNVAuthoringError(
-                f"duplicate operator name: {name}"
-            )
-        if (
-            not isinstance(args, list)
-            or any(not isinstance(x, str) for x in args)
-        ):
+            raise GremlinPNVAuthoringError(f"duplicate operator name: {name}")
+        if not isinstance(args, list) or any(not isinstance(x, str) for x in args):
             raise GremlinPNVAuthoringError(
                 "operator candidate args must be a list of strings"
             )
@@ -354,11 +406,7 @@ def render_operator_program(
         lines.append(
             "OP "
             + " ".join(
-                [
-                    shlex.quote(name),
-                    shlex.quote(opcode),
-                    *(shlex.quote(x) for x in args),
-                ]
+                [shlex.quote(name), shlex.quote(opcode), *(shlex.quote(x) for x in args)]
             )
         )
     for name in assertions:
@@ -399,9 +447,7 @@ def persist_candidate(
         candidate.get("runtime_execution_authority") is not False
         or candidate.get("canon_write_authority") is not False
     ):
-        raise GremlinPNVAuthoringError(
-            "candidate authority boundary is invalid"
-        )
+        raise GremlinPNVAuthoringError("candidate authority boundary is invalid")
     kind_raw = candidate.get("kind")
     if not isinstance(kind_raw, str):
         raise GremlinPNVAuthoringError("candidate kind is invalid")
@@ -413,7 +459,7 @@ def persist_candidate(
         raise GremlinPNVAuthoringError("candidate_id must be a string")
     expected_id = _typed_candidate_id(
         kind,
-        {k: candidate[k] for k in candidate if k != "candidate_id"},
+        {key: candidate[key] for key in candidate if key != "candidate_id"},
     )
     if candidate_id != expected_id:
         raise GremlinPNVAuthoringError("candidate content hash mismatch")
@@ -436,9 +482,7 @@ def persist_candidate(
                 f"cannot verify existing candidate object: {target}"
             ) from exc
         if existing != raw:
-            raise GremlinPNVAuthoringError(
-                "content-addressed candidate path collision"
-            )
+            raise GremlinPNVAuthoringError("content-addressed candidate path collision")
     receipt_body = {
         "schema": RECEIPT_SCHEMA,
         "authoring_contract": AUTHORING_SCHEMA,
@@ -457,19 +501,10 @@ def persist_candidate(
 def _read_required_json(path: Path) -> dict[str, Any]:
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
-    except (
-        FileNotFoundError,
-        OSError,
-        UnicodeError,
-        json.JSONDecodeError,
-    ) as exc:
-        raise GremlinPNVAuthoringError(
-            f"invalid required live JSON: {path}"
-        ) from exc
+    except (FileNotFoundError, OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise GremlinPNVAuthoringError(f"invalid required live JSON: {path}") from exc
     if not isinstance(value, dict):
-        raise GremlinPNVAuthoringError(
-            f"required live JSON is not an object: {path}"
-        )
+        raise GremlinPNVAuthoringError(f"required live JSON is not an object: {path}")
     return value
 
 
@@ -495,10 +530,7 @@ class GremlinPNVAuthoringSession:
             authority=self.authority,
             evidence_refs=evidence_refs,
         )
-        return candidate, persist_candidate(
-            candidate,
-            authoring_root=self.authoring_root,
-        )
+        return candidate, persist_candidate(candidate, authoring_root=self.authoring_root)
 
     def write_radical(
         self,
@@ -521,10 +553,7 @@ class GremlinPNVAuthoringSession:
             authority=self.authority,
             evidence_refs=evidence_refs,
         )
-        return candidate, persist_candidate(
-            candidate,
-            authoring_root=self.authoring_root,
-        )
+        return candidate, persist_candidate(candidate, authoring_root=self.authoring_root)
 
     def write_operator(
         self,
@@ -545,10 +574,7 @@ class GremlinPNVAuthoringSession:
             radical_candidate_id=radical_candidate_id,
             evidence_refs=evidence_refs,
         )
-        return candidate, persist_candidate(
-            candidate,
-            authoring_root=self.authoring_root,
-        )
+        return candidate, persist_candidate(candidate, authoring_root=self.authoring_root)
 
 
 def open_gremlin_pnv_authoring_live(
@@ -576,14 +602,8 @@ def open_gremlin_pnv_authoring_live(
         witness.get("generation_binding"),
         "generation_binding",
     )
-    identity = _nonempty_text(
-        current_memory.get("identity"),
-        "identity",
-    )
-    authority = _nonempty_text(
-        current_memory.get("authority"),
-        "authority",
-    )
+    identity = _nonempty_text(current_memory.get("identity"), "identity")
+    authority = _nonempty_text(current_memory.get("authority"), "authority")
     authoring_root = root / DEFAULT_AUTHORING_RELATIVE_ROOT
     authoring_root.mkdir(parents=True, exist_ok=True)
     return GremlinPNVAuthoringSession(

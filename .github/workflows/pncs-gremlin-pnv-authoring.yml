@@ -49,6 +49,7 @@ on:
       - 'tests/test_gremlin_relational_compiler_integrity_v01.py'
       - 'tests/test_gremlin_relational_admission_v01.py'
       - 'tests/test_gremlin_relation_mining_adapter_v01.py'
+      - 'tests/test_gremlin_relation_mining_admission_v01.py'
       - 'tests/test_gremlin_kaku_resolver_v01.py'
       - 'tests/test_gremlin_kaku_resolver_pipeline_v01.py'
       - 'tests/test_fpdg_gremlin_pain_ingress_v01.py'
@@ -123,6 +124,7 @@ jobs:
           tests/test_gremlin_relational_compiler_integrity_v01.py
           tests/test_gremlin_relational_admission_v01.py
           tests/test_gremlin_relation_mining_adapter_v01.py
+          tests/test_gremlin_relation_mining_admission_v01.py
           tests/test_gremlin_kaku_resolver_v01.py
           tests/test_gremlin_kaku_resolver_pipeline_v01.py
           tests/test_fpdg_gremlin_pain_ingress_v01.py

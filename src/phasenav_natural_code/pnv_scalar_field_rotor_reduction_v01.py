@@ -12,6 +12,15 @@ from .gremlin_pnv_holonomy_v01 import (
     information_transport_connection,
 )
 from .model import Kaku
+from .pnv_holonomy_numeric_v01 import (
+    checked_abs_difference_ratio,
+    checked_difference,
+    checked_product,
+    checked_ratio,
+    checked_sum,
+    finite_float,
+    finite_tree,
+)
 
 SCALAR_FIELD_ROTOR_CONTRACT = "PNCS_PNV_SCALAR_FIELD_ROTOR_INERTIA_REDUCTION_V0_1"
 SCALAR_FIELD_ROTOR_LOOP_ID = "SOURCE.PHASE_NOETHER.ROTOR_INERTIA.REDUCTION.ROUNDTRIP"
@@ -22,13 +31,7 @@ class PNVScalarFieldRotorReductionError(PNVInformationHolonomyError):
 
 
 def _finite(value: Any, field: str) -> float:
-    try:
-        out = float(value)
-    except (TypeError, ValueError) as exc:
-        raise PNVScalarFieldRotorReductionError(f"{field} must be finite") from exc
-    if not math.isfinite(out):
-        raise PNVScalarFieldRotorReductionError(f"{field} must be finite")
-    return out
+    return finite_float(value, field, PNVScalarFieldRotorReductionError)
 
 
 def _positive(value: Any, field: str) -> float:
@@ -62,6 +65,26 @@ def _law_node(law_id: str, domain: str, kaku: Kaku, refs: Sequence[str]) -> LawF
     if not isinstance(kaku, Kaku):
         raise PNVScalarFieldRotorReductionError("scalar-field/rotor law gate requires Kaku")
     return LawFrameNode(law_id, domain, kaku, _refs(refs))
+
+
+def _field_coefficient(amplitudes: Sequence[float], volumes: Sequence[float]) -> float:
+    terms = []
+    for index, (amplitude, volume) in enumerate(zip(amplitudes, volumes)):
+        a_sq = checked_product(
+            amplitude,
+            amplitude,
+            field=f"field_coefficient.amplitude_squared[{index}]",
+            error_type=PNVScalarFieldRotorReductionError,
+        )
+        terms.append(
+            checked_product(
+                a_sq,
+                volume,
+                field=f"field_coefficient.term[{index}]",
+                error_type=PNVScalarFieldRotorReductionError,
+            )
+        )
+    return checked_sum(terms, "field_coefficient", PNVScalarFieldRotorReductionError)
 
 
 def make_scalar_field_rotor_state(
@@ -101,7 +124,13 @@ def make_scalar_field_rotor_state(
     rate = _positive(d_tau_chi, "D_tau_chi")
     rotor_inertia = _positive(i_phi, "I_phi")
     intention = _finite(j_i, "J_I")
-    i_a = 2.0 * sum((a * a) * v for a, v in zip(amps, vols))
+    coefficient = _field_coefficient(amps, vols)
+    i_a = checked_product(
+        2.0,
+        coefficient,
+        field="I_A",
+        error_type=PNVScalarFieldRotorReductionError,
+    )
     if i_a <= 0.0:
         raise PNVScalarFieldRotorReductionError("field inertia I_A must be strictly positive")
 
@@ -153,67 +182,189 @@ def _derived(state: Mapping[str, Any]) -> dict[str, Any]:
     if raw["field_cell_ids"] != raw["rotor_cell_ids"]:
         raise PNVScalarFieldRotorReductionError("field and rotor collective supports differ")
 
-    amps = tuple(float(value) for value in raw["amplitudes"])
-    vols = tuple(float(value) for value in raw["volumes"])
-    rate = float(raw["D_tau_chi"])
-    i_phi = float(raw["I_phi"])
-    j_i = float(raw["J_I"])
+    amps = tuple(_finite(value, "field amplitude") for value in raw["amplitudes"])
+    vols = tuple(_positive(value, "field volume") for value in raw["volumes"])
+    rate = _positive(raw["D_tau_chi"], "D_tau_chi")
+    i_phi = _positive(raw["I_phi"], "I_phi")
+    j_i = _finite(raw["J_I"], "J_I")
 
-    field_coefficient = sum((a * a) * v for a, v in zip(amps, vols))
-    i_a = 2.0 * field_coefficient
-    rotor_coefficient = i_phi / 2.0
-    q_theta = i_a * rate
-    p_phi = i_phi * rate
-    h_phi = (p_phi * p_phi) / (2.0 * i_phi)
-    epsilon_n = h_phi / q_theta
-    half_rate = rate / 2.0
+    field_coefficient = _field_coefficient(amps, vols)
+    i_a = checked_product(
+        2.0,
+        field_coefficient,
+        field="I_A",
+        error_type=PNVScalarFieldRotorReductionError,
+    )
+    rotor_coefficient = checked_ratio(
+        i_phi,
+        2.0,
+        "rotor_phase_coefficient",
+        PNVScalarFieldRotorReductionError,
+    )
+    q_theta = checked_product(
+        i_a,
+        rate,
+        field="Q_theta",
+        error_type=PNVScalarFieldRotorReductionError,
+    )
+    p_phi = checked_product(
+        i_phi,
+        rate,
+        field="P_Phi",
+        error_type=PNVScalarFieldRotorReductionError,
+    )
+    p_phi_sq = checked_product(
+        p_phi,
+        p_phi,
+        field="P_Phi_squared",
+        error_type=PNVScalarFieldRotorReductionError,
+    )
+    h_phi = checked_ratio(
+        p_phi_sq,
+        checked_product(
+            2.0,
+            i_phi,
+            field="2I_phi",
+            error_type=PNVScalarFieldRotorReductionError,
+        ),
+        "H_Phi",
+        PNVScalarFieldRotorReductionError,
+    )
+    epsilon_n = checked_ratio(
+        h_phi,
+        q_theta,
+        "epsilon_N",
+        PNVScalarFieldRotorReductionError,
+    )
+    half_rate = checked_ratio(
+        rate,
+        2.0,
+        "half_phase_rate",
+        PNVScalarFieldRotorReductionError,
+    )
 
-    delta_i = abs(i_phi - i_a) / i_a
-    delta_coefficient = abs(rotor_coefficient - field_coefficient) / field_coefficient
-    delta_q = abs(p_phi - q_theta) / q_theta
-    delta_epsilon = abs(epsilon_n - half_rate) / half_rate
+    delta_i = checked_abs_difference_ratio(
+        i_phi,
+        i_a,
+        i_a,
+        "Delta_I_reduction",
+        PNVScalarFieldRotorReductionError,
+    )
+    delta_coefficient = checked_abs_difference_ratio(
+        rotor_coefficient,
+        field_coefficient,
+        field_coefficient,
+        "Delta_coefficient",
+        PNVScalarFieldRotorReductionError,
+    )
+    delta_q = checked_abs_difference_ratio(
+        p_phi,
+        q_theta,
+        q_theta,
+        "Delta_Q_reduction",
+        PNVScalarFieldRotorReductionError,
+    )
+    delta_epsilon = checked_abs_difference_ratio(
+        epsilon_n,
+        half_rate,
+        half_rate,
+        "Delta_epsilon_reduction",
+        PNVScalarFieldRotorReductionError,
+    )
 
     identity_residual = max(
-        abs(delta_i - delta_coefficient),
-        abs(delta_i - delta_q),
-        abs(delta_i - delta_epsilon),
+        abs(
+            checked_difference(
+                delta_i,
+                delta_coefficient,
+                "Delta_identity_residual.I_coeff",
+                PNVScalarFieldRotorReductionError,
+            )
+        ),
+        abs(
+            checked_difference(
+                delta_i,
+                delta_q,
+                "Delta_identity_residual.I_Q",
+                PNVScalarFieldRotorReductionError,
+            )
+        ),
+        abs(
+            checked_difference(
+                delta_i,
+                delta_epsilon,
+                "Delta_identity_residual.I_epsilon",
+                PNVScalarFieldRotorReductionError,
+            )
+        ),
     )
+    identity_residual = _finite(identity_residual, "Delta_identity_residual")
     if identity_residual > 1e-12:
         raise PNVScalarFieldRotorReductionError("scalar-field/rotor defect identity violated")
 
-    field_phase_lagrangian = field_coefficient * rate * rate
-    rotor_phase_kinetic = rotor_coefficient * rate * rate
-    rotor_phase_with_intention = rotor_phase_kinetic + j_i * rate
+    rate_sq = checked_product(
+        rate,
+        rate,
+        field="phase_rate_squared",
+        error_type=PNVScalarFieldRotorReductionError,
+    )
+    field_phase_lagrangian = checked_product(
+        field_coefficient,
+        rate_sq,
+        field="field_phase_lagrangian",
+        error_type=PNVScalarFieldRotorReductionError,
+    )
+    rotor_phase_kinetic = checked_product(
+        rotor_coefficient,
+        rate_sq,
+        field="rotor_phase_kinetic",
+        error_type=PNVScalarFieldRotorReductionError,
+    )
+    intention_term = checked_product(
+        j_i,
+        rate,
+        field="intention_phase_term",
+        error_type=PNVScalarFieldRotorReductionError,
+    )
+    rotor_phase_with_intention = checked_sum(
+        (rotor_phase_kinetic, intention_term),
+        "rotor_phase_with_intention",
+        PNVScalarFieldRotorReductionError,
+    )
 
-    return {
-        "I_A": i_a,
-        "I_phi": i_phi,
-        "field_phase_coefficient": field_coefficient,
-        "rotor_phase_coefficient": rotor_coefficient,
-        "Q_theta": q_theta,
-        "P_Phi": p_phi,
-        "H_Phi": h_phi,
-        "epsilon_N": epsilon_n,
-        "half_phase_rate": half_rate,
-        "Delta_I_reduction": delta_i,
-        "Delta_coefficient": delta_coefficient,
-        "Delta_Q_reduction": delta_q,
-        "Delta_epsilon_reduction": delta_epsilon,
-        "Delta_identity_residual": identity_residual,
-        "field_phase_lagrangian": field_phase_lagrangian,
-        "rotor_phase_kinetic": rotor_phase_kinetic,
-        "rotor_phase_with_intention": rotor_phase_with_intention,
-    }
+    return finite_tree(
+        {
+            "I_A": i_a,
+            "I_phi": i_phi,
+            "field_phase_coefficient": field_coefficient,
+            "rotor_phase_coefficient": rotor_coefficient,
+            "Q_theta": q_theta,
+            "P_Phi": p_phi,
+            "H_Phi": h_phi,
+            "epsilon_N": epsilon_n,
+            "half_phase_rate": half_rate,
+            "Delta_I_reduction": delta_i,
+            "Delta_coefficient": delta_coefficient,
+            "Delta_Q_reduction": delta_q,
+            "Delta_epsilon_reduction": delta_epsilon,
+            "Delta_identity_residual": identity_residual,
+            "field_phase_lagrangian": field_phase_lagrangian,
+            "rotor_phase_kinetic": rotor_phase_kinetic,
+            "rotor_phase_with_intention": rotor_phase_with_intention,
+        },
+        "scalar_field_rotor_derived",
+        PNVScalarFieldRotorReductionError,
+    )
 
 
 def scalar_field_rotor_reduction_defects(state: Mapping[str, Any]) -> dict[str, float]:
     values = _derived(state)
     return {
-        "Delta_I_reduction": float(values["Delta_I_reduction"]),
-        "Delta_coefficient": float(values["Delta_coefficient"]),
-        "Delta_Q_reduction": float(values["Delta_Q_reduction"]),
-        "Delta_epsilon_reduction": float(values["Delta_epsilon_reduction"]),
-        "Delta_identity_residual": float(values["Delta_identity_residual"]),
+        "Delta_I_reduction": _finite(values["Delta_I_reduction"], "Delta_I_reduction"),
+        "Delta_coefficient": _finite(values["Delta_coefficient"], "Delta_coefficient"),
+        "Delta_Q_reduction": _finite(values["Delta_Q_reduction"], "Delta_Q_reduction"),
+        "Delta_epsilon_reduction": _finite(values["Delta_epsilon_reduction"], "Delta_epsilon_reduction"),
+        "Delta_identity_residual": _finite(values["Delta_identity_residual"], "Delta_identity_residual"),
     }
 
 
@@ -257,7 +408,7 @@ def scalar_field_rotor_reduction_transforms(*, reduction_tolerance: float = 0.0)
             "rotor_phase_with_intention",
         ):
             observed = _finite(state.get(key), key)
-            expected = float(values[key])
+            expected = _finite(values[key], key)
             if not math.isclose(observed, expected, rel_tol=1e-12, abs_tol=1e-15):
                 raise PNVScalarFieldRotorReductionError(f"{key} changed before reverse reduction audit")
         if values["Delta_I_reduction"] > tolerance:
@@ -290,7 +441,7 @@ def _value(name: str):
     def evaluate(state: Mapping[str, Any]) -> float:
         if name in state:
             return _finite(state[name], name)
-        return float(_derived(state)[name])
+        return _finite(_derived(state)[name], name)
     return evaluate
 
 

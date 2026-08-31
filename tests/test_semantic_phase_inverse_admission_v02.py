@@ -42,6 +42,16 @@ class _ExecutableQuantizer:
         return "O5"
 
 
+class _MutableFloat(float):
+    def __new__(cls, value):
+        obj = super().__new__(cls, value)
+        obj.current = value
+        return obj
+
+    def __float__(self):
+        return self.current
+
+
 def _placement(**overrides):
     kwargs = dict(
         content_id="SEM.ADMISSION",
@@ -100,6 +110,19 @@ def test_quantizer_type_is_admitted_before_any_quantizer_execution():
     with pytest.raises(SemanticPhaseInverseError, match="quantizer must be OrbitQuantizerProfile"):
         _placement(quantizer=quantizer)
     assert quantizer.called is False
+
+
+def test_carrier_coordinates_are_frozen_before_receipt_hashing():
+    mutable_B = _MutableFloat(2.0)
+    placement = _placement(B=mutable_B)
+    before = placement.deterministic_receipt()
+
+    mutable_B.current = 9.0
+    after = placement.deterministic_receipt()
+
+    assert type(placement.B) is float
+    assert placement.B == 2.0
+    assert before == after
 
 
 def test_legal_inverse_receipt_remains_deterministic():

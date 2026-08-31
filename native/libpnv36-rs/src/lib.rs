@@ -45,7 +45,12 @@ impl Phi36 {
         let mut out = [0.0; DIM];
         let mut i = 0;
         while i < DIM {
-            let d = (self.x[i] - other.x[i]).rem_euclid(TAU);
+            // Reduce each finite coordinate before subtraction. Directly
+            // subtracting opposite-sign extreme finite f64 values can overflow
+            // to infinity and turn rem_euclid into NaN.
+            let a = self.x[i].rem_euclid(TAU);
+            let b = other.x[i].rem_euclid(TAU);
+            let d = (a - b).rem_euclid(TAU);
             out[i] = if d > PI { TAU - d } else { d };
             i += 1;
         }
@@ -57,7 +62,11 @@ impl Phi36 {
         let mut out = [0.0; DIM];
         let mut i = 0;
         while i < DIM {
-            out[i] = ((other.x[i] - self.x[i]) + 0.5).rem_euclid(1.0) - 0.5;
+            // The same pre-reduction is required for turn coordinates: the
+            // raw difference of two finite values is not guaranteed finite.
+            let a = self.x[i].rem_euclid(1.0);
+            let b = other.x[i].rem_euclid(1.0);
+            out[i] = ((b - a) + 0.5).rem_euclid(1.0) - 0.5;
             i += 1;
         }
         Self::from_finite_unchecked(out)
@@ -271,11 +280,34 @@ mod tests {
     }
 
     #[test]
+    fn wrapped_delta_keeps_extreme_finite_inputs_finite() {
+        let a = Phi36::new([f64::MAX; DIM]).unwrap();
+        let b = Phi36::new([-f64::MAX; DIM]).unwrap();
+        let d = a.wrapped_delta_radians(&b);
+        for value in d.x {
+            assert!(value.is_finite());
+            assert!((0.0..=PI).contains(&value));
+        }
+        assert!(distance_radians_strict(&a, &b).is_finite());
+    }
+
+    #[test]
     fn torus_turn_delta_is_bounded() {
         let a = sample(0.1);
         let b = sample(0.9);
         let d = a.signed_torus_delta_turns(&b);
         for value in d.x {
+            assert!((-0.5..0.5).contains(&value));
+        }
+    }
+
+    #[test]
+    fn torus_turn_delta_keeps_extreme_finite_inputs_finite() {
+        let a = Phi36::new([f64::MAX; DIM]).unwrap();
+        let b = Phi36::new([-f64::MAX; DIM]).unwrap();
+        let d = a.signed_torus_delta_turns(&b);
+        for value in d.x {
+            assert!(value.is_finite());
             assert!((-0.5..0.5).contains(&value));
         }
     }

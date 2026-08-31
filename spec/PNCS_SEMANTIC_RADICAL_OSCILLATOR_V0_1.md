@@ -68,6 +68,8 @@ normalization = NONE | UNIT_SUM
 
 with exact KAKU coverage. Profile identifiers and normalization modes are exact strings; weights are finite real values with boolean values rejected explicitly.
 
+At admission, the exact KAKU-to-weight mapping is copied into an internal read-only snapshot. The caller-owned source mapping and the admitted profile therefore have independent mutation state, and the profile itself exposes read-only weights for later aggregate and receipt construction.
+
 The reference linear aggregate is
 
 \[
@@ -82,7 +84,7 @@ For `UNIT_SUM`, the profile additionally requires
 \sum_a w_a=1.
 \]
 
-Every weighted product and the final sum must remain finite before receipt construction. Changing the profile id, a weight, or normalization changes the deterministic receipt.
+Every weighted product and the final sum must remain finite before receipt construction. Changing the admitted profile id, weight snapshot, or normalization changes the deterministic receipt.
 
 ## 5. GREMLIN / OPERATORS boundary
 
@@ -112,7 +114,8 @@ The reference gate checks:
 10. `UNIT_SUM` normalization;
 11. finite aggregate result;
 12. deterministic receipt hashing and profile sensitivity;
-13. candidate-only authority fields.
+13. read-only aggregation-weight snapshot stability after admission;
+14. candidate-only authority fields.
 
 Reference implementation: `src/phasenav_natural_code/semantic_radical_oscillator_v01.py`.
 Reference tests: `tests/test_semantic_radical_oscillator_v01.py` and `tests/test_semantic_actuation_radical_admission_v01.py`.

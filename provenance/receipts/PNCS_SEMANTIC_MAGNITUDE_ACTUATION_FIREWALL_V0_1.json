@@ -1,0 +1,38 @@
+{
+  "schema": "PNCS_VALIDATION_RECEIPT_V0_1",
+  "gate": "PNCS_SEMANTIC_MAGNITUDE_ACTUATION_FIREWALL_V0_1",
+  "status": "REFERENCE_CANDIDATE_SELF_HOSTED_CI_PENDING",
+  "formula_factorization": [
+    "Q_BNA=B*N/A_R",
+    "S=Q_BNA*omega*(phi+kappa)"
+  ],
+  "parents": [
+    "PNCS Semantic Orbital Carrier v0.1",
+    "PNCS Semantic Orbital -> HTRI Bridge v0.1",
+    "PNCS v0.32 controlled HTRI/QHTRI reference",
+    "PNCS v0.33 bounded HTRI control exposes independently typed u_max"
+  ],
+  "exact_firewall": [
+    "magnitude-only comparison fixes content_id/kaku_id/phi/omega/lane profile/source DriveSnapshot",
+    "B/N/A_R may vary",
+    "Q_BNA and semantic_value may vary",
+    "orbital-band receipt may vary through the explicit semantic quantizer",
+    "target36/derived omega/derived phi/g/flavor/tau/gravity remain numerically identical",
+    "controlled phi_next/g_next/gravity_next/control/H remain numerically identical",
+    "current bridge therefore has no implicit B/N/A_R -> HTRI actuation channel"
+  ],
+  "open_gate": "SEMANTIC_MAGNITUDE_TO_HTRI_ACTUATION",
+  "open_gate_status": "OPEN_SOURCE_BINDING",
+  "authority": {
+    "epistemic_state": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false
+  },
+  "reference_implementation": "src/phasenav_natural_code/semantic_magnitude_actuation_firewall_v01.py",
+  "reference_tests": "tests/test_semantic_magnitude_actuation_firewall_v01.py",
+  "self_hosted_ci": {
+    "workflow": "PNCS Semantic Orbital Carrier v0.1",
+    "status": "PENDING_RUNNER_ASSIGNMENT"
+  }
+}

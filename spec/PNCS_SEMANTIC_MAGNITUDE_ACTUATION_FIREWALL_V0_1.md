@@ -1,6 +1,6 @@
 # PNCS Semantic Magnitude -> HTRI Actuation Firewall v0.1
 
-Status: `CANDIDATE / EXACT_NON_ACTUATION_FIREWALL / SOURCE_BINDING_OPEN`
+Status: `CANDIDATE / EXACT_MAGNITUDE_INVARIANCE_FIREWALL / SOURCE_BINDING_OPEN`
 
 ## 1. Algebraic source factor
 
@@ -18,7 +18,7 @@ Q_{BNA}(t):=\frac{B(t)N(t)}{A_R(t)},
 }
 \]
 
-`Q_BNA` is an algebraic coordinate of the user formula. v0.1 preserves the source symbols `B`, `N`, and `A_R` and assigns no additional physical normalization to this coordinate.
+`Q_BNA` is an algebraic coordinate of the user formula. v0.1 preserves the source symbols `B`, `N`, and `A_R` and carries the computed coordinate as finite receipt provenance.
 
 ## 2. Current HTRI boundary
 
@@ -28,7 +28,7 @@ The Semantic Orbital -> HTRI Bridge v0.1 binds semantic `phi` and, under an expl
 
 The v0.33 bounded HTRI reference additionally exposes a positive control bound `u_max` and saturation diagnostics. `u_max` is an independently typed control limit.
 
-## 3. Exact non-actuation theorem for v0.1
+## 3. Exact magnitude-invariance theorem for v0.1
 
 Consider two semantic bindings `X` and `Y` with the same:
 
@@ -58,13 +58,21 @@ control vector
 QHTRI Hamiltonian H
 ```
 
-because those arrays depend on the semantic binding only through the explicitly admitted `phi` and `omega` lane channels.
+because these arrays are determined by the explicitly admitted `phi` and `omega` lane channels together with the shared HTRI state/profile.
 
 The semantic receipts remain distinct because `Q_BNA`, `semantic_value`, quantized orbital band, and semantic binding commitment may differ.
 
-This is a deliberate firewall separating semantic magnitude coordinates from physical HTRI actuation.
+This firewall preserves a separate provenance coordinate for semantic magnitude and a separately typed HTRI actuation surface.
 
-## 4. Open source-binding gate
+## 4. Admission boundary
+
+The audit accepts an exact `DriveSnapshot` and two exact `SemanticOrbitalBinding` objects satisfying the magnitude-only comparison identity conditions.
+
+The caller-supplied `dt` is admitted as a positive finite `numbers.Real` value with boolean values rejected explicitly. Lane and profile admission is delegated to the strict `SemanticHTRILaneProfile` contract.
+
+`Q_BNA` is required to remain finite after evaluating `B*N/A_R`. A finite input tuple whose derived product overflows therefore fails before the audit receipt is hashed.
+
+## 5. Open source-binding gate
 
 A future actuation law may bind a source-derived function of
 
@@ -80,17 +88,18 @@ The current gate records this frontier as:
 SEMANTIC_MAGNITUDE_TO_HTRI_ACTUATION = OPEN_SOURCE_BINDING
 ```
 
-## 5. Validation
+## 6. Validation
 
 The reference audit:
 
-1. computes `Q_BNA=B*N/A_R`;
+1. computes finite `Q_BNA=B*N/A_R`;
 2. requires equal KAKU/content identity, `phi`, and `omega` for a magnitude-only comparison;
-3. executes both bindings through the same HTRI bridge profile and source snapshot;
-4. checks exact equality of all numeric HTRI/QHTRI output arrays listed above;
-5. confirms semantic values may differ;
-6. confirms deterministic semantic/bridge receipt provenance remains distinct;
-7. retains `CHYBA / CANDIDATE_ONLY` authority.
+3. admits `dt` through an exact positive-real boundary;
+4. executes both bindings through the same HTRI bridge profile and source snapshot;
+5. checks exact equality of all numeric HTRI/QHTRI output arrays listed above;
+6. confirms semantic values may differ;
+7. confirms deterministic semantic/bridge receipt provenance remains distinct;
+8. retains `CHYBA / CANDIDATE_ONLY` authority.
 
 Reference implementation: `src/phasenav_natural_code/semantic_magnitude_actuation_firewall_v01.py`.
-Reference tests: `tests/test_semantic_magnitude_actuation_firewall_v01.py`.
+Reference tests: `tests/test_semantic_magnitude_actuation_firewall_v01.py` and `tests/test_semantic_actuation_radical_admission_v01.py`.

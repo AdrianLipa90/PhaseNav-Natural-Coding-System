@@ -22,7 +22,10 @@ class SemanticOrbitalCarrierError(ValueError):
 
 
 def _finite(name: str, value: float) -> float:
-    value = float(value)
+    try:
+        value = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SemanticOrbitalCarrierError(f"{name} must be finite") from exc
     if not math.isfinite(value):
         raise SemanticOrbitalCarrierError(f"{name} must be finite")
     return value
@@ -42,13 +45,13 @@ def carrier_prefactor(B: float, omega: float, N: float, A_R: float) -> float:
     A_R = _finite("A_R", A_R)
     if A_R == 0.0:
         raise SemanticOrbitalCarrierError("A_R must be nonzero")
-    return (B * omega * N) / A_R
+    return _finite("carrier_prefactor", (B * omega * N) / A_R)
 
 
 def shifted_phase(phi: float, kappa: float = KAPPA) -> float:
     phi = _finite("phi", phi)
     kappa = _finite("kappa", kappa)
-    return phi + kappa
+    return _finite("phase_plus_kappa", phi + kappa)
 
 
 def semantic_value(
@@ -60,7 +63,8 @@ def semantic_value(
     *,
     kappa: float = KAPPA,
 ) -> float:
-    return carrier_prefactor(B, omega, N, A_R) * shifted_phase(phi, kappa)
+    value = carrier_prefactor(B, omega, N, A_R) * shifted_phase(phi, kappa)
+    return _finite("semantic_value", value)
 
 
 @dataclass(frozen=True)

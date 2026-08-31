@@ -23,6 +23,14 @@ from phasenav_natural_code.semantic_orbital_htri_bridge_v01 import (
 )
 
 
+class _StringLike:
+    def __init__(self, value: str):
+        self.value = value
+
+    def __str__(self) -> str:
+        return self.value
+
+
 def _snapshot() -> DriveSnapshot:
     phi = np.linspace(0.07, 5.91, 36, dtype=np.float64)
     omega = 39.6 + np.linspace(-0.12, 0.12, 36, dtype=np.float64)
@@ -94,6 +102,32 @@ def test_explicit_lane_profile_rejects_collisions_and_invalid_lanes():
         SemanticHTRILaneProfile("LANE.BAD", {"K.A": 1.5})
 
 
+def test_lane_profile_requires_exact_string_identity_and_mode_admission():
+    with pytest.raises(SemanticOrbitalHTRIBridgeError, match="lane_profile_id"):
+        SemanticHTRILaneProfile(_StringLike("LANE.TEST"), {"K.A": 3})  # type: ignore[arg-type]
+    with pytest.raises(SemanticOrbitalHTRIBridgeError, match="kaku_id"):
+        SemanticHTRILaneProfile("LANE.TEST", {_StringLike("K.A"): 3})  # type: ignore[dict-item]
+    with pytest.raises(SemanticOrbitalHTRIBridgeError, match="frequency_binding"):
+        SemanticHTRILaneProfile(
+            "LANE.TEST",
+            {"K.A": 3},
+            _StringLike(ASSIGN_SAMPLE_OMEGA),  # type: ignore[arg-type]
+        )
+
+
+def test_lane_profile_rejects_normalized_kaku_identity_collision():
+    with pytest.raises(SemanticOrbitalHTRIBridgeError, match="duplicate normalized KAKU id"):
+        SemanticHTRILaneProfile(
+            "LANE.COLLISION",
+            {" K.A ": 3, "K.A": 27},
+        )
+
+
+def test_lane_profile_requires_mapping_container():
+    with pytest.raises(SemanticOrbitalHTRIBridgeError, match="kaku_to_lane must be a mapping"):
+        SemanticHTRILaneProfile("LANE.BAD", [("K.A", 3)])  # type: ignore[arg-type]
+
+
 def test_lane_profile_requires_exact_semantic_binding_coverage():
     snapshot = _snapshot()
     bindings = _bindings()
@@ -106,6 +140,8 @@ def test_lane_profile_requires_exact_semantic_binding_coverage():
             {**bindings, "K.EXTRA": bindings["K.A"]},
             profile,
         )
+    with pytest.raises(SemanticOrbitalHTRIBridgeError, match="bindings must be a mapping"):
+        build_semantic_htri_target(snapshot, list(bindings), profile)  # type: ignore[arg-type]
 
 
 def test_assigned_phase_targets_are_wrapped_and_unassigned_lanes_are_exactly_preserved():
@@ -215,10 +251,11 @@ def test_receipt_is_deterministic_and_lane_or_frequency_profile_changes_identity
 def test_invalid_frequency_mode_and_dt_fail_closed():
     with pytest.raises(SemanticOrbitalHTRIBridgeError):
         SemanticHTRILaneProfile("LANE.BAD", {"K.A": 0}, "MAGIC")
-    with pytest.raises(SemanticOrbitalHTRIBridgeError):
-        execute_semantic_orbital_htri_bridge(
-            _snapshot(),
-            _bindings(),
-            _profile(),
-            dt=0.0,
-        )
+    for bad_dt in (0.0, True, "0.01", object()):
+        with pytest.raises(SemanticOrbitalHTRIBridgeError, match="dt must be positive finite real"):
+            execute_semantic_orbital_htri_bridge(
+                _snapshot(),
+                _bindings(),
+                _profile(),
+                dt=bad_dt,  # type: ignore[arg-type]
+            )

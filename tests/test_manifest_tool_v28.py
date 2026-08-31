@@ -75,8 +75,23 @@ def test_verify_detects_tracked_file_tamper(tmp_path):
     manifest = m.build_manifest(root)
     m.verify_manifest(root, manifest)
     (root / "src" / "a.txt").write_text("tampered\n", "utf-8")
-    with pytest.raises(m.ManifestError, match="manifest mismatch"):
+    with pytest.raises(m.ManifestError, match="tracked working tree differs from HEAD"):
         m.verify_manifest(root, manifest)
+
+
+def test_generation_rejects_dirty_tracked_source_scope(tmp_path):
+    root = _repo(tmp_path)
+    (root / "src" / "a.txt").write_text("dirty but finite\n", "utf-8")
+    with pytest.raises(m.ManifestError, match="tracked working tree differs from HEAD"):
+        m.build_manifest(root)
+
+
+def test_generation_allows_dirty_excluded_release_metadata(tmp_path):
+    root = _repo(tmp_path)
+    receipt = root / "provenance" / "receipts" / "FOUNDATION_STATUS_V0_28.json"
+    receipt.write_text(json.dumps({"status": "PENDING_RELEASE"}) + "\n", "utf-8")
+    manifest = m.build_manifest(root)
+    assert manifest["status"] == "AUTHORITATIVE_FOR_DECLARED_SCOPE"
 
 
 def test_verify_allows_excluded_foundation_receipt_to_change(tmp_path):

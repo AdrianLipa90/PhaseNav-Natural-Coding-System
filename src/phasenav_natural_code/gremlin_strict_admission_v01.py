@@ -2,10 +2,10 @@ from __future__ import annotations
 
 """Shared fail-closed admission primitives for GREMLIN candidate mathematics.
 
-The kernel performs type and numeric-domain admission only. It does not assign
-semantic identity, candidate authority, runtime authority, or canon status.
-Callers may provide their own exception type so domain-specific APIs retain
-their established error contracts.
+The kernel scope is exact type and numeric-domain admission. Semantic identity,
+candidate authority, runtime authority, and canon status remain assigned by
+their existing dedicated layers. Callers may provide their own exception type
+so domain-specific APIs retain their established error contracts.
 """
 
 import math

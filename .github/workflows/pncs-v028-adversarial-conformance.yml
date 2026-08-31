@@ -1,9 +1,6 @@
 name: PNCS v0.28 adversarial conformance
 
 on:
-  push:
-    branches:
-      - feat/pncs-v0.28-release-closure
   pull_request:
     branches:
       - main
@@ -19,6 +16,16 @@ on:
         required: false
         default: false
         type: boolean
+      emit_manifest:
+        description: Emit short-lived v0.28 manifest candidate
+        required: false
+        default: false
+        type: boolean
+      run_rust_strict:
+        description: Run libpnv36 Rust strict build and ABI gate
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -28,7 +35,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  structural-authority:
+  pure-conformance:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,102 +46,7 @@ jobs:
           python-version: '3.12'
       - name: Install pytest
         run: python -m pip install pytest
-      - name: Run semantic and authority adversarial corpus
-        env:
-          PYTHONPATH: src
-        run: >-
-          python -m pytest -q
-          tests/test_adversarial_v28.py
-          tests/test_adversarial_authority_v28.py
-          tests/test_execution_orch_v27.py
-
-  semantic-equivalence:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install pytest
-        run: python -m pip install pytest
-      - name: Run cross-layer semantic equivalence corpus
-        env:
-          PYTHONPATH: src
-        run: python -m pytest -q tests/test_semantic_equivalence_v28.py
-
-  dynamics-pure:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install pytest
-        run: python -m pip install pytest
-      - name: Run pure ORCH hydrodynamic dynamics and v0.27 regression corpus
-        env:
-          PYTHONPATH: src
-        run: >-
-          python -m pytest -q
-          tests/test_adversarial_dynamics_v28.py
-          tests/test_orch_hydro_v27.py
-          tests/test_orch_package_v27.py
-          tests/test_hydro_time_v27.py
-          tests/test_hydro_schedule_v27.py
-
-  concurrency-pure:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install pytest
-        run: python -m pip install pytest
-      - name: Run branch/session collision gate corpus
-        env:
-          PYTHONPATH: src
-        run: python -m pytest -q tests/test_branch_session_collision_v28.py
-
-  repository-integrity:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install pytest
-        run: python -m pip install pytest
-      - name: Test manifest and pure/live repository separation
-        env:
-          PYTHONPATH: src
-        run: >-
-          python -m pytest -q
-          tests/test_manifest_tool_v28.py
-          tests/test_repository_conformance_v28.py
-
-  closure-macos-fallback:
-    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance' }}
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          ref: ${{ github.event.pull_request.head.sha }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install pytest
-        run: python -m pip install pytest
-      - name: Run complete v0.28 pure release gate mirror
+      - name: Run complete v0.28 pure conformance corpus
         env:
           PYTHONPATH: src
         run: >-
@@ -151,6 +63,18 @@ jobs:
           tests/test_branch_session_collision_v28.py
           tests/test_manifest_tool_v28.py
           tests/test_repository_conformance_v28.py
+
+  hosted-manifest-candidate:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.emit_manifest == true }}
+    needs: pure-conformance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Generate authoritative tracked-tree manifest candidate
         run: python scripts/regenerate_manifest.py --root .
       - name: Verify generated manifest candidate
@@ -159,16 +83,17 @@ jobs:
         run: |
           python - <<'PY'
           import hashlib
+          import subprocess
           from pathlib import Path
           raw = Path('MANIFEST.sha256.json').read_bytes()
           Path('MANIFEST.sha256.json.sha256').write_text(hashlib.sha256(raw).hexdigest() + '\n', encoding='utf-8')
+          Path('MANIFEST.source_commit.txt').write_text(subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True), encoding='utf-8')
+          Path('MANIFEST.source_tree.txt').write_text(subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True), encoding='utf-8')
           PY
-          git rev-parse HEAD > MANIFEST.source_commit.txt
-          git rev-parse 'HEAD^{tree}' > MANIFEST.source_tree.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: pncs-v028-macos-closure
-          retention-days: 7
+          name: pncs-v028-manifest-candidate
+          retention-days: 1
           path: |
             MANIFEST.sha256.json
             MANIFEST.sha256.json.sha256
@@ -177,13 +102,12 @@ jobs:
           if-no-files-found: error
 
   pure-self-hosted-mirror:
-    if: ${{ (github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance') || (github.event_name == 'workflow_dispatch' && inputs.run_self_hosted_pure == true) }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_self_hosted_pure == true }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -206,43 +130,18 @@ jobs:
           tests/test_branch_session_collision_v28.py
           tests/test_manifest_tool_v28.py
           tests/test_repository_conformance_v28.py
-
-  manifest-candidate:
-    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance' }}
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          ref: ${{ github.event.pull_request.head.sha }}
-      - name: Generate authoritative tracked-tree manifest candidate
-        run: python3 scripts/regenerate_manifest.py --root .
-      - name: Verify generated manifest candidate
-        run: python3 scripts/regenerate_manifest.py --root . --check
-      - name: Record manifest source identity
+      - name: Verify deterministic manifest generation on self-hosted mirror
         run: |
-          sha256sum MANIFEST.sha256.json > MANIFEST.sha256.json.sha256
-          git rev-parse HEAD > MANIFEST.source_commit.txt
-          git rev-parse 'HEAD^{tree}' > MANIFEST.source_tree.txt
-      - uses: actions/upload-artifact@v4
-        with:
-          name: pncs-v028-manifest-candidate
-          retention-days: 7
-          path: |
-            MANIFEST.sha256.json
-            MANIFEST.sha256.json.sha256
-            MANIFEST.source_commit.txt
-            MANIFEST.source_tree.txt
-          if-no-files-found: error
+          python3 scripts/regenerate_manifest.py --root .
+          python3 scripts/regenerate_manifest.py --root . --check
 
   live-dev-shm:
-    if: ${{ (github.event_name == 'pull_request' && github.head_ref == 'fix/pncs-v028-postmerge-conformance') || (github.event_name == 'workflow_dispatch' && inputs.run_live == true) }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_live == true }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -269,13 +168,12 @@ jobs:
         run: python -m pytest -q tests/live
 
   libpnv36-rust-self-hosted:
-    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'feat/libpnv36-rust-v0.1' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_rust_strict == true }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: Verify pinned Rust toolchain
         working-directory: native/libpnv36-rs
         run: |

@@ -25,6 +25,25 @@ A supplied matrix with 36 total elements represents its own matrix shape and doe
 
 Boolean, string and object-typed arrays are outside the numeric admission domain. Integer and floating-point numeric arrays are converted to the internal `float64` representation after admission.
 
+## Immutable DriveSnapshot state
+
+`DriveSnapshot.build()` copies every admitted numeric state coordinate and stores the canonical array snapshot on immutable byte-backed NumPy views:
+
+```text
+phi
+omega
+g
+flavor
+tau
+gravity
+```
+
+These arrays have read-only NumPy flags backed by immutable storage. Direct item assignment and attempts to re-enable the write flag therefore fail at the snapshot boundary.
+
+The caller-owned source arrays remain independent from the stored snapshot. Mutating those source arrays after construction leaves `snapshot_id` unchanged.
+
+Controlled HTRI/QHTRI steps obtain explicit writable `.copy()` values before evaluating the existing dynamics, preserving the parent computation path while the admitted source identity remains stable.
+
 ## Scalar admission
 
 Public real-valued controls are admitted from finite `numbers.Real` values with boolean values rejected explicitly.
@@ -57,7 +76,7 @@ When `track_target()` receives an existing `U_total`, the supplied propagator is
 
 `DriveSnapshot.source_id`, semantic lane profile identifiers, KAKU lane identities and frequency-binding modes are explicit string provenance fields.
 
-The semantic bridge rejects normalized KAKU-key collisions. Its lane mapping therefore preserves one exact admitted KAKU identity per declared lane assignment.
+The semantic bridge rejects normalized KAKU-key collisions. Its lane mapping preserves one admitted KAKU identity per declared lane assignment and stores the resulting lane map as a read-only profile snapshot.
 
 Canonical receipt hashing admits mappings with string keys. Mapping-key identity is preserved directly in the commitment input.
 
@@ -74,6 +93,10 @@ boolean/string array rejection
 non-vector flavor admission rejection
 non-string canonical mapping-key rejection
 lane-profile normalized-key collision rejection
+lane-profile immutable mapping snapshot
+DriveSnapshot immutable numeric state
+DriveSnapshot source-array independence
+DriveSnapshot snapshot_id stability
 strict frequency-mode admission
 strict bounded scalar/tick admission
 strict prior U_total shape/dtype admission
@@ -85,7 +108,9 @@ Reference tests:
 
 ```text
 tests/test_semantic_htri_drive_v32.py
+tests/test_semantic_htri_snapshot_immutability_v01.py
 tests/test_semantic_htri_bounded_v33.py
 tests/test_semantic_orbital_htri_bridge_v01.py
+tests/test_semantic_htri_lane_profile_immutability_v01.py
 tests/test_semantic_orbital_htri_bounded_v01.py
 ```

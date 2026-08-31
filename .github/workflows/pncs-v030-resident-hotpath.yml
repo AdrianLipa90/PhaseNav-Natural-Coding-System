@@ -1,9 +1,14 @@
 name: PNCS v0.30 resident hotpath
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/pncs-v0.30-resident-hotpath
+      - main
+    paths:
+      - 'src/phasenav_natural_code/runtime_v30_hot.py'
+      - 'tests/test_runtime_v30_hot.py'
+      - 'native/PNCS_RESIDENT_HOT_DISPATCH_V0_30.pnv'
+      - '.github/workflows/pncs-v030-resident-hotpath.yml'
   workflow_dispatch:
 
 permissions:

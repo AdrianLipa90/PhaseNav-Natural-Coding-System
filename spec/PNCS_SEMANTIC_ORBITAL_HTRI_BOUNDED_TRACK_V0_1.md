@@ -18,6 +18,7 @@ u_max > 0
 tolerance_rad > 0
 max_ticks >= 1
 settle_consecutive >= 1
+dt > 0
 ```
 
 v0.1 constructs the same:
@@ -33,7 +34,9 @@ as `PNCS_SEMANTIC_ORBITAL_HTRI_BRIDGE_V0_1` and calls the existing
 semantic_htri_bounded_v33.track_target(...)
 ```
 
-without changing the v0.33 bounded-control law.
+using the parent v0.33 bounded-control law exactly.
+
+`u_max`, `tolerance_rad`, and `dt` enter through positive finite `numbers.Real` admission with boolean values excluded. `max_ticks` and `settle_consecutive` enter through positive integer admission with boolean values excluded. Numeric conversion to the parent float/int representation occurs only after the corresponding exact type gate.
 
 ## 3. Reachability result
 
@@ -58,7 +61,7 @@ The current gate records
 SEMANTIC_MAGNITUDE_TO_HTRI_ACTUATION = OPEN_SOURCE_BINDING
 ```
 
-and does not infer `u_max` from `B`, `N`, `A_R`, `Q_BNA`, semantic value, orbital band or semantic mass.
+and takes the control bound from the explicit admitted `u_max` input. `B`, `N`, `A_R`, `Q_BNA`, semantic value, orbital band and semantic mass remain recorded semantic/source coordinates under their own typed provenance.
 
 ## 5. Exact checks
 
@@ -67,13 +70,14 @@ The reference gate validates:
 1. the same explicit lane profile as the v0.32 bridge;
 2. identical semantic target construction;
 3. identical semantic frequency binding into the derived snapshot;
-4. positive finite `u_max` and tolerance;
-5. positive tick/settling limits with `settle_consecutive <= max_ticks`;
-6. parent v0.33 bounded control never exceeds `u_max`;
-7. PASS and timeout statuses remain distinct;
-8. source snapshot remains unchanged;
-9. semantic provenance and finite-control provenance both enter the deterministic receipt;
-10. candidate-only authority is preserved.
+4. exact-real positive finite admission for `u_max`, `tolerance_rad`, and `dt`;
+5. exact-integer positive admission for tick/settling limits;
+6. `settle_consecutive <= max_ticks`;
+7. parent v0.33 bounded control remains within `u_max`;
+8. PASS and timeout statuses remain distinct;
+9. source snapshot remains unchanged;
+10. semantic provenance and finite-control provenance both enter the deterministic receipt;
+11. candidate-only authority is preserved.
 
 Reference implementation: `src/phasenav_natural_code/semantic_orbital_htri_bounded_v01.py`.
 Reference tests: `tests/test_semantic_orbital_htri_bounded_v01.py`.

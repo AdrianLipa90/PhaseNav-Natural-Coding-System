@@ -13,6 +13,7 @@ on:
       - 'src/phasenav_natural_code/gremlin_live_hydration_v03.py'
       - 'src/phasenav_natural_code/gremlin_pnv_authoring_v03.py'
       - 'src/phasenav_natural_code/gremlin_pnv_bridge_v03.py'
+      - 'src/phasenav_natural_code/native_pnv_exec_v01.py'
       - 'src/phasenav_natural_code/gremlin_relational_compiler_v01.py'
       - 'src/phasenav_natural_code/gremlin_relation_mining_adapter_v01.py'
       - 'src/phasenav_natural_code/gremlin_kaku_resolver_v01.py'
@@ -46,6 +47,7 @@ on:
       - 'tests/test_fpdg_gremlin_pain_ingress_v01.py'
       - 'tests/test_gremlin_inverse_lineage_v01.py'
       - 'tests/test_gremlin_pnv_holonomy_v01.py'
+      - 'tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py'
       - 'tests/test_pnv_source_holonomy_v01.py'
       - 'tests/test_pnv_noether_collective_holonomy_v01.py'
       - 'tests/test_pnv_noether_rfc_current_holonomy_v01.py'
@@ -55,6 +57,9 @@ on:
       - 'tests/test_gremlin_cross_formalism_sealed_bundle_v01.py'
       - 'tests/test_gremlin_cross_formalism_round28_v01.py'
       - 'tests/test_gremlin_round28_sealed_bundle_v01.py'
+      - 'tests/test_gremlin_native_pnv_bridge_v01.py'
+      - 'tests/test_native_pnv_exec_v01.py'
+      - 'spec/PNCS_NATIVE_PNV_EXEC_TOOL_V0_1.md'
       - 'spec/PNCS_GREMLIN_PNV_AUTHORING_V0_2.md'
       - 'spec/PNCS_GREMLIN_LIVE_AUTHORING_V0_3.md'
       - 'spec/PNCS_GREMLIN_RELATIONAL_ISOMORPHISM_COMPILER_V0_1.md'
@@ -110,6 +115,7 @@ jobs:
           tests/test_fpdg_gremlin_pain_ingress_v01.py
           tests/test_gremlin_inverse_lineage_v01.py
           tests/test_gremlin_pnv_holonomy_v01.py
+          tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py
           tests/test_pnv_source_holonomy_v01.py
           tests/test_pnv_noether_collective_holonomy_v01.py
           tests/test_pnv_noether_rfc_current_holonomy_v01.py

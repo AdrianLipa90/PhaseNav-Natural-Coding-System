@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from numbers import Real
 from typing import Any
 
 import numpy as np
@@ -22,13 +23,40 @@ class SemanticMagnitudeActuationFirewallError(ValueError):
     pass
 
 
+def _finite_real(name: str, value: object) -> float:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise SemanticMagnitudeActuationFirewallError(f"{name} must be finite real")
+    try:
+        out = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SemanticMagnitudeActuationFirewallError(f"{name} must be finite real") from exc
+    if not math.isfinite(out):
+        raise SemanticMagnitudeActuationFirewallError(f"{name} must be finite real")
+    return out
+
+
+def _positive_real(name: str, value: object) -> float:
+    out = _finite_real(name, value)
+    if out <= 0.0:
+        raise SemanticMagnitudeActuationFirewallError(
+            f"{name} must be positive finite real"
+        )
+    return out
+
+
 def source_factor_q_bna(binding: SemanticOrbitalBinding) -> float:
     if not isinstance(binding, SemanticOrbitalBinding):
         raise SemanticMagnitudeActuationFirewallError(
             "binding must be SemanticOrbitalBinding"
         )
     sample = binding.sample
-    return (sample.B * sample.N) / sample.A_R
+    try:
+        value = (sample.B * sample.N) / sample.A_R
+    except OverflowError as exc:
+        raise SemanticMagnitudeActuationFirewallError(
+            "Q_BNA must be finite real"
+        ) from exc
+    return _finite_real("Q_BNA", value)
 
 
 def _require_magnitude_only_pair(
@@ -76,8 +104,7 @@ def audit_magnitude_only_htri_invariance(
             "snapshot must be DriveSnapshot"
         )
     _require_magnitude_only_pair(left, right)
-    if not math.isfinite(float(dt)) or float(dt) <= 0.0:
-        raise SemanticMagnitudeActuationFirewallError("dt must be positive finite")
+    dt_value = _positive_real("dt", dt)
 
     kaku_id = left.sample.kaku_id
     profile = SemanticHTRILaneProfile(
@@ -86,10 +113,10 @@ def audit_magnitude_only_htri_invariance(
         frequency_binding=frequency_binding,
     )
     left_run = execute_semantic_orbital_htri_bridge(
-        snapshot, {kaku_id: left}, profile, dt=float(dt)
+        snapshot, {kaku_id: left}, profile, dt=dt_value
     )
     right_run = execute_semantic_orbital_htri_bridge(
-        snapshot, {kaku_id: right}, profile, dt=float(dt)
+        snapshot, {kaku_id: right}, profile, dt=dt_value
     )
 
     array_pairs = {

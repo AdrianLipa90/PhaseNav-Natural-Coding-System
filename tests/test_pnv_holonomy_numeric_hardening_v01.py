@@ -15,6 +15,15 @@ from phasenav_natural_code.pnv_noether_rfc_current_holonomy_v01 import (
     PNVNoetherRFCCurrentError,
     make_noether_rfc_current_state,
 )
+from phasenav_natural_code.pnv_scalar_field_rotor_reduction_v01 import (
+    PNVScalarFieldRotorReductionError,
+    make_scalar_field_rotor_state,
+)
+from phasenav_natural_code.pnv_gauge_covariant_phase_pullback_v01 import (
+    PNVGaugeCovariantPhasePullbackError,
+    gauge_covariant_phase_pullback_defects,
+    make_gauge_covariant_phase_pullback_state,
+)
 
 
 class LocalNumericError(RuntimeError):
@@ -94,3 +103,73 @@ def test_noether_rfc_rejects_huge_integer_before_weighted_total():
             j_theta_cells=(1.0,),
             j_q_cells=(1.0,),
         )
+
+
+def test_scalar_field_rotor_rejects_field_coefficient_overflow():
+    with pytest.raises(PNVScalarFieldRotorReductionError, match="finite numeric"):
+        make_scalar_field_rotor_state(
+            field_phase_mode_id="mode:chi",
+            rotor_phase_mode_id="mode:chi",
+            field_rate_id="rate:chi",
+            rotor_rate_id="rate:chi",
+            field_measure_id="measure:h",
+            rotor_measure_id="measure:h",
+            field_cell_ids=("c0",),
+            rotor_cell_ids=("c0",),
+            amplitudes=(1.0e308,),
+            volumes=(1.0,),
+            d_tau_chi=1.0,
+            i_phi=1.0,
+        )
+
+
+def test_gauge_pullback_rejects_finite_coordinate_addition_overflow():
+    state = make_gauge_covariant_phase_pullback_state(
+        field_bundle_id="bundle:u1",
+        rotor_bundle_id="bundle:u1",
+        field_phase_patch_id="patch:n",
+        rotor_phase_patch_id="patch:n",
+        field_connection_id="connection:a",
+        rotor_connection_id="connection:a",
+        field_measure_id="measure:h",
+        rotor_measure_id="measure:h",
+        field_cell_ids=("c0",),
+        rotor_cell_ids=("c0",),
+        phase_gradients=(1.0e308,),
+        connection_components=(1.0e308,),
+        gauge_shift_components=(1.0,),
+        trajectory_velocity=(1.0,),
+        field_normal_rate=1.0,
+        rotor_rate=1.0,
+        amplitudes=(1.0,),
+        volumes=(1.0,),
+        i_phi=2.0,
+    )
+    with pytest.raises(PNVGaugeCovariantPhasePullbackError, match="finite numeric"):
+        gauge_covariant_phase_pullback_defects(state)
+
+
+def test_gauge_pullback_rejects_action_overflow_after_finite_admission():
+    state = make_gauge_covariant_phase_pullback_state(
+        field_bundle_id="bundle:u1",
+        rotor_bundle_id="bundle:u1",
+        field_phase_patch_id="patch:n",
+        rotor_phase_patch_id="patch:n",
+        field_connection_id="connection:a",
+        rotor_connection_id="connection:a",
+        field_measure_id="measure:h",
+        rotor_measure_id="measure:h",
+        field_cell_ids=("c0",),
+        rotor_cell_ids=("c0",),
+        phase_gradients=(1.0,),
+        connection_components=(1.0,),
+        gauge_shift_components=(0.5,),
+        trajectory_velocity=(1.0e154,),
+        field_normal_rate=1.0,
+        rotor_rate=1.0e154,
+        amplitudes=(1.0,),
+        volumes=(1.0,),
+        i_phi=2.0,
+    )
+    with pytest.raises(PNVGaugeCovariantPhasePullbackError, match="finite numeric"):
+        gauge_covariant_phase_pullback_defects(state)

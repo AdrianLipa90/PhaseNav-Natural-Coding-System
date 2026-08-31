@@ -5,6 +5,7 @@ import pytest
 from phasenav_natural_code.gremlin_inverse_lineage_v01 import (
     LINEAGE_SCHEMA,
     GremlinInverseLineageError,
+    _sha256,
     persist_gremlin_candidate_inverse_lineage,
     resolve_gremlin_candidate_inverse_lineage,
 )
@@ -115,7 +116,6 @@ def test_execution_compilation_program_hash_mismatch_fails_closed():
     body = dict(receipt)
     body.pop("receipt_sha256")
     body["program_source_sha256"] = "0" * 64
-    from phasenav_natural_code.gremlin_inverse_lineage_v01 import _sha256
 
     bad = {**body, "receipt_sha256": _sha256(body)}
     with pytest.raises(GremlinInverseLineageError, match="source hash mismatch"):
@@ -154,12 +154,36 @@ def test_false_emitted_receipt_hash_fails_closed():
     body = dict(receipt)
     body.pop("receipt_sha256")
     body["emitted"] = [["ISO.RETURN", "0" * 64]]
-    from phasenav_natural_code.gremlin_inverse_lineage_v01 import _sha256
 
     bad_receipt = {**body, "receipt_sha256": _sha256(body)}
     bad_result = _with_receipt(result, bad_receipt)
     with pytest.raises(GremlinInverseLineageError, match="emitted value/receipt mismatch"):
         resolve_gremlin_candidate_inverse_lineage(compilation, bad_result)
+
+
+def test_inverse_lineage_rejects_nonstring_candidate_evidence_even_with_valid_content_hash():
+    compilation, result = _compiled()
+    kaku_candidates = dict(compilation.kaku_candidates)
+    bad = dict(kaku_candidates["K.LEFT"])
+    bad["evidence_refs"] = [[CONTENT_ID]]
+    body = {key: value for key, value in bad.items() if key != "candidate_id"}
+    bad["candidate_id"] = "pncs:gremlin-kaku:sha256:" + _sha256(body)
+    kaku_candidates["K.LEFT"] = bad
+    broken = replace(compilation, kaku_candidates=kaku_candidates)
+
+    with pytest.raises(GremlinInverseLineageError, match=r"KAKU evidence_refs\[0\]"):
+        resolve_gremlin_candidate_inverse_lineage(broken, result)
+
+
+def test_inverse_lineage_rejects_nonstring_kaku_mapping_identity_before_coercion():
+    compilation, result = _compiled()
+    kaku_candidates = dict(compilation.kaku_candidates)
+    left = kaku_candidates.pop("K.LEFT")
+    kaku_candidates[7] = left
+    broken = replace(compilation, kaku_candidates=kaku_candidates)
+
+    with pytest.raises(GremlinInverseLineageError, match="compilation KAKU node id"):
+        resolve_gremlin_candidate_inverse_lineage(broken, result)
 
 
 def test_no_explicit_content_binding_keeps_v22_join_open():

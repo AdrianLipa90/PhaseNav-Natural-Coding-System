@@ -1,3 +1,4 @@
+from dataclasses import replace
 import cmath
 import math
 import random
@@ -129,3 +130,29 @@ def test_all_entries_compile_to_read_only_candidate_pnv():
         assert result.receipt["effect_boundary"]["external_effects"] is False
         assert result.program.mode == "READ_ONLY"
         assert result.program.epistemic == "CHYBA"
+
+
+def test_direct_validator_rejects_tampered_aggregate_manifest():
+    compiled = compile_cross_formalism_candidates(**KWARGS)
+    manifest = dict(compiled.manifest)
+    entries = {
+        iso_id: dict(row)
+        for iso_id, row in manifest["compiled_entries"].items()
+    }
+    target = sorted(entries)[0]
+    entries[target]["receipt_sha256"] = "0" * 64
+    manifest["compiled_entries"] = entries
+    broken = replace(compiled, manifest=manifest)
+
+    with pytest.raises(CrossFormalismBankError, match="aggregate manifest mismatch"):
+        validate_cross_formalism_candidates(broken)
+
+
+def test_direct_validator_rejects_missing_leaf_compilation_even_with_rewritten_manifest():
+    compiled = compile_cross_formalism_candidates(**KWARGS)
+    reduced = dict(compiled.compilations)
+    reduced.pop(sorted(reduced)[0])
+    broken = replace(compiled, compilations=reduced)
+
+    with pytest.raises(CrossFormalismBankError, match="compilation keyset mismatch"):
+        validate_cross_formalism_candidates(broken)

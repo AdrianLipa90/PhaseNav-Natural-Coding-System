@@ -151,14 +151,23 @@ class FullProgramInstruction:
     source_kind: str | None = None
 
     def __post_init__(self) -> None:
-        if not isinstance(self.pc, int) or self.pc < 0:
+        if not isinstance(self.pc, int) or isinstance(self.pc, bool) or self.pc < 0:
             raise FullProgramExecutorV01Error("instruction pc must be non-negative")
         if self.kind not in {"CONTROL_DISPATCH", "CONTINUATION_ROUTE", "RETURN"}:
             raise FullProgramExecutorV01Error("unsupported instruction kind")
-        if not isinstance(self.operator_start, int) or not isinstance(self.operator_stop, int) or self.operator_start < 0 or self.operator_stop <= self.operator_start:
+        if (
+            not isinstance(self.operator_start, int)
+            or isinstance(self.operator_start, bool)
+            or not isinstance(self.operator_stop, int)
+            or isinstance(self.operator_stop, bool)
+            or self.operator_start < 0
+            or self.operator_stop <= self.operator_start
+        ):
             raise FullProgramExecutorV01Error("invalid operator span")
         if not isinstance(self.reference_id, str) or not self.reference_id:
             raise FullProgramExecutorV01Error("instruction reference_id required")
+        if self.kind == "CONTROL_DISPATCH":
+            _typed(self.reference_id, _DEFINITION_RE, "control Definition ID")
         if self.kind == "CONTINUATION_ROUTE":
             _typed(self.reference_id, _ROUTE_RE, "continuation route ref")
             if not self.target:
@@ -185,6 +194,8 @@ class FullProgramExecutionPlan:
         _typed(self.composition_id, _COMPOSITION_RE, "composition_id")
         if not self.instructions:
             raise FullProgramExecutorV01Error("execution plan must contain instructions")
+        if any(not isinstance(i, FullProgramInstruction) for i in self.instructions):
+            raise FullProgramExecutorV01Error("execution plan requires FullProgramInstruction entries")
         if tuple(i.pc for i in self.instructions) != tuple(range(len(self.instructions))):
             raise FullProgramExecutorV01Error("instruction pcs must be contiguous")
         if self.instructions[0].kind != "CONTROL_DISPATCH" or self.instructions[-1].kind != "RETURN":
@@ -259,6 +270,33 @@ class FullProgramTraceStep:
     control_location_after: str | None
     reference_id: str
 
+    def __post_init__(self) -> None:
+        if not isinstance(self.pc, int) or isinstance(self.pc, bool) or self.pc < 0:
+            raise FullProgramExecutorV01Error("trace pc must be non-negative")
+        if self.kind not in {"CONTROL_DISPATCH", "CONTINUATION_ROUTE", "RETURN"}:
+            raise FullProgramExecutorV01Error("unsupported trace kind")
+        if (
+            not isinstance(self.operator_start, int)
+            or isinstance(self.operator_start, bool)
+            or not isinstance(self.operator_stop, int)
+            or isinstance(self.operator_stop, bool)
+            or self.operator_start < 0
+            or self.operator_stop <= self.operator_start
+        ):
+            raise FullProgramExecutorV01Error("invalid trace operator span")
+        if self.control_location_before is not None and (
+            not isinstance(self.control_location_before, str) or not self.control_location_before
+        ):
+            raise FullProgramExecutorV01Error("invalid trace control_location_before")
+        if not isinstance(self.control_location_after, str) or not self.control_location_after:
+            raise FullProgramExecutorV01Error("trace control_location_after required")
+        if self.kind == "CONTROL_DISPATCH":
+            _typed(self.reference_id, _DEFINITION_RE, "trace control Definition ID")
+        elif self.kind == "CONTINUATION_ROUTE":
+            _typed(self.reference_id, _ROUTE_RE, "trace route ref")
+        else:
+            _typed(self.reference_id, _RETURN_RE, "trace return ref")
+
     @property
     def payload(self) -> dict[str, object]:
         return {"schema": TRACE_SCHEMA, "pc": self.pc, "kind": self.kind, "operator_start": self.operator_start, "operator_stop": self.operator_stop, "control_location_before": self.control_location_before, "control_location_after": self.control_location_after, "reference_id": self.reference_id}
@@ -280,6 +318,8 @@ class FullProgramExecutionReceipt:
     final_control_location: str
 
     def __post_init__(self) -> None:
+        if not isinstance(self.plan, FullProgramExecutionPlan):
+            raise FullProgramExecutorV01Error("FullProgramExecutionPlan required in receipt")
         _typed(self.control_dispatch_id, _DISPATCH_RE, "control_dispatch_id")
         _typed(self.generation_id, _GENERATION_RE, "generation_id")
         _typed(self.result_id, _RESULT_RE, "result_id")
@@ -287,10 +327,54 @@ class FullProgramExecutionReceipt:
         _typed(self.return_ref_id, _RETURN_RE, "return_ref_id")
         if self.branch_truth_state not in {"TRUE", "FALSE"}:
             raise FullProgramExecutorV01Error("invalid branch_truth_state")
-        if not self.final_control_location:
+        if not isinstance(self.final_control_location, str) or not self.final_control_location:
             raise FullProgramExecutorV01Error("final control location required")
-        if len(self.trace) != len(self.plan.instructions) or tuple(s.pc for s in self.trace) != tuple(range(len(self.trace))):
-            raise FullProgramExecutorV01Error("trace must cover contiguous instruction pc sequence")
+        if len(self.trace) != len(self.plan.instructions):
+            raise FullProgramExecutorV01Error("trace must cover every plan instruction")
+        if any(not isinstance(step, FullProgramTraceStep) for step in self.trace):
+            raise FullProgramExecutorV01Error("trace requires FullProgramTraceStep entries")
+
+        previous_after: str | None = None
+        for index, (step, instruction) in enumerate(zip(self.trace, self.plan.instructions)):
+            expected_instruction_witness = (
+                instruction.pc,
+                instruction.kind,
+                instruction.operator_start,
+                instruction.operator_stop,
+                instruction.reference_id,
+            )
+            observed_instruction_witness = (
+                step.pc,
+                step.kind,
+                step.operator_start,
+                step.operator_stop,
+                step.reference_id,
+            )
+            if observed_instruction_witness != expected_instruction_witness:
+                raise FullProgramExecutorV01Error("trace step does not exactly witness plan instruction")
+            if index == 0:
+                if step.control_location_before is not None:
+                    raise FullProgramExecutorV01Error("initial control trace must start from no prior location")
+            elif step.control_location_before != previous_after:
+                raise FullProgramExecutorV01Error("trace control locations are not contiguous")
+            if instruction.kind == "CONTINUATION_ROUTE" and step.control_location_after != instruction.target:
+                raise FullProgramExecutorV01Error("continuation trace target does not match plan")
+            if instruction.kind == "RETURN" and step.control_location_after != step.control_location_before:
+                raise FullProgramExecutorV01Error("RETURN trace must preserve final control location")
+            previous_after = step.control_location_after
+
+        terminal = self.plan.instructions[-1]
+        if terminal.kind != "RETURN":
+            raise FullProgramExecutorV01Error("receipt plan must terminate with RETURN")
+        if (
+            self.return_ref_id != terminal.reference_id
+            or self.return_selector != terminal.target
+            or self.return_source_kind != terminal.source_kind
+        ):
+            raise FullProgramExecutorV01Error("receipt return metadata does not match terminal RETURN")
+        if self.final_control_location != self.trace[-1].control_location_after:
+            raise FullProgramExecutorV01Error("final control location does not match trace")
+        _jsonable(self.return_value)
 
     @property
     def payload(self) -> dict[str, object]:

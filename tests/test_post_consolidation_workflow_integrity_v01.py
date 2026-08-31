@@ -39,6 +39,23 @@ def test_v1_release_closure_is_compact_and_does_not_archive_full_source():
     assert text.count("actions/setup-python@v5") == 1
 
 
+def test_post_consolidation_feature_workflows_target_main_not_deleted_branches():
+    cases = {
+        "pncs-full-program-executor-integration.yml": (
+            "feat/pncs-full-program-executor-v01",
+            "feat/pncs-v029-orchorbital-harvest-hardening",
+        ),
+        "pncs-native-pnv-exec.yml": ("feat/native-pnv-exec-tool",),
+        "pncs-v030-resident-hotpath.yml": ("feat/pncs-v0.30-resident-hotpath",),
+    }
+    for workflow_name, deleted_branches in cases.items():
+        text = _workflow(workflow_name)
+        assert "pull_request:" in text
+        assert "      - main" in text
+        for deleted_branch in deleted_branches:
+            assert deleted_branch not in text
+
+
 def test_v1_release_closure_runs_this_regression_guard():
     text = _workflow("pncs-v1-release-closure.yml")
     assert "tests/test_post_consolidation_workflow_integrity_v01.py" in text

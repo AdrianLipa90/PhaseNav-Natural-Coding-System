@@ -151,7 +151,7 @@ def test_relation_delta_overflow_fails_before_receipt_hash():
 
 def test_aggregate_product_overflow_fails_before_receipt_hash():
     bindings = {
-        "K.A": _binding("K.A", "SEM.A", B=1.0e308, omega=1.0, phi=0.5),
+        "K.A": _binding("K.A", "SEM.A", B=1.0e308, omega=1.0, phi=1.5),
         "K.B": _binding("K.B", "SEM.B", B=0.0, omega=1.0, phi=0.0),
     }
     profile = RadicalAggregationProfile(

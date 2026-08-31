@@ -12,6 +12,15 @@ from .gremlin_pnv_holonomy_v01 import (
     information_transport_connection,
 )
 from .model import Kaku
+from .pnv_holonomy_numeric_v01 import (
+    checked_abs_difference_ratio,
+    checked_difference,
+    checked_product,
+    checked_ratio,
+    checked_sum,
+    finite_float,
+    finite_tree,
+)
 
 NOETHER_RFC_CURRENT_CONTRACT = "PNCS_PNV_NOETHER_RFC_CURRENT_BINDING_V0_1"
 NOETHER_RFC_CURRENT_LOOP_ID = "SOURCE.PHASE_NOETHER.RFC_CONSERVED_CURRENT.ROUNDTRIP"
@@ -22,13 +31,7 @@ class PNVNoetherRFCCurrentError(PNVInformationHolonomyError):
 
 
 def _finite(value: Any, field: str) -> float:
-    try:
-        out = float(value)
-    except (TypeError, ValueError) as exc:
-        raise PNVNoetherRFCCurrentError(f"{field} must be finite") from exc
-    if not math.isfinite(out):
-        raise PNVNoetherRFCCurrentError(f"{field} must be finite")
-    return out
+    return finite_float(value, field, PNVNoetherRFCCurrentError)
 
 
 def _positive(value: Any, field: str) -> float:
@@ -72,6 +75,21 @@ def _law_node(law_id: str, domain: str, kaku: Kaku, evidence_refs: Sequence[str]
     return LawFrameNode(law_id, domain, kaku, _refs(evidence_refs))
 
 
+def _weighted_total(
+    volumes: Sequence[float], currents: Sequence[float], field: str
+) -> float:
+    products = (
+        checked_product(
+            volume,
+            current,
+            field=f"{field}.cell_product",
+            error_type=PNVNoetherRFCCurrentError,
+        )
+        for volume, current in zip(volumes, currents)
+    )
+    return checked_sum(products, field, PNVNoetherRFCCurrentError)
+
+
 def make_noether_rfc_current_state(
     *,
     slice_id: str,
@@ -107,8 +125,8 @@ def make_noether_rfc_current_state(
     if len(r_ids) != len(r_vol) or len(r_ids) != len(j_q):
         raise PNVNoetherRFCCurrentError("RFC cell/volume/current support mismatch")
 
-    q_theta = sum(v * j for v, j in zip(n_vol, j_theta))
-    q_sigma = sum(v * j for v, j in zip(r_vol, j_q))
+    q_theta = _weighted_total(n_vol, j_theta, "Q_theta")
+    q_sigma = _weighted_total(r_vol, j_q, "Q_Sigma")
     if q_theta <= 0.0 or q_sigma <= 0.0:
         raise PNVNoetherRFCCurrentError("positive finite Noether and RFC carrier totals are required")
 
@@ -161,35 +179,127 @@ def _derived(state: Mapping[str, Any]) -> dict[str, Any]:
     j_theta = tuple(raw["j_theta_cells"])
     j_q = tuple(raw["j_q_cells"])
 
-    q_theta = sum(v * j for v, j in zip(n_vol, j_theta))
-    q_sigma = sum(v * j for v, j in zip(r_vol, j_q))
-    measure_defect = sum(
-        abs(v_q - v_theta) * abs(j_theta_i)
-        for v_theta, v_q, j_theta_i in zip(n_vol, r_vol, j_theta)
-    ) / q_theta
-    local_defect = sum(
-        v_q * abs(j_q_i - j_theta_i)
-        for v_q, j_theta_i, j_q_i in zip(r_vol, j_theta, j_q)
-    ) / q_theta
-    total_defect = abs(q_sigma - q_theta) / q_theta
-    defect_bound_margin = max(0.0, total_defect - (local_defect + measure_defect))
+    q_theta = _weighted_total(n_vol, j_theta, "Q_theta")
+    q_sigma = _weighted_total(r_vol, j_q, "Q_Sigma")
+
+    measure_terms = []
+    local_terms = []
+    for index, (v_theta, v_q, j_theta_i, j_q_i) in enumerate(
+        zip(n_vol, r_vol, j_theta, j_q)
+    ):
+        dv = abs(
+            checked_difference(
+                v_q,
+                v_theta,
+                f"Delta_measure.volume[{index}]",
+                PNVNoetherRFCCurrentError,
+            )
+        )
+        dj = abs(
+            checked_difference(
+                j_q_i,
+                j_theta_i,
+                f"Delta_local_current.current[{index}]",
+                PNVNoetherRFCCurrentError,
+            )
+        )
+        measure_terms.append(
+            checked_product(
+                dv,
+                abs(j_theta_i),
+                field=f"Delta_measure.term[{index}]",
+                error_type=PNVNoetherRFCCurrentError,
+            )
+        )
+        local_terms.append(
+            checked_product(
+                v_q,
+                dj,
+                field=f"Delta_local_current.term[{index}]",
+                error_type=PNVNoetherRFCCurrentError,
+            )
+        )
+
+    measure_defect = checked_ratio(
+        checked_sum(measure_terms, "Delta_measure.sum", PNVNoetherRFCCurrentError),
+        q_theta,
+        "Delta_measure",
+        PNVNoetherRFCCurrentError,
+    )
+    local_defect = checked_ratio(
+        checked_sum(local_terms, "Delta_local_current.sum", PNVNoetherRFCCurrentError),
+        q_theta,
+        "Delta_local_current",
+        PNVNoetherRFCCurrentError,
+    )
+    total_defect = checked_abs_difference_ratio(
+        q_sigma,
+        q_theta,
+        q_theta,
+        "Delta_total_charge",
+        PNVNoetherRFCCurrentError,
+    )
+    defect_sum = checked_sum(
+        (local_defect, measure_defect),
+        "Delta_bound_components",
+        PNVNoetherRFCCurrentError,
+    )
+    defect_bound_margin = max(
+        0.0,
+        checked_difference(
+            total_defect,
+            defect_sum,
+            "Delta_bound_margin",
+            PNVNoetherRFCCurrentError,
+        ),
+    )
     if defect_bound_margin > 1e-12:
         raise PNVNoetherRFCCurrentError("Noether/RFC current-measure defect bound violated")
 
-    p_theta = [v * j / q_theta for v, j in zip(n_vol, j_theta)]
-    p_q = [v * j / q_sigma for v, j in zip(r_vol, j_q)]
+    p_theta = [
+        checked_ratio(
+            checked_product(
+                v,
+                j,
+                field=f"p_theta.cell[{index}]",
+                error_type=PNVNoetherRFCCurrentError,
+            ),
+            q_theta,
+            f"p_theta[{index}]",
+            PNVNoetherRFCCurrentError,
+        )
+        for index, (v, j) in enumerate(zip(n_vol, j_theta))
+    ]
+    p_q = [
+        checked_ratio(
+            checked_product(
+                v,
+                j,
+                field=f"p_Q.cell[{index}]",
+                error_type=PNVNoetherRFCCurrentError,
+            ),
+            q_sigma,
+            f"p_Q[{index}]",
+            PNVNoetherRFCCurrentError,
+        )
+        for index, (v, j) in enumerate(zip(r_vol, j_q))
+    ]
 
-    return {
-        "Q_theta": q_theta,
-        "Q_Sigma": q_sigma,
-        "Delta_measure": measure_defect,
-        "Delta_local_current": local_defect,
-        "Delta_total_charge": total_defect,
-        "Delta_bound_margin": defect_bound_margin,
-        "side_flux_abs": abs(float(raw["side_flux"])),
-        "p_theta": p_theta,
-        "p_Q": p_q,
-    }
+    return finite_tree(
+        {
+            "Q_theta": q_theta,
+            "Q_Sigma": q_sigma,
+            "Delta_measure": measure_defect,
+            "Delta_local_current": local_defect,
+            "Delta_total_charge": total_defect,
+            "Delta_bound_margin": defect_bound_margin,
+            "side_flux_abs": abs(_finite(raw["side_flux"], "side_flux")),
+            "p_theta": p_theta,
+            "p_Q": p_q,
+        },
+        "noether_rfc_current_derived",
+        PNVNoetherRFCCurrentError,
+    )
 
 
 def noether_rfc_current_defects(state: Mapping[str, Any]) -> dict[str, float]:
@@ -259,7 +369,7 @@ def noether_rfc_current_transforms(
             "side_flux_abs",
         ):
             observed = _finite(state.get(key), key)
-            expected = float(values[key])
+            expected = _finite(values[key], key)
             if not math.isclose(observed, expected, rel_tol=1e-12, abs_tol=1e-15):
                 raise PNVNoetherRFCCurrentError(f"{key} changed before conserved-current binding")
         enforce(values)
@@ -283,7 +393,7 @@ def noether_rfc_current_transforms(
             raise PNVNoetherRFCCurrentError("Noether total failed reverse current audit")
         for key in ("p_theta", "p_Q"):
             observed = tuple(_finite(value, key) for value in state.get(key, ()))
-            expected = tuple(float(value) for value in values[key])
+            expected = tuple(_finite(value, key) for value in values[key])
             if len(observed) != len(expected) or any(
                 not math.isclose(a, b, rel_tol=1e-12, abs_tol=1e-15)
                 for a, b in zip(observed, expected)
@@ -301,20 +411,20 @@ def noether_rfc_current_transforms(
 def _q_theta(state: Mapping[str, Any]) -> float:
     if "Q_theta" in state:
         return _positive(state["Q_theta"], "Q_theta")
-    return float(_derived(state)["Q_theta"])
+    return _positive(_derived(state)["Q_theta"], "Q_theta")
 
 
 def _q_sigma(state: Mapping[str, Any]) -> float:
     if "Q_Sigma" in state:
         return _positive(state["Q_Sigma"], "Q_Sigma")
-    return float(_derived(state)["Q_Sigma"])
+    return _positive(_derived(state)["Q_Sigma"], "Q_Sigma")
 
 
 def _delta(name: str):
     def evaluate(state: Mapping[str, Any]) -> float:
         if name in state:
             return _nonnegative(state[name], name)
-        return float(_derived(state)[name])
+        return _nonnegative(_derived(state)[name], name)
     return evaluate
 
 
@@ -323,8 +433,8 @@ def _profile_norm(name: str):
         if name in state:
             values = tuple(_finite(value, name) for value in state[name])
         else:
-            values = tuple(float(value) for value in _derived(state)[name])
-        return sum(values)
+            values = tuple(_finite(value, name) for value in _derived(state)[name])
+        return checked_sum(values, f"{name}.norm", PNVNoetherRFCCurrentError)
     return evaluate
 
 

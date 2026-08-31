@@ -43,6 +43,7 @@ jobs:
           tests/test_gremlin_pnv_authoring_v02.py
           tests/test_gremlin_pnv_authoring_canonical_boundary_v01.py
           tests/test_gremlin_radical_candidate_integrity_v01.py
+          tests/test_gremlin_live_hydration_v03.py
           tests/test_gremlin_relational_compiler_v01.py
           tests/test_gremlin_relational_compiler_integrity_v01.py
           tests/test_gremlin_relational_admission_v01.py

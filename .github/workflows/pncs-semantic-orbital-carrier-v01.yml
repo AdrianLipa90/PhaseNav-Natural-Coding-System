@@ -15,6 +15,7 @@ on:
       - 'src/phasenav_natural_code/semantic_htri_drive_v32.py'
       - 'src/phasenav_natural_code/semantic_htri_bounded_v33.py'
       - 'tests/test_semantic_orbital_carrier_v01.py'
+      - 'tests/test_semantic_orbital_carrier_admission_v01.py'
       - 'tests/test_semantic_radical_oscillator_v01.py'
       - 'tests/test_semantic_orbital_trajectory_v01.py'
       - 'tests/test_semantic_orbital_htri_bridge_v01.py'
@@ -65,6 +66,7 @@ jobs:
         run: >-
           python3 -m pytest -q
           tests/test_semantic_orbital_carrier_v01.py
+          tests/test_semantic_orbital_carrier_admission_v01.py
           tests/test_semantic_orbital_trajectory_v01.py
           tests/test_semantic_orbital_htri_bridge_v01.py
           tests/test_semantic_orbital_htri_bounded_v01.py

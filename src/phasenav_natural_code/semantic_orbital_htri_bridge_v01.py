@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import math
+from numbers import Real
 from typing import Any, Mapping
 
 import numpy as np
@@ -29,11 +30,19 @@ class SemanticOrbitalHTRIBridgeError(ValueError):
     pass
 
 
-def _text(name: str, value: str) -> str:
-    value = str(value).strip()
-    if not value:
-        raise SemanticOrbitalHTRIBridgeError(f"{name} must be non-empty")
-    return value
+def _text(name: str, value: object) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise SemanticOrbitalHTRIBridgeError(f"{name} must be a non-empty string")
+    return value.strip()
+
+
+def _positive_real(name: str, value: object) -> float:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise SemanticOrbitalHTRIBridgeError(f"{name} must be positive finite real")
+    out = float(value)
+    if not math.isfinite(out) or out <= 0.0:
+        raise SemanticOrbitalHTRIBridgeError(f"{name} must be positive finite real")
+    return out
 
 
 @dataclass(frozen=True)
@@ -48,9 +57,15 @@ class SemanticHTRILaneProfile:
             "lane_profile_id",
             _text("lane_profile_id", self.lane_profile_id),
         )
+        if not isinstance(self.kaku_to_lane, Mapping):
+            raise SemanticOrbitalHTRIBridgeError("kaku_to_lane must be a mapping")
         mapping: dict[str, int] = {}
         for raw_kaku, raw_lane in self.kaku_to_lane.items():
             kaku = _text("kaku_id", raw_kaku)
+            if kaku in mapping:
+                raise SemanticOrbitalHTRIBridgeError(
+                    f"duplicate normalized KAKU id in lane profile: {kaku}"
+                )
             if isinstance(raw_lane, bool) or not isinstance(raw_lane, (int, np.integer)):
                 raise SemanticOrbitalHTRIBridgeError(
                     f"lane for {kaku} must be an integer"
@@ -65,7 +80,7 @@ class SemanticHTRILaneProfile:
             raise SemanticOrbitalHTRIBridgeError("at least one KAKU lane is required")
         if len(set(mapping.values())) != len(mapping):
             raise SemanticOrbitalHTRIBridgeError("HTRI lane collisions are rejected in v0.1")
-        mode = str(self.frequency_binding).upper()
+        mode = _text("frequency_binding", self.frequency_binding).upper()
         if mode not in _FREQUENCY_MODES:
             raise SemanticOrbitalHTRIBridgeError(
                 f"unsupported frequency_binding: {self.frequency_binding}"
@@ -87,6 +102,10 @@ def _validate_bindings(
     bindings: Mapping[str, SemanticOrbitalBinding],
     profile: SemanticHTRILaneProfile,
 ) -> dict[str, SemanticOrbitalBinding]:
+    if not isinstance(profile, SemanticHTRILaneProfile):
+        raise SemanticOrbitalHTRIBridgeError("profile must be SemanticHTRILaneProfile")
+    if not isinstance(bindings, Mapping):
+        raise SemanticOrbitalHTRIBridgeError("bindings must be a mapping")
     expected = set(profile.kaku_to_lane)
     supplied = set(bindings)
     if expected != supplied:
@@ -175,12 +194,11 @@ def execute_semantic_orbital_htri_bridge(
     dt: float = DEFAULT_DT,
 ) -> SemanticOrbitalHTRIBridgeResult:
     clean = _validate_bindings(bindings, profile)
-    if not math.isfinite(float(dt)) or float(dt) <= 0.0:
-        raise SemanticOrbitalHTRIBridgeError("dt must be positive finite")
+    dt_value = _positive_real("dt", dt)
 
     target = build_semantic_htri_target(snapshot, clean, profile)
     drive_snapshot = build_semantic_htri_snapshot(snapshot, clean, profile)
-    step = controlled_step(drive_snapshot, target, dt=float(dt))
+    step = controlled_step(drive_snapshot, target, dt=dt_value)
 
     assigned_lanes = set(profile.kaku_to_lane.values())
     unassigned = np.asarray(

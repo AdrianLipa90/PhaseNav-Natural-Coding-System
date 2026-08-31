@@ -243,6 +243,40 @@ def round28_manifest() -> Mapping[str, object]:
     return {**body, "manifest_sha256": hashlib.sha256(_canonical_bytes(body)).hexdigest()}
 
 
+def _compilation_manifest(
+    compiled: Mapping[str, RelationalCompilation],
+) -> dict[str, object]:
+    return {
+        **round28_manifest(),
+        "compilation_schema": ROUND28_COMPILATION_SCHEMA,
+        "compiled_entries": {
+            iso_id: {
+                "receipt_sha256": compilation.receipt["receipt_sha256"],
+                "radical_candidate_id": compilation.radical_candidate["candidate_id"],
+                "pnv_graph_sha256": compilation.receipt["pnv_graph_sha256"],
+            }
+            for iso_id, compilation in sorted(compiled.items())
+        },
+    }
+
+
+def _validate_aggregate_manifest(compiled: Round28Compilation) -> None:
+    if not isinstance(compiled, Round28Compilation):
+        raise Round28Error("Round28Compilation required")
+    if not isinstance(compiled.compilations, Mapping):
+        raise Round28Error("ROUND28 compilations must be a mapping")
+    expected_ids = {entry.spec.isomorphism_id for entry in round28_bank()}
+    if set(compiled.compilations) != expected_ids:
+        raise Round28Error("ROUND28 compilation keyset mismatch")
+    if any(not isinstance(item, RelationalCompilation) for item in compiled.compilations.values()):
+        raise Round28Error("ROUND28 compilation entry type mismatch")
+    if not isinstance(compiled.manifest, Mapping):
+        raise Round28Error("ROUND28 aggregate manifest must be a mapping")
+    expected = _compilation_manifest(compiled.compilations)
+    if dict(compiled.manifest) != expected:
+        raise Round28Error("ROUND28 aggregate manifest mismatch")
+
+
 def compile_round28_candidates(
     *,
     generation_binding: str,
@@ -258,22 +292,14 @@ def compile_round28_candidates(
             authority=authority,
             authoring_root=None,
         )
-    manifest = {
-        **round28_manifest(),
-        "compilation_schema": ROUND28_COMPILATION_SCHEMA,
-        "compiled_entries": {
-            iso_id: {
-                "receipt_sha256": compilation.receipt["receipt_sha256"],
-                "radical_candidate_id": compilation.radical_candidate["candidate_id"],
-                "pnv_graph_sha256": compilation.receipt["pnv_graph_sha256"],
-            }
-            for iso_id, compilation in sorted(compiled.items())
-        },
-    }
-    return Round28Compilation(compilations=compiled, manifest=manifest)
+    return Round28Compilation(
+        compilations=compiled,
+        manifest=_compilation_manifest(compiled),
+    )
 
 
 def validate_round28_candidates(compiled: Round28Compilation):
+    _validate_aggregate_manifest(compiled)
     results = {}
     for iso_id, compilation in sorted(compiled.compilations.items()):
         result = validate_compiled_relational_candidate(compilation)

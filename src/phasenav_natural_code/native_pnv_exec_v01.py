@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass
 import hashlib
 import json
@@ -80,12 +81,12 @@ def _finite_result(value: Any, field: str) -> float:
     return out
 
 
-def _validate_runtime_value(value: Any, field: str) -> Any:
+def _snapshot_runtime_value(value: Any, field: str) -> Any:
     try:
         _canonical_bytes(value)
+        return copy.deepcopy(value)
     except (TypeError, ValueError, OverflowError) as exc:
         raise NativePNVResolutionError(f"{field} is not canonical finite JSON") from exc
-    return value
 
 
 @dataclass(frozen=True)
@@ -109,7 +110,11 @@ class PNVProgram:
     assertions: tuple[str, ...]
     emits: tuple[str, ...]
     metadata: tuple[tuple[str, str], ...]
-    source_sha256: str
+    source_text: str
+
+    @property
+    def source_sha256(self) -> str:
+        return hashlib.sha256(self.source_text.encode("utf-8")).hexdigest()
 
     @property
     def payload(self) -> dict[str, Any]:
@@ -128,6 +133,42 @@ class PNVProgram:
     @property
     def graph_sha256(self) -> str:
         return _sha256(self.payload)
+
+
+def _validate_program(program: PNVProgram) -> None:
+    if not isinstance(program.version, int) or isinstance(program.version, bool) or program.version != 1:
+        raise NativePNVParseError("PNVProgram carries an unsupported version")
+    if program.epistemic not in SUPPORTED_EPISTEMIC:
+        raise NativePNVParseError("PNVProgram carries an unsupported EPISTEMIC state")
+    if program.mode not in SUPPORTED_MODES:
+        raise NativePNVParseError("PNVProgram carries an unsupported MODE")
+    if not isinstance(program.source_text, str) or not program.source_text.strip():
+        raise NativePNVParseError("PNVProgram requires exact non-empty source_text")
+    if not program.ops:
+        raise NativePNVParseError("PNVProgram contains no operations")
+    names: set[str] = set()
+    for op in program.ops:
+        if not isinstance(op, PNVOp):
+            raise NativePNVParseError("PNVProgram ops must be PNVOp entries")
+        if not isinstance(op.name, str) or not op.name or op.name in names:
+            raise NativePNVParseError("PNVProgram operation names must be unique and non-empty")
+        if op.opcode not in SUPPORTED_OPCODES:
+            raise NativePNVParseError(f"unsupported opcode {op.opcode!r}")
+        if not isinstance(op.args, tuple) or not op.args or any(not isinstance(x, str) or not x for x in op.args):
+            raise NativePNVParseError("PNVProgram operation args must be non-empty string tuples")
+        if not isinstance(op.line_no, int) or isinstance(op.line_no, bool) or op.line_no <= 0:
+            raise NativePNVParseError("PNVProgram operation line_no must be a positive integer")
+        names.add(op.name)
+    for label, refs in (("ASSERT", program.assertions), ("EMIT", program.emits)):
+        if any(not isinstance(name, str) or name not in names for name in refs):
+            raise NativePNVParseError(f"{label} references unknown OP names")
+    if any(
+        not isinstance(row, tuple)
+        or len(row) != 2
+        or not all(isinstance(item, str) for item in row)
+        for row in program.metadata
+    ):
+        raise NativePNVParseError("PNVProgram metadata must contain string pairs")
 
 
 @dataclass(frozen=True)
@@ -228,7 +269,7 @@ def parse_pnv(text: str) -> PNVProgram:
     if missing_refs:
         raise NativePNVParseError(f"ASSERT/EMIT references unknown OP names: {sorted(set(missing_refs))}")
 
-    return PNVProgram(
+    program = PNVProgram(
         version=version,
         epistemic=epistemic,
         mode=mode,
@@ -236,8 +277,10 @@ def parse_pnv(text: str) -> PNVProgram:
         assertions=tuple(assertions),
         emits=tuple(emits),
         metadata=tuple(metadata),
-        source_sha256=hashlib.sha256(text.encode("utf-8")).hexdigest(),
+        source_text=text,
     )
+    _validate_program(program)
+    return program
 
 
 class NativePNVExecutor:
@@ -257,22 +300,23 @@ class NativePNVExecutor:
         comparators: Mapping[str, Callable[[Any], bool]] | None = None,
         transforms: Mapping[str, Callable[[Any], Any]] | None = None,
     ) -> None:
-        self.sources = dict(sources or {})
+        source_rows = dict(sources or {})
         self.comparators = dict(comparators or {})
         self.transforms = dict(transforms or {})
         for name, callback in (*self.comparators.items(), *self.transforms.items()):
             if not isinstance(name, str) or not name or not callable(callback):
                 raise NativePNVResolutionError("callback registries require non-empty names and callables")
-        for name, value in self.sources.items():
+        self.sources: dict[str, Any] = {}
+        for name, value in source_rows.items():
             if not isinstance(name, str) or not name:
                 raise NativePNVResolutionError("source registry requires non-empty names")
-            _validate_runtime_value(value, f"source {name!r}")
+            self.sources[name] = _snapshot_runtime_value(value, f"source {name!r}")
 
     def _resolve(self, token: str, values: Mapping[str, Any]) -> Any:
         if token in values:
-            return values[token]
+            return _snapshot_runtime_value(values[token], f"resolved operation {token!r}")
         if token in self.sources:
-            return self.sources[token]
+            return _snapshot_runtime_value(self.sources[token], f"resolved source {token!r}")
         if token == "TRUE":
             return True
         if token == "FALSE":
@@ -297,10 +341,10 @@ class NativePNVExecutor:
         if code == "SOURCE":
             if len(op.args) != 1:
                 raise NativePNVResolutionError(f"{op.name}: SOURCE requires one argument")
-            return _validate_runtime_value(self._resolve(op.args[0], values), f"{op.name} result")
+            return self._resolve(op.args[0], values)
         if code == "IDENTITY":
             if len(op.args) == 1:
-                return _validate_runtime_value(self._resolve(op.args[0], values), f"{op.name} result")
+                return self._resolve(op.args[0], values)
             if len(op.args) == 2:
                 return self._resolve(op.args[0], values) == self._resolve(op.args[1], values)
             raise NativePNVResolutionError(f"{op.name}: IDENTITY supports one or two arguments")
@@ -324,17 +368,17 @@ class NativePNVExecutor:
             comparator = self.comparators.get(comparator_name)
             if comparator is None:
                 raise NativePNVResolutionError(f"{op.name}: comparator {comparator_name!r} is not admitted")
-            result = comparator(value)
+            try:
+                result = comparator(value)
+            except Exception as exc:
+                raise NativePNVResolutionError(f"{op.name}: comparator {comparator_name!r} failed") from exc
             if not isinstance(result, bool):
                 raise NativePNVResolutionError(f"{op.name}: comparator must return bool")
             return result
         if code == "ORDER":
             if not op.args:
                 raise NativePNVResolutionError(f"{op.name}: ORDER requires at least one argument")
-            return _validate_runtime_value(
-                [self._resolve(token, values) for token in op.args],
-                f"{op.name} result",
-            )
+            return [self._resolve(token, values) for token in op.args]
         if code == "TRANSFORM":
             if len(op.args) != 2:
                 raise NativePNVResolutionError(f"{op.name}: TRANSFORM requires value and transform name")
@@ -343,18 +387,18 @@ class NativePNVExecutor:
             transform = self.transforms.get(transform_name)
             if transform is None:
                 raise NativePNVResolutionError(f"{op.name}: transform {transform_name!r} is not admitted")
-            return _validate_runtime_value(transform(value), f"{op.name} callback result")
+            try:
+                return transform(value)
+            except Exception as exc:
+                raise NativePNVResolutionError(f"{op.name}: transform {transform_name!r} failed") from exc
         if code == "COMPOSITION":
             if not op.args:
                 raise NativePNVResolutionError(f"{op.name}: COMPOSITION requires at least one argument")
-            return _validate_runtime_value(
-                [self._resolve(token, values) for token in op.args],
-                f"{op.name} result",
-            )
+            return [self._resolve(token, values) for token in op.args]
         if code == "RETURN":
             if len(op.args) != 1:
                 raise NativePNVResolutionError(f"{op.name}: RETURN requires one argument")
-            return _validate_runtime_value(self._resolve(op.args[0], values), f"{op.name} result")
+            return self._resolve(op.args[0], values)
         raise NativePNVResolutionError(f"{op.name}: unsupported opcode {code!r}")
 
     def execute(self, program: PNVProgram | str) -> NativePNVExecutionResult:
@@ -362,15 +406,13 @@ class NativePNVExecutor:
             program = parse_pnv(program)
         if not isinstance(program, PNVProgram):
             raise TypeError("PNVProgram or source string required")
-        if program.epistemic not in SUPPORTED_EPISTEMIC or program.mode not in SUPPORTED_MODES:
-            raise NativePNVParseError("PNVProgram carries an unsupported execution header")
+        _validate_program(program)
 
         values: dict[str, Any] = {}
         trace: list[dict[str, Any]] = []
         invoked_callbacks: list[str] = []
         for op in program.ops:
-            value = self._execute_op(op, values)
-            _validate_runtime_value(value, f"{op.name} result")
+            value = _snapshot_runtime_value(self._execute_op(op, values), f"{op.name} result")
             values[op.name] = value
             if op.opcode == "CONDITION":
                 invoked_callbacks.append(f"comparator:{op.args[1]}")
@@ -386,7 +428,7 @@ class NativePNVExecutor:
             if not passed:
                 raise NativePNVAssertionError(f"ASSERT failed for {name}")
 
-        emitted = {name: values[name] for name in program.emits}
+        emitted = {name: _snapshot_runtime_value(values[name], f"emitted {name!r}") for name in program.emits}
         callbacks_invoked = tuple(invoked_callbacks)
         callback_boundary_open = bool(callbacks_invoked)
         effect_value: bool | None = None if callback_boundary_open else False
@@ -431,7 +473,12 @@ class NativePNVExecutor:
         }
         receipt_sha256 = _sha256(payload)
         receipt = {**payload, "receipt_sha256": receipt_sha256}
-        return NativePNVExecutionResult(program=program, values=values, emitted=emitted, receipt=receipt)
+        return NativePNVExecutionResult(
+            program=program,
+            values={name: _snapshot_runtime_value(value, f"final value {name!r}") for name, value in values.items()},
+            emitted=emitted,
+            receipt=receipt,
+        )
 
 
 def execute_pnv(

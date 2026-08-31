@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from bisect import bisect_right
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import json
 import math
@@ -36,6 +36,25 @@ def _text(name: str, value: str) -> str:
     if not value:
         raise SemanticOrbitalCarrierError(f"{name} must be non-empty")
     return value
+
+
+def _canonical_source_snapshot(value: Mapping[str, Any] | None) -> str | None:
+    if value is None:
+        return None
+    if not isinstance(value, Mapping):
+        raise SemanticOrbitalCarrierError("source_orbital_state must be a mapping")
+    try:
+        return json.dumps(
+            dict(value),
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        )
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SemanticOrbitalCarrierError(
+            "source_orbital_state must be finite canonical JSON"
+        ) from exc
 
 
 def carrier_prefactor(B: float, omega: float, N: float, A_R: float) -> float:
@@ -159,6 +178,7 @@ class SemanticOrbitalBinding:
     quantizer: OrbitQuantizerProfile
     orbital_band: str
     source_orbital_state: Mapping[str, Any] | None = None
+    _source_snapshot_json: str | None = field(init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if not isinstance(self.sample, SemanticCarrierSample):
@@ -168,8 +188,18 @@ class SemanticOrbitalBinding:
         expected = self.quantizer.quantize(self.sample.value)
         if self.orbital_band != expected:
             raise SemanticOrbitalCarrierError("orbital_band must equal quantized semantic value")
+        object.__setattr__(
+            self,
+            "_source_snapshot_json",
+            _canonical_source_snapshot(self.source_orbital_state),
+        )
 
     def body(self) -> dict[str, Any]:
+        source_snapshot = (
+            None
+            if self._source_snapshot_json is None
+            else json.loads(self._source_snapshot_json)
+        )
         return {
             "schema": SCHEMA,
             "formula_id": FORMULA_ID,
@@ -178,9 +208,7 @@ class SemanticOrbitalBinding:
                 "orbital_band": self.orbital_band,
                 "quantizer": self.quantizer.to_dict(),
             },
-            "source_orbital_state": None
-            if self.source_orbital_state is None
-            else dict(self.source_orbital_state),
+            "source_orbital_state": source_snapshot,
             "semantic_authority": "EXPLICIT_KAKU_CONTENT_BINDING",
             "epistemic_state": "CHYBA",
             "promotion_state": "CANDIDATE_ONLY",

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from phasenav_natural_code.semantic_address_v31 import build_semantic_trajectory
 from phasenav_natural_code.semantic_htri_bounded_v33 import (
+    SemanticHTRIBoundedV33Error,
     bounded_step,
     execute_bounded_trajectory,
     track_target,
@@ -114,3 +116,73 @@ def test_bounded_execution_is_deterministic():
     assert a["execution_id"] == b["execution_id"]
     assert a["receipt_sha256"] == b["receipt_sha256"]
     assert np.array_equal(a["U_total"], b["U_total"])
+
+
+def test_bounded_step_rejects_implicit_real_coercion():
+    target = trajectories()[0].addresses[0].phase36
+    for field in ("u_max", "dt"):
+        for bad in (True, "1.0", object()):
+            kwargs = {field: bad}
+            if field == "dt":
+                kwargs["u_max"] = 25.0
+            with pytest.raises(SemanticHTRIBoundedV33Error, match=field):
+                bounded_step(
+                    snapshot(),
+                    target,
+                    **kwargs,  # type: ignore[arg-type]
+                )
+
+
+def test_track_target_rejects_scalar_and_tick_coercion_before_execution():
+    target = trajectories()[0].addresses[0].phase36
+    for field in ("u_max", "tolerance_rad", "dt"):
+        for bad in (True, "1.0", object()):
+            kwargs = {field: bad}
+            with pytest.raises(SemanticHTRIBoundedV33Error, match=field):
+                track_target(
+                    snapshot(),
+                    target,
+                    **kwargs,  # type: ignore[arg-type]
+                )
+    for field in ("max_ticks", "settle_consecutive"):
+        for bad in (True, "3"):
+            kwargs = {field: bad}
+            with pytest.raises(SemanticHTRIBoundedV33Error, match="positive integer"):
+                track_target(
+                    snapshot(),
+                    target,
+                    **kwargs,  # type: ignore[arg-type]
+                )
+
+
+def test_track_target_requires_exact_finite_36x36_prior_unitary():
+    target = trajectories()[0].addresses[0].phase36
+    for bad in (
+        np.ones((36, 36), dtype=bool),
+        np.full((36, 36), "1.0"),
+        np.eye(35, dtype=np.complex128),
+    ):
+        with pytest.raises(SemanticHTRIBoundedV33Error, match="U_total"):
+            track_target(snapshot(), target, U_total=bad)
+
+
+def test_full_bounded_execution_rejects_public_parameter_coercion():
+    traj = trajectories()[0]
+    for field in ("u_max", "tolerance_rad", "dt"):
+        for bad in (True, "1.0"):
+            kwargs = {field: bad}
+            with pytest.raises(SemanticHTRIBoundedV33Error, match=field):
+                execute_bounded_trajectory(
+                    snapshot(),
+                    traj,
+                    **kwargs,  # type: ignore[arg-type]
+                )
+    for field in ("max_ticks_per_target", "settle_consecutive"):
+        for bad in (True, "3"):
+            kwargs = {field: bad}
+            with pytest.raises(SemanticHTRIBoundedV33Error, match="positive integer"):
+                execute_bounded_trajectory(
+                    snapshot(),
+                    traj,
+                    **kwargs,  # type: ignore[arg-type]
+                )

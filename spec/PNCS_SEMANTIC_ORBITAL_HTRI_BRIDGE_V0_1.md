@@ -24,7 +24,9 @@ kaku_to_lane[kaku_id] -> integer 0..35
 frequency_binding = ASSIGN_SAMPLE_OMEGA | PRESERVE_SNAPSHOT_OMEGA
 ```
 
-The mapping is explicit provenance. v0.1 rejects lane collisions and rejects missing or extra KAKU mappings relative to the supplied semantic binding set.
+The mapping is explicit provenance. `lane_profile_id`, every `kaku_id`, and `frequency_binding` are admitted as exact non-empty Python strings. The lane map is admitted as an explicit mapping and copied into the profile snapshot. KAKU identifiers are normalized by surrounding-whitespace trimming, and normalized duplicate identifiers fail admission before lane assignment.
+
+Lane values are exact integer values in `[0,35]`, with boolean values excluded from integer admission. v0.1 rejects lane collisions and rejects missing or extra KAKU mappings relative to the supplied semantic binding set.
 
 For KAKU `a` assigned to lane `lambda(a)`, the phase target is
 
@@ -54,7 +56,7 @@ Every unassigned lane retains the input snapshot frequency exactly.
 
 The complete input `snapshot.omega` vector is retained.
 
-The selected profile is part of the deterministic receipt. No frequency map is inferred from orbital band, semantic value, KAKU mass, or neighboring lanes.
+The selected profile is part of the deterministic receipt. Frequency mode admission is exact-string typed before normalization to the declared uppercase mode identifier.
 
 ## 4. v0.32 composition
 
@@ -63,7 +65,10 @@ The bridge constructs a derived read-only `DriveSnapshot`:
 ```text
 phi    = original snapshot phi
 omega  = profile-bound omega
--g/-flavor/-tau/-gravity = unchanged copies from source snapshot
+g      = unchanged copy from source snapshot
+flavor = unchanged copy from source snapshot
+tau    = unchanged copy from source snapshot
+gravity = unchanged copy from source snapshot
 source_id = content-addressed bridge identity
 ```
 
@@ -75,9 +80,9 @@ Then it calls the existing
 semantic_htri_drive_v32.controlled_step(derived_snapshot, target36, dt)
 ```
 
-without modifying the v0.32 control, coupling, HTRI or QHTRI Hamiltonian laws.
+with `dt` admitted as a positive finite `numbers.Real` scalar with boolean values excluded. The admitted value is converted to the parent float representation only after the exact numeric type gate.
 
-Therefore the semantic carrier enters the existing oscillator through an explicit typed boundary instead of a parallel oscillator implementation.
+Therefore the semantic carrier enters the existing oscillator through an explicit typed boundary and the existing v0.32 control, coupling, HTRI and QHTRI Hamiltonian laws remain the active parent implementation.
 
 ## 5. Semantic-value and source-coordinate provenance
 
@@ -93,35 +98,38 @@ omega
 N
 A_R
 phi
-kappa
 semantic_value
 semantic carrier receipt sha256
 ```
 
-`B`, `N`, `A_R`, and `semantic_value` are provenance in v0.1. The v0.32 drive has no native actuation input for those coordinates. A future actuation gate may map an explicitly source-bound coordinate into coupling/drive parameters with its own validation receipt.
+`B`, `N`, `A_R`, and `semantic_value` are provenance in v0.1. The actuation boundary remains the existing declared lane/frequency profile and parent v0.32 controlled drive.
 
 ## 6. Exact invariants
 
 The bridge validates:
 
 1. every semantic KAKU has exactly one explicit lane;
-2. lanes are unique integers in `[0,35]`;
-3. assigned target phase equals wrapped semantic `phi`;
-4. unassigned target phases equal the source snapshot phases exactly;
-5. under `ASSIGN_SAMPLE_OMEGA`, assigned frequencies equal semantic `omega`;
-6. unassigned frequencies equal source frequencies exactly;
-7. under `PRESERVE_SNAPSHOT_OMEGA`, all frequencies equal the source vector;
-8. `g`, `flavor`, `tau`, and `gravity` are copied unchanged into the derived snapshot;
-9. the existing v0.32 controlled step hits the resulting 36D target to its parent numerical tolerance;
-10. lane/frequency profile changes alter the bridge receipt identity.
+2. lane-profile IDs, KAKU IDs and frequency modes enter through exact string admission;
+3. normalized duplicate KAKU IDs fail admission;
+4. lane-map and semantic-binding inputs use explicit mapping containers;
+5. lanes are unique integers in `[0,35]` with boolean lane values excluded;
+6. assigned target phase equals wrapped semantic `phi`;
+7. unassigned target phases equal the source snapshot phases exactly;
+8. under `ASSIGN_SAMPLE_OMEGA`, assigned frequencies equal semantic `omega`;
+9. unassigned frequencies equal source frequencies exactly;
+10. under `PRESERVE_SNAPSHOT_OMEGA`, all frequencies equal the source vector;
+11. `g`, `flavor`, `tau`, and `gravity` are copied unchanged into the derived snapshot;
+12. `dt` is a positive finite real admitted before parent execution;
+13. the existing v0.32 controlled step hits the resulting 36D target to its parent numerical tolerance;
+14. lane/frequency profile changes alter the bridge receipt identity.
 
 ## 7. Authority boundary
 
 The bridge is a candidate/read-only reference.
 
 ```text
-epistemic_state            = CHYBA
-promotion_state            = CANDIDATE_ONLY
+epistemic_state             = CHYBA
+promotion_state             = CANDIDATE_ONLY
 runtime_execution_authority = false
 canon_write_authority       = false
 live_surface_writes         = 0

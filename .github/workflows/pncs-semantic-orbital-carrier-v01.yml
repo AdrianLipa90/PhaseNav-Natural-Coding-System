@@ -26,6 +26,7 @@ on:
       - 'tests/test_semantic_htri_drive_v32.py'
       - 'tests/test_semantic_htri_bounded_v33.py'
       - 'tests/test_pnlf_orbital_memory_v01.py'
+      - 'tests/test_pnlf_orbital_memory_admission_v01.py'
       - 'tests/test_gremlin_kaku_resolver_v01.py'
       - 'spec/PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1.md'
       - 'spec/PNCS_SEMANTIC_RADICAL_OSCILLATOR_V0_1.md'
@@ -34,6 +35,7 @@ on:
       - 'spec/PNCS_SEMANTIC_ORBITAL_HTRI_BOUNDED_TRACK_V0_1.md'
       - 'spec/PNCS_SEMANTIC_HTRI_INPUT_ADMISSION_V0_1.md'
       - 'spec/PNCS_SEMANTIC_MAGNITUDE_ACTUATION_FIREWALL_V0_1.md'
+      - 'spec/PNCS_PNLF_ORBITAL_MEMORY_ADMISSION_V0_1.md'
       - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1.json'
       - 'provenance/receipts/PNCS_SEMANTIC_RADICAL_OSCILLATOR_V0_1.json'
       - 'provenance/receipts/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_1.json'
@@ -79,4 +81,5 @@ jobs:
           tests/test_semantic_htri_drive_v32.py
           tests/test_semantic_htri_bounded_v33.py
           tests/test_pnlf_orbital_memory_v01.py
+          tests/test_pnlf_orbital_memory_admission_v01.py
           tests/test_gremlin_kaku_resolver_v01.py

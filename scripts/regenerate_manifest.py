@@ -172,10 +172,19 @@ def verify_manifest(root: Path, manifest: dict[str, object]) -> None:
     if manifest.get("schema") != SCHEMA:
         raise ManifestError("unexpected manifest schema")
     exclusions = manifest.get("exclusions")
-    if not isinstance(exclusions, list) or not all(isinstance(x, str) and x for x in exclusions):
+    if (
+        not isinstance(exclusions, list)
+        or not exclusions
+        or not all(isinstance(x, str) and x for x in exclusions)
+    ):
         raise ManifestError("manifest exclusions must be a non-empty string list")
-    expected = build_manifest(root, exclusions=exclusions)
+    canonical_exclusions = list(sorted(DEFAULT_EXCLUSIONS))
+    if exclusions != canonical_exclusions:
+        raise ManifestError("manifest exclusions differ from canonical exclusions")
+
+    expected = build_manifest(root, exclusions=DEFAULT_EXCLUSIONS)
     for field in (
+        "status",
         "hash_algorithm",
         "path_order",
         "scope",
@@ -189,8 +198,8 @@ def verify_manifest(root: Path, manifest: dict[str, object]) -> None:
             raise ManifestError(f"manifest mismatch: {field}")
     # The manifest may survive a later metadata-only commit, but its declared
     # source identity must be a real commit/tree pair whose differences from
-    # current HEAD are confined to the declared exclusions.
-    _verify_source_identity(root, manifest, exclusions)
+    # current HEAD are confined to the canonical exclusions.
+    _verify_source_identity(root, manifest, canonical_exclusions)
 
 
 def _load_manifest(path: Path) -> dict[str, object]:

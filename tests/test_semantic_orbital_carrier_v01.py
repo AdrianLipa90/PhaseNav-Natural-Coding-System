@@ -94,6 +94,15 @@ def test_zero_reference_denominator_and_nonfinite_values_fail_closed():
         shifted_phase(math.inf)
 
 
+def test_finite_inputs_cannot_overflow_semantic_outputs():
+    with pytest.raises(SemanticOrbitalCarrierError, match="carrier_prefactor must be finite"):
+        carrier_prefactor(1.0e308, 1.0e308, 1.0, 1.0)
+    with pytest.raises(SemanticOrbitalCarrierError, match="semantic_value must be finite"):
+        semantic_value(1.0e308, 1.0, 1.0, 1.0, 2.0)
+    with pytest.raises(SemanticOrbitalCarrierError, match="must be finite"):
+        semantic_value(10**400, 1.0, 1.0, 1.0, 0.0)
+
+
 def test_nine_band_quantizer_is_explicit_and_deterministic():
     q = _quantizer()
     assert q.quantize(-10.0) == "O0"

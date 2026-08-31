@@ -4,6 +4,7 @@ from dataclasses import dataclass, replace
 import hashlib
 import json
 import math
+from numbers import Real
 import re
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -36,7 +37,14 @@ def _jsonable(value: Any) -> Any:
     if isinstance(value, list):
         return [_jsonable(v) for v in value]
     if isinstance(value, Mapping):
-        return {str(k): _jsonable(value[k]) for k in sorted(value)}
+        out: dict[str, Any] = {}
+        for key, item in value.items():
+            if not isinstance(key, str):
+                raise PNLFOrbitalMemoryError(
+                    "canonical PNLF JSON mapping keys must be strings"
+                )
+            out[key] = _jsonable(item)
+        return out
     raise PNLFOrbitalMemoryError(f"unsupported canonical value type: {type(value).__name__}")
 
 
@@ -55,12 +63,14 @@ def _sha256(value: Any) -> str:
 
 
 def _finite(value: Any, field: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise PNLFOrbitalMemoryError(f"{field} must be finite real")
     try:
         out = float(value)
-    except (TypeError, ValueError) as exc:
-        raise PNLFOrbitalMemoryError(f"{field} must be finite") from exc
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise PNLFOrbitalMemoryError(f"{field} must be finite real") from exc
     if not math.isfinite(out):
-        raise PNLFOrbitalMemoryError(f"{field} must be finite")
+        raise PNLFOrbitalMemoryError(f"{field} must be finite real")
     return out
 
 
@@ -79,28 +89,32 @@ def _positive(value: Any, field: str) -> float:
 
 
 def _require_text(value: Any, field: str) -> str:
-    out = str(value or "").strip()
-    if not out:
-        raise PNLFOrbitalMemoryError(f"{field} must be non-empty")
-    return out
+    if not isinstance(value, str) or not value.strip():
+        raise PNLFOrbitalMemoryError(f"{field} must be a non-empty string")
+    return value.strip()
 
 
 def _digest(value: Any, field: str) -> str:
-    out = str(value or "")
-    if not _DIGEST_RE.fullmatch(out):
+    if not isinstance(value, str) or not _DIGEST_RE.fullmatch(value):
         raise PNLFOrbitalMemoryError(f"{field} must be lowercase SHA-256")
-    return out
+    return value
 
 
 def _checkpoint_id(value: Any, field: str) -> str:
-    out = str(value or "")
-    if not _CHECKPOINT_ID_RE.fullmatch(out):
+    if not isinstance(value, str) or not _CHECKPOINT_ID_RE.fullmatch(value):
         raise PNLFOrbitalMemoryError(f"{field} must be a PNLF checkpoint ID")
-    return out
+    return value
 
 
 def _layers(values: Iterable[str]) -> tuple[str, ...]:
-    out = tuple(sorted(set(str(v) for v in values)))
+    if not isinstance(values, (list, tuple)):
+        raise PNLFOrbitalMemoryError("active M-layers must be a list or tuple")
+    clean: list[str] = []
+    for value in values:
+        if not isinstance(value, str) or not value:
+            raise PNLFOrbitalMemoryError("active M-layer ids must be exact strings")
+        clean.append(value)
+    out = tuple(sorted(set(clean)))
     if not out:
         raise PNLFOrbitalMemoryError("at least one active M-layer is required")
     unknown = sorted(set(out) - M_LAYERS)
@@ -132,7 +146,9 @@ class OrbitalState:
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "attractor_id", _require_text(self.attractor_id, "attractor_id"))
-        band = str(self.orbital_band)
+        if not isinstance(self.orbital_band, str):
+            raise PNLFOrbitalMemoryError("orbital_band must be an exact string")
+        band = self.orbital_band
         if band not in ORBITAL_BANDS:
             raise PNLFOrbitalMemoryError(f"orbital_band must be one of {sorted(ORBITAL_BANDS)}")
         object.__setattr__(self, "orbital_band", band)
@@ -335,7 +351,7 @@ def build_state_checkpoint(
     object.__setattr__(proto, "active_m_layers", _layers(active_m_layers))
     if not isinstance(orbital_state, OrbitalState):
         raise PNLFOrbitalMemoryError("orbital_state must be OrbitalState")
-    if abs(orbital_state.proper_time - float(tau)) > 1e-12:
+    if abs(orbital_state.proper_time - proto.tau) > 1e-12:
         raise PNLFOrbitalMemoryError("checkpoint tau must equal orbital_state.proper_time")
     object.__setattr__(proto, "orbital_state", orbital_state)
     object.__setattr__(proto, "state_commitment", "0" * 64)
@@ -416,7 +432,9 @@ class LiminalSegmentRevision:
         if self.target_orbital_state is not None and not isinstance(self.target_orbital_state, OrbitalState):
             raise PNLFOrbitalMemoryError("target_orbital_state must be OrbitalState or None")
         object.__setattr__(self, "epistemic_state", _require_text(self.epistemic_state, "epistemic_state"))
-        state = str(self.resolution_state).upper()
+        if not isinstance(self.resolution_state, str):
+            raise PNLFOrbitalMemoryError("resolution_state must be an exact string")
+        state = self.resolution_state.upper()
         if state not in RESOLUTION_STATES:
             raise PNLFOrbitalMemoryError(f"resolution_state must be one of {sorted(RESOLUTION_STATES)}")
         object.__setattr__(self, "resolution_state", state)

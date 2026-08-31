@@ -2,6 +2,8 @@ name: PNCS GREMLIN PNV authoring
 
 on:
   pull_request:
+    branches:
+      - main
     paths:
       - 'native/GREMLIN_TRIPLE_PULSE_BOOT_V0_5.pnv'
       - 'scripts/noema_gremlin_post_working_state_v03.py'
@@ -22,6 +24,10 @@ on:
       - 'src/phasenav_natural_code/pnv_noether_rfc_current_holonomy_v01.py'
       - 'src/phasenav_natural_code/pnv_scalar_field_rotor_reduction_v01.py'
       - 'src/phasenav_natural_code/pnv_gauge_covariant_phase_pullback_v01.py'
+      - 'src/phasenav_natural_code/gremlin_cross_formalism_bank_v02.py'
+      - 'src/phasenav_natural_code/gremlin_cross_formalism_sealed_bundle_v01.py'
+      - 'src/phasenav_natural_code/gremlin_cross_formalism_round28_v01.py'
+      - 'src/phasenav_natural_code/gremlin_round28_sealed_bundle_v01.py'
       - 'tests/test_gremlin_pnv_authoring_v02.py'
       - 'tests/test_gremlin_live_hydration_v03.py'
       - 'tests/test_gremlin_pnv_bridge_v02.py'
@@ -45,6 +51,10 @@ on:
       - 'tests/test_pnv_noether_rfc_current_holonomy_v01.py'
       - 'tests/test_pnv_scalar_field_rotor_reduction_v01.py'
       - 'tests/test_pnv_gauge_covariant_phase_pullback_v01.py'
+      - 'tests/test_gremlin_cross_formalism_bank_v02.py'
+      - 'tests/test_gremlin_cross_formalism_sealed_bundle_v01.py'
+      - 'tests/test_gremlin_cross_formalism_round28_v01.py'
+      - 'tests/test_gremlin_round28_sealed_bundle_v01.py'
       - 'spec/PNCS_GREMLIN_PNV_AUTHORING_V0_2.md'
       - 'spec/PNCS_GREMLIN_LIVE_AUTHORING_V0_3.md'
       - 'spec/PNCS_GREMLIN_RELATIONAL_ISOMORPHISM_COMPILER_V0_1.md'
@@ -58,6 +68,9 @@ on:
       - 'spec/PNCS_PNV_NOETHER_RFC_CURRENT_BINDING_V0_1.md'
       - 'spec/PNCS_PNV_SCALAR_FIELD_ROTOR_INERTIA_REDUCTION_V0_1.md'
       - 'spec/PNCS_PNV_GAUGE_COVARIANT_PHASE_PULLBACK_V0_1.md'
+      - 'spec/PNCS_GREMLIN_CROSS_FORMALISM_ISOMORPHISM_BANK_V0_2.md'
+      - 'spec/PNCS_GREMLIN_CROSS_FORMALISM_SEALED_AUTHORING_V0_1.md'
+      - 'spec/PNCS_GREMLIN_CROSS_FORMALISM_ROUND28_V0_1.md'
       - '.github/workflows/pncs-gremlin-pnv-authoring.yml'
   workflow_dispatch:
 
@@ -102,5 +115,9 @@ jobs:
           tests/test_pnv_noether_rfc_current_holonomy_v01.py
           tests/test_pnv_scalar_field_rotor_reduction_v01.py
           tests/test_pnv_gauge_covariant_phase_pullback_v01.py
+          tests/test_gremlin_cross_formalism_bank_v02.py
+          tests/test_gremlin_cross_formalism_sealed_bundle_v01.py
+          tests/test_gremlin_cross_formalism_round28_v01.py
+          tests/test_gremlin_round28_sealed_bundle_v01.py
           tests/test_gremlin_native_pnv_bridge_v01.py
           tests/test_native_pnv_exec_v01.py

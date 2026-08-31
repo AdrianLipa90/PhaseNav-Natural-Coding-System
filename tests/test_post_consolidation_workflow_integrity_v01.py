@@ -98,6 +98,15 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
     ):
         assert path in gremlin
 
+    tau = _workflow("pncs-tau-liminal-file-v01.yml")
+    for path in (
+        "src/phasenav_natural_code/gremlin_tau_codec_v01.py",
+        "src/phasenav_natural_code/gremlin_isomorphic_codec_merge_v01.py",
+        "tests/test_gremlin_tau_codec_v01.py",
+        "tests/test_gremlin_isomorphic_codec_merge_v01.py",
+    ):
+        assert path in tau
+
 
 def test_v1_release_closure_runs_full_post_merge_regression_surface():
     text = _workflow("pncs-v1-release-closure.yml")
@@ -120,6 +129,11 @@ def test_v1_release_closure_runs_full_post_merge_regression_surface():
         "tests/test_gremlin_relation_mining_admission_v01.py",
         "tests/test_gremlin_kaku_resolver_v01.py",
         "tests/test_gremlin_kaku_resolver_admission_v01.py",
+        "tests/test_gremlin_kaku_resolver_pipeline_v01.py",
+        "tests/test_tau_frame_codec_v01.py",
+        "tests/test_pnh5_tau_realization_v01.py",
+        "tests/test_gremlin_tau_codec_v01.py",
+        "tests/test_gremlin_isomorphic_codec_merge_v01.py",
         "tests/test_gremlin_inverse_lineage_v01.py",
         "tests/test_gremlin_pnv_holonomy_v01.py",
         "tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py",

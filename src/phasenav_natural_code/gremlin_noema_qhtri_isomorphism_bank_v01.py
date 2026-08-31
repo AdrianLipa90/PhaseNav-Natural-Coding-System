@@ -286,6 +286,40 @@ def bank_manifest() -> Mapping[str, object]:
     return {**body, "manifest_sha256": hashlib.sha256(raw).hexdigest()}
 
 
+def _compilation_manifest(
+    compiled: Mapping[str, RelationalCompilation],
+) -> dict[str, object]:
+    return {
+        **bank_manifest(),
+        "compilation_schema": COMPILATION_SCHEMA,
+        "compiled_entries": {
+            key: {
+                "receipt_sha256": value.receipt["receipt_sha256"],
+                "radical_candidate_id": value.radical_candidate["candidate_id"],
+                "pnv_graph_sha256": value.receipt["pnv_graph_sha256"],
+            }
+            for key, value in sorted(compiled.items())
+        },
+    }
+
+
+def _validate_aggregate_manifest(bank: NoemaQhtriBankCompilation) -> None:
+    if not isinstance(bank, NoemaQhtriBankCompilation):
+        raise RuntimeError("NoemaQhtriBankCompilation required")
+    if not isinstance(bank.compilations, Mapping):
+        raise RuntimeError("NOEMA/QHTRI bank compilations must be a mapping")
+    expected_ids = {entry.spec.isomorphism_id for entry in isomorphism_bank()}
+    if set(bank.compilations) != expected_ids:
+        raise RuntimeError("NOEMA/QHTRI bank compilation keyset mismatch")
+    if any(not isinstance(item, RelationalCompilation) for item in bank.compilations.values()):
+        raise RuntimeError("NOEMA/QHTRI bank compilation entry type mismatch")
+    if not isinstance(bank.manifest, Mapping):
+        raise RuntimeError("NOEMA/QHTRI aggregate manifest must be a mapping")
+    expected = _compilation_manifest(bank.compilations)
+    if dict(bank.manifest) != expected:
+        raise RuntimeError("NOEMA/QHTRI aggregate manifest mismatch")
+
+
 def compile_isomorphism_bank_candidates(
     *,
     generation_binding: str,
@@ -302,23 +336,14 @@ def compile_isomorphism_bank_candidates(
             authority=authority,
             authoring_root=authoring_root,
         )
-    base = bank_manifest()
-    manifest = {
-        **base,
-        "compilation_schema": COMPILATION_SCHEMA,
-        "compiled_entries": {
-            key: {
-                "receipt_sha256": value.receipt["receipt_sha256"],
-                "radical_candidate_id": value.radical_candidate["candidate_id"],
-                "pnv_graph_sha256": value.receipt["pnv_graph_sha256"],
-            }
-            for key, value in sorted(compiled.items())
-        },
-    }
-    return NoemaQhtriBankCompilation(compilations=compiled, manifest=manifest)
+    return NoemaQhtriBankCompilation(
+        compilations=compiled,
+        manifest=_compilation_manifest(compiled),
+    )
 
 
 def validate_isomorphism_bank_candidates(bank: NoemaQhtriBankCompilation):
+    _validate_aggregate_manifest(bank)
     results = {}
     for iso_id, compilation in sorted(bank.compilations.items()):
         result = validate_compiled_relational_candidate(compilation)

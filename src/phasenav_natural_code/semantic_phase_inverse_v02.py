@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
+from numbers import Real
 from typing import Any
 
 from .semantic_orbital_carrier_v01 import (
@@ -30,20 +31,21 @@ class SemanticPhaseInverseError(ValueError):
 
 
 def _finite(name: str, value: float) -> float:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise SemanticPhaseInverseError(f"{name} must be finite real")
     try:
         value = float(value)
     except (TypeError, ValueError, OverflowError) as exc:
-        raise SemanticPhaseInverseError(f"{name} must be finite") from exc
+        raise SemanticPhaseInverseError(f"{name} must be finite real") from exc
     if not math.isfinite(value):
-        raise SemanticPhaseInverseError(f"{name} must be finite")
+        raise SemanticPhaseInverseError(f"{name} must be finite real")
     return value
 
 
 def _text(name: str, value: str) -> str:
-    value = str(value).strip()
-    if not value:
+    if not isinstance(value, str) or not value.strip():
         raise SemanticPhaseInverseError(f"{name} must be non-empty")
-    return value
+    return value.strip()
 
 
 def _compose_lifted_phase(wrapped_phase: float, winding: int) -> float:
@@ -178,6 +180,8 @@ class SemanticPhasePlacement:
             raise SemanticPhaseInverseError("phase_code must be CanonicalPhaseSplit")
         if not isinstance(self.quantizer, OrbitQuantizerProfile):
             raise SemanticPhaseInverseError("quantizer must be OrbitQuantizerProfile")
+        if not isinstance(self.orbital_band, str):
+            raise SemanticPhaseInverseError("orbital_band must be an exact string")
         target = _finite("semantic_target", self.semantic_target)
         expected_phase = lifted_phase_from_semantic_value(
             target, self.B, self.omega, self.N, self.A_R

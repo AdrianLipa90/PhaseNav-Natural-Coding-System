@@ -12,6 +12,14 @@ from .gremlin_pnv_holonomy_v01 import (
     information_transport_connection,
 )
 from .model import Kaku
+from .pnv_holonomy_numeric_v01 import (
+    checked_abs_difference_ratio,
+    checked_difference,
+    checked_product,
+    checked_ratio,
+    finite_float,
+    finite_tree,
+)
 
 NOETHER_COLLECTIVE_CONTRACT = "PNCS_PNV_NOETHER_COLLECTIVE_CARRIER_V0_1"
 NOETHER_COLLECTIVE_LOOP_ID = "SOURCE.PHASE_NOETHER.COLLECTIVE_CARRIER.ROUNDTRIP"
@@ -22,13 +30,7 @@ class PNVNoetherCollectiveError(PNVInformationHolonomyError):
 
 
 def _finite(value: Any, field: str) -> float:
-    try:
-        out = float(value)
-    except (TypeError, ValueError) as exc:
-        raise PNVNoetherCollectiveError(f"{field} must be finite") from exc
-    if not math.isfinite(out):
-        raise PNVNoetherCollectiveError(f"{field} must be finite")
-    return out
+    return finite_float(value, field, PNVNoetherCollectiveError)
 
 
 def _positive(value: Any, field: str) -> float:
@@ -59,12 +61,18 @@ def make_noether_collective_state(
     i_phi: float,
     i_a: float,
 ) -> dict[str, Any]:
-    if isinstance(D, bool) or int(D) != D:
+    if isinstance(D, bool):
+        raise PNVNoetherCollectiveError("Euler sector D must be integer")
+    try:
+        d_int = int(D)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise PNVNoetherCollectiveError("Euler sector D must be integer") from exc
+    if d_int != D:
         raise PNVNoetherCollectiveError("Euler sector D must be integer")
     return {
         "schema": "PNCS_NOETHER_COLLECTIVE_CARRIER_STATE_V0_1",
         "representation": "EULER_CLOSED_ROTOR_INPUT",
-        "D": int(D),
+        "D": d_int,
         "epsilon_EB": _finite(epsilon_eb, "epsilon_EB"),
         "theta_I_EB": _finite(theta_i_eb, "theta_I_EB"),
         "hbar": _positive(hbar, "hbar"),
@@ -80,26 +88,79 @@ def _derived(state: Mapping[str, Any]) -> dict[str, float]:
     j_total = _finite(state.get("J_total"), "J_total")
     i_phi = _positive(state.get("I_phi"), "I_phi")
     i_a = _positive(state.get("I_A"), "I_A")
-    j_i = hbar * theta
-    p_phi = j_total - j_i
+
+    j_i = checked_product(
+        hbar,
+        theta,
+        field="J_I_EB",
+        error_type=PNVNoetherCollectiveError,
+    )
+    p_phi = checked_difference(
+        j_total,
+        j_i,
+        "P_Phi_EB",
+        PNVNoetherCollectiveError,
+    )
     if p_phi <= 0.0:
         raise PNVNoetherCollectiveError("positive rotor carrier P_Phi is required")
-    phase_rate = p_phi / i_phi
-    q_theta = i_a * phase_rate
+    phase_rate = checked_ratio(
+        p_phi,
+        i_phi,
+        "phase_rate",
+        PNVNoetherCollectiveError,
+    )
+    q_theta = checked_product(
+        i_a,
+        phase_rate,
+        field="Q_theta",
+        error_type=PNVNoetherCollectiveError,
+    )
     if q_theta <= 0.0:
         raise PNVNoetherCollectiveError("positive finite Noether charge Q_theta is required")
-    h_phi = p_phi * p_phi / (2.0 * i_phi)
-    epsilon_n = h_phi / q_theta
-    delta_i = abs(q_theta - p_phi) / abs(p_phi)
-    return {
-        "J_I_EB": j_i,
-        "P_Phi_EB": p_phi,
-        "phase_rate": phase_rate,
-        "Q_theta": q_theta,
-        "H_Phi_EB": h_phi,
-        "epsilon_N_EB": epsilon_n,
-        "Delta_I": delta_i,
-    }
+    p_phi_sq = checked_product(
+        p_phi,
+        p_phi,
+        field="P_Phi_EB_squared",
+        error_type=PNVNoetherCollectiveError,
+    )
+    two_i_phi = checked_product(
+        2.0,
+        i_phi,
+        field="2I_phi",
+        error_type=PNVNoetherCollectiveError,
+    )
+    h_phi = checked_ratio(
+        p_phi_sq,
+        two_i_phi,
+        "H_Phi_EB",
+        PNVNoetherCollectiveError,
+    )
+    epsilon_n = checked_ratio(
+        h_phi,
+        q_theta,
+        "epsilon_N_EB",
+        PNVNoetherCollectiveError,
+    )
+    delta_i = checked_abs_difference_ratio(
+        q_theta,
+        p_phi,
+        p_phi,
+        "Delta_I",
+        PNVNoetherCollectiveError,
+    )
+    return finite_tree(
+        {
+            "J_I_EB": j_i,
+            "P_Phi_EB": p_phi,
+            "phase_rate": phase_rate,
+            "Q_theta": q_theta,
+            "H_Phi_EB": h_phi,
+            "epsilon_N_EB": epsilon_n,
+            "Delta_I": delta_i,
+        },
+        "noether_collective_derived",
+        PNVNoetherCollectiveError,
+    )
 
 
 def collective_noether_binding_defect(state: Mapping[str, Any]) -> float:
@@ -152,12 +213,12 @@ def noether_collective_transforms(*, binding_tolerance: float = 1e-12) -> dict[s
             "schema": "PNCS_NOETHER_COLLECTIVE_CARRIER_STATE_V0_1",
             "representation": "EULER_CLOSED_ROTOR_INPUT",
             "D": int(state["D"]),
-            "epsilon_EB": float(state["epsilon_EB"]),
-            "theta_I_EB": float(state["theta_I_EB"]),
-            "hbar": float(state["hbar"]),
-            "J_total": float(state["J_total"]),
-            "I_phi": float(state["I_phi"]),
-            "I_A": float(state["I_A"]),
+            "epsilon_EB": _finite(state["epsilon_EB"], "epsilon_EB"),
+            "theta_I_EB": _finite(state["theta_I_EB"], "theta_I_EB"),
+            "hbar": _positive(state["hbar"], "hbar"),
+            "J_total": _finite(state["J_total"], "J_total"),
+            "I_phi": _positive(state["I_phi"], "I_phi"),
+            "I_A": _positive(state["I_A"], "I_A"),
         }
 
     return {

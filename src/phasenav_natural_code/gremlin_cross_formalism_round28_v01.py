@@ -14,6 +14,12 @@ from .gremlin_relational_compiler_v01 import (
     compile_relational_isomorphism,
     validate_compiled_relational_candidate,
 )
+from .gremlin_strict_admission_v01 import (
+    closed_unit_interval,
+    finite_real,
+    finite_real_sequence,
+    nonnegative_real,
+)
 from .model import Kaku, Vector36
 
 ROUND28_BANK_SCHEMA = "PNCS_GREMLIN_CROSS_FORMALISM_ROUND28_BANK_V0_1"
@@ -282,9 +288,12 @@ def validate_round28_candidates(compiled: Round28Compilation):
 
 
 def _unit3(vector: Sequence[float]) -> tuple[float, float, float]:
-    values = tuple(float(value) for value in vector)
-    if len(values) != 3 or any(not math.isfinite(value) for value in values):
-        raise Round28Error("finite three-vector required")
+    values = finite_real_sequence(
+        vector,
+        "three-vector",
+        exact_length=3,
+        error_type=Round28Error,
+    )
     norm = math.sqrt(sum(value * value for value in values))
     if norm <= 0.0:
         raise Round28Error("nonzero three-vector required")
@@ -292,23 +301,28 @@ def _unit3(vector: Sequence[float]) -> tuple[float, float, float]:
 
 
 def _dot(a: Sequence[float], b: Sequence[float]) -> float:
-    return sum(float(x) * float(y) for x, y in zip(a, b))
+    if len(a) != len(b):
+        raise Round28Error("dot-product dimensions must match")
+    return sum(x * y for x, y in zip(a, b))
 
 
 def _cross(a: Sequence[float], b: Sequence[float]) -> tuple[float, float, float]:
-    ax, ay, az = (float(value) for value in a)
-    bx, by, bz = (float(value) for value in b)
+    if len(a) != 3 or len(b) != 3:
+        raise Round28Error("cross product requires three-vectors")
+    ax, ay, az = a
+    bx, by, bz = b
     return (ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx)
 
 
 def cp1_minimal_axis_angle(a: Sequence[float], b: Sequence[float], *, tolerance: float = 1e-12) -> Mapping[str, object]:
     left = _unit3(a)
     right = _unit3(b)
+    tol = nonnegative_real(tolerance, "tolerance", error_type=Round28Error)
     cosine = max(-1.0, min(1.0, _dot(left, right)))
     theta = math.acos(cosine)
-    if abs(math.pi - theta) <= tolerance:
+    if abs(math.pi - theta) <= tol:
         raise Round28Error("antipodal CP1 endpoints are ambiguous")
-    if theta <= tolerance:
+    if theta <= tol:
         return {"a": left, "b": right, "theta": 0.0, "axis": (0.0, 0.0, 1.0)}
     axis = _unit3(_cross(left, right))
     return {"a": left, "b": right, "theta": theta, "axis": axis}
@@ -317,9 +331,7 @@ def cp1_minimal_axis_angle(a: Sequence[float], b: Sequence[float], *, tolerance:
 def rodrigues_rotate(vector: Sequence[float], axis: Sequence[float], theta: float) -> tuple[float, float, float]:
     v = _unit3(vector)
     k = _unit3(axis)
-    angle = float(theta)
-    if not math.isfinite(angle):
-        raise Round28Error("finite angle required")
+    angle = finite_real(theta, "angle", error_type=Round28Error)
     cross = _cross(k, v)
     dot = _dot(k, v)
     c = math.cos(angle)
@@ -329,18 +341,20 @@ def rodrigues_rotate(vector: Sequence[float], axis: Sequence[float], theta: floa
 
 def spin_lift_quaternion(axis: Sequence[float], theta: float) -> tuple[float, float, float, float]:
     k = _unit3(axis)
-    half = 0.5 * float(theta)
-    if not math.isfinite(half):
-        raise Round28Error("finite angle required")
+    angle = finite_real(theta, "angle", error_type=Round28Error)
+    half = 0.5 * angle
     s = math.sin(half)
     return (math.cos(half), s * k[0], s * k[1], s * k[2])
 
 
 def quaternion_rotate(vector: Sequence[float], quaternion: Sequence[float]) -> tuple[float, float, float]:
     v = _unit3(vector)
-    q = tuple(float(value) for value in quaternion)
-    if len(q) != 4 or any(not math.isfinite(value) for value in q):
-        raise Round28Error("finite quaternion required")
+    q = finite_real_sequence(
+        quaternion,
+        "quaternion",
+        exact_length=4,
+        error_type=Round28Error,
+    )
     norm = math.sqrt(sum(value * value for value in q))
     if norm <= 0.0:
         raise Round28Error("nonzero quaternion required")
@@ -353,44 +367,41 @@ def quaternion_rotate(vector: Sequence[float], quaternion: Sequence[float]) -> t
 
 def cp1_spin_lift_projection_defect(a: Sequence[float], b: Sequence[float]) -> Mapping[str, float]:
     geometry = cp1_minimal_axis_angle(a, b)
-    theta = float(geometry["theta"])
+    theta = finite_real(geometry["theta"], "theta", error_type=Round28Error)
     axis = geometry["axis"]
     source = geometry["a"]
     target = geometry["b"]
-    rodrigues = rodrigues_rotate(source, axis, theta)
-    quaternion = spin_lift_quaternion(axis, theta)
-    lifted = quaternion_rotate(source, quaternion)
+    rodrigues = rodrigues_rotate(source, axis, theta)  # type: ignore[arg-type]
+    quaternion = spin_lift_quaternion(axis, theta)  # type: ignore[arg-type]
+    lifted = quaternion_rotate(source, quaternion)  # type: ignore[arg-type]
     return {
-        "so3_to_target": math.sqrt(sum((rodrigues[i] - target[i]) ** 2 for i in range(3))),
+        "so3_to_target": math.sqrt(sum((rodrigues[i] - target[i]) ** 2 for i in range(3))),  # type: ignore[index]
         "su2_projection_to_so3": math.sqrt(sum((lifted[i] - rodrigues[i]) ** 2 for i in range(3))),
         "central_sign_projection": math.sqrt(
-            sum((quaternion_rotate(source, tuple(-value for value in quaternion))[i] - lifted[i]) ** 2 for i in range(3))
+            sum((quaternion_rotate(source, tuple(-value for value in quaternion))[i] - lifted[i]) ** 2 for i in range(3))  # type: ignore[arg-type]
         ),
     }
 
 
 def half_interface_defect(weight: float, delta_tau: float) -> float:
-    p = float(weight)
-    phase = float(delta_tau)
-    if not 0.0 <= p <= 1.0 or not math.isfinite(phase):
-        raise Round28Error("half-interface requires weight in [0,1] and finite phase")
+    p = closed_unit_interval(weight, "weight", error_type=Round28Error)
+    phase = finite_real(delta_tau, "delta_tau", error_type=Round28Error)
     return 1.0 + 2.0 * math.sqrt(p * (1.0 - p)) * math.cos(0.5 * phase)
 
 
 def half_interface_is_zero(weight: float, delta_tau: float, *, tolerance: float = 1e-12) -> bool:
-    return abs(half_interface_defect(weight, delta_tau)) <= tolerance
+    tol = nonnegative_real(tolerance, "tolerance", error_type=Round28Error)
+    return abs(half_interface_defect(weight, delta_tau)) <= tol
 
 
 def half_rapidity_forward(rapidity: float) -> float:
-    value = float(rapidity)
-    if not math.isfinite(value):
-        raise Round28Error("finite rapidity required")
+    value = finite_real(rapidity, "rapidity", error_type=Round28Error)
     return math.tanh(0.5 * value)
 
 
 def half_rapidity_inverse(centered: float) -> float:
-    value = float(centered)
-    if not math.isfinite(value) or abs(value) >= 1.0:
+    value = finite_real(centered, "centered coordinate", error_type=Round28Error)
+    if abs(value) >= 1.0:
         raise Round28Error("centered coordinate must satisfy |t| < 1")
     return 2.0 * math.atanh(value)
 

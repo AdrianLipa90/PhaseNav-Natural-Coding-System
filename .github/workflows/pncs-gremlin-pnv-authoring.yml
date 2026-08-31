@@ -20,6 +20,7 @@ on:
       - 'src/phasenav_natural_code/fpdg_gremlin_pain_ingress_v01.py'
       - 'src/phasenav_natural_code/gremlin_inverse_lineage_v01.py'
       - 'src/phasenav_natural_code/gremlin_pnv_holonomy_v01.py'
+      - 'src/phasenav_natural_code/pnv_holonomy_numeric_v01.py'
       - 'src/phasenav_natural_code/pnv_source_holonomy_v01.py'
       - 'src/phasenav_natural_code/pnv_noether_collective_holonomy_v01.py'
       - 'src/phasenav_natural_code/pnv_noether_rfc_current_holonomy_v01.py'
@@ -48,6 +49,7 @@ on:
       - 'tests/test_gremlin_inverse_lineage_v01.py'
       - 'tests/test_gremlin_pnv_holonomy_v01.py'
       - 'tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py'
+      - 'tests/test_pnv_holonomy_numeric_hardening_v01.py'
       - 'tests/test_pnv_source_holonomy_v01.py'
       - 'tests/test_pnv_noether_collective_holonomy_v01.py'
       - 'tests/test_pnv_noether_rfc_current_holonomy_v01.py'
@@ -116,6 +118,7 @@ jobs:
           tests/test_gremlin_inverse_lineage_v01.py
           tests/test_gremlin_pnv_holonomy_v01.py
           tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py
+          tests/test_pnv_holonomy_numeric_hardening_v01.py
           tests/test_pnv_source_holonomy_v01.py
           tests/test_pnv_noether_collective_holonomy_v01.py
           tests/test_pnv_noether_rfc_current_holonomy_v01.py

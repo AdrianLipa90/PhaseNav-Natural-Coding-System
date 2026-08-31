@@ -4,56 +4,123 @@ Status: `POST_V1_EXPERIMENTAL / FAIL_CLOSED / ZERO_RELEASE_GATE_AUTHORITY`
 
 ## Purpose
 
-Add an interpreter boundary for native `.pnv` source so PNCS can parse and execute admitted PNV1 relational programs instead of using a hand-written semantic harness for each native witness.
+This contract defines the native PNV1 interpreter boundary used by PNCS relational witnesses. A successful execution is bound to the exact source text, the exact parsed operator graph, the ordered execution trace, emitted-value commitments, and the observed effect boundary.
 
-The tool is deliberately outside the frozen v0.29/v0.30/v1.0 release scope. It does not alter the v1 release train and carries zero release-gate authority.
+## Admitted headers and statements
 
-## Supported PNV1 statements
+The parser admits exactly:
 
-Headers are admitted fail-closed:
+```text
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY | INTERNAL_EXECUTION
+```
 
-- `PNV 1`;
-- `EPISTEMIC CHYBA`;
-- `MODE READ_ONLY` or `MODE INTERNAL_EXECUTION`.
+Admitted execution statements are:
 
-Execution statements: `SOURCE`, `IDENTITY`, `DIFFERENCE`, `CONDITION`, `ORDER`, `TRANSFORM`, `COMPOSITION`, `RETURN`, plus `ASSERT` and `EMIT`.
+```text
+SOURCE
+IDENTITY
+DIFFERENCE
+CONDITION
+ORDER
+TRANSFORM
+COMPOSITION
+RETURN
+ASSERT
+EMIT
+```
 
-No new PNV opcode is introduced.
+`TRUE`, `FALSE`, and `NONE` are reserved literals and cannot be shadowed by OP names. OP names are unique. ASSERT and EMIT references are valid, unique operator references.
 
-## Execution boundary
+## Exact source-to-graph binding
 
-External semantics are admitted only through explicit `sources`, `comparators`, and `transforms` registries. Unknown tokens, comparators, transforms, opcodes, duplicate OP names, malformed or unsupported headers, failed assertions, dangling references, non-canonical values, and non-finite numeric results fail closed.
+`PNVProgram` stores the exact `source_text` and derives:
 
-The interpreter implementation itself exposes no Python eval/exec, dynamic import, shell, subprocess, network, Git, device access, or arbitrary filesystem read.
+```text
+source_sha256 = SHA256(exact source bytes)
+```
 
-Python comparator and transform callbacks are an explicit boundary beyond what the interpreter can observe. When no callback is invoked, the successful receipt records `external_effects=false` with status `VERIFIED_NONE_WITHIN_INTERPRETER_BOUNDARY`. When a comparator or transform callback is invoked, the receipt records `external_effects=null` with status `UNVERIFIED_CALLBACK_BOUNDARY`, preserves the interpreter-local no-effect measurements separately, and lists the invoked callback bindings. A callback-bearing execution therefore never claims globally verified zero external effects from the interpreter alone.
+Before executing a public `PNVProgram` object, the interpreter reparses its stored source and requires exact structural equality of:
+
+```text
+version
+epistemic
+mode
+ops
+assertions
+emits
+metadata
+```
+
+A caller therefore cannot attach a valid source hash to a different in-memory operator graph.
+
+## Canonical runtime-value domain
+
+Every source, operation result, final value, emitted value, and hashed value is normalized into one canonical finite JSON domain.
+
+Rules:
+
+- JSON object keys are strings;
+- tuples and lists share one canonical JSON-array representation;
+- finite floats are admitted;
+- non-finite floats fail closed;
+- unsupported Python objects fail closed;
+- numeric operations that overflow to non-finite values fail closed before receipt construction.
+
+This prevents Python-object distinctions from creating ambiguous JSON commitments.
+
+## External semantics and effect boundary
+
+External semantics are admitted only through explicit `sources`, `comparators`, and `transforms` registries. Unknown tokens or callbacks fail closed. Callback exceptions are converted to controlled PNCS resolution errors.
+
+The interpreter-local implementation performs no shell, subprocess, network, Git, device, or arbitrary-filesystem action. Its receipt records those interpreter-local measurements separately.
+
+When no comparator or transform callback is invoked:
+
+```text
+external_effects = false
+external_effects_status = VERIFIED_NONE_WITHIN_INTERPRETER_BOUNDARY
+callback_effects_verified = true
+callback_determinism_verified = true
+```
+
+When a Python comparator or transform callback is invoked, effects outside the interpreter cannot be inferred from the interpreter alone. The receipt records:
+
+```text
+external_effects = null
+external_effects_status = UNVERIFIED_CALLBACK_BOUNDARY
+callback_effects_verified = false
+callback_determinism_verified = false
+callbacks_invoked = [...]
+```
+
+The interpreter-local fields remain `false`, preserving the measured boundary without promoting callback purity.
 
 ## Receipt
 
-Every successful execution returns a deterministic SHA-256 receipt binding source bytes, parsed program graph, ordered operator trace, assertion results, emitted object hashes, the explicit interpreter effect boundary, and the callback-boundary status.
+Every successful execution returns a SHA-256 receipt binding:
 
-Runtime values entering the receipt must be canonical finite JSON. Numerical operations that overflow to non-finite values are rejected before receipt construction.
+```text
+program_source_sha256
+program_graph_sha256
+pnv_version
+epistemic
+mode
+ordered trace hashes
+assertion results
+emitted value hashes
+effect_boundary
+```
+
+`deterministic_receipt = true` means the observed receipt body has deterministic canonical serialization. Callback determinism is reported independently by `callback_determinism_verified`.
 
 ## GREMLIN / BELZEBUB live bridge
 
-`gremlin_native_pnv_bridge_v01.py` binds the interpreter to the already-verified PNCS live-surface loader. Live use requires the canonical `/dev/shm/ciel_noema` surface and Unix socket admission. No static-state fallback is provided.
+`gremlin_native_pnv_bridge_v01.py` binds native execution to the verified live PNCS surface. Live execution requires canonical `/dev/shm/ciel_noema` admission. GREMLIN Triple Pulse and BELZEBUB witnesses preserve callback-boundary status in their native execution receipts.
 
-GREMLIN Triple Pulse binds `current.identity`, `current.domain`, `current.authority`, `user.request`, the same-generation pulse set, and the current live-surface receipt into the native PNV1 graph from `GREMLIN_TRIPLE_PULSE_BOOT_V0_5.pnv`.
+## Fail-closed gate
 
-BELZEBUB binds its content-addressed quarantine object and `CURRENT` pointer from its own namespace. `invariant_violation` and `defensive_semantic_digest` remain explicit admitted semantics; quarantined content remains data. Their Python callback effects are reported through the callback boundary described above rather than being inferred as absent.
+The interpreter rejects malformed headers, unknown opcodes, duplicate or reserved operator identities, dangling ASSERT/EMIT references, noncanonical values, non-finite arithmetic, unregistered semantics, callback exceptions, failed assertions, and source-to-graph mismatch.
 
-## Harness comparison rule
-
-The old Triple Pulse object and the new native-executor receipt are different provenance schemas, so byte-for-byte receipt identity is neither expected nor asserted. The bridge instead performs an exact canonical semantic projection comparison over identity, domain surface, authority, request, generation binding, and admission result.
-
-A mismatch is reported as a mismatch; it is never normalized away.
-
-## Current gate
-
-1. Pure native executor tests.
-2. GREMLIN Triple Pulse native execution test.
-3. Exact canonical semantic-projection comparison against the legacy Triple Pulse harness witness.
-4. BELZEBUB content-addressed quarantine execution test.
-5. Live `/dev/shm/ciel_noema` run only when the existing PNCS tether/live-surface guard passes.
-
-The bridge remains post-v1 experimental until its live receipts and regression evidence are separately promoted.
+The tool remains under `CHYBA` and carries zero automatic canon or release-promotion authority.

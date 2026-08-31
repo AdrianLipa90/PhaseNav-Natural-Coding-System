@@ -4,7 +4,8 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
-from typing import Any, Sequence
+from numbers import Real
+from typing import Any, Mapping, Sequence
 
 from .semantic_orbital_carrier_v01 import SemanticOrbitalBinding
 
@@ -17,10 +18,27 @@ class SemanticOrbitalTrajectoryError(ValueError):
     pass
 
 
-def _finite(name: str, value: float) -> float:
-    value = float(value)
-    if not math.isfinite(value):
-        raise SemanticOrbitalTrajectoryError(f"{name} must be finite")
+def _finite(name: str, value: object) -> float:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise SemanticOrbitalTrajectoryError(f"{name} must be finite real")
+    try:
+        out = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SemanticOrbitalTrajectoryError(f"{name} must be finite real") from exc
+    if not math.isfinite(out):
+        raise SemanticOrbitalTrajectoryError(f"{name} must be finite real")
+    return out
+
+
+def _profile(value: object) -> str:
+    if not isinstance(value, str) or not value:
+        raise SemanticOrbitalTrajectoryError(
+            "phase-rate profile id must be an exact non-empty string"
+        )
+    if value != TRAPEZOIDAL_PROFILE:
+        raise SemanticOrbitalTrajectoryError(
+            f"unsupported phase-rate profile: {value}"
+        )
     return value
 
 
@@ -48,7 +66,10 @@ class SemanticOrbitalTrajectoryPoint:
 
     @property
     def lifted_phase(self) -> float:
-        return self.binding.sample.phi + (2.0 * math.pi * self.winding)
+        return _finite(
+            "lifted_phase",
+            self.binding.sample.phi + (2.0 * math.pi * self.winding),
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -68,30 +89,34 @@ def point_from_binding(
             "binding must be SemanticOrbitalBinding"
         )
     if winding is None:
-        source = binding.source_orbital_state
-        if source is None or "winding" not in source:
+        frozen_source = binding.body()["source_orbital_state"]
+        if not isinstance(frozen_source, Mapping) or "winding" not in frozen_source:
             raise SemanticOrbitalTrajectoryError(
-                "explicit winding or source_orbital_state winding is required"
+                "explicit winding or frozen source provenance winding is required"
             )
-        winding = float(source["winding"])
+        winding = _finite("source winding", frozen_source["winding"])
     return SemanticOrbitalTrajectoryPoint(binding=binding, winding=winding)
 
 
 def _validate_points(
     points: Sequence[SemanticOrbitalTrajectoryPoint],
 ) -> tuple[SemanticOrbitalTrajectoryPoint, ...]:
-    points = tuple(points)
-    if len(points) < 2:
+    if not isinstance(points, (tuple, list)):
+        raise SemanticOrbitalTrajectoryError(
+            "trajectory points must be an explicit list or tuple"
+        )
+    clean = tuple(points)
+    if len(clean) < 2:
         raise SemanticOrbitalTrajectoryError(
             "trajectory requires at least two points"
         )
-    if not all(isinstance(p, SemanticOrbitalTrajectoryPoint) for p in points):
+    if not all(isinstance(p, SemanticOrbitalTrajectoryPoint) for p in clean):
         raise SemanticOrbitalTrajectoryError(
             "trajectory points must be SemanticOrbitalTrajectoryPoint"
         )
 
-    first = points[0].binding.sample
-    for point in points[1:]:
+    first = clean[0].binding.sample
+    for point in clean[1:]:
         sample = point.binding.sample
         if sample.kaku_id != first.kaku_id:
             raise SemanticOrbitalTrajectoryError(
@@ -102,12 +127,12 @@ def _validate_points(
                 "trajectory must preserve one content id"
             )
 
-    times = [p.binding.sample.sample_time for p in points]
+    times = [p.binding.sample.sample_time for p in clean]
     if any(b <= a for a, b in zip(times, times[1:])):
         raise SemanticOrbitalTrajectoryError(
             "trajectory sample times must be strictly increasing"
         )
-    return points
+    return clean
 
 
 def trajectory_segments(
@@ -115,20 +140,24 @@ def trajectory_segments(
     *,
     profile_id: str = TRAPEZOIDAL_PROFILE,
 ) -> tuple[dict[str, float], ...]:
-    points = _validate_points(points)
-    if profile_id != TRAPEZOIDAL_PROFILE:
-        raise SemanticOrbitalTrajectoryError(
-            f"unsupported phase-rate profile: {profile_id}"
-        )
+    clean = _validate_points(points)
+    profile = _profile(profile_id)
 
     out: list[dict[str, float]] = []
-    for left, right in zip(points, points[1:]):
+    for left, right in zip(clean, clean[1:]):
         l = left.binding.sample
         r = right.binding.sample
-        delta_t = r.sample_time - l.sample_time
-        delta_lifted_phase = right.lifted_phase - left.lifted_phase
-        integrated_phase = 0.5 * (l.omega + r.omega) * delta_t
-        residual = delta_lifted_phase - integrated_phase
+        delta_t = _finite("delta_t", r.sample_time - l.sample_time)
+        delta_lifted_phase = _finite(
+            "delta_lifted_phase", right.lifted_phase - left.lifted_phase
+        )
+        integrated_phase = _finite(
+            "integrated_phase_from_omega",
+            0.5 * (l.omega + r.omega) * delta_t,
+        )
+        residual = _finite(
+            "phase_residual", delta_lifted_phase - integrated_phase
+        )
         out.append(
             {
                 "t_left": l.sample_time,
@@ -148,21 +177,25 @@ def semantic_orbital_trajectory_receipt(
     tolerance: float = 0.0,
     profile_id: str = TRAPEZOIDAL_PROFILE,
 ) -> dict[str, Any]:
-    points = _validate_points(points)
-    tolerance = _finite("tolerance", tolerance)
-    if tolerance < 0.0:
+    clean = _validate_points(points)
+    tolerance_value = _finite("tolerance", tolerance)
+    if tolerance_value < 0.0:
         raise SemanticOrbitalTrajectoryError("tolerance must be non-negative")
-    segments = trajectory_segments(points, profile_id=profile_id)
-    max_abs_residual = max(abs(s["phase_residual"]) for s in segments)
-    consistency = "PASS" if max_abs_residual <= tolerance else "FAIL"
+    profile = _profile(profile_id)
+    segments = trajectory_segments(clean, profile_id=profile)
+    max_abs_residual = _finite(
+        "max_abs_phase_residual",
+        max(abs(s["phase_residual"]) for s in segments),
+    )
+    consistency = "PASS" if max_abs_residual <= tolerance_value else "FAIL"
     body = {
         "schema": SCHEMA,
-        "phase_rate_profile_id": profile_id,
-        "kaku_id": points[0].binding.sample.kaku_id,
-        "content_id": points[0].binding.sample.content_id,
-        "points": [point.to_dict() for point in points],
+        "phase_rate_profile_id": profile,
+        "kaku_id": clean[0].binding.sample.kaku_id,
+        "content_id": clean[0].binding.sample.content_id,
+        "points": [point.to_dict() for point in clean],
         "segments": list(segments),
-        "tolerance": tolerance,
+        "tolerance": tolerance_value,
         "max_abs_phase_residual": max_abs_residual,
         "phase_rate_consistency": consistency,
         "epistemic_state": "CHYBA",

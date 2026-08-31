@@ -14,7 +14,7 @@ pub const ABI_VERSION: u32 = 1;
 #[repr(C, align(32))]
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Phi36 {
-    pub x: [f64; DIM],
+    x: [f64; DIM],
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -31,7 +31,7 @@ impl Phi36 {
     }
 
     #[inline]
-    pub const fn from_finite_unchecked(x: [f64; DIM]) -> Self {
+    const fn from_finite_unchecked(x: [f64; DIM]) -> Self {
         Self { x }
     }
 

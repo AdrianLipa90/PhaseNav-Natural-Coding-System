@@ -77,8 +77,14 @@ def _require_text(value: Any, label: str) -> str:
     return value.strip()
 
 
+def _require_source_text(value: Any, label: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise GremlinLiveHydrationError(f"{label} must be a non-empty string")
+    return value
+
+
 def _sha256_text(text: str) -> str:
-    exact = _require_text(text, "native PNV source")
+    exact = _require_source_text(text, "native PNV source")
     return hashlib.sha256(exact.encode("utf-8")).hexdigest()
 
 
@@ -388,7 +394,7 @@ def hydrate_gremlin_pnv_live(
     root = Path(surface_root)
     if root != DEFAULT_SURFACE_ROOT:
         raise GremlinLiveHydrationError("GREMLIN live hydration must bind /dev/shm/ciel_noema")
-    source = _require_text(pnv_text, "native GREMLIN triple-pulse PNV source")
+    source = _require_source_text(pnv_text, "native GREMLIN triple-pulse PNV source")
     request_text = _require_text(request, "request")
 
     live, runtime_instances = _load_coherent_live(
@@ -493,7 +499,7 @@ def open_verified_gremlin_pnv_authoring_live(
     if root != DEFAULT_SURFACE_ROOT:
         raise GremlinPNVAuthoringError("live GREMLIN authoring must bind /dev/shm/ciel_noema")
     try:
-        source = _require_text(pnv_text, "exact native GREMLIN triple-pulse PNV source")
+        source = _require_source_text(pnv_text, "exact native GREMLIN triple-pulse PNV source")
     except GremlinLiveHydrationError as exc:
         raise GremlinPNVAuthoringError(str(exc)) from exc
 

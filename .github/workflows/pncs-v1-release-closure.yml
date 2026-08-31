@@ -46,6 +46,8 @@ jobs:
           tests/test_gremlin_relational_compiler_v01.py
           tests/test_gremlin_relational_compiler_integrity_v01.py
           tests/test_gremlin_relational_admission_v01.py
+          tests/test_gremlin_relation_mining_adapter_v01.py
+          tests/test_gremlin_relation_mining_admission_v01.py
           tests/test_gremlin_inverse_lineage_v01.py
           tests/test_gremlin_pnv_holonomy_v01.py
           tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py

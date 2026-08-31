@@ -190,6 +190,15 @@ def test_empty_semantic_identity_fails_closed(content_id, kaku_id):
         )
 
 
+def test_inverse_numeric_overflow_fails_closed():
+    with pytest.raises(SemanticPhaseInverseError, match="lifted_phase must be finite"):
+        lifted_phase_from_semantic_value(1.0e308, 5.0e-324, 1.0, 1.0, 1.0)
+    with pytest.raises(SemanticPhaseInverseError, match="lifted_phase must be finite"):
+        lifted_phase_from_split(0.0, 10**400)
+    with pytest.raises(SemanticPhaseInverseError, match="lifted_phase must be finite"):
+        CanonicalPhaseSplit(0.0, 0.0, 10**400)
+
+
 def test_invalid_phase_code_inputs_fail_closed():
     with pytest.raises(SemanticPhaseInverseError):
         CanonicalPhaseSplit(0.0, -0.1, 0)

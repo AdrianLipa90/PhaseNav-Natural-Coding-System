@@ -1,22 +1,18 @@
 from __future__ import annotations
 
-import math
 from typing import Any, Iterable, Mapping, TypeVar
+
+from .gremlin_strict_admission_v01 import GremlinStrictAdmissionError, finite_real
 
 
 ErrorT = TypeVar("ErrorT", bound=Exception)
 
 
 def finite_float(value: Any, field: str, error_type: type[ErrorT]) -> float:
-    if isinstance(value, bool):
-        raise error_type(f"{field} must be finite numeric")
     try:
-        out = float(value)
-    except (TypeError, ValueError, OverflowError) as exc:
+        return finite_real(value, field)
+    except GremlinStrictAdmissionError as exc:
         raise error_type(f"{field} must be finite numeric") from exc
-    if not math.isfinite(out):
-        raise error_type(f"{field} must be finite numeric")
-    return out
 
 
 def checked_sum(values: Iterable[float], field: str, error_type: type[ErrorT]) -> float:

@@ -15,7 +15,7 @@ native result
 -> explicit content IDs and evidence refs
 ```
 
-The lineage remains `CHYBA / CANDIDATE_ONLY` and provides no automatic runtime or canon-write authority.
+The lineage remains `CHYBA / CANDIDATE_ONLY` and carries the authority flags defined by the candidate boundary.
 
 ## Relation to PNCS v0.22
 
@@ -75,15 +75,21 @@ A reported positive external effect, malformed effect provenance, or inconsisten
 
 The lineage payload carries the summarized execution effect boundary. `deterministic_serialization=true` records deterministic content-addressed serialization. `deterministic_fields_only` follows the verified callback-determinism state rather than being asserted unconditionally.
 
+## Candidate envelope admission
+
+Every KAKU, RADICAL and OPERATOR candidate is revalidated from its exact content-addressed envelope before lineage traversal. Candidate `evidence_refs` and `dependency_ids` are explicit lists whose members are exact non-empty strings.
+
+This means provenance extraction consumes the same typed string material that was committed into the candidate identity. A nested list, numeric value or other JSON value inside an evidence/dependency list fails admission instead of being converted into text.
+
 ## OPERATOR graph
 
-Traversal starts at every EMIT root. Each reachable OPERATOR must preserve candidate schema/kind, candidate content hash, authority boundary, RADICAL dependency, and exact opcode/args equality with the parsed PNV program.
+Traversal starts at every EMIT root. Each reachable OPERATOR preserves candidate schema/kind, candidate content hash, authority boundary, RADICAL dependency, and exact opcode/args equality with the parsed PNV program.
 
-Each lineage OPERATOR row carries the execution trace result hash.
+Once exact candidate/program operator equality is established, dependency traversal uses the committed operator tokens directly. Each lineage OPERATOR row carries the execution trace result hash.
 
 ## RADICAL and KAKU closure
 
-The RADICAL node map must equal the compiled KAKU candidate map exactly. Every RADICAL node reference must point to the exact KAKU candidate ID, its dependency list must close over the same KAKU set, and the compiler receipt must carry the same RADICAL/KAKU identities.
+The RADICAL node map must equal the compiled KAKU candidate map exactly. Node-map keys and RADICAL KAKU references are admitted as exact non-empty strings before comparison. Every RADICAL node reference must point to the exact KAKU candidate ID, its dependency list must close over the same KAKU set, and the compiler receipt must carry the same RADICAL/KAKU identities.
 
 KAKU rows preserve:
 
@@ -96,7 +102,7 @@ evidence_refs
 explicit_content_ids
 ```
 
-Typed PNCS SHA-256 content IDs are extracted only from explicit provenance strings already attached to the candidate material.
+Typed PNCS SHA-256 content IDs are extracted only from explicit provenance strings already attached to the candidate material. Evidence items are scanned as committed strings; container/string coercion is not part of content-ID extraction.
 
 ## Identity
 
@@ -116,8 +122,8 @@ The content-addressed payload includes the execution effect-boundary summary, so
 
 ## Persistence
 
-Conformance persistence stores `<authoring_root>/lineage/<lineage_digest>.json` with idempotent content-addressed writes. Live persistence is admitted only through the GREMLIN live authoring surface under `/dev/shm/ciel_noema/gremlin/candidates/pncs`.
+Conformance persistence stores `<authoring_root>/lineage/<lineage_digest>.json` with idempotent content-addressed writes. Live persistence is admitted through the GREMLIN live authoring surface under `/dev/shm/ciel_noema/gremlin/candidates/pncs`.
 
 ## Fail-closed gates
 
-The resolver rejects tampered compilation or execution receipts, source/graph mismatch, interpreter-boundary effects, malformed callback-boundary provenance, reported external effects, candidate content/authority mismatch, candidate/program operator mismatch, missing EMIT roots, trace mismatch, RADICAL/KAKU closure mismatch, emitted-value mismatch, and content-addressed persistence collisions.
+The resolver rejects tampered compilation or execution receipts, source/graph mismatch, interpreter-boundary effects, malformed callback-boundary provenance, reported external effects, candidate content/authority mismatch, malformed candidate evidence/dependency provenance, candidate/program operator mismatch, missing EMIT roots, trace mismatch, non-string KAKU/RADICAL mapping identities, RADICAL/KAKU closure mismatch, emitted-value mismatch, and content-addressed persistence collisions.

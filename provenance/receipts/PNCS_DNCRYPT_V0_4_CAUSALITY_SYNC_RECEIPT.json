@@ -1,0 +1,33 @@
+{
+  "date": "2026-08-28",
+  "dncrypt_binding_commit": "868645f7cd85f3aec421f78cac7ac98efe0478f0",
+  "dncrypt_causality_registry_digest": "17cfb6f33d5e487f7e690efe7da30075438f487b0e236f92bfcc307245a3afaf",
+  "dncrypt_security_commitment": "ebc634dde1db25455d1fea84306145b3c380b779d4f4e01feada9679287edf70",
+  "live_tether_status": "ACTIVE",
+  "live_vectors": {
+    "aux_feedback_phi": {
+      "bytes": 288,
+      "finite": true,
+      "sha256": "af6d6caff68e67136da088ec27ebdfa3857c27bf6c19c356c73209a786eb9469"
+    },
+    "aux_phi": {
+      "bytes": 288,
+      "finite": true,
+      "sha256": "af6d6caff68e67136da088ec27ebdfa3857c27bf6c19c356c73209a786eb9469"
+    },
+    "phi": {
+      "bytes": 288,
+      "finite": true,
+      "sha256": "7e46a6f88ee763dee188edbcdf5b411b58943adda7dc94f9764b7bd6ee9a36a5"
+    }
+  },
+  "main_modified": false,
+  "pncs_base": "7a54596c1794be29e0b85f5c363213cc81eb87d7",
+  "pnv_sha256": "1230be79841e4d82f6b0b3caec23d90aad4c053190f8cf0e15220b0fc3e11c12",
+  "receipt_digest_domain": "canonical_json_without_receipt_sha256",
+  "receipt_sha256": "0f7678a1cac2f65296e2c98bb378f56f14358e92b4cecb2beb7db3a2d549a5e6",
+  "schema": "pncs.dncrypt-v0.4-causality-sync-receipt/v0.1",
+  "status": "PASS_STRUCTURAL_AND_LIVE_BINDING",
+  "structural_test": "1 passed",
+  "test_sha256": "ffc0523fc7ad03984c90457a95be6da4cc5b95c89dafa0f2cdb1074d1ecf93fa"
+}

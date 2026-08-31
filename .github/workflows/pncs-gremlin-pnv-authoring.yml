@@ -43,6 +43,7 @@ on:
       - 'tests/test_gremlin_pnv_bridge_scalar_field_rotor_v02.py'
       - 'tests/test_gremlin_pnv_bridge_gauge_covariant_pullback_v02.py'
       - 'tests/test_gremlin_relational_compiler_v01.py'
+      - 'tests/test_gremlin_relational_compiler_integrity_v01.py'
       - 'tests/test_gremlin_relation_mining_adapter_v01.py'
       - 'tests/test_gremlin_kaku_resolver_v01.py'
       - 'tests/test_gremlin_kaku_resolver_pipeline_v01.py'
@@ -113,6 +114,7 @@ jobs:
           tests/test_gremlin_pnv_bridge_scalar_field_rotor_v02.py
           tests/test_gremlin_pnv_bridge_gauge_covariant_pullback_v02.py
           tests/test_gremlin_relational_compiler_v01.py
+          tests/test_gremlin_relational_compiler_integrity_v01.py
           tests/test_gremlin_relation_mining_adapter_v01.py
           tests/test_gremlin_kaku_resolver_v01.py
           tests/test_gremlin_kaku_resolver_pipeline_v01.py

@@ -50,6 +50,11 @@ jobs:
           tests/test_gremlin_relation_mining_admission_v01.py
           tests/test_gremlin_kaku_resolver_v01.py
           tests/test_gremlin_kaku_resolver_admission_v01.py
+          tests/test_gremlin_kaku_resolver_pipeline_v01.py
+          tests/test_tau_frame_codec_v01.py
+          tests/test_pnh5_tau_realization_v01.py
+          tests/test_gremlin_tau_codec_v01.py
+          tests/test_gremlin_isomorphic_codec_merge_v01.py
           tests/test_gremlin_inverse_lineage_v01.py
           tests/test_gremlin_pnv_holonomy_v01.py
           tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py

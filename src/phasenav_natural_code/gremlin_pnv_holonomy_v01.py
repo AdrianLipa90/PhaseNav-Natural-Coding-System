@@ -35,9 +35,32 @@ class PNVInformationHolonomyError(RuntimeError):
     pass
 
 
+def _canonical_value(value: Any, field: str = "holonomy value") -> Any:
+    if value is None or isinstance(value, (str, bool)):
+        return value
+    if isinstance(value, int) and not isinstance(value, bool):
+        return value
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise PNVInformationHolonomyError(f"{field} must be canonical finite JSON")
+        return value
+    if isinstance(value, (list, tuple)):
+        return [_canonical_value(item, f"{field}[{i}]") for i, item in enumerate(value)]
+    if isinstance(value, Mapping):
+        out: dict[str, Any] = {}
+        for key, item in value.items():
+            if not isinstance(key, str):
+                raise PNVInformationHolonomyError(
+                    f"{field} contains a non-string JSON object key"
+                )
+            out[key] = _canonical_value(item, f"{field}.{key}")
+        return {key: out[key] for key in sorted(out)}
+    raise PNVInformationHolonomyError(f"{field} must be canonical finite JSON")
+
+
 def _canonical_bytes(value: Any) -> bytes:
     return json.dumps(
-        value,
+        _canonical_value(value),
         sort_keys=True,
         separators=(",", ":"),
         ensure_ascii=False,
@@ -52,7 +75,7 @@ def _sha256(value: Any) -> str:
 def _finite_nonnegative(value: Any, field: str) -> float:
     try:
         out = float(value)
-    except (TypeError, ValueError) as exc:
+    except (TypeError, ValueError, OverflowError) as exc:
         raise PNVInformationHolonomyError(f"{field} must be finite non-negative") from exc
     if not math.isfinite(out) or out < 0.0:
         raise PNVInformationHolonomyError(f"{field} must be finite non-negative")
@@ -80,28 +103,49 @@ def numeric_linf_metric(left: Any, right: Any) -> float:
     if isinstance(left, (int, float)) and not isinstance(left, bool):
         if not isinstance(right, (int, float)) or isinstance(right, bool):
             raise PNVInformationHolonomyError("numeric L-inf metric type mismatch")
-        a, b = float(left), float(right)
+        try:
+            a, b = float(left), float(right)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise PNVInformationHolonomyError(
+                "numeric L-inf metric requires finite values"
+            ) from exc
         if not math.isfinite(a) or not math.isfinite(b):
             raise PNVInformationHolonomyError("numeric L-inf metric requires finite values")
-        return abs(a - b)
+        defect = abs(a - b)
+        if not math.isfinite(defect):
+            raise PNVInformationHolonomyError("numeric L-inf metric overflowed")
+        return defect
     if isinstance(left, Sequence) and not isinstance(left, (str, bytes, bytearray)):
         if not isinstance(right, Sequence) or isinstance(right, (str, bytes, bytearray)):
             raise PNVInformationHolonomyError("numeric L-inf metric sequence mismatch")
         if len(left) != len(right) or not left:
-            raise PNVInformationHolonomyError("numeric L-inf metric requires equal non-empty sequences")
+            raise PNVInformationHolonomyError(
+                "numeric L-inf metric requires equal non-empty sequences"
+            )
         defects = []
         for a_raw, b_raw in zip(left, right):
             if isinstance(a_raw, bool) or isinstance(b_raw, bool):
-                raise PNVInformationHolonomyError("numeric L-inf metric rejects boolean coordinates")
+                raise PNVInformationHolonomyError(
+                    "numeric L-inf metric rejects boolean coordinates"
+                )
             try:
                 a, b = float(a_raw), float(b_raw)
-            except (TypeError, ValueError) as exc:
-                raise PNVInformationHolonomyError("numeric L-inf metric requires numeric coordinates") from exc
+            except (TypeError, ValueError, OverflowError) as exc:
+                raise PNVInformationHolonomyError(
+                    "numeric L-inf metric requires numeric coordinates"
+                ) from exc
             if not math.isfinite(a) or not math.isfinite(b):
-                raise PNVInformationHolonomyError("numeric L-inf metric requires finite coordinates")
-            defects.append(abs(a - b))
+                raise PNVInformationHolonomyError(
+                    "numeric L-inf metric requires finite coordinates"
+                )
+            defect = abs(a - b)
+            if not math.isfinite(defect):
+                raise PNVInformationHolonomyError("numeric L-inf metric overflowed")
+            defects.append(defect)
         return max(defects)
-    raise PNVInformationHolonomyError("numeric L-inf metric supports finite scalar or flat numeric sequence")
+    raise PNVInformationHolonomyError(
+        "numeric L-inf metric supports finite scalar or flat numeric sequence"
+    )
 
 
 @dataclass(frozen=True)
@@ -114,16 +158,26 @@ class HolonomyConnection:
     evidence_refs: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "connection_id", _nonempty(self.connection_id, "connection_id"))
-        object.__setattr__(self, "connection_kind", _nonempty(self.connection_kind, "connection_kind"))
-        object.__setattr__(self, "state_space_id", _nonempty(self.state_space_id, "state_space_id"))
-        object.__setattr__(self, "contract_ref", _nonempty(self.contract_ref, "contract_ref"))
+        object.__setattr__(
+            self, "connection_id", _nonempty(self.connection_id, "connection_id")
+        )
+        object.__setattr__(
+            self, "connection_kind", _nonempty(self.connection_kind, "connection_kind")
+        )
+        object.__setattr__(
+            self, "state_space_id", _nonempty(self.state_space_id, "state_space_id")
+        )
+        object.__setattr__(
+            self, "contract_ref", _nonempty(self.contract_ref, "contract_ref")
+        )
         state = _nonempty(self.execution_state, "execution_state").upper()
         if state not in CONNECTION_STATES:
-            raise PNVInformationHolonomyError(f"connection execution_state must be one of {sorted(CONNECTION_STATES)}")
+            raise PNVInformationHolonomyError(
+                f"connection execution_state must be one of {sorted(CONNECTION_STATES)}"
+            )
         object.__setattr__(self, "execution_state", state)
-        for ref in self.evidence_refs:
-            _nonempty(ref, "connection evidence_ref")
+        refs = tuple(_nonempty(ref, "connection evidence_ref") for ref in self.evidence_refs)
+        object.__setattr__(self, "evidence_refs", refs)
 
     @property
     def payload(self) -> dict[str, Any]:
@@ -164,10 +218,12 @@ class LawFrameNode:
     evidence_refs: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        if not self.law_id or not self.domain:
-            raise PNVInformationHolonomyError("law_id and domain are required")
+        object.__setattr__(self, "law_id", _nonempty(self.law_id, "law_id"))
+        object.__setattr__(self, "domain", _nonempty(self.domain, "domain"))
         if not isinstance(self.kaku, Kaku):
             raise PNVInformationHolonomyError("LawFrameNode requires Kaku")
+        refs = tuple(_nonempty(ref, "law-frame evidence_ref") for ref in self.evidence_refs)
+        object.__setattr__(self, "evidence_refs", refs)
 
     @property
     def node_id(self) -> str:
@@ -183,8 +239,18 @@ class LawTransport:
     evidence_refs: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        if not all((self.edge_id, self.source_node_id, self.target_node_id, self.transform_name)):
-            raise PNVInformationHolonomyError("law transport fields are required")
+        object.__setattr__(self, "edge_id", _nonempty(self.edge_id, "edge_id"))
+        object.__setattr__(
+            self, "source_node_id", _nonempty(self.source_node_id, "source_node_id")
+        )
+        object.__setattr__(
+            self, "target_node_id", _nonempty(self.target_node_id, "target_node_id")
+        )
+        object.__setattr__(
+            self, "transform_name", _nonempty(self.transform_name, "transform_name")
+        )
+        refs = tuple(_nonempty(ref, "transport evidence_ref") for ref in self.evidence_refs)
+        object.__setattr__(self, "evidence_refs", refs)
 
 
 @dataclass(frozen=True)
@@ -194,13 +260,16 @@ class HolonomyInvariant:
     tolerance: float = 0.0
 
     def __post_init__(self) -> None:
-        if not self.invariant_id:
-            raise PNVInformationHolonomyError("invariant_id is required")
+        object.__setattr__(
+            self, "invariant_id", _nonempty(self.invariant_id, "invariant_id")
+        )
         mode = str(self.mode).upper()
         if mode not in {"EXACT", "ABS"}:
             raise PNVInformationHolonomyError("invariant mode must be EXACT or ABS")
         object.__setattr__(self, "mode", mode)
-        object.__setattr__(self, "tolerance", _finite_nonnegative(self.tolerance, "invariant tolerance"))
+        object.__setattr__(
+            self, "tolerance", _finite_nonnegative(self.tolerance, "invariant tolerance")
+        )
 
 
 @dataclass(frozen=True)
@@ -213,31 +282,54 @@ class InformationHolonomyLoop:
     evidence_refs: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        if not self.loop_id:
-            raise PNVInformationHolonomyError("loop_id is required")
+        object.__setattr__(self, "loop_id", _nonempty(self.loop_id, "loop_id"))
         if not isinstance(self.connection, HolonomyConnection):
-            raise PNVInformationHolonomyError("information-holonomy loop requires explicit HolonomyConnection")
+            raise PNVInformationHolonomyError(
+                "information-holonomy loop requires explicit HolonomyConnection"
+            )
         if not self.nodes:
-            raise PNVInformationHolonomyError("information-holonomy loop requires at least one law node")
+            raise PNVInformationHolonomyError(
+                "information-holonomy loop requires at least one law node"
+            )
+        if any(not isinstance(node, LawFrameNode) for node in self.nodes):
+            raise PNVInformationHolonomyError("holonomy nodes must be LawFrameNode entries")
+        if any(not isinstance(edge, LawTransport) for edge in self.transports):
+            raise PNVInformationHolonomyError(
+                "holonomy transports must be LawTransport entries"
+            )
+        if any(not isinstance(item, HolonomyInvariant) for item in self.invariants):
+            raise PNVInformationHolonomyError(
+                "holonomy invariants must be HolonomyInvariant entries"
+            )
         node_ids = [node.node_id for node in self.nodes]
         if len(node_ids) != len(set(node_ids)):
             raise PNVInformationHolonomyError("law-frame node ids must be unique")
         basis_ids = {node.kaku.vector.basis_id for node in self.nodes}
         if len(basis_ids) != 1:
-            raise PNVInformationHolonomyError("law-frame KAKU nodes must share one exact PNCS basis")
+            raise PNVInformationHolonomyError(
+                "law-frame KAKU nodes must share one exact PNCS basis"
+            )
         if len(self.transports) != len(self.nodes):
-            raise PNVInformationHolonomyError("closed law-frame loop requires one ordered transport per node")
+            raise PNVInformationHolonomyError(
+                "closed law-frame loop requires one ordered transport per node"
+            )
         for index, edge in enumerate(self.transports):
             expected_source = self.nodes[index].node_id
             expected_target = self.nodes[(index + 1) % len(self.nodes)].node_id
-            if edge.source_node_id != expected_source or edge.target_node_id != expected_target:
+            if (
+                edge.source_node_id != expected_source
+                or edge.target_node_id != expected_target
+            ):
                 raise PNVInformationHolonomyError(
                     f"transport order does not close loop at index {index}: "
-                    f"{edge.source_node_id}->{edge.target_node_id} != {expected_source}->{expected_target}"
+                    f"{edge.source_node_id}->{edge.target_node_id} != "
+                    f"{expected_source}->{expected_target}"
                 )
         invariant_ids = [item.invariant_id for item in self.invariants]
         if len(invariant_ids) != len(set(invariant_ids)):
             raise PNVInformationHolonomyError("holonomy invariant ids must be unique")
+        refs = tuple(_nonempty(ref, "loop evidence_ref") for ref in self.evidence_refs)
+        object.__setattr__(self, "evidence_refs", refs)
 
 
 @dataclass(frozen=True)
@@ -278,8 +370,9 @@ def compile_information_holonomy_loop(
 ) -> RelationalCompilation:
     if not isinstance(loop, InformationHolonomyLoop):
         raise PNVInformationHolonomyError("InformationHolonomyLoop required")
-    if not generation_binding or not identity or not authority:
-        raise PNVInformationHolonomyError("generation_binding, identity and authority are required")
+    generation_binding = _nonempty(generation_binding, "generation_binding")
+    identity = _nonempty(identity, "identity")
+    authority = _nonempty(authority, "authority")
 
     basis_id = loop.nodes[0].kaku.vector.basis_id
     radical = RadicalGraph(f"HOLONOMY.{_safe_token(loop.loop_id)}", basis_id)
@@ -402,13 +495,18 @@ def compile_information_holonomy_loop(
     if authoring_root is not None:
         persist_candidate(returned, authoring_root=authoring_root)
 
-    pnv_text = render_operator_program(tuple(operators), emits=("HOL.RETURN",), mode="READ_ONLY")
+    pnv_text = render_operator_program(
+        tuple(operators), emits=("HOL.RETURN",), mode="READ_ONLY"
+    )
     parsed = parse_pnv(pnv_text)
     body = {
         "schema": HOLONOMY_COMPILATION_RECEIPT_SCHEMA,
         "holonomy_contract": HOLONOMY_CONTRACT,
         "loop_id": loop.loop_id,
-        "connection": {**loop.connection.payload, "connection_sha256": loop.connection.connection_sha256},
+        "connection": {
+            **loop.connection.payload,
+            "connection_sha256": loop.connection.connection_sha256,
+        },
         "legacy_connection_firewall": {
             "contract": LEGACY_TYPED_CONNECTION_CONTRACT,
             "contract_sha256": LEGACY_TYPED_CONNECTION_CONTRACT_SHA256,
@@ -423,12 +521,20 @@ def compile_information_holonomy_loop(
             }
             for node in loop.nodes
         ],
-        "node_candidate_ids": {k: str(v["candidate_id"]) for k, v in sorted(kaku_candidates.items())},
+        "node_candidate_ids": {
+            k: str(v["candidate_id"]) for k, v in sorted(kaku_candidates.items())
+        },
         "radical_candidate_id": radical_id,
-        "operator_candidate_ids": [str(candidate["candidate_id"]) for candidate in operators],
+        "operator_candidate_ids": [
+            str(candidate["candidate_id"]) for candidate in operators
+        ],
         "transport_plan": transport_plan,
         "invariants": [
-            {"invariant_id": item.invariant_id, "mode": item.mode, "tolerance": item.tolerance}
+            {
+                "invariant_id": item.invariant_id,
+                "mode": item.mode,
+                "tolerance": item.tolerance,
+            }
             for item in loop.invariants
         ],
         "pnv_source_sha256": parsed.source_sha256,
@@ -459,12 +565,28 @@ def _invariant_defect(mode: str, baseline: Any, current: Any) -> float:
             raise PNVInformationHolonomyError("ABS invariant requires numeric scalar")
         try:
             left, right = float(baseline), float(current)
-        except (TypeError, ValueError) as exc:
+        except (TypeError, ValueError, OverflowError) as exc:
             raise PNVInformationHolonomyError("ABS invariant requires numeric scalar") from exc
         if not math.isfinite(left) or not math.isfinite(right):
             raise PNVInformationHolonomyError("ABS invariant requires finite scalar")
-        return abs(left - right)
+        defect = abs(left - right)
+        if not math.isfinite(defect):
+            raise PNVInformationHolonomyError("ABS invariant defect overflowed")
+        return defect
     raise PNVInformationHolonomyError(f"unsupported invariant mode: {mode}")
+
+
+def _call_metric(
+    callback: Callable[..., Any],
+    label: str,
+    *args: Any,
+) -> Any:
+    try:
+        return callback(*args)
+    except PNVInformationHolonomyError:
+        raise
+    except Exception as exc:
+        raise PNVInformationHolonomyError(f"{label} callback failed") from exc
 
 
 def audit_information_holonomy(
@@ -487,56 +609,87 @@ def audit_information_holonomy(
         compilation.receipt.get("loop_id") != loop.loop_id
         or compilation.receipt.get("holonomy_contract") != HOLONOMY_CONTRACT
         or not isinstance(receipt_connection, Mapping)
-        or receipt_connection.get("connection_sha256") != loop.connection.connection_sha256
+        or receipt_connection.get("connection_sha256")
+        != loop.connection.connection_sha256
         or receipt_connection.get("connection_id") != loop.connection.connection_id
     ):
-        raise PNVInformationHolonomyError("holonomy loop/connection/compilation receipt mismatch")
+        raise PNVInformationHolonomyError(
+            "holonomy loop/connection/compilation receipt mismatch"
+        )
     if loop.connection.execution_state != "READY_CANDIDATE":
         raise PNVInformationHolonomyError(
             f"holonomy connection execution gate OPEN: {loop.connection.connection_id}"
         )
-    if not callable(state_metric) or not metric_id:
-        raise PNVInformationHolonomyError("explicit state metric and metric_id are required")
+    if not callable(state_metric):
+        raise PNVInformationHolonomyError("explicit state metric is required")
+    metric_id = _nonempty(metric_id, "metric_id")
     tolerance = _finite_nonnegative(state_tolerance, "state_tolerance")
+
     required_transforms = [edge.transform_name for edge in loop.transports]
-    missing = [name for name in required_transforms if name not in transforms or not callable(transforms[name])]
+    missing = [
+        name
+        for name in required_transforms
+        if name not in transforms or not callable(transforms[name])
+    ]
     if missing:
-        raise PNVInformationHolonomyError(f"missing admitted holonomy transform(s): {sorted(set(missing))}")
+        raise PNVInformationHolonomyError(
+            f"missing admitted holonomy transform(s): {sorted(set(missing))}"
+        )
 
     evaluators = dict(invariant_evaluators or {})
     missing_invariants = [
         item.invariant_id
         for item in loop.invariants
-        if item.invariant_id not in evaluators or not callable(evaluators[item.invariant_id])
+        if item.invariant_id not in evaluators
+        or not callable(evaluators[item.invariant_id])
     ]
     if missing_invariants:
-        raise PNVInformationHolonomyError(f"missing invariant evaluator(s): {sorted(set(missing_invariants))}")
+        raise PNVInformationHolonomyError(
+            f"missing invariant evaluator(s): {sorted(set(missing_invariants))}"
+        )
 
     execution = execute_pnv(
         compilation.pnv_text,
         sources={"holonomy.input": initial_state},
-        transforms={name: transforms[name] for name in sorted(set(required_transforms))},
+        transforms={
+            name: transforms[name] for name in sorted(set(required_transforms))
+        },
     )
     final_state = execution.emitted.get("HOL.RETURN")
-    raw_state_defect = state_metric(initial_state, final_state)
+    raw_state_defect = _call_metric(
+        state_metric,
+        f"state metric {metric_id}",
+        initial_state,
+        final_state,
+    )
     state_defect = _finite_nonnegative(raw_state_defect, "state holonomy defect")
 
     stages: list[tuple[str, Any]] = [("HOL.START", initial_state)]
     for index in range(len(loop.transports)):
         name = f"HOL.EDGE.{index:03d}"
         if name not in execution.values:
-            raise PNVInformationHolonomyError(f"missing holonomy execution stage: {name}")
+            raise PNVInformationHolonomyError(
+                f"missing holonomy execution stage: {name}"
+            )
         stages.append((name, execution.values[name]))
 
     invariant_results: list[Mapping[str, Any]] = []
     all_invariants_pass = True
     for invariant in loop.invariants:
         evaluator = evaluators[invariant.invariant_id]
-        baseline = evaluator(initial_state)
+        baseline = _call_metric(
+            evaluator,
+            f"invariant evaluator {invariant.invariant_id}",
+            initial_state,
+        )
         stage_rows = []
         max_defect = 0.0
         for stage_name, stage_state in stages:
-            value = evaluator(stage_state)
+            value = _call_metric(
+                evaluator,
+                f"invariant evaluator {invariant.invariant_id}",
+                stage_state,
+            )
             defect = _finite_nonnegative(
                 _invariant_defect(invariant.mode, baseline, value),
                 f"invariant defect {invariant.invariant_id}",
@@ -549,21 +702,33 @@ def audit_information_holonomy(
                     "defect_from_initial": defect,
                 }
             )
-        passed = max_defect <= invariant.tolerance
-        all_invariants_pass = all_invariants_pass and passed
+        invariant_passed = max_defect <= invariant.tolerance
+        all_invariants_pass = all_invariants_pass and invariant_passed
         invariant_results.append(
             {
                 "invariant_id": invariant.invariant_id,
                 "mode": invariant.mode,
                 "tolerance": invariant.tolerance,
                 "max_defect": max_defect,
-                "passed": passed,
+                "passed": invariant_passed,
                 "stages": stage_rows,
             }
         )
 
     inverse = resolve_gremlin_candidate_inverse_lineage(compilation, execution)
     passed = state_defect <= tolerance and all_invariants_pass
+    native_boundary = execution.receipt.get("effect_boundary")
+    if not isinstance(native_boundary, Mapping):
+        raise PNVInformationHolonomyError(
+            "native execution effect boundary receipt is missing"
+        )
+    audit_callbacks = [
+        f"state_metric:{metric_id}",
+        *[
+            f"invariant_evaluator:{item.invariant_id}"
+            for item in loop.invariants
+        ],
+    ]
     body = {
         "schema": HOLONOMY_AUDIT_RECEIPT_SCHEMA,
         "holonomy_contract": HOLONOMY_CONTRACT,
@@ -585,8 +750,26 @@ def audit_information_holonomy(
         "promotion_state": "CANDIDATE_ONLY",
         "runtime_execution_authority": False,
         "canon_write_authority": False,
-        "external_effects": False,
-        "deterministic_fields_only": True,
+        "effect_boundary": {
+            "external_effects": None,
+            "external_effects_status": "UNVERIFIED_CALLBACK_BOUNDARY",
+            "callback_effects_verified": False,
+            "native_execution_external_effects": native_boundary.get(
+                "external_effects"
+            ),
+            "native_execution_external_effects_status": native_boundary.get(
+                "external_effects_status"
+            ),
+            "native_callbacks_invoked": list(
+                native_boundary.get("callbacks_invoked", [])
+            ),
+            "audit_callbacks_invoked": audit_callbacks,
+        },
+        "external_effects": None,
+        "external_effects_status": "UNVERIFIED_CALLBACK_BOUNDARY",
+        "deterministic_fields_only": False,
+        "deterministic_serialization": True,
+        "callback_determinism_verified": False,
     }
     receipt = {**body, "receipt_sha256": _sha256(body)}
     return InformationHolonomyAudit(
@@ -617,5 +800,7 @@ def persist_information_holonomy_audit(
             handle.write(raw)
     except FileExistsError:
         if target.read_bytes() != raw:
-            raise PNVInformationHolonomyError("content-addressed holonomy receipt collision")
+            raise PNVInformationHolonomyError(
+                "content-addressed holonomy receipt collision"
+            )
     return str(target)

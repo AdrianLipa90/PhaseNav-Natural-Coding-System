@@ -58,7 +58,7 @@ C(t)\bigl(\phi_{lift}(t)+\kappa\bigr)=\mathcal S(t).
 }
 \]
 
-Thus semantic value, together with the admitted carrier coordinates, fixes one lifted phase coordinate without an auxiliary phase-fitting law.
+Thus semantic value, together with the admitted carrier coordinates, fixes one lifted phase coordinate through the declared inverse profile.
 
 ## 3. Canonical wrapped phase and winding
 
@@ -119,7 +119,7 @@ the parent equation becomes
 \mathcal S=0.
 \]
 
-Two distinct cases are kept separate:
+Three explicit states are retained:
 
 ```text
 C = 0 and S != 0  -> INCONSISTENT_ZERO_CARRIER
@@ -127,7 +127,7 @@ C = 0 and S = 0   -> NON_IDENTIFIABLE_PHASE
 C != 0            -> UNIQUE_LIFTED_PHASE
 ```
 
-A unique phase encoder is emitted only on `C != 0`.
+The unique phase encoder is defined on the `C != 0` branch.
 
 ## 5. Orbit placement
 
@@ -167,11 +167,40 @@ orbit_quantizer_id
 
 so the phase/orbit code can be replayed exactly.
 
-## 6. Distinct source and placement phase profiles
+## 6. Typed admission boundary
+
+The inverse-specific scalar coordinates
+
+```text
+semantic_target
+kappa
+lifted_phase
+wrapped_phase
+sample_time
+```
+
+require finite `numbers.Real` values with `bool` excluded. Numeric strings and arbitrary objects exposing `__float__` are rejected at this boundary. Finite-conversion overflow also fails closed.
+
+The carrier coordinates
+
+```text
+B
+omega
+N
+A_R
+```
+
+retain the strict-real admission contract of `PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1`.
+
+`content_id`, `kaku_id` and direct placement `orbital_band` are exact string identities. The established whitespace normalization for non-empty content/KAKU identifiers is preserved.
+
+Canonical winding remains an exact integer with `bool` excluded.
+
+## 7. Distinct source and placement phase profiles
 
 The parent PNLF adapter uses the stored wrapped `OrbitalState.phase` as one source-phase profile and records PNLF winding separately.
 
-v0.2 defines a semantic-value inverse profile in which
+v0.2 defines the semantic-value inverse profile:
 
 ```text
 semantic target S
@@ -179,9 +208,9 @@ semantic target S
  -> canonical wrapped phase + integer winding
 ```
 
-These profiles remain explicitly identified in receipts. A physical model may bind them through a later equality/transport gate.
+Both profiles carry explicit receipt identities. A later equality/transport gate can bind them through its own declared contract.
 
-## 7. KAKU / RADICAL use
+## 8. KAKU / RADICAL use
 
 For one explicit KAKU/content identity, the candidate encoder is
 
@@ -197,9 +226,9 @@ content_id + KAKU id
 
 RADICAL composition consumes these per-KAKU codes through a separately identified composition/operator profile.
 
-## 8. GREMLIN boundary
+## 9. GREMLIN boundary
 
-GREMLIN may propose candidate placements, but the deterministic receipt retains
+GREMLIN may propose candidate placements. The deterministic receipt retains
 
 ```text
 semantic_authority = EXPLICIT_KAKU_CONTENT_BINDING
@@ -209,7 +238,7 @@ runtime_execution_authority = false
 canon_write_authority = false
 ```
 
-## 9. Validation gates
+## 10. Validation gates
 
 Reference tests verify:
 
@@ -221,8 +250,14 @@ Reference tests verify:
 6. distinction between inconsistent and non-identifiable zero-carrier cases;
 7. composition with explicit `O0..O8` quantizer provenance;
 8. deterministic receipt hashing;
-9. fail-closed non-finite inputs and malformed winding values.
+9. finite-result and integer-winding admission;
+10. bool, numeric-string and arbitrary float-coercible inverse-coordinate rejection;
+11. exact content/KAKU/orbital-band string identity;
+12. inherited strict carrier-coordinate admission.
 
 Reference implementation: `src/phasenav_natural_code/semantic_phase_inverse_v02.py`.
-Reference tests: `tests/test_semantic_phase_inverse_v02.py`.
+Reference tests:
+- `tests/test_semantic_phase_inverse_v02.py`
+- `tests/test_semantic_phase_inverse_admission_v02.py`
+
 Validation receipt: `provenance/receipts/PNCS_SEMANTIC_PHASE_INVERSE_V0_2.json`.

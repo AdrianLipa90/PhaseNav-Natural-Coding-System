@@ -140,6 +140,25 @@ def test_radical_weight_and_binding_keys_require_exact_strings():
         validate_radical_bindings(_radical(), bad)  # type: ignore[arg-type]
 
 
+def test_radical_profile_freezes_weight_snapshot_after_admission():
+    source_weights = {"K.A": 0.25, "K.B": 0.75}
+    profile = RadicalAggregationProfile("AGG.FROZEN", source_weights, "UNIT_SUM")
+    before = radical_semantic_receipt(
+        _radical(), _bindings(), aggregation_profile=profile
+    )
+
+    source_weights["K.A"] = 0.9
+    source_weights["K.B"] = 0.1
+    with pytest.raises(TypeError):
+        profile.weights["K.A"] = 0.9  # type: ignore[index]
+
+    after = radical_semantic_receipt(
+        _radical(), _bindings(), aggregation_profile=profile
+    )
+    assert dict(profile.weights) == {"K.A": 0.25, "K.B": 0.75}
+    assert before == after
+
+
 def test_relation_delta_overflow_fails_before_receipt_hash():
     bindings = {
         "K.A": _binding("K.A", "SEM.A", B=0.0, phi=-1.0e308),

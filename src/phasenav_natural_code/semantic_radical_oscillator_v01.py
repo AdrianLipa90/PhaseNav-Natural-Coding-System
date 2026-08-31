@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
+from numbers import Real
 from typing import Any, Mapping
 
 from .model import RadicalGraph
@@ -17,17 +18,27 @@ class SemanticRadicalOscillatorError(ValueError):
     pass
 
 
-def _finite(name: str, value: float) -> float:
-    value = float(value)
-    if not math.isfinite(value):
-        raise SemanticRadicalOscillatorError(f"{name} must be finite")
-    return value
+def _finite(name: str, value: object) -> float:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise SemanticRadicalOscillatorError(f"{name} must be finite real")
+    try:
+        out = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SemanticRadicalOscillatorError(f"{name} must be finite real") from exc
+    if not math.isfinite(out):
+        raise SemanticRadicalOscillatorError(f"{name} must be finite real")
+    return out
 
 
-def _text(name: str, value: str) -> str:
-    value = str(value).strip()
-    if not value:
-        raise SemanticRadicalOscillatorError(f"{name} must be non-empty")
+def _text(name: str, value: object) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise SemanticRadicalOscillatorError(f"{name} must be a non-empty string")
+    return value.strip()
+
+
+def _identity(name: str, value: object) -> str:
+    if not isinstance(value, str) or not value:
+        raise SemanticRadicalOscillatorError(f"{name} must be an exact non-empty string")
     return value
 
 
@@ -51,6 +62,12 @@ def validate_radical_bindings(
 ) -> None:
     if not isinstance(radical, RadicalGraph):
         raise SemanticRadicalOscillatorError("radical must be RadicalGraph")
+    if not isinstance(bindings, Mapping):
+        raise SemanticRadicalOscillatorError("bindings must be a mapping")
+    if any(not isinstance(key, str) or not key for key in bindings):
+        raise SemanticRadicalOscillatorError(
+            "binding keys must be exact non-empty KAKU string identities"
+        )
     expected = set(radical.nodes)
     supplied = set(bindings)
     if expected != supplied:
@@ -83,8 +100,11 @@ def relation_oscillator_deltas(
     ):
         source = bindings[edge.source_id]
         target = bindings[edge.target_id]
-        delta_phi = target.sample.phi - source.sample.phi
-        delta_shifted_phase = target.sample.phase_kappa - source.sample.phase_kappa
+        delta_phi = _finite("delta_phi", target.sample.phi - source.sample.phi)
+        delta_shifted_phase = _finite(
+            "delta_phase_plus_kappa",
+            target.sample.phase_kappa - source.sample.phase_kappa,
+        )
         if not math.isclose(delta_phi, delta_shifted_phase, rel_tol=0.0, abs_tol=1e-15):
             raise SemanticRadicalOscillatorError("common kappa phase shift failed to cancel")
         out.append(
@@ -97,8 +117,13 @@ def relation_oscillator_deltas(
                 "target_orbital_band": target.orbital_band,
                 "delta_phi": delta_phi,
                 "delta_phase_plus_kappa": delta_shifted_phase,
-                "delta_omega": target.sample.omega - source.sample.omega,
-                "delta_semantic_value": target.sample.value - source.sample.value,
+                "delta_omega": _finite(
+                    "delta_omega", target.sample.omega - source.sample.omega
+                ),
+                "delta_semantic_value": _finite(
+                    "delta_semantic_value",
+                    target.sample.value - source.sample.value,
+                ),
             }
         )
     return tuple(out)
@@ -116,18 +141,30 @@ class RadicalAggregationProfile:
             "aggregation_profile_id",
             _text("aggregation_profile_id", self.aggregation_profile_id),
         )
-        normalization = str(self.normalization).upper()
+        if not isinstance(self.normalization, str) or not self.normalization.strip():
+            raise SemanticRadicalOscillatorError(
+                "normalization must be an exact non-empty string"
+            )
+        normalization = self.normalization.strip().upper()
         if normalization not in {"NONE", "UNIT_SUM"}:
             raise SemanticRadicalOscillatorError(
                 "normalization must be NONE or UNIT_SUM"
             )
         object.__setattr__(self, "normalization", normalization)
-        clean = {str(k): _finite(f"weight[{k}]", v) for k, v in self.weights.items()}
+
+        if not isinstance(self.weights, Mapping):
+            raise SemanticRadicalOscillatorError("aggregation weights must be a mapping")
+        clean: dict[str, float] = {}
+        for raw_key, raw_value in self.weights.items():
+            key = _identity("aggregation weight KAKU id", raw_key)
+            clean[key] = _finite(f"weight[{key}]", raw_value)
         if not clean:
             raise SemanticRadicalOscillatorError("aggregation weights must be non-empty")
         object.__setattr__(self, "weights", clean)
 
     def validated_weights(self, radical: RadicalGraph) -> dict[str, float]:
+        if not isinstance(radical, RadicalGraph):
+            raise SemanticRadicalOscillatorError("radical must be RadicalGraph")
         expected = set(radical.nodes)
         supplied = set(self.weights)
         if expected != supplied:
@@ -136,7 +173,7 @@ class RadicalAggregationProfile:
             raise SemanticRadicalOscillatorError(
                 f"aggregation weight coverage mismatch: missing={missing}, extra={extra}"
             )
-        weights = {k: float(self.weights[k]) for k in sorted(expected)}
+        weights = {k: self.weights[k] for k in sorted(expected)}
         if self.normalization == "UNIT_SUM":
             total = math.fsum(weights.values())
             if not math.isclose(total, 1.0, rel_tol=0.0, abs_tol=1e-12):
@@ -164,7 +201,18 @@ def aggregate_radical_semantic_value(
             "explicit RadicalAggregationProfile is required"
         )
     weights = profile.validated_weights(radical)
-    return math.fsum(weights[k] * bindings[k].sample.value for k in sorted(weights))
+    products = [weights[k] * bindings[k].sample.value for k in sorted(weights)]
+    if any(not math.isfinite(value) for value in products):
+        raise SemanticRadicalOscillatorError(
+            "aggregate semantic products must be finite"
+        )
+    try:
+        aggregate = math.fsum(products)
+    except OverflowError as exc:
+        raise SemanticRadicalOscillatorError(
+            "aggregate semantic value must be finite"
+        ) from exc
+    return _finite("aggregate semantic value", aggregate)
 
 
 def radical_semantic_receipt(
@@ -174,6 +222,12 @@ def radical_semantic_receipt(
     aggregation_profile: RadicalAggregationProfile | None = None,
 ) -> dict[str, Any]:
     validate_radical_bindings(radical, bindings)
+    if aggregation_profile is not None and not isinstance(
+        aggregation_profile, RadicalAggregationProfile
+    ):
+        raise SemanticRadicalOscillatorError(
+            "aggregation_profile must be RadicalAggregationProfile"
+        )
     nodes = {
         kaku_id: bindings[kaku_id].deterministic_receipt()
         for kaku_id in sorted(radical.nodes)

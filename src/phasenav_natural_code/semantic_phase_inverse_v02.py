@@ -48,6 +48,21 @@ def _text(name: str, value: str) -> str:
     return value.strip()
 
 
+def _carrier_coordinates(
+    B: float,
+    omega: float,
+    N: float,
+    A_R: float,
+) -> tuple[float, float, float, float]:
+    B = _finite("B", B)
+    omega = _finite("omega", omega)
+    N = _finite("N", N)
+    A_R = _finite("A_R", A_R)
+    if A_R == 0.0:
+        raise SemanticPhaseInverseError("A_R must be nonzero")
+    return B, omega, N, A_R
+
+
 def _compose_lifted_phase(wrapped_phase: float, winding: int) -> float:
     wrapped = _finite("wrapped_phase", wrapped_phase)
     if not isinstance(winding, int) or isinstance(winding, bool):
@@ -182,10 +197,11 @@ class SemanticPhasePlacement:
             raise SemanticPhaseInverseError("quantizer must be OrbitQuantizerProfile")
         if not isinstance(self.orbital_band, str):
             raise SemanticPhaseInverseError("orbital_band must be an exact string")
+
         target = _finite("semantic_target", self.semantic_target)
-        expected_phase = lifted_phase_from_semantic_value(
-            target, self.B, self.omega, self.N, self.A_R
-        )
+        sample_time = _finite("sample_time", self.sample_time)
+        B, omega, N, A_R = _carrier_coordinates(self.B, self.omega, self.N, self.A_R)
+        expected_phase = lifted_phase_from_semantic_value(target, B, omega, N, A_R)
         if not math.isclose(
             expected_phase,
             self.phase_code.lifted_phase,
@@ -196,8 +212,13 @@ class SemanticPhasePlacement:
         expected_band = self.quantizer.quantize(target)
         if self.orbital_band != expected_band:
             raise SemanticPhaseInverseError("orbital band does not match semantic target quantizer")
+
         object.__setattr__(self, "semantic_target", target)
-        object.__setattr__(self, "sample_time", _finite("sample_time", self.sample_time))
+        object.__setattr__(self, "sample_time", sample_time)
+        object.__setattr__(self, "B", B)
+        object.__setattr__(self, "omega", omega)
+        object.__setattr__(self, "N", N)
+        object.__setattr__(self, "A_R", A_R)
 
     def parent_binding_receipt(self) -> dict[str, Any]:
         sample = SemanticCarrierSample(
@@ -226,10 +247,10 @@ class SemanticPhasePlacement:
             "sample_time": self.sample_time,
             "semantic_target": self.semantic_target,
             "carrier": {
-                "B": float(self.B),
-                "omega": float(self.omega),
-                "N": float(self.N),
-                "A_R": float(self.A_R),
+                "B": self.B,
+                "omega": self.omega,
+                "N": self.N,
+                "A_R": self.A_R,
                 "kappa": KAPPA,
                 "prefactor": prefactor,
             },
@@ -279,14 +300,17 @@ def encode_semantic_phase_placement(
 ) -> SemanticPhasePlacement:
     if not isinstance(quantizer, OrbitQuantizerProfile):
         raise SemanticPhaseInverseError("quantizer must be OrbitQuantizerProfile")
-    phase = lifted_phase_from_semantic_value(semantic_target, B, omega, N, A_R)
+
+    target = _finite("semantic_target", semantic_target)
+    B, omega, N, A_R = _carrier_coordinates(B, omega, N, A_R)
+    phase = lifted_phase_from_semantic_value(target, B, omega, N, A_R)
     split = canonical_phase_split(phase)
-    band = quantizer.quantize(semantic_target)
+    band = quantizer.quantize(target)
     return SemanticPhasePlacement(
         content_id=content_id,
         kaku_id=kaku_id,
         sample_time=sample_time,
-        semantic_target=semantic_target,
+        semantic_target=target,
         B=B,
         omega=omega,
         N=N,

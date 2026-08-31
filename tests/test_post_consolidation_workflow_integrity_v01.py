@@ -109,14 +109,18 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
 
     semantic = _workflow("pncs-semantic-orbital-carrier-v01.yml")
     for path in (
+        "src/phasenav_natural_code/semantic_orbital_carrier_v01.py",
         "src/phasenav_natural_code/semantic_htri_drive_v32.py",
         "src/phasenav_natural_code/semantic_htri_bounded_v33.py",
         "src/phasenav_natural_code/semantic_orbital_htri_bridge_v01.py",
         "src/phasenav_natural_code/semantic_orbital_htri_bounded_v01.py",
+        "tests/test_semantic_orbital_carrier_v01.py",
+        "tests/test_semantic_orbital_carrier_admission_v01.py",
         "tests/test_semantic_htri_drive_v32.py",
         "tests/test_semantic_htri_bounded_v33.py",
         "tests/test_semantic_orbital_htri_bridge_v01.py",
         "tests/test_semantic_orbital_htri_bounded_v01.py",
+        "spec/PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1.md",
         "spec/PNCS_SEMANTIC_HTRI_INPUT_ADMISSION_V0_1.md",
     ):
         assert path in semantic
@@ -182,6 +186,7 @@ def test_v1_release_closure_runs_full_post_merge_regression_surface():
         "tests/test_gremlin_round28_sealed_bundle_v01.py",
         "tests/test_gremlin_noema_qhtri_isomorphism_bank_v01.py",
         "tests/test_semantic_orbital_carrier_v01.py",
+        "tests/test_semantic_orbital_carrier_admission_v01.py",
         "tests/test_semantic_orbital_trajectory_v01.py",
         "tests/test_semantic_orbital_htri_bridge_v01.py",
         "tests/test_semantic_orbital_htri_bounded_v01.py",

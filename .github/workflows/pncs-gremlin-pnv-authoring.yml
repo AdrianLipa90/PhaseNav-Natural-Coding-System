@@ -14,6 +14,7 @@ on:
       - 'src/phasenav_natural_code/gremlin_relational_compiler_v01.py'
       - 'src/phasenav_natural_code/gremlin_relation_mining_adapter_v01.py'
       - 'src/phasenav_natural_code/gremlin_kaku_resolver_v01.py'
+      - 'src/phasenav_natural_code/fpdg_gremlin_pain_ingress_v01.py'
       - 'src/phasenav_natural_code/gremlin_inverse_lineage_v01.py'
       - 'src/phasenav_natural_code/gremlin_pnv_holonomy_v01.py'
       - 'src/phasenav_natural_code/pnv_source_holonomy_v01.py'
@@ -36,6 +37,7 @@ on:
       - 'tests/test_gremlin_relation_mining_adapter_v01.py'
       - 'tests/test_gremlin_kaku_resolver_v01.py'
       - 'tests/test_gremlin_kaku_resolver_pipeline_v01.py'
+      - 'tests/test_fpdg_gremlin_pain_ingress_v01.py'
       - 'tests/test_gremlin_inverse_lineage_v01.py'
       - 'tests/test_gremlin_pnv_holonomy_v01.py'
       - 'tests/test_pnv_source_holonomy_v01.py'
@@ -48,6 +50,7 @@ on:
       - 'spec/PNCS_GREMLIN_RELATIONAL_ISOMORPHISM_COMPILER_V0_1.md'
       - 'spec/PNCS_GREMLIN_RELATION_MINING_ADAPTER_V0_1.md'
       - 'spec/PNCS_GREMLIN_KAKU_RESOLVER_V0_1.md'
+      - 'spec/PNCS_FPDG_GREMLIN_PAIN_INGRESS_V0_1.md'
       - 'spec/PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_V0_1.md'
       - 'spec/PNCS_PNV_INFORMATION_HOLONOMY_V0_1.md'
       - 'spec/PNCS_PNV_SOURCE_HOLONOMY_LOOPS_V0_1.md'
@@ -91,6 +94,7 @@ jobs:
           tests/test_gremlin_relation_mining_adapter_v01.py
           tests/test_gremlin_kaku_resolver_v01.py
           tests/test_gremlin_kaku_resolver_pipeline_v01.py
+          tests/test_fpdg_gremlin_pain_ingress_v01.py
           tests/test_gremlin_inverse_lineage_v01.py
           tests/test_gremlin_pnv_holonomy_v01.py
           tests/test_pnv_source_holonomy_v01.py

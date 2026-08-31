@@ -53,7 +53,7 @@ closed_unit_interval(x)-> 0 <= x <= 1
 
 ## Error contract
 
-Every primitive accepts an `error_type` argument. GREMLIN consumers therefore retain their established public error class while sharing one admission implementation.
+Every primitive accepts an `error_type` argument. GREMLIN consumers therefore retain their established public error class while sharing one admission implementation. Consumers that preserve an older public message may translate `GremlinStrictAdmissionError` into their established domain error after the kernel rejects the value.
 
 Current bindings:
 
@@ -63,11 +63,17 @@ gremlin_cross_formalism_bank_v02.py
 
 gremlin_cross_formalism_round28_v01.py
   -> Round28Error
+
+pnv_holonomy_numeric_v01.py
+  -> caller-supplied holonomy/domain error type
+
+gremlin_pnv_holonomy_v01.py
+  -> PNVInformationHolonomyError
 ```
 
 ## Cross-formalism integration
 
-The v0.2 cross-formalism falsification helpers now route the following inputs through the kernel:
+The v0.2 cross-formalism falsification helpers route the following inputs through the kernel:
 
 - coboundary cycle potentials,
 - complex states used by Bargmann products,
@@ -81,7 +87,7 @@ The mathematical formulas and source-pinned candidate bank remain unchanged.
 
 ## ROUND28 integration
 
-ROUND28 falsification helpers now route the following inputs through the kernel:
+ROUND28 falsification helpers route the following inputs through the kernel:
 
 - CP1 three-vectors,
 - CP1 ambiguity tolerance,
@@ -93,6 +99,18 @@ ROUND28 falsification helpers now route the following inputs through the kernel:
 
 Internal dot/cross operations consume already admitted finite vectors and therefore avoid a second coercion layer.
 
+## Holonomy integration
+
+The shared holonomy numeric layer routes scalar numeric admission through `finite_real(...)`. This binding is inherited by the Noether collective, Noether/RFC current, scalar-field/rotor and gauge-covariant pullback helpers that already consume `pnv_holonomy_numeric_v01.py`.
+
+The GREMLIN information-holonomy layer routes the following admission points through the same kernel:
+
+- invariant and audit tolerances,
+- scalar and flat-sequence L-infinity metric coordinates,
+- `ABS` invariant callback outputs.
+
+Holonomy invariant mode admission remains an exact string boundary and canonical token construction consumes an already validated non-empty string. Existing holonomy formulas, connection typing, candidate-only state and effect-boundary receipts remain unchanged.
+
 ## Regression surface
 
 Direct kernel corpus:
@@ -103,6 +121,14 @@ Consumer-boundary corpus:
 
 `tests/test_gremlin_strict_admission_consumers_v01.py`
 
-The adversarial cases include boolean-as-number, numeric strings, complex strings, string-as-sequence containers, non-finite values, malformed vector dimensions, and invalid tolerance/scale domains.
+Holonomy numeric boundary corpus:
 
-Both corpora are part of the GREMLIN authoring workflow and v1 release closure. Hosted conformance remains pending until a GitHub Actions runner executes the test steps.
+`tests/test_pnv_holonomy_numeric_hardening_v01.py`
+
+GREMLIN information-holonomy boundary corpus:
+
+`tests/test_gremlin_pnv_holonomy_v01.py`
+
+The adversarial cases include boolean-as-number, numeric strings, complex strings, string-as-sequence containers, non-finite values, malformed vector dimensions, invalid tolerance/scale domains, string-valued holonomy coordinates, string-valued tolerances and string-valued `ABS` invariant outputs.
+
+These corpora are part of the GREMLIN authoring workflow and v1 release closure. Hosted conformance remains pending until a GitHub Actions runner executes the test steps.

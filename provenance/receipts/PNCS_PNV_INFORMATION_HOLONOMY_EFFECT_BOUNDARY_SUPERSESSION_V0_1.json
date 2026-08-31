@@ -1,0 +1,28 @@
+{
+  "schema": "PNCS_PNV_INFORMATION_HOLONOMY_EFFECT_BOUNDARY_SUPERSESSION_V0_1",
+  "status": "APPEND_ONLY_CONTRACT_SUPERSESSION",
+  "historical_receipt": "provenance/receipts/PNCS_PNV_INFORMATION_HOLONOMY_V0_1.json",
+  "historical_receipt_schema": "PNCS_PNV_INFORMATION_HOLONOMY_IMPLEMENTATION_RECEIPT_V0_1",
+  "historical_code_head_sha": "f838752f61bd2b7248ed8c52a0927ad2a4302579",
+  "historical_field": {
+    "path": "audit.external_effects",
+    "value": false,
+    "scope": "HISTORICAL_PRE_CALLBACK_BOUNDARY_CONTRACT"
+  },
+  "current_contract": "PNCS_PNV_INFORMATION_HOLONOMY_V0_1",
+  "current_audit_receipt_schema": "PNCS_PNV_INFORMATION_HOLONOMY_AUDIT_RECEIPT_V0_1",
+  "current_effect_boundary_rule": {
+    "interpreter_external_effects": false,
+    "external_effects": null,
+    "external_effects_status": "UNVERIFIED_CALLBACK_BOUNDARY",
+    "callback_effects_verified": false,
+    "deterministic_serialization": true,
+    "callback_determinism_verified": false
+  },
+  "inverse_lineage_rule": "PRESERVE_NATIVE_EFFECT_BOUNDARY_WITHOUT_PROMOTING_CALLBACK_PURITY",
+  "epistemic": "CHYBA",
+  "promotion_state": "CANDIDATE_ONLY",
+  "runtime_execution_authority": false,
+  "canon_write_authority": false,
+  "main_mutated_by_receipt_creation": false
+}

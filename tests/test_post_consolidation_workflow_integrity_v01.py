@@ -81,9 +81,12 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
     gremlin = _workflow("pncs-gremlin-pnv-authoring.yml")
     for path in (
         "src/phasenav_natural_code/model.py",
+        "src/phasenav_natural_code/gremlin_strict_admission_v01.py",
         "src/phasenav_natural_code/gremlin_live_hydration_v03.py",
         "src/phasenav_natural_code/pnv_holonomy_numeric_v01.py",
         "tests/test_model_integrity_v01.py",
+        "tests/test_gremlin_strict_admission_v01.py",
+        "tests/test_gremlin_strict_admission_consumers_v01.py",
         "tests/test_gremlin_pnv_authoring_canonical_boundary_v01.py",
         "tests/test_gremlin_radical_candidate_integrity_v01.py",
         "tests/test_gremlin_live_hydration_v03.py",
@@ -97,6 +100,7 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
         "tests/test_gremlin_cross_formalism_round28_v01.py",
         "tests/test_gremlin_round28_sealed_bundle_v01.py",
         "tests/test_fpdg_gremlin_pain_ingress_v01.py",
+        "spec/PNCS_GREMLIN_STRICT_ADMISSION_V0_1.md",
     ):
         assert path in gremlin
 
@@ -117,6 +121,8 @@ def test_v1_release_closure_runs_full_post_merge_regression_surface():
         "tests/test_post_consolidation_workflow_integrity_v01.py",
         "tests/test_manifest_tool_v28.py",
         "tests/test_model_integrity_v01.py",
+        "tests/test_gremlin_strict_admission_v01.py",
+        "tests/test_gremlin_strict_admission_consumers_v01.py",
         "tests/test_full_program_executor_v01.py",
         "tests/test_full_program_executor_receipt_integrity_v01.py",
         "tests/test_runtime_v30_hot.py",

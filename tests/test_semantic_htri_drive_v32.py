@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from phasenav_natural_code.semantic_address_v31 import build_semantic_trajectory
 from phasenav_natural_code.semantic_htri_drive_v32 import (
     DEFAULT_DT,
     DriveSnapshot,
+    SemanticHTRIDriveV32Error,
     controlled_step,
+    digest,
     execute_trajectory,
+    qhtri_graph_hamiltonian,
 )
 from phasenav_natural_code.semantic_sequence_v31 import (
     build_nisaba_frozen_roles,
@@ -109,3 +113,85 @@ def test_reverse_ends_on_original_first_target_and_original_on_last_target():
     last = np.asarray(original.addresses[-1].phase36)
     assert np.max(np.abs(np.angle(np.exp(1j * (last - a["final_phi"]))))) < 1e-12
     assert np.max(np.abs(np.angle(np.exp(1j * (first - b["final_phi"]))))) < 1e-12
+
+
+def test_snapshot_rejects_implicit_numeric_coercion_and_false_36d_shape():
+    base = snapshot()
+    kwargs = dict(
+        omega=base.omega,
+        g=base.g,
+        flavor=base.flavor,
+        tau=base.tau,
+        gravity=base.gravity,
+        source_id="STRICT_SNAPSHOT",
+    )
+    for bad_phi in (
+        ["1.0"] * 36,
+        [True] * 36,
+        np.ones((6, 6), dtype=np.float64),
+    ):
+        with pytest.raises(SemanticHTRIDriveV32Error, match="phi"):
+            DriveSnapshot.build(phi=bad_phi, **kwargs)
+
+
+def test_snapshot_rejects_nonreal_matrix_and_nonvector_metadata():
+    base = snapshot()
+    with pytest.raises(SemanticHTRIDriveV32Error, match="g"):
+        DriveSnapshot.build(
+            phi=base.phi,
+            omega=base.omega,
+            g=np.ones((36, 36), dtype=bool),
+            flavor=base.flavor,
+            tau=base.tau,
+            gravity=base.gravity,
+            source_id="BAD_G",
+        )
+    with pytest.raises(SemanticHTRIDriveV32Error, match="flavor"):
+        DriveSnapshot.build(
+            phi=base.phi,
+            omega=base.omega,
+            g=base.g,
+            flavor=np.ones((2, 3), dtype=np.float64),
+            tau=base.tau,
+            gravity=base.gravity,
+            source_id="BAD_FLAVOR",
+        )
+    with pytest.raises(SemanticHTRIDriveV32Error, match="source_id"):
+        DriveSnapshot.build(
+            phi=base.phi,
+            omega=base.omega,
+            g=base.g,
+            flavor=base.flavor,
+            tau=base.tau,
+            gravity=base.gravity,
+            source_id="   ",
+        )
+
+
+def test_parent_dt_and_target_admission_reject_bool_strings_and_shape_coercion():
+    target = trajectories()[0].addresses[0].phase36
+    for bad_dt in (True, "0.01", object()):
+        with pytest.raises(SemanticHTRIDriveV32Error, match="dt"):
+            controlled_step(snapshot(), target, dt=bad_dt)  # type: ignore[arg-type]
+    with pytest.raises(SemanticHTRIDriveV32Error, match="target36"):
+        controlled_step(snapshot(), np.ones((6, 6), dtype=np.float64))
+    with pytest.raises(SemanticHTRIDriveV32Error, match="target36"):
+        controlled_step(snapshot(), ["0.1"] * 36)  # type: ignore[list-item]
+
+
+def test_hamiltonian_strengths_require_exact_finite_real_inputs():
+    state = snapshot()
+    for field in ("coupling_strength", "detuning_strength"):
+        for bad in (True, "0.7", object()):
+            kwargs = {field: bad}
+            with pytest.raises(SemanticHTRIDriveV32Error, match=field):
+                qhtri_graph_hamiltonian(
+                    state.omega,
+                    state.g,
+                    **kwargs,  # type: ignore[arg-type]
+                )
+
+
+def test_digest_rejects_non_string_mapping_keys_instead_of_stringifying_them():
+    with pytest.raises(SemanticHTRIDriveV32Error, match="mapping keys must be strings"):
+        digest({1: "value"})

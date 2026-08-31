@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
+from numbers import Real
 from typing import Any, Sequence
 
 from .semantic_phase_inverse_v02 import SemanticPhasePlacement
@@ -20,20 +21,23 @@ class SemanticOrbitalTrajectoryError(ValueError):
 
 
 def _finite(name: str, value: float) -> float:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise SemanticOrbitalTrajectoryError(f"{name} must be finite real")
     try:
         value = float(value)
     except (TypeError, ValueError, OverflowError) as exc:
-        raise SemanticOrbitalTrajectoryError(f"{name} must be finite") from exc
+        raise SemanticOrbitalTrajectoryError(f"{name} must be finite real") from exc
     if not math.isfinite(value):
-        raise SemanticOrbitalTrajectoryError(f"{name} must be finite")
+        raise SemanticOrbitalTrajectoryError(f"{name} must be finite real")
     return value
 
 
 def _band_index(band: str) -> int:
-    text = str(band)
-    if len(text) != 2 or text[0] != "O" or text[1] not in "012345678":
+    if not isinstance(band, str):
+        raise SemanticOrbitalTrajectoryError("orbital band must be an exact string")
+    if len(band) != 2 or band[0] != "O" or band[1] not in "012345678":
         raise SemanticOrbitalTrajectoryError("orbital band must be O0..O8")
-    return int(text[1])
+    return int(band[1])
 
 
 def transition_class(source_band: str, target_band: str) -> str:
@@ -134,14 +138,18 @@ class SemanticOrbitalTrajectory:
     placements: tuple[SemanticPhasePlacement, ...]
 
     def __post_init__(self) -> None:
-        if not self.placements:
+        if not isinstance(self.placements, (list, tuple)):
+            raise SemanticOrbitalTrajectoryError("trajectory placements must be a list or tuple")
+        placements = tuple(self.placements)
+        object.__setattr__(self, "placements", placements)
+        if not placements:
             raise SemanticOrbitalTrajectoryError("trajectory requires at least one placement")
-        if any(not isinstance(p, SemanticPhasePlacement) for p in self.placements):
+        if any(not isinstance(p, SemanticPhasePlacement) for p in placements):
             raise SemanticOrbitalTrajectoryError("all trajectory samples must be SemanticPhasePlacement")
-        first = self.placements[0]
+        first = placements[0]
         quantizer = first.quantizer.to_dict()
         previous_time = _finite("sample_time[0]", first.sample_time)
-        for index, placement in enumerate(self.placements):
+        for index, placement in enumerate(placements):
             if placement.content_id != first.content_id or placement.kaku_id != first.kaku_id:
                 raise SemanticOrbitalTrajectoryError("trajectory must preserve one KAKU/content identity")
             if placement.quantizer.to_dict() != quantizer:

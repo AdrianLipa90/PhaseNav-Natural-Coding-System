@@ -35,6 +35,20 @@ def _placement(t: float, target: float, *, quantizer=None, content_id="SEM.T", k
     )
 
 
+def _large_semantic_placement(t: float, target: float):
+    return encode_semantic_phase_placement(
+        content_id="SEM.LARGE",
+        kaku_id="K.LARGE",
+        sample_time=t,
+        semantic_target=target,
+        B=1.0e308,
+        omega=1.0,
+        N=1.0,
+        A_R=1.0,
+        quantizer=_quantizer("Q.LARGE"),
+    )
+
+
 def test_transition_class_uses_pnlf_band_strength_order():
     assert transition_class("O5", "O4") == ORBIT_PROMOTE_CANDIDATE
     assert transition_class("O4", "O5") == ORBIT_DEMOTE_CANDIDATE
@@ -74,6 +88,26 @@ def test_intraband_transport_keeps_phase_and_winding_change():
     assert transition.delta_lifted_phase == pytest.approx(6.9)
     assert transition.delta_winding != 0
     assert transition.to_dict()["pnlf_radical_candidate"] is None
+
+
+def test_delta_time_overflow_fails_closed():
+    a = _placement(-1.0e308, 0.5)
+    b = _placement(1.0e308, 0.6)
+    transition = build_semantic_orbital_trajectory((a, b)).transitions[0]
+    with pytest.raises(SemanticOrbitalTrajectoryError, match="delta_time must be finite"):
+        _ = transition.delta_time
+    with pytest.raises(SemanticOrbitalTrajectoryError, match="delta_time must be finite"):
+        transition.to_dict()
+
+
+def test_delta_semantic_overflow_fails_closed():
+    a = _large_semantic_placement(0.0, -1.0e308)
+    b = _large_semantic_placement(1.0, 1.0e308)
+    transition = build_semantic_orbital_trajectory((a, b)).transitions[0]
+    with pytest.raises(SemanticOrbitalTrajectoryError, match="delta_semantic must be finite"):
+        _ = transition.delta_semantic
+    with pytest.raises(SemanticOrbitalTrajectoryError, match="delta_semantic must be finite"):
+        transition.to_dict()
 
 
 def test_single_sample_trajectory_is_valid_and_has_no_transition():

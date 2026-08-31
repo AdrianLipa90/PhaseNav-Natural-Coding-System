@@ -55,7 +55,24 @@ semantic_value S(t)
 
 This preserves the existing GREMLIN KAKU resolver authority contract while adding a semantic-value coordinate suitable for orbital assignment.
 
-## 3. Orbital assignment
+## 3. Admission and provenance identity
+
+Numeric carrier coordinates are admitted from finite `numbers.Real` values. Boolean values are rejected explicitly. Conversion to the internal floating representation occurs after type admission.
+
+Identity fields are admitted as non-empty strings:
+
+```text
+content_id
+kaku_id
+quantizer_id
+orbital_band
+```
+
+Quantizer boundaries and band order use explicit list/tuple containers. Every band identity is an exact string and the ordered nine-element sequence is validated as a permutation of `O0..O8`.
+
+Optional `source_orbital_state` provenance is snapshotted recursively into canonical JSON. Mapping keys are exact strings at every depth, values are canonical JSON values, and finite floating values remain finite in the commitment input. The snapshot is fixed at binding time and enters the deterministic receipt.
+
+## 4. Orbital assignment
 
 PNLF already represents orbital bands
 
@@ -84,11 +101,11 @@ quantizer_id
 ordered 9-element permutation of O0..O8
 ```
 
-The ordered band permutation is part of the source profile. The semantic carrier formula does not choose whether increasing `S(t)` corresponds to increasing band index, decreasing band index, or another admitted permutation. Therefore the API has no implicit `O0 -> O8` direction.
+The ordered band permutation is part of the source profile and supplies the quantizer direction explicitly. Increasing `S(t)` is resolved according to that declared ordering.
 
 Both threshold values and exact band ordering enter provenance. Identical semantic values evaluated under profiles with different thresholds or different band permutations remain distinguishable receipts.
 
-## 4. Oscillator coordinates
+## 5. Oscillator coordinates
 
 An orbital carrier receipt preserves
 
@@ -114,7 +131,7 @@ When the source is a PNLF `OrbitalState`, the standard angular-frequency project
 
 The PNLF wrapped `phase` is copied as `phi`; `winding` remains a separate recorded coordinate. An alternate phase-lift profile can therefore be introduced with an explicit profile identifier while preserving the v0.1 formula.
 
-## 5. KAKU/RADICAL/OPERATORS boundary
+## 6. KAKU/RADICAL/OPERATORS boundary
 
 The v0.1 carrier attaches one semantic-orbital sample to one admitted KAKU identity.
 
@@ -129,7 +146,7 @@ explicit content binding
 
 RADICAL composition consumes the per-KAKU carrier receipts. A RADICAL aggregation law is carried by its own operator/profile identifier, so the single-KAKU formula remains exact and independently auditable.
 
-## 6. GREMLIN use
+## 7. GREMLIN use
 
 GREMLIN may propose candidate semantic-orbital bindings using the same evaluator and an admitted quantizer profile. Candidate receipts retain
 
@@ -142,7 +159,7 @@ canon_write_authority = false
 
 The existing explicit `content_id` remains the semantic authority input.
 
-## 7. Deterministic receipt
+## 8. Deterministic receipt
 
 The reference implementation emits a canonical JSON receipt containing
 
@@ -157,23 +174,25 @@ The reference implementation emits a canonical JSON receipt containing
 - GREMLIN authority fields;
 - SHA-256 over canonical JSON.
 
-## 8. Validation gates
+## 9. Validation gates
 
 The reference gate checks
 
 1. the canonical value of `kappa`;
 2. exact formula evaluation;
 3. exact factorization `S=C(phi+kappa)`;
-4. finite input coordinates and nonzero `A_R`;
-5. explicit presence of a 9-band ordering together with 8 ordered thresholds;
-6. exact validation that the band ordering is a permutation of `O0..O8`;
-7. deterministic quantization under the declared profile;
-8. PNLF `orbit_period -> omega=2pi/T` projection;
-9. preservation of wrapped phase and winding provenance;
-10. explicit KAKU/content identity fields;
-11. receipt determinism and sensitivity to quantizer thresholds, id and band ordering;
-12. GREMLIN candidate authority fields.
+4. finite exact-real input coordinates and nonzero `A_R`;
+5. exact string identity for content, KAKU, quantizer and band fields;
+6. explicit list/tuple quantizer containers;
+7. explicit presence of a 9-band ordering together with 8 ordered thresholds;
+8. exact validation that the band ordering is a permutation of `O0..O8`;
+9. deterministic quantization under the declared profile;
+10. recursive source-provenance canonicalization with exact string mapping keys;
+11. PNLF `orbit_period -> omega=2pi/T` projection;
+12. preservation of wrapped phase and winding provenance;
+13. receipt determinism and sensitivity to quantizer thresholds, id and band ordering;
+14. GREMLIN candidate authority fields.
 
 Reference implementation: `src/phasenav_natural_code/semantic_orbital_carrier_v01.py`.
-Reference tests: `tests/test_semantic_orbital_carrier_v01.py`.
+Reference tests: `tests/test_semantic_orbital_carrier_v01.py` and `tests/test_semantic_orbital_carrier_admission_v01.py`.
 Validation receipt: `provenance/receipts/PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1.json`.

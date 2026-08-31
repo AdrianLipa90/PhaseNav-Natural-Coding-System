@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 import hashlib
 import json
 import math
+from numbers import Real
 from typing import Any, Mapping
 
 from .pnlf_orbital_memory_v01 import ORBITAL_BANDS, OrbitalState
@@ -21,21 +22,57 @@ class SemanticOrbitalCarrierError(ValueError):
     pass
 
 
-def _finite(name: str, value: float) -> float:
+def _finite(name: str, value: object) -> float:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise SemanticOrbitalCarrierError(f"{name} must be finite real")
     try:
-        value = float(value)
+        out = float(value)
     except (TypeError, ValueError, OverflowError) as exc:
-        raise SemanticOrbitalCarrierError(f"{name} must be finite") from exc
-    if not math.isfinite(value):
-        raise SemanticOrbitalCarrierError(f"{name} must be finite")
-    return value
+        raise SemanticOrbitalCarrierError(f"{name} must be finite real") from exc
+    if not math.isfinite(out):
+        raise SemanticOrbitalCarrierError(f"{name} must be finite real")
+    return out
 
 
-def _text(name: str, value: str) -> str:
-    value = str(value).strip()
-    if not value:
-        raise SemanticOrbitalCarrierError(f"{name} must be non-empty")
-    return value
+def _text(name: str, value: object) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise SemanticOrbitalCarrierError(f"{name} must be a non-empty string")
+    return value.strip()
+
+
+def _explicit_sequence(name: str, value: object) -> tuple[object, ...]:
+    if not isinstance(value, (tuple, list)):
+        raise SemanticOrbitalCarrierError(f"{name} must be an explicit list or tuple")
+    return tuple(value)
+
+
+def _canonical_json_value(value: object, *, path: str) -> object:
+    if value is None or isinstance(value, (str, bool, int)):
+        return value
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise SemanticOrbitalCarrierError(
+                "source_orbital_state must be finite canonical JSON"
+            )
+        return value
+    if isinstance(value, (list, tuple)):
+        return [
+            _canonical_json_value(item, path=f"{path}[{index}]")
+            for index, item in enumerate(value)
+        ]
+    if isinstance(value, Mapping):
+        if any(not isinstance(key, str) for key in value):
+            raise SemanticOrbitalCarrierError(
+                "source_orbital_state mapping keys must be strings"
+            )
+        return {
+            key: _canonical_json_value(value[key], path=f"{path}.{key}")
+            for key in sorted(value)
+        }
+    raise SemanticOrbitalCarrierError(
+        f"source_orbital_state contains unsupported canonical type at {path}: "
+        f"{type(value).__name__}"
+    )
 
 
 def _canonical_source_snapshot(value: Mapping[str, Any] | None) -> str | None:
@@ -43,9 +80,10 @@ def _canonical_source_snapshot(value: Mapping[str, Any] | None) -> str | None:
         return None
     if not isinstance(value, Mapping):
         raise SemanticOrbitalCarrierError("source_orbital_state must be a mapping")
+    canonical = _canonical_json_value(value, path="source_orbital_state")
     try:
         return json.dumps(
-            dict(value),
+            canonical,
             sort_keys=True,
             separators=(",", ":"),
             ensure_ascii=False,
@@ -147,13 +185,20 @@ class OrbitQuantizerProfile:
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "quantizer_id", _text("quantizer_id", self.quantizer_id))
-        boundaries = tuple(_finite(f"boundaries[{i}]", x) for i, x in enumerate(self.boundaries))
+        raw_boundaries = _explicit_sequence("boundaries", self.boundaries)
+        boundaries = tuple(
+            _finite(f"boundaries[{i}]", x) for i, x in enumerate(raw_boundaries)
+        )
         if len(boundaries) != 8:
             raise SemanticOrbitalCarrierError("nine orbital bands require exactly eight boundaries")
         if any(b >= c for b, c in zip(boundaries, boundaries[1:])):
             raise SemanticOrbitalCarrierError("boundaries must be strictly increasing")
         object.__setattr__(self, "boundaries", boundaries)
-        bands = tuple(str(x) for x in self.bands)
+
+        raw_bands = _explicit_sequence("bands", self.bands)
+        if any(not isinstance(item, str) for item in raw_bands):
+            raise SemanticOrbitalCarrierError("bands must contain exact string identities")
+        bands = tuple(raw_bands)
         if len(bands) != 9:
             raise SemanticOrbitalCarrierError("bands must contain exactly nine entries")
         if len(set(bands)) != 9 or set(bands) != set(ORBITAL_BANDS):
@@ -185,6 +230,8 @@ class SemanticOrbitalBinding:
             raise SemanticOrbitalCarrierError("sample must be SemanticCarrierSample")
         if not isinstance(self.quantizer, OrbitQuantizerProfile):
             raise SemanticOrbitalCarrierError("quantizer must be OrbitQuantizerProfile")
+        if not isinstance(self.orbital_band, str):
+            raise SemanticOrbitalCarrierError("orbital_band must be an exact string identity")
         expected = self.quantizer.quantize(self.sample.value)
         if self.orbital_band != expected:
             raise SemanticOrbitalCarrierError("orbital_band must equal quantized semantic value")
@@ -237,6 +284,10 @@ def bind_semantic_sample(
     *,
     source_orbital_state: Mapping[str, Any] | None = None,
 ) -> SemanticOrbitalBinding:
+    if not isinstance(sample, SemanticCarrierSample):
+        raise SemanticOrbitalCarrierError("sample must be SemanticCarrierSample")
+    if not isinstance(quantizer, OrbitQuantizerProfile):
+        raise SemanticOrbitalCarrierError("quantizer must be OrbitQuantizerProfile")
     return SemanticOrbitalBinding(
         sample=sample,
         quantizer=quantizer,
@@ -293,6 +344,8 @@ def bind_orbital_state_sample(
     quantizer: OrbitQuantizerProfile,
     sample_time: float | None = None,
 ) -> SemanticOrbitalBinding:
+    if not isinstance(quantizer, OrbitQuantizerProfile):
+        raise SemanticOrbitalCarrierError("quantizer must be OrbitQuantizerProfile")
     sample, source = sample_from_orbital_state(
         content_id=content_id,
         kaku_id=kaku_id,

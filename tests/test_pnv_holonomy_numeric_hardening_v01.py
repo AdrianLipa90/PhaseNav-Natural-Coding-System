@@ -30,6 +30,17 @@ class LocalNumericError(RuntimeError):
     pass
 
 
+@pytest.mark.parametrize("value", [True, "1.0", "-3", object()])
+def test_shared_numeric_guard_rejects_implicit_numeric_coercion(value):
+    with pytest.raises(LocalNumericError, match="finite numeric"):
+        finite_float(value, "probe", LocalNumericError)
+
+
+def test_shared_numeric_guard_accepts_exact_finite_real_inputs():
+    assert finite_float(3, "probe", LocalNumericError) == 3.0
+    assert finite_float(2.5, "probe", LocalNumericError) == 2.5
+
+
 def test_shared_numeric_guard_rejects_huge_int_conversion_and_overflow():
     with pytest.raises(LocalNumericError, match="finite numeric"):
         finite_float(10**10000, "huge", LocalNumericError)

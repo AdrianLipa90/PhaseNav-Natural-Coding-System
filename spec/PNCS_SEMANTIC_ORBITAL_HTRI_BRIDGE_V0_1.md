@@ -24,7 +24,9 @@ kaku_to_lane[kaku_id] -> integer 0..35
 frequency_binding = ASSIGN_SAMPLE_OMEGA | PRESERVE_SNAPSHOT_OMEGA
 ```
 
-The mapping is explicit provenance. `lane_profile_id`, every `kaku_id`, and `frequency_binding` are admitted as exact non-empty Python strings. The lane map is admitted as an explicit mapping and copied into the profile snapshot. KAKU identifiers are normalized by surrounding-whitespace trimming, and normalized duplicate identifiers fail admission before lane assignment.
+The mapping is explicit provenance. `lane_profile_id`, every `kaku_id`, and `frequency_binding` are admitted as exact non-empty Python strings. The lane map is admitted as an explicit mapping and copied into an internal read-only profile snapshot. Caller-side mutation of the source mapping therefore leaves the admitted KAKU-to-lane routing unchanged.
+
+KAKU identifiers are normalized by surrounding-whitespace trimming, and normalized duplicate identifiers fail admission before lane assignment.
 
 Lane values are exact integer values in `[0,35]`, with boolean values excluded from integer admission. v0.1 rejects lane collisions and rejects missing or extra KAKU mappings relative to the supplied semantic binding set.
 
@@ -112,16 +114,17 @@ The bridge validates:
 2. lane-profile IDs, KAKU IDs and frequency modes enter through exact string admission;
 3. normalized duplicate KAKU IDs fail admission;
 4. lane-map and semantic-binding inputs use explicit mapping containers;
-5. lanes are unique integers in `[0,35]` with boolean lane values excluded;
-6. assigned target phase equals wrapped semantic `phi`;
-7. unassigned target phases equal the source snapshot phases exactly;
-8. under `ASSIGN_SAMPLE_OMEGA`, assigned frequencies equal semantic `omega`;
-9. unassigned frequencies equal source frequencies exactly;
-10. under `PRESERVE_SNAPSHOT_OMEGA`, all frequencies equal the source vector;
-11. `g`, `flavor`, `tau`, and `gravity` are copied unchanged into the derived snapshot;
-12. `dt` is a positive finite real admitted before parent execution;
-13. the existing v0.32 controlled step hits the resulting 36D target to its parent numerical tolerance;
-14. lane/frequency profile changes alter the bridge receipt identity.
+5. admitted lane routing is an internal read-only snapshot independent of caller-side source-map mutation;
+6. lanes are unique integers in `[0,35]` with boolean lane values excluded;
+7. assigned target phase equals wrapped semantic `phi`;
+8. unassigned target phases equal the source snapshot phases exactly;
+9. under `ASSIGN_SAMPLE_OMEGA`, assigned frequencies equal semantic `omega`;
+10. unassigned frequencies equal source frequencies exactly;
+11. under `PRESERVE_SNAPSHOT_OMEGA`, all frequencies equal the source vector;
+12. `g`, `flavor`, `tau`, and `gravity` are copied unchanged into the derived snapshot;
+13. `dt` is a positive finite real admitted before parent execution;
+14. the existing v0.32 controlled step hits the resulting 36D target to its parent numerical tolerance;
+15. lane/frequency profile changes alter the bridge receipt identity.
 
 ## 7. Authority boundary
 
@@ -136,5 +139,8 @@ live_surface_writes         = 0
 ```
 
 Reference implementation: `src/phasenav_natural_code/semantic_orbital_htri_bridge_v01.py`.
-Reference tests: `tests/test_semantic_orbital_htri_bridge_v01.py`.
+Reference tests:
+- `tests/test_semantic_orbital_htri_bridge_v01.py`
+- `tests/test_semantic_htri_lane_profile_immutability_v01.py`
+
 Validation receipt: `provenance/receipts/PNCS_SEMANTIC_ORBITAL_HTRI_BRIDGE_V0_1.json`.

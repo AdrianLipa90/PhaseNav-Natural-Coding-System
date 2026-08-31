@@ -138,6 +138,27 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
     ):
         assert path in semantic
 
+    inverse = _workflow("pncs-semantic-phase-inverse-v02.yml")
+    for path in (
+        "src/phasenav_natural_code/semantic_phase_inverse_v02.py",
+        "tests/test_semantic_phase_inverse_v02.py",
+        "tests/test_semantic_phase_inverse_admission_v02.py",
+        "spec/PNCS_SEMANTIC_PHASE_INVERSE_V0_2.md",
+    ):
+        assert path in inverse
+
+    trajectory_v03 = _workflow("pncs-semantic-orbital-trajectory-v03.yml")
+    for path in (
+        "src/phasenav_natural_code/semantic_phase_inverse_v02.py",
+        "src/phasenav_natural_code/semantic_orbital_trajectory_v03.py",
+        "tests/test_semantic_phase_inverse_admission_v02.py",
+        "tests/test_semantic_orbital_trajectory_v03.py",
+        "tests/test_semantic_orbital_trajectory_admission_v03.py",
+        "spec/PNCS_SEMANTIC_PHASE_INVERSE_V0_2.md",
+        "spec/PNCS_SEMANTIC_ORBITAL_TRAJECTORY_V0_3.md",
+    ):
+        assert path in trajectory_v03
+
     tau = _workflow("pncs-tau-liminal-file-v01.yml")
     for path in (
         "src/phasenav_natural_code/gremlin_tau_codec_v01.py",
@@ -212,6 +233,8 @@ def test_v1_release_closure_runs_full_post_merge_regression_surface():
         "tests/test_pnlf_orbital_memory_v01.py",
         "tests/test_pnlf_orbital_memory_admission_v01.py",
         "tests/test_semantic_phase_inverse_v02.py",
+        "tests/test_semantic_phase_inverse_admission_v02.py",
         "tests/test_semantic_orbital_trajectory_v03.py",
+        "tests/test_semantic_orbital_trajectory_admission_v03.py",
     ):
         assert test_path in text

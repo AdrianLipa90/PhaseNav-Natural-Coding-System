@@ -166,6 +166,24 @@ def test_receipt_is_deterministic_and_quantizer_provenance_changes_hash():
     assert a["receipt_sha256"] != c["receipt_sha256"]
 
 
+def test_source_provenance_is_snapshotted_at_binding_time():
+    sample = SemanticCarrierSample("SEM.SOURCE", "K.SOURCE", 0.0, 1.0, 1.0, 1.0, 1.0, 0.25)
+    source = {"phase": 0.25, "nested": {"winding": 1}}
+    binding = bind_semantic_sample(sample, _quantizer(), source_orbital_state=source)
+    first = binding.deterministic_receipt()
+    source["phase"] = 9.0
+    source["nested"]["winding"] = 99
+    second = binding.deterministic_receipt()
+    assert second == first
+    assert second["source_orbital_state"] == {"phase": 0.25, "nested": {"winding": 1}}
+
+
+def test_source_provenance_rejects_noncanonical_values():
+    sample = SemanticCarrierSample("SEM.SOURCE", "K.SOURCE", 0.0, 1.0, 1.0, 1.0, 1.0, 0.25)
+    with pytest.raises(SemanticOrbitalCarrierError, match="finite canonical JSON"):
+        bind_semantic_sample(sample, _quantizer(), source_orbital_state={"phase": math.nan})
+
+
 def test_pnlf_orbit_period_projects_to_angular_frequency_and_phase():
     state = _orbital_state(period=4.0, phase=0.75, winding=2.0)
     sample, source = sample_from_orbital_state(

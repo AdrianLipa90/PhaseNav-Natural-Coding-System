@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 from typing import Iterable
@@ -15,6 +16,7 @@ DEFAULT_EXCLUSIONS = (
     DEFAULT_OUTPUT,
     "provenance/receipts/FOUNDATION_STATUS_V0_28.json",
 )
+_HEX40_RE = re.compile(r"^[0-9a-f]{40}$")
 
 
 class ManifestError(RuntimeError):
@@ -35,6 +37,36 @@ def _run_git(root: Path, *args: str) -> str:
             detail = detail.decode("utf-8", "replace")
         raise ManifestError(f"git command failed: {' '.join(args)}: {detail}") from exc
     return proc.stdout.decode("utf-8", "strict").strip()
+
+
+def _changed_paths(root: Path, source_commit: str) -> tuple[str, ...]:
+    try:
+        proc = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(root),
+                "diff",
+                "--name-only",
+                "-z",
+                source_commit,
+                "HEAD",
+                "--",
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except (OSError, subprocess.CalledProcessError) as exc:
+        detail = getattr(exc, "stderr", b"")
+        if isinstance(detail, bytes):
+            detail = detail.decode("utf-8", "replace")
+        raise ManifestError(f"cannot compare manifest source commit to HEAD: {detail}") from exc
+    try:
+        paths = tuple(item.decode("utf-8", "strict") for item in proc.stdout.split(b"\0") if item)
+    except UnicodeDecodeError as exc:
+        raise ManifestError("changed tracked path is not valid UTF-8") from exc
+    return tuple(sorted(set(paths)))
 
 
 def tracked_paths(root: Path) -> tuple[str, ...]:
@@ -110,7 +142,33 @@ def build_manifest(root: Path, *, exclusions: Iterable[str] = DEFAULT_EXCLUSIONS
     }
 
 
+def _verify_source_identity(root: Path, manifest: dict[str, object], exclusions: list[str]) -> None:
+    source_commit = manifest.get("source_commit")
+    source_tree = manifest.get("source_tree")
+    if not isinstance(source_commit, str) or not _HEX40_RE.fullmatch(source_commit):
+        raise ManifestError("invalid source_commit")
+    if not isinstance(source_tree, str) or not _HEX40_RE.fullmatch(source_tree):
+        raise ManifestError("invalid source_tree")
+
+    resolved_commit = _run_git(root, "rev-parse", f"{source_commit}^{{commit}}")
+    if resolved_commit != source_commit:
+        raise ManifestError("source_commit does not resolve exactly")
+    actual_tree = _run_git(root, "rev-parse", f"{source_commit}^{{tree}}")
+    if actual_tree != source_tree:
+        raise ManifestError("source_commit/source_tree mismatch")
+
+    changed = _changed_paths(root, source_commit)
+    allowed = set(exclusions)
+    out_of_scope = tuple(path for path in changed if path not in allowed)
+    if out_of_scope:
+        raise ManifestError(
+            "manifest source commit differs from HEAD outside declared exclusions: "
+            + ", ".join(out_of_scope)
+        )
+
+
 def verify_manifest(root: Path, manifest: dict[str, object]) -> None:
+    root = root.resolve()
     if manifest.get("schema") != SCHEMA:
         raise ManifestError("unexpected manifest schema")
     exclusions = manifest.get("exclusions")
@@ -129,12 +187,10 @@ def verify_manifest(root: Path, manifest: dict[str, object]) -> None:
     ):
         if manifest.get(field) != expected.get(field):
             raise ManifestError(f"manifest mismatch: {field}")
-    # source_commit/source_tree identify the tree from which the manifest was generated.
-    # A later metadata-only release commit may add the excluded foundation receipt.
-    if not isinstance(manifest.get("source_commit"), str) or len(str(manifest["source_commit"])) != 40:
-        raise ManifestError("invalid source_commit")
-    if not isinstance(manifest.get("source_tree"), str) or len(str(manifest["source_tree"])) != 40:
-        raise ManifestError("invalid source_tree")
+    # The manifest may survive a later metadata-only commit, but its declared
+    # source identity must be a real commit/tree pair whose differences from
+    # current HEAD are confined to the declared exclusions.
+    _verify_source_identity(root, manifest, exclusions)
 
 
 def _load_manifest(path: Path) -> dict[str, object]:

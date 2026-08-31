@@ -87,6 +87,73 @@ def test_verify_allows_excluded_foundation_receipt_to_change(tmp_path):
     m.verify_manifest(root, manifest)
 
 
+def test_verify_allows_later_commit_that_changes_only_excluded_release_metadata(tmp_path):
+    root = _repo(tmp_path)
+    manifest = m.build_manifest(root)
+    source_commit = manifest["source_commit"]
+    source_tree = manifest["source_tree"]
+
+    receipt = root / "provenance" / "receipts" / "FOUNDATION_STATUS_V0_28.json"
+    receipt.write_text(json.dumps({"status": "PASS_RELEASE_CLOSED"}) + "\n", "utf-8")
+    _git(root, "add", str(receipt.relative_to(root)))
+    _git(root, "commit", "-m", "release metadata only")
+
+    assert _git(root, "rev-parse", "HEAD") != source_commit
+    assert _git(root, "rev-parse", "HEAD^{tree}") != source_tree
+    m.verify_manifest(root, manifest)
+
+
+def test_verify_rejects_source_commit_tree_mismatch(tmp_path):
+    root = _repo(tmp_path)
+    manifest = m.build_manifest(root)
+    tampered = dict(manifest)
+    tampered["source_tree"] = "0" * 40
+    with pytest.raises(m.ManifestError, match="source_commit/source_tree mismatch"):
+        m.verify_manifest(root, tampered)
+
+
+def test_verify_rejects_valid_older_source_when_included_content_changed(tmp_path):
+    root = _repo(tmp_path)
+    old_commit = _git(root, "rev-parse", "HEAD")
+    old_tree = _git(root, "rev-parse", "HEAD^{tree}")
+
+    (root / "src" / "a.txt").write_text("beta\n", "utf-8")
+    _git(root, "add", "src/a.txt")
+    _git(root, "commit", "-m", "included content change")
+
+    manifest = m.build_manifest(root)
+    manifest["source_commit"] = old_commit
+    manifest["source_tree"] = old_tree
+    with pytest.raises(m.ManifestError, match="differs from HEAD outside declared exclusions"):
+        m.verify_manifest(root, manifest)
+
+
+def test_verify_rejects_manifest_status_downgrade(tmp_path):
+    root = _repo(tmp_path)
+    manifest = m.build_manifest(root)
+    manifest["status"] = "CANDIDATE"
+    with pytest.raises(m.ManifestError, match="manifest mismatch: status"):
+        m.verify_manifest(root, manifest)
+
+
+def test_verify_rejects_scope_downgrade_via_extra_exclusion(tmp_path):
+    root = _repo(tmp_path)
+    downgraded = m.build_manifest(
+        root,
+        exclusions=(*m.DEFAULT_EXCLUSIONS, "src/a.txt"),
+    )
+    with pytest.raises(m.ManifestError, match="canonical exclusions"):
+        m.verify_manifest(root, downgraded)
+
+
+def test_verify_rejects_empty_exclusion_contract(tmp_path):
+    root = _repo(tmp_path)
+    manifest = m.build_manifest(root)
+    manifest["exclusions"] = []
+    with pytest.raises(m.ManifestError, match="non-empty string list"):
+        m.verify_manifest(root, manifest)
+
+
 def test_untracked_file_does_not_silently_enter_manifest_scope(tmp_path):
     root = _repo(tmp_path)
     (root / "untracked.txt").write_text("not tracked\n", "utf-8")

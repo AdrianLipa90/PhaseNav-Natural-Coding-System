@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import math
 from numbers import Real
+from types import MappingProxyType
 from typing import Any, Mapping
 
 import numpy as np
@@ -85,7 +86,7 @@ class SemanticHTRILaneProfile:
             raise SemanticOrbitalHTRIBridgeError(
                 f"unsupported frequency_binding: {self.frequency_binding}"
             )
-        object.__setattr__(self, "kaku_to_lane", mapping)
+        object.__setattr__(self, "kaku_to_lane", MappingProxyType(dict(mapping)))
         object.__setattr__(self, "frequency_binding", mode)
 
     def to_dict(self) -> dict[str, Any]:

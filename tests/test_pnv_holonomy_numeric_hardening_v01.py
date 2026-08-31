@@ -11,6 +11,10 @@ from phasenav_natural_code.pnv_noether_collective_holonomy_v01 import (
     make_noether_collective_state,
     noether_collective_transforms,
 )
+from phasenav_natural_code.pnv_noether_rfc_current_holonomy_v01 import (
+    PNVNoetherRFCCurrentError,
+    make_noether_rfc_current_state,
+)
 
 
 class LocalNumericError(RuntimeError):
@@ -60,3 +64,33 @@ def test_noether_collective_rejects_finite_input_that_overflows_derived_product(
     transforms = noether_collective_transforms()
     with pytest.raises(PNVNoetherCollectiveError, match="finite numeric"):
         transforms["noether.resolve_rotor_carrier"](state)
+
+
+def test_noether_rfc_rejects_weighted_total_overflow_at_state_admission():
+    with pytest.raises(PNVNoetherRFCCurrentError, match="finite numeric"):
+        make_noether_rfc_current_state(
+            slice_id="SIGMA.OVERFLOW",
+            noether_measure_id="measure:shared:v1",
+            rfc_measure_id="measure:shared:v1",
+            noether_cell_ids=("c0",),
+            rfc_cell_ids=("c0",),
+            noether_volumes=(1.0e308,),
+            rfc_volumes=(1.0e308,),
+            j_theta_cells=(1.0e308,),
+            j_q_cells=(1.0e308,),
+        )
+
+
+def test_noether_rfc_rejects_huge_integer_before_weighted_total():
+    with pytest.raises(PNVNoetherRFCCurrentError, match="finite numeric"):
+        make_noether_rfc_current_state(
+            slice_id="SIGMA.HUGE.INT",
+            noether_measure_id="measure:shared:v1",
+            rfc_measure_id="measure:shared:v1",
+            noether_cell_ids=("c0",),
+            rfc_cell_ids=("c0",),
+            noether_volumes=(10**10000,),
+            rfc_volumes=(1.0,),
+            j_theta_cells=(1.0,),
+            j_q_cells=(1.0,),
+        )

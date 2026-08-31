@@ -196,7 +196,26 @@ retain the strict-real admission contract of `PNCS_SEMANTIC_ORBITAL_CARRIER_V0_1
 
 Canonical winding remains an exact integer with `bool` excluded.
 
-## 7. Distinct source and placement phase profiles
+The supplied quantizer is admitted as an `OrbitQuantizerProfile` before its `quantize()` method participates in placement construction.
+
+## 7. Immutable placement provenance
+
+A `SemanticPhasePlacement` stores the admitted
+
+```text
+sample_time
+semantic_target
+B
+omega
+N
+A_R
+```
+
+as canonical plain `float` values before deterministic receipt construction. The placement therefore commits one scalar snapshot even when an accepted `numbers.Real` implementation has caller-controlled conversion state.
+
+Receipt construction consumes these stored canonical coordinates directly. Repeated receipt generation from one placement preserves the same carrier coordinate snapshot.
+
+## 8. Distinct source and placement phase profiles
 
 The parent PNLF adapter uses the stored wrapped `OrbitalState.phase` as one source-phase profile and records PNLF winding separately.
 
@@ -210,7 +229,7 @@ semantic target S
 
 Both profiles carry explicit receipt identities. A later equality/transport gate can bind them through its own declared contract.
 
-## 8. KAKU / RADICAL use
+## 9. KAKU / RADICAL use
 
 For one explicit KAKU/content identity, the candidate encoder is
 
@@ -226,7 +245,7 @@ content_id + KAKU id
 
 RADICAL composition consumes these per-KAKU codes through a separately identified composition/operator profile.
 
-## 9. GREMLIN boundary
+## 10. GREMLIN boundary
 
 GREMLIN may propose candidate placements. The deterministic receipt retains
 
@@ -238,7 +257,7 @@ runtime_execution_authority = false
 canon_write_authority = false
 ```
 
-## 10. Validation gates
+## 11. Validation gates
 
 Reference tests verify:
 
@@ -253,7 +272,9 @@ Reference tests verify:
 9. finite-result and integer-winding admission;
 10. bool, numeric-string and arbitrary float-coercible inverse-coordinate rejection;
 11. exact content/KAKU/orbital-band string identity;
-12. inherited strict carrier-coordinate admission.
+12. inherited strict carrier-coordinate admission;
+13. quantizer type admission before quantizer execution;
+14. canonical carrier-coordinate snapshot stability under caller-side `Real` conversion-state mutation.
 
 Reference implementation: `src/phasenav_natural_code/semantic_phase_inverse_v02.py`.
 Reference tests:

@@ -115,6 +115,16 @@ def _real_array(name: str, value: object) -> np.ndarray:
     return out
 
 
+def _immutable_array(value: np.ndarray) -> np.ndarray:
+    contiguous = np.ascontiguousarray(value)
+    frozen = np.frombuffer(
+        contiguous.tobytes(order="C"),
+        dtype=contiguous.dtype,
+    ).reshape(contiguous.shape)
+    frozen.setflags(write=False)
+    return frozen
+
+
 def wrap_delta(target: np.ndarray, current: np.ndarray) -> np.ndarray:
     return np.angle(np.exp(1j * (np.asarray(target) - np.asarray(current))))
 
@@ -214,17 +224,21 @@ class DriveSnapshot:
         gravity: Sequence[float],
         source_id: str,
     ) -> "DriveSnapshot":
-        f = _require_min_vec("flavor", flavor, 5)
-        gr = _require_min_vec("gravity", gravity, 3)
+        phi_values = _require_vec("phi", phi)
+        omega_values = _require_vec("omega", omega)
+        g_values = _require_g(g)
+        flavor_values = _require_min_vec("flavor", flavor, 5)
+        tau_values = _require_vec("tau", tau)
+        gravity_values = _require_min_vec("gravity", gravity, 3)
         if not isinstance(source_id, str) or not source_id.strip():
             raise SemanticHTRIDriveV32Error("source_id must be a non-empty string")
         return cls(
-            _require_vec("phi", phi),
-            _require_vec("omega", omega),
-            _require_g(g),
-            f,
-            _require_vec("tau", tau),
-            gr,
+            _immutable_array(phi_values),
+            _immutable_array(omega_values),
+            _immutable_array(g_values),
+            _immutable_array(flavor_values),
+            _immutable_array(tau_values),
+            _immutable_array(gravity_values),
             source_id,
         )
 

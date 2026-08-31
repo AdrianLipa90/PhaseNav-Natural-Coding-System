@@ -21,6 +21,7 @@ on:
       - 'tests/test_semantic_orbital_trajectory_v01.py'
       - 'tests/test_semantic_orbital_trajectory_admission_v01.py'
       - 'tests/test_semantic_orbital_htri_bridge_v01.py'
+      - 'tests/test_semantic_htri_lane_profile_immutability_v01.py'
       - 'tests/test_semantic_orbital_htri_bounded_v01.py'
       - 'tests/test_semantic_magnitude_actuation_firewall_v01.py'
       - 'tests/test_semantic_htri_drive_v32.py'
@@ -75,6 +76,7 @@ jobs:
           tests/test_semantic_orbital_trajectory_v01.py
           tests/test_semantic_orbital_trajectory_admission_v01.py
           tests/test_semantic_orbital_htri_bridge_v01.py
+          tests/test_semantic_htri_lane_profile_immutability_v01.py
           tests/test_semantic_orbital_htri_bounded_v01.py
           tests/test_semantic_magnitude_actuation_firewall_v01.py
           tests/test_semantic_radical_oscillator_v01.py

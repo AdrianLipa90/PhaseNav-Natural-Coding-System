@@ -84,6 +84,7 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
         "src/phasenav_natural_code/gremlin_strict_admission_v01.py",
         "src/phasenav_natural_code/gremlin_live_hydration_v03.py",
         "src/phasenav_natural_code/pnv_holonomy_numeric_v01.py",
+        "src/phasenav_natural_code/gremlin_noema_qhtri_isomorphism_bank_v01.py",
         "tests/test_model_integrity_v01.py",
         "tests/test_gremlin_strict_admission_v01.py",
         "tests/test_gremlin_strict_admission_consumers_v01.py",
@@ -99,8 +100,10 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
         "tests/test_gremlin_cross_formalism_sealed_bundle_v01.py",
         "tests/test_gremlin_cross_formalism_round28_v01.py",
         "tests/test_gremlin_round28_sealed_bundle_v01.py",
+        "tests/test_gremlin_noema_qhtri_isomorphism_bank_v01.py",
         "tests/test_fpdg_gremlin_pain_ingress_v01.py",
         "spec/PNCS_GREMLIN_STRICT_ADMISSION_V0_1.md",
+        "spec/PNCS_GREMLIN_CROSS_FORMALISM_AGGREGATE_INTEGRITY_V0_1.md",
     ):
         assert path in gremlin
 
@@ -163,6 +166,7 @@ def test_v1_release_closure_runs_full_post_merge_regression_surface():
         "tests/test_gremlin_cross_formalism_sealed_bundle_v01.py",
         "tests/test_gremlin_cross_formalism_round28_v01.py",
         "tests/test_gremlin_round28_sealed_bundle_v01.py",
+        "tests/test_gremlin_noema_qhtri_isomorphism_bank_v01.py",
         "tests/test_semantic_orbital_carrier_v01.py",
         "tests/test_semantic_phase_inverse_v02.py",
         "tests/test_semantic_orbital_trajectory_v03.py",

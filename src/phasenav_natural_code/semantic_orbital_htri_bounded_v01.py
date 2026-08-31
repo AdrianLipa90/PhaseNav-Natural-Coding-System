@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from numbers import Real
 from typing import Any, Mapping
 
 import numpy as np
@@ -29,11 +30,13 @@ class SemanticOrbitalHTRIBoundedError(ValueError):
     pass
 
 
-def _positive_float(name: str, value: float) -> float:
-    value = float(value)
-    if not math.isfinite(value) or value <= 0.0:
-        raise SemanticOrbitalHTRIBoundedError(f"{name} must be positive finite")
-    return value
+def _positive_float(name: str, value: object) -> float:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise SemanticOrbitalHTRIBoundedError(f"{name} must be positive finite real")
+    out = float(value)
+    if not math.isfinite(out) or out <= 0.0:
+        raise SemanticOrbitalHTRIBoundedError(f"{name} must be positive finite real")
+    return out
 
 
 def _positive_int(name: str, value: int) -> int:

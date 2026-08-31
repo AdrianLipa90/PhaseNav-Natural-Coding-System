@@ -283,6 +283,49 @@ def test_nonfinite_state_metric_fails_closed():
         )
 
 
+def test_holonomy_invariant_rejects_string_tolerance_and_bool_tolerance():
+    for value in ("0.0", True):
+        with pytest.raises(PNVInformationHolonomyError, match="invariant tolerance"):
+            HolonomyInvariant("STRICT.TOLERANCE", "ABS", value)
+
+
+def test_holonomy_invariant_mode_requires_exact_string_type():
+    class StringLikeExact:
+        def __str__(self):
+            return "EXACT"
+
+    with pytest.raises(PNVInformationHolonomyError, match="invariant mode"):
+        HolonomyInvariant("STRICT.MODE", StringLikeExact(), 0.0)
+
+
+@pytest.mark.parametrize(
+    "left,right",
+    [
+        (["1.0"], [1.0]),
+        ([True], [1.0]),
+        ([1.0], ["1.0"]),
+    ],
+)
+def test_numeric_linf_metric_rejects_implicit_coordinate_coercion(left, right):
+    with pytest.raises(PNVInformationHolonomyError, match="finite numeric coordinates"):
+        numeric_linf_metric(left, right)
+
+
+def test_abs_invariant_callback_rejects_numeric_string_output():
+    loop = _loop(invariants=(HolonomyInvariant("STRICT.ABS", "ABS", 0.0),))
+    compiled = _compile(loop)
+    with pytest.raises(PNVInformationHolonomyError, match="ABS invariant requires finite numeric scalar"):
+        audit_information_holonomy(
+            loop,
+            compiled,
+            initial_state=[1.0, 2.0],
+            transforms={"scale2": lambda x: x, "scale_half": lambda x: x},
+            state_metric=numeric_linf_metric,
+            metric_id="L_INF",
+            invariant_evaluators={"STRICT.ABS": lambda _state: "1.0"},
+        )
+
+
 def test_holonomy_audit_persistence_is_content_addressed_and_idempotent(tmp_path):
     loop = _loop()
     compiled = _compile(loop)

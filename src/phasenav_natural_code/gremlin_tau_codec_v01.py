@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Mapping
+import hashlib
+import json
+from typing import Any, Mapping
 
 from .gremlin_isomorphic_codec_merge_v01 import merge_relational_isomorphisms
 from .gremlin_relational_compiler_v01 import (
@@ -20,6 +22,7 @@ CODEC_LEFT_FRAGMENT_ID = "ISO.PNLF.PNCS.STATE"
 CODEC_RIGHT_FRAGMENT_ID = "ISO.PNLF.STATE.BIOOS"
 CODEC_REALIZATION_FRAGMENT_ID = "ISO.PNLF.PNH5.REALIZATION"
 CODEC_INVARIANT_ID = "INV.CONTENT.IDENTITY.TAU.T36.STATE"
+CODEC_MANIFEST_SCHEMA = "PNCS_GREMLIN_TAU_CODEC_MANIFEST_V0_1"
 CODEC_INVARIANT_DESCRIPTION = (
     "logical file content is transported through exact scalar tau frames, "
     "whole-lane T36 witnesses and State Memory consolidation checkpoints "
@@ -34,10 +37,28 @@ EVIDENCE_REFS = (
 )
 
 
+class GremlinTauCodecError(RuntimeError):
+    pass
+
+
 @dataclass(frozen=True)
 class TauCodecCompilation:
     compilation: RelationalCompilation
     codec_manifest: Mapping[str, object]
+
+
+def _canonical_bytes(value: Any) -> bytes:
+    return json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")
+
+
+def _sha256(value: Any) -> str:
+    return hashlib.sha256(_canonical_bytes(value)).hexdigest()
 
 
 def _vector(seed: int) -> Vector36:
@@ -132,6 +153,59 @@ def tau_codec_isomorphism() -> RelationalIsomorphism:
     return merge_relational_isomorphisms(fragments, merged_isomorphism_id=CODEC_ISOMORPHISM_ID)
 
 
+def _codec_manifest_body(compilation: RelationalCompilation) -> dict[str, object]:
+    if not isinstance(compilation, RelationalCompilation):
+        raise GremlinTauCodecError("RelationalCompilation required")
+    try:
+        return {
+            "schema": CODEC_MANIFEST_SCHEMA,
+            "isomorphism_id": CODEC_ISOMORPHISM_ID,
+            "source_isomorphism_fragments": [
+                CODEC_LEFT_FRAGMENT_ID,
+                CODEC_RIGHT_FRAGMENT_ID,
+                CODEC_REALIZATION_FRAGMENT_ID,
+            ],
+            "invariant_id": CODEC_INVARIANT_ID,
+            "kaku_candidate_ids": {
+                key: value["candidate_id"] for key, value in sorted(compilation.kaku_candidates.items())
+            },
+            "radical_candidate_id": compilation.radical_candidate["candidate_id"],
+            "operator_candidate_ids": [op["candidate_id"] for op in compilation.operator_candidates],
+            "compilation_receipt_sha256": compilation.receipt["receipt_sha256"],
+            "pnv_source_sha256": compilation.receipt["pnv_source_sha256"],
+            "pnv_graph_sha256": compilation.receipt["pnv_graph_sha256"],
+            "isomorphic_merge_applied": True,
+            "shared_merge_nodes": ["K.LIMINAL.SEGMENT", "K.PNH5.VIEW"],
+            "tau_is_content_carrier": True,
+            "t36_is_whole_lane_witness": True,
+            "state_memory_is_consolidation_boundary": True,
+            "pnh5_binary_realization_bound": True,
+            "file_identity_distinct_from_content_and_checkpoint": True,
+            "wall_clock_in_semantic_identity": False,
+            "runtime_execution_authority": False,
+            "canon_write_authority": False,
+            "promotion_state": "CANDIDATE_ONLY",
+            "epistemic": "CHYBA",
+        }
+    except (KeyError, TypeError) as exc:
+        raise GremlinTauCodecError("tau codec compilation is missing committed provenance fields") from exc
+
+
+def _validate_tau_codec_manifest(candidate: TauCodecCompilation) -> None:
+    if not isinstance(candidate, TauCodecCompilation):
+        raise GremlinTauCodecError("TauCodecCompilation required")
+    if not isinstance(candidate.codec_manifest, Mapping):
+        raise GremlinTauCodecError("tau codec manifest mapping required")
+
+    expected_body = _codec_manifest_body(candidate.compilation)
+    observed = dict(candidate.codec_manifest)
+    manifest_sha256 = observed.pop("manifest_sha256", None)
+    if observed != expected_body:
+        raise GremlinTauCodecError("tau codec manifest no longer matches exact compilation provenance")
+    if not isinstance(manifest_sha256, str) or manifest_sha256 != _sha256(expected_body):
+        raise GremlinTauCodecError("tau codec manifest commitment mismatch")
+
+
 def compile_tau_codec_candidate(
     *,
     generation_binding: str,
@@ -147,40 +221,14 @@ def compile_tau_codec_candidate(
         authority=authority,
         authoring_root=authoring_root,
     )
-    manifest = {
-        "schema": "PNCS_GREMLIN_TAU_CODEC_MANIFEST_V0_1",
-        "isomorphism_id": merged.isomorphism_id,
-        "source_isomorphism_fragments": [
-            CODEC_LEFT_FRAGMENT_ID,
-            CODEC_RIGHT_FRAGMENT_ID,
-            CODEC_REALIZATION_FRAGMENT_ID,
-        ],
-        "invariant_id": CODEC_INVARIANT_ID,
-        "kaku_candidate_ids": {
-            key: value["candidate_id"] for key, value in sorted(compilation.kaku_candidates.items())
-        },
-        "radical_candidate_id": compilation.radical_candidate["candidate_id"],
-        "operator_candidate_ids": [op["candidate_id"] for op in compilation.operator_candidates],
-        "pnv_source_sha256": compilation.receipt["pnv_source_sha256"],
-        "pnv_graph_sha256": compilation.receipt["pnv_graph_sha256"],
-        "isomorphic_merge_applied": True,
-        "shared_merge_nodes": ["K.LIMINAL.SEGMENT", "K.PNH5.VIEW"],
-        "tau_is_content_carrier": True,
-        "t36_is_whole_lane_witness": True,
-        "state_memory_is_consolidation_boundary": True,
-        "pnh5_binary_realization_bound": True,
-        "file_identity_distinct_from_content_and_checkpoint": True,
-        "wall_clock_in_semantic_identity": False,
-        "runtime_execution_authority": False,
-        "canon_write_authority": False,
-        "promotion_state": "CANDIDATE_ONLY",
-        "epistemic": "CHYBA",
-    }
+    manifest_body = _codec_manifest_body(compilation)
+    manifest = {**manifest_body, "manifest_sha256": _sha256(manifest_body)}
     return TauCodecCompilation(compilation=compilation, codec_manifest=manifest)
 
 
 def validate_tau_codec_candidate(candidate: TauCodecCompilation):
+    _validate_tau_codec_manifest(candidate)
     result = validate_compiled_relational_candidate(candidate.compilation)
     if result.receipt["effect_boundary"]["external_effects"] is not False:
-        raise RuntimeError("GREMLIN tau codec conformance crossed effect boundary")
+        raise GremlinTauCodecError("GREMLIN tau codec conformance crossed effect boundary")
     return result

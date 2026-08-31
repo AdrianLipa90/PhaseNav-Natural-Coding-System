@@ -80,7 +80,9 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
 
     gremlin = _workflow("pncs-gremlin-pnv-authoring.yml")
     for path in (
+        "src/phasenav_natural_code/model.py",
         "src/phasenav_natural_code/pnv_holonomy_numeric_v01.py",
+        "tests/test_model_integrity_v01.py",
         "tests/test_gremlin_pnv_authoring_canonical_boundary_v01.py",
         "tests/test_gremlin_relational_compiler_integrity_v01.py",
         "tests/test_pnv_holonomy_numeric_hardening_v01.py",
@@ -99,6 +101,7 @@ def test_v1_release_closure_runs_full_post_merge_regression_surface():
     for test_path in (
         "tests/test_post_consolidation_workflow_integrity_v01.py",
         "tests/test_manifest_tool_v28.py",
+        "tests/test_model_integrity_v01.py",
         "tests/test_full_program_executor_v01.py",
         "tests/test_full_program_executor_receipt_integrity_v01.py",
         "tests/test_runtime_v30_hot.py",

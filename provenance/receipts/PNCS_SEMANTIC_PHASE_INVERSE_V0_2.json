@@ -1,0 +1,36 @@
+{
+  "schema": "PNCS_VALIDATION_RECEIPT_V0_1",
+  "gate": "PNCS_SEMANTIC_PHASE_INVERSE_V0_2",
+  "status": "REFERENCE_CANDIDATE / STACKED_ON_V0_1_SELF_HOSTED_GATE",
+  "stack_parent": "feat/pncs-semantic-orbital-carrier-v0.1",
+  "stack_parent_head": "f862e6847b20bbe094ddcad01aedc6c3704d3112",
+  "formula": "S=C*(phi+kappa), C=B*omega*N/A_R",
+  "inverse": "C!=0 -> phi_lift=S/C-kappa",
+  "phase_split": "phi_lift=phi_wrap+2*pi*w, phi_wrap in [0,2*pi), w integer",
+  "identifiability": {
+    "C_nonzero": "UNIQUE_LIFTED_PHASE",
+    "C_zero_S_zero": "NON_IDENTIFIABLE_PHASE",
+    "C_zero_S_nonzero": "INCONSISTENT_ZERO_CARRIER"
+  },
+  "exact_contract": [
+    "nonzero carrier semantic value uniquely fixes lifted phase",
+    "canonical wrapped phase plus integer winding reconstructs lifted phase",
+    "wrapped phase plus winding reconstructs semantic value",
+    "semantic target composes with explicit parent O0..O8 quantizer",
+    "parent forward evaluator replays the encoded target"
+  ],
+  "authority": {
+    "semantic_authority": "EXPLICIT_KAKU_CONTENT_BINDING",
+    "epistemic_state": "CHYBA",
+    "promotion_state": "CANDIDATE_ONLY",
+    "runtime_execution_authority": false,
+    "canon_write_authority": false
+  },
+  "reference_implementation": "src/phasenav_natural_code/semantic_phase_inverse_v02.py",
+  "reference_tests": "tests/test_semantic_phase_inverse_v02.py",
+  "hosted_ci": {
+    "profile": "SELF_HOSTED_PURE_CONFORMANCE",
+    "run": null,
+    "conclusion": "PENDING"
+  }
+}

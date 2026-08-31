@@ -1,6 +1,6 @@
 import pytest
 
-from phasenav_natural_code.semantic_orbital_carrier_v01 import OrbitQuantizerProfile
+from phasenav_natural_code.semantic_orbital_carrier_v01 import DEFAULT_BANDS, OrbitQuantizerProfile
 from phasenav_natural_code.semantic_phase_inverse_v02 import encode_semantic_phase_placement
 from phasenav_natural_code.semantic_orbital_trajectory_v03 import (
     INTRABAND_PHASE_TRANSPORT,
@@ -17,6 +17,7 @@ def _quantizer(quantizer_id: str = "Q.TRAJ") -> OrbitQuantizerProfile:
     return OrbitQuantizerProfile(
         quantizer_id=quantizer_id,
         boundaries=(-100.0, -10.0, -5.0, -1.0, 0.0, 10.0, 20.0, 30.0),
+        bands=DEFAULT_BANDS,
     )
 
 

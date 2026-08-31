@@ -1,136 +1,91 @@
 # PNCS GREMLIN Candidate Inverse Lineage v0.1
 
-Status: `RESULT_TO_OPERATOR_RADICAL_KAKU_PASS / EXPLICIT_CONTENT_JOIN_AVAILABLE / V22_CANONICAL_JOIN_GATED / LIVE_GREMLIN_HYDRATION_OPEN`
+Status: `RESULT_TO_OPERATOR_RADICAL_KAKU_PASS / EFFECT_BOUNDARY_PROPAGATED / V22_CANONICAL_JOIN_GATED`
 
 ## Purpose
 
-This contract adds deterministic inverse provenance for GREMLIN-authored native PNV candidate programs.
-
-The forward path is:
+This contract reconstructs inverse provenance for GREMLIN-authored native PNV candidate programs:
 
 ```text
-GREMLIN finding
-  -> KAKU candidates
-  -> RADICAL candidate
-  -> OPERATOR candidates
-  -> native PNV candidate program
-  -> pure conformance result
+native result
+-> emitted OPERATOR root
+-> dependent OPERATOR candidates
+-> RADICAL candidate
+-> KAKU candidates
+-> explicit content IDs and evidence refs
 ```
 
-The inverse path is:
-
-```text
-native PNV result
-  -> emitted root OPERATOR
-  -> dependent OPERATOR candidates
-  -> RADICAL candidate
-  -> KAKU candidates
-  -> explicit content IDs and evidence refs
-```
-
-The inverse receipt is content-addressed and remains under `CHYBA / CANDIDATE_ONLY` until a separate admission/promotion gate acts on the candidate material.
+The lineage remains `CHYBA / CANDIDATE_ONLY` and provides no automatic runtime or canon-write authority.
 
 ## Relation to PNCS v0.22
 
-`PNCS_EXACT_INVERSE_EXECUTION_LINEAGE_V0_22` is the canonical execution-lineage contract for admitted PNCS Definition execution and reconstructs:
+The candidate lineage carries explicit PNCS content IDs when they already exist in provenance. Its join state is:
 
 ```text
-RESULT
-  -> SYSTEM
-  -> HIGH_ORCHESTRATOR
-  -> LOW_ORCHESTRATOR
-  -> SUBSYSTEM|DAEMON
-  -> CLUSTER
-  -> FILE
-  -> CLASS
-  -> DEFINITION
-  -> RADICAL
-  -> KAKU
+CONTENT_ID_AVAILABLE
+CONTENT_ID_OPEN
 ```
 
-GREMLIN candidate inverse lineage occupies the pre-promotion candidate layer. Its join key into v0.22 is an explicitly carried PNCS content ID.
-
-```text
-GREMLIN candidate lineage
-    -> explicit content_id
-    -> admission/promotion
-    -> PNCS v0.22 canonical lineage
-```
-
-The receipt therefore reports one of:
-
-```text
-v22_join_state = CONTENT_ID_AVAILABLE
-v22_join_state = CONTENT_ID_OPEN
-```
-
-This keeps the candidate and canonical lineage contracts distinct while providing an exact bridge when semantic provenance is already explicit.
+An available content ID is the exact bridge key for a later admitted PNCS v0.22 canonical execution lineage.
 
 ## Execution binding
 
-The inverse resolver accepts exactly:
+The resolver accepts a `RelationalCompilation` and a `NativePNVExecutionResult` and verifies:
 
 ```text
-RelationalCompilation
-NativePNVExecutionResult
+native receipt schema and receipt_sha256
+program_source_sha256 == compilation pnv_source_sha256
+program_graph_sha256 == compilation pnv_graph_sha256
+result.program source/graph hashes == native receipt hashes
 ```
 
-It verifies the native execution receipt:
+The runtime trace must cover exactly the parsed PNV operator set, and emitted-value commitments must equal the actual emitted values.
+
+## Effect-boundary rule
+
+Inverse provenance requires the native interpreter boundary itself to remain closed:
 
 ```text
-schema = PNCS_NATIVE_PNV_EXEC_RECEIPT_V0_1
-receipt_sha256 = SHA256(canonical receipt body)
-program_source_sha256 == compilation.pnv_source_sha256
-program_graph_sha256  == compilation.pnv_graph_sha256
-external_effects      == false
+interpreter_external_effects = false
 ```
 
-The runtime trace must contain exactly the parsed PNV operator set and every trace row carries a valid result SHA-256.
+The global execution boundary may then be one of two admitted states.
 
-## OPERATOR inverse graph
-
-The inverse traversal begins at the program `EMIT` roots. For the relational compiler this is normally:
+Callback-free execution:
 
 ```text
-ISO.RETURN
+external_effects = false
+external_effects_status = VERIFIED_NONE_WITHIN_INTERPRETER_BOUNDARY
+callback_effects_verified = true
+callbacks_invoked = []
+callback_determinism_verified = true
 ```
 
-For every candidate OPERATOR the resolver verifies:
+Execution containing admitted Python callbacks:
 
 ```text
-candidate schema/kind
-candidate content hash
-CHYBA / CANDIDATE_ONLY state
-runtime_execution_authority = false
-canon_write_authority = false
-radical_candidate_id = compiled RADICAL candidate id
-candidate opcode/args = parsed native PNV opcode/args
+external_effects = null
+external_effects_status = UNVERIFIED_CALLBACK_BOUNDARY
+callback_effects_verified = false
+callbacks_invoked = [non-empty bindings]
+callback_determinism_verified = false
 ```
 
-Operator arguments that name another compiled OPERATOR form exact inverse edges. A depth-first dependency traversal reconstructs only the subgraph reachable from the emitted result roots.
+A reported positive external effect, malformed effect provenance, or inconsistent callback-determinism flag fails closed.
 
-The inverse receipt records result hashes from the native PNV trace for every reachable operator.
+The lineage payload carries the summarized execution effect boundary. `deterministic_serialization=true` records deterministic content-addressed serialization. `deterministic_fields_only` follows the verified callback-determinism state rather than being asserted unconditionally.
 
-## RADICAL closure
+## OPERATOR graph
 
-The compiled RADICAL must satisfy exact candidate closure:
+Traversal starts at every EMIT root. Each reachable OPERATOR must preserve candidate schema/kind, candidate content hash, authority boundary, RADICAL dependency, and exact opcode/args equality with the parsed PNV program.
 
-```text
-RADICAL.content.kaku_candidate_ids.keys
-    == compilation.kaku_candidates.keys
-```
+Each lineage OPERATOR row carries the execution trace result hash.
 
-and for every node:
+## RADICAL and KAKU closure
 
-```text
-RADICAL[node_id] == exact KAKU candidate_id
-```
+The RADICAL node map must equal the compiled KAKU candidate map exactly. Every RADICAL node reference must point to the exact KAKU candidate ID, its dependency list must close over the same KAKU set, and the compiler receipt must carry the same RADICAL/KAKU identities.
 
-The RADICAL dependency list must equal the sorted set of referenced KAKU candidate IDs. The compiler receipt must carry the same RADICAL candidate ID and the same node-to-candidate mapping.
-
-## KAKU provenance
-
-Each KAKU row records:
+KAKU rows preserve:
 
 ```text
 node_id
@@ -141,102 +96,28 @@ evidence_refs
 explicit_content_ids
 ```
 
-`explicit_content_ids` are extracted only from provenance strings that already contain a typed PNCS SHA-256 content ID, for example the resolver-produced role:
+Typed PNCS SHA-256 content IDs are extracted only from explicit provenance strings already attached to the candidate material.
 
-```text
-gremlin_relation_atom:<ATOM>:pncs:def:sha256:<digest>
-```
+## Identity
 
-The semantic join authority is therefore explicit provenance. Numeric 36D realization remains an integrity/realization layer.
-
-## Result identity
-
-The deterministic lineage payload contains:
-
-```text
-schema = PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_V0_1
-compilation_receipt_sha256
-execution_receipt_sha256
-emit_roots
-operator_rows
-radical_row
-kaku_rows
-explicit_content_ids
-v22_join_state
-epistemic = CHYBA
-promotion_state = CANDIDATE_ONLY
-```
-
-Its content ID is:
+The lineage content ID is:
 
 ```text
 pncs:gremlin-candidate-lineage:sha256:<payload digest>
 ```
 
-and the receipt schema is:
+and its receipt schema is:
 
 ```text
 PNCS_GREMLIN_CANDIDATE_INVERSE_LINEAGE_RECEIPT_V0_1
 ```
 
+The content-addressed payload includes the execution effect-boundary summary, so changing callback-boundary status changes the lineage identity.
+
 ## Persistence
 
-Offline/conformance persistence accepts an explicit authoring root and stores:
-
-```text
-<authoring_root>/lineage/<lineage_digest>.json
-```
-
-using content-addressed idempotence.
-
-The unified bridge additionally exposes:
-
-```text
-persist_gremlin_candidate_inverse_lineage_live()
-```
-
-which first resolves an admitted `GremlinPNVAuthoringSession`. Operational live persistence therefore stays bound to the canonical GREMLIN authoring surface under:
-
-```text
-/dev/shm/ciel_noema/gremlin/candidates/pncs
-```
-
-Current repository status keeps live GREMLIN hydration as an explicit OPEN gate until the canonical GREMLIN state witness is hydrated on the live surface.
+Conformance persistence stores `<authoring_root>/lineage/<lineage_digest>.json` with idempotent content-addressed writes. Live persistence is admitted only through the GREMLIN live authoring surface under `/dev/shm/ciel_noema/gremlin/candidates/pncs`.
 
 ## Fail-closed gates
 
-The v0.1 resolver rejects:
-
-- tampered compilation receipt,
-- tampered native execution receipt,
-- PNV source or graph hash mismatch,
-- external-effect execution receipts,
-- candidate content-hash mismatch,
-- candidate authority-boundary mismatch,
-- candidate/program OPERATOR mismatch,
-- missing EMIT root,
-- trace/program operator mismatch,
-- RADICAL/KAKU closure mismatch,
-- RADICAL dependency mismatch,
-- compiler-receipt candidate mismatch,
-- emitted-value receipt mismatch,
-- content-addressed lineage collision.
-
-## Coding consequence
-
-GREMLIN can now compile a relational finding forward and audit the resulting computation backward:
-
-```text
-finding
-  -> KAKU
-  -> RADICAL
-  -> OPERATORS
-  -> PNV
-  -> result
-  -> OPERATORS
-  -> RADICAL
-  -> KAKU
-  -> content/evidence
-```
-
-This provides the provenance backbone required for later PNV information-holonomy loops, because every measured loop result can retain an exact inverse path to the relational atoms and evidence that generated it.
+The resolver rejects tampered compilation or execution receipts, source/graph mismatch, interpreter-boundary effects, malformed callback-boundary provenance, reported external effects, candidate content/authority mismatch, candidate/program operator mismatch, missing EMIT roots, trace mismatch, RADICAL/KAKU closure mismatch, emitted-value mismatch, and content-addressed persistence collisions.

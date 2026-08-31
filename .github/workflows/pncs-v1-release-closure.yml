@@ -48,6 +48,8 @@ jobs:
           tests/test_gremlin_relational_admission_v01.py
           tests/test_gremlin_relation_mining_adapter_v01.py
           tests/test_gremlin_relation_mining_admission_v01.py
+          tests/test_gremlin_kaku_resolver_v01.py
+          tests/test_gremlin_kaku_resolver_admission_v01.py
           tests/test_gremlin_inverse_lineage_v01.py
           tests/test_gremlin_pnv_holonomy_v01.py
           tests/test_gremlin_pnv_holonomy_effect_boundary_v01.py
@@ -77,7 +79,6 @@ jobs:
           tests/test_semantic_htri_drive_v32.py
           tests/test_semantic_htri_bounded_v33.py
           tests/test_pnlf_orbital_memory_v01.py
-          tests/test_gremlin_kaku_resolver_v01.py
           tests/test_semantic_phase_inverse_v02.py
           tests/test_semantic_orbital_trajectory_v03.py
       - name: Generate authoritative tracked-tree manifest candidate

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
+from numbers import Real
 from typing import Mapping, Sequence
 
 import numpy as np
@@ -53,13 +54,15 @@ def _canon(value: object) -> object:
     if isinstance(value, np.ndarray):
         return _canon(value.tolist())
     if isinstance(value, np.generic):
-        return value.item()
+        return _canon(value.item())
     if isinstance(value, tuple):
         return [_canon(x) for x in value]
     if isinstance(value, list):
         return [_canon(x) for x in value]
     if isinstance(value, dict):
-        return {str(k): _canon(value[k]) for k in sorted(value)}
+        if any(not isinstance(key, str) for key in value):
+            raise SemanticHTRIDriveV32Error("canonical mapping keys must be strings")
+        return {key: _canon(value[key]) for key in sorted(value)}
     if isinstance(value, float) and not math.isfinite(value):
         raise SemanticHTRIDriveV32Error("non-finite canonical float")
     if value is None or isinstance(value, (str, int, float, bool)):
@@ -80,22 +83,63 @@ def array_sha(a: np.ndarray) -> str:
     return hashlib.sha256(x.tobytes(order="C")).hexdigest()
 
 
+def _finite_real(name: str, value: object) -> float:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise SemanticHTRIDriveV32Error(f"{name} must be finite real")
+    out = float(value)
+    if not math.isfinite(out):
+        raise SemanticHTRIDriveV32Error(f"{name} must be finite real")
+    return out
+
+
+def _positive_real(name: str, value: object) -> float:
+    out = _finite_real(name, value)
+    if out <= 0.0:
+        raise SemanticHTRIDriveV32Error(f"{name} must be positive finite real")
+    return out
+
+
+def _real_array(name: str, value: object) -> np.ndarray:
+    try:
+        raw = np.asarray(value)
+    except (TypeError, ValueError) as exc:
+        raise SemanticHTRIDriveV32Error(f"{name} must be a real numeric array") from exc
+    if raw.dtype.kind not in {"i", "u", "f"}:
+        raise SemanticHTRIDriveV32Error(f"{name} must be a real numeric array")
+    try:
+        out = raw.astype(np.float64, copy=True)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SemanticHTRIDriveV32Error(f"{name} must be a real numeric array") from exc
+    if not np.isfinite(out).all():
+        raise SemanticHTRIDriveV32Error(f"{name} must contain finite real values")
+    return out
+
+
 def wrap_delta(target: np.ndarray, current: np.ndarray) -> np.ndarray:
     return np.angle(np.exp(1j * (np.asarray(target) - np.asarray(current))))
 
 
 def _require_vec(name: str, value: Sequence[float], n: int = N) -> np.ndarray:
-    a = np.asarray(value, dtype=np.float64).reshape(-1)
-    if a.size != n or not np.isfinite(a).all():
+    a = _real_array(name, value)
+    if a.shape != (n,):
         raise SemanticHTRIDriveV32Error(f"{name} must be finite shape ({n},)")
-    return a.copy()
+    return a
 
 
 def _require_g(value: Sequence[Sequence[float]]) -> np.ndarray:
-    g = np.asarray(value, dtype=np.float64)
-    if g.shape != (N, N) or not np.isfinite(g).all():
+    g = _real_array("g", value)
+    if g.shape != (N, N):
         raise SemanticHTRIDriveV32Error("g must be finite shape (36,36)")
-    return g.copy()
+    return g
+
+
+def _require_min_vec(name: str, value: Sequence[float], minimum: int) -> np.ndarray:
+    a = _real_array(name, value)
+    if a.ndim != 1 or a.size < minimum:
+        raise SemanticHTRIDriveV32Error(
+            f"{name} must be one-dimensional with at least {minimum} finite values"
+        )
+    return a
 
 
 def harmonic_composite_phase(phi: np.ndarray) -> np.ndarray:
@@ -116,21 +160,25 @@ def qhtri_graph_hamiltonian(
     detuning_strength: float = 0.25,
 ) -> tuple[np.ndarray, dict[str, float]]:
     """Exact qhtri_v3 graph_hamiltonian law."""
-    j = 0.5 * (g + g.T)
+    omega_values = _require_vec("omega", omega)
+    g_values = _require_g(g)
+    coupling_value = _finite_real("coupling_strength", coupling_strength)
+    detuning_value = _finite_real("detuning_strength", detuning_strength)
+    j = 0.5 * (g_values + g_values.T)
     j = j.copy()
     np.fill_diagonal(j, 0.0)
     spec = float(np.max(np.abs(np.linalg.eigvalsh(j))))
     if spec <= 0.0:
         raise SemanticHTRIDriveV32Error("zero coupling matrix")
     jn = j / spec
-    oc = omega - float(np.mean(omega))
+    oc = omega_values - float(np.mean(omega_values))
     os = float(np.std(oc)) or 1.0
     on = oc / os
-    h = detuning_strength * np.diag(on) + coupling_strength * jn
+    h = detuning_value * np.diag(on) + coupling_value * jn
     return h, {
         "raw_J_spectral_norm": spec,
-        "coupling_strength": float(coupling_strength),
-        "detuning_strength": float(detuning_strength),
+        "coupling_strength": coupling_value,
+        "detuning_strength": detuning_value,
     }
 
 
@@ -140,7 +188,8 @@ def unitary(H: np.ndarray, dt: float) -> np.ndarray:
 
 
 def phase_state(phi: np.ndarray) -> np.ndarray:
-    return np.exp(1j * np.asarray(phi, dtype=np.float64).reshape(N)) / math.sqrt(N)
+    values = _require_vec("phi", phi)
+    return np.exp(1j * values) / math.sqrt(N)
 
 
 @dataclass(frozen=True)
@@ -165,21 +214,17 @@ class DriveSnapshot:
         gravity: Sequence[float],
         source_id: str,
     ) -> "DriveSnapshot":
-        f = np.asarray(flavor, dtype=np.float64).reshape(-1)
-        gr = np.asarray(gravity, dtype=np.float64).reshape(-1)
-        if f.size < 5 or not np.isfinite(f).all():
-            raise SemanticHTRIDriveV32Error("flavor must contain at least 5 finite values")
-        if gr.size < 3 or not np.isfinite(gr).all():
-            raise SemanticHTRIDriveV32Error("gravity must contain at least 3 finite values")
-        if not isinstance(source_id, str) or not source_id:
-            raise SemanticHTRIDriveV32Error("source_id required")
+        f = _require_min_vec("flavor", flavor, 5)
+        gr = _require_min_vec("gravity", gravity, 3)
+        if not isinstance(source_id, str) or not source_id.strip():
+            raise SemanticHTRIDriveV32Error("source_id must be a non-empty string")
         return cls(
             _require_vec("phi", phi),
             _require_vec("omega", omega),
             _require_g(g),
-            f.copy(),
+            f,
             _require_vec("tau", tau),
-            gr.copy(),
+            gr,
             source_id,
         )
 
@@ -214,8 +259,9 @@ def controlled_step(
     *,
     dt: float = DEFAULT_DT,
 ) -> ControlledStep:
-    if not math.isfinite(dt) or dt <= 0.0:
-        raise SemanticHTRIDriveV32Error("dt must be positive finite")
+    if not isinstance(snapshot, DriveSnapshot):
+        raise SemanticHTRIDriveV32Error("snapshot must be DriveSnapshot")
+    dt_value = _positive_real("dt", dt)
     phi = snapshot.phi.copy()
     omega = snapshot.omega.copy()
     g = snapshot.g.copy()
@@ -244,8 +290,8 @@ def controlled_step(
 
     activity = (float(flavor[2]) + float(flavor[4]) * 0.5 + (1.0 - float(flavor[3])) * 0.3) / 1.8
     activity = min(max(activity, 0.0), 1.0)
-    hebb_step = 0.01 * dt * 10.0
-    decay_step = 0.001 * dt * 10.0
+    hebb_step = 0.01 * dt_value * 10.0
+    decay_step = 0.001 * dt_value * 10.0
     dg = hebb_step * (activity - 0.5) * np.cos(diff) - decay_step * (g - _EYE_N * 0.1)
     g += dg
     np.clip(g, -1.0, 1.0, out=g)
@@ -260,7 +306,7 @@ def controlled_step(
     dist = np.abs(np.angle(np.exp(1j * (ch_mean - global_mean))))
     weak = (ch_coh < 0.5) & (dist > 0.5)
     if weak.any():
-        boost = 0.01 * (0.5 - ch_coh) * dist * dt * 10.0
+        boost = 0.01 * (0.5 - ch_coh) * dist * dt_value * 10.0
         wc = np.flatnonzero(weak)
         rows = _CH_ROWS[wc].ravel()
         cols = _CH_COLS[wc].ravel()
@@ -269,19 +315,19 @@ def controlled_step(
 
     phi_base = phi.copy()
     if global_R > 0.7:
-        push = 0.005 * (global_R - 0.7) * dt * 10.0
+        push = 0.005 * (global_R - 0.7) * dt_value * 10.0
         ch_target = (ch_mean + math.pi) % TAU
         target_osc = np.repeat(ch_target, 3)
         phi_base += push * np.angle(np.exp(1j * (target_osc - phi_base)))
         phi_base %= TAU
 
     desired = wrap_delta(target, phi_base)
-    control = desired / dt - effective_omega - coupling
-    phi_next = (phi_base + dt * (effective_omega + coupling + control)) % TAU
+    control = desired / dt_value - effective_omega - coupling
+    phi_next = (phi_base + dt_value * (effective_omega + coupling + control)) % TAU
     residual = wrap_delta(target, phi_next)
 
     dphi = wrap_delta(phi_next, phi_base)
-    semantic_density = min(10.0, float(np.mean(np.abs(dphi)) / dt))
+    semantic_density = min(10.0, float(np.mean(np.abs(dphi)) / dt_value))
     gravity_next = gravity.copy()
     gravity_next[0] = semantic_density
     gravity_next[1] = 1.0 + math.tanh(semantic_density * 0.5) * 9.0
@@ -293,7 +339,7 @@ def controlled_step(
         "schema": STEP_SCHEMA,
         "contract_id": CONTRACT_ID,
         "source_snapshot_id": snapshot.snapshot_id,
-        "dt": float(dt),
+        "dt": dt_value,
         "target_phase36_sha256": array_sha(target),
         "phi_next_sha256": array_sha(phi_next),
         "g_next_sha256": array_sha(g),
@@ -319,16 +365,19 @@ def execute_trajectory(
     *,
     dt: float = DEFAULT_DT,
 ) -> dict[str, object]:
+    if not isinstance(initial, DriveSnapshot):
+        raise SemanticHTRIDriveV32Error("DriveSnapshot required")
     if not isinstance(trajectory, SemanticTrajectory36):
         raise SemanticHTRIDriveV32Error("SemanticTrajectory36 required")
+    dt_value = _positive_real("dt", dt)
     state = initial
     U_total = np.eye(N, dtype=np.complex128)
     psi0 = phase_state(initial.phi)
     steps: list[dict[str, object]] = []
 
     for idx, address in enumerate(trajectory.addresses):
-        step = controlled_step(state, address.phase36, dt=dt)
-        U = unitary(step.H, dt)
+        step = controlled_step(state, address.phase36, dt=dt_value)
+        U = unitary(step.H, dt_value)
         U_total = U @ U_total
         unit_err = float(np.max(np.abs(U_total.conj().T @ U_total - np.eye(N))))
         rec = dict(step.receipt)
@@ -358,7 +407,7 @@ def execute_trajectory(
         "initial_snapshot_id": initial.snapshot_id,
         "trajectory_id": trajectory.trajectory_id,
         "ordered_semantic_id": trajectory.ordered_semantic_id,
-        "dt": float(dt),
+        "dt": dt_value,
         "steps": steps,
         "final_phi_sha256": array_sha(state.phi),
         "final_g_sha256": array_sha(state.g),

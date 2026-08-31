@@ -72,6 +72,20 @@ def test_newly_consolidated_layers_remain_in_ci_coverage():
         assert test_path in gremlin
 
 
-def test_v1_release_closure_runs_this_regression_guard():
+def test_v1_release_closure_runs_full_post_merge_regression_surface():
     text = _workflow("pncs-v1-release-closure.yml")
-    assert "tests/test_post_consolidation_workflow_integrity_v01.py" in text
+    assert "python -m pip install pytest numpy" in text
+    for test_path in (
+        "tests/test_post_consolidation_workflow_integrity_v01.py",
+        "tests/test_dncrypt_native_pncs_v04_causality.py",
+        "tests/test_fpdg_gremlin_pain_ingress_v01.py",
+        "tests/test_gremlin_cross_formalism_bank_v02.py",
+        "tests/test_gremlin_cross_formalism_sealed_bundle_v01.py",
+        "tests/test_gremlin_cross_formalism_round28_v01.py",
+        "tests/test_gremlin_round28_sealed_bundle_v01.py",
+        "tests/test_semantic_orbital_carrier_v01.py",
+        "tests/test_semantic_phase_inverse_v02.py",
+        "tests/test_semantic_orbital_trajectory_v03.py",
+        "tests/test_manifest_tool_v28.py",
+    ):
+        assert test_path in text

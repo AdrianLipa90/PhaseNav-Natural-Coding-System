@@ -5,8 +5,11 @@ import pytest
 
 from phasenav_natural_code.native_pnv_exec_v01 import (
     NativePNVAssertionError,
+    NativePNVExecutor,
     NativePNVParseError,
     NativePNVResolutionError,
+    PNVOp,
+    PNVProgram,
     execute_pnv,
     parse_pnv,
 )
@@ -77,7 +80,10 @@ def test_callback_free_execution_has_verified_zero_effect_boundary():
 
 def test_unregistered_transform_fails_closed():
     with pytest.raises(NativePNVResolutionError):
-        execute_pnv('PNV 1\nEPISTEMIC CHYBA\nMODE INTERNAL_EXECUTION\nOP A SOURCE x\nOP B TRANSFORM A magic\nEMIT B\n', sources={'x': 1})
+        execute_pnv(
+            'PNV 1\nEPISTEMIC CHYBA\nMODE INTERNAL_EXECUTION\nOP A SOURCE x\nOP B TRANSFORM A magic\nEMIT B\n',
+            sources={'x': 1},
+        )
 
 
 def test_unknown_opcode_rejected_at_parse_time():
@@ -99,7 +105,10 @@ def test_unsupported_execution_headers_fail_closed(header):
 
 def test_failed_assertion_stops_execution():
     with pytest.raises(NativePNVAssertionError):
-        execute_pnv('PNV 1\nEPISTEMIC CHYBA\nMODE INTERNAL_EXECUTION\nOP A SOURCE x\nASSERT A\nEMIT A\n', sources={'x': False})
+        execute_pnv(
+            'PNV 1\nEPISTEMIC CHYBA\nMODE INTERNAL_EXECUTION\nOP A SOURCE x\nASSERT A\nEMIT A\n',
+            sources={'x': False},
+        )
 
 
 def test_numeric_difference_overflow_fails_closed():
@@ -125,9 +134,54 @@ def test_noncanonical_source_and_callback_results_fail_closed():
             'PNV 1\nEPISTEMIC CHYBA\nMODE READ_ONLY\nOP A SOURCE x\nEMIT A\n',
             sources={'x': float('nan')},
         )
-    with pytest.raises(NativePNVResolutionError, match='callback result'):
+    with pytest.raises(NativePNVResolutionError, match='result'):
         execute_pnv(
             'PNV 1\nEPISTEMIC CHYBA\nMODE INTERNAL_EXECUTION\nOP A SOURCE x\nOP B TRANSFORM A bad\nEMIT B\n',
             sources={'x': 1},
             transforms={'bad': lambda _: object()},
+        )
+
+
+def test_runtime_values_use_one_canonical_json_domain():
+    result = execute_pnv(
+        'PNV 1\nEPISTEMIC CHYBA\nMODE READ_ONLY\n'
+        'OP A SOURCE left\nOP B SOURCE right\nOP C IDENTITY A B\nEMIT C\n',
+        sources={'left': (1, 2), 'right': [1, 2]},
+    )
+    assert result.emitted['C'] is True
+    with pytest.raises(NativePNVResolutionError, match='non-string JSON object key'):
+        execute_pnv(
+            'PNV 1\nEPISTEMIC CHYBA\nMODE READ_ONLY\nOP A SOURCE x\nEMIT A\n',
+            sources={'x': {1: 'ambiguous'}},
+        )
+
+
+def test_reserved_literals_cannot_be_shadowed_by_operation_names():
+    with pytest.raises(NativePNVParseError, match='reserved literal'):
+        parse_pnv(
+            'PNV 1\nEPISTEMIC CHYBA\nMODE READ_ONLY\nOP TRUE SOURCE x\nEMIT TRUE\n'
+        )
+
+
+def test_public_program_must_match_exact_source_graph():
+    text = 'PNV 1\nEPISTEMIC CHYBA\nMODE READ_ONLY\nOP A SOURCE x\nEMIT A\n'
+    parsed = parse_pnv(text)
+    forged = PNVProgram(
+        version=parsed.version,
+        epistemic=parsed.epistemic,
+        mode=parsed.mode,
+        ops=(PNVOp('B', 'SOURCE', ('x',), 4),),
+        assertions=(),
+        emits=('B',),
+        metadata=parsed.metadata,
+        source_text=text,
+    )
+    with pytest.raises(NativePNVParseError, match='does not match exact source_text'):
+        NativePNVExecutor(sources={'x': 1}).execute(forged)
+
+
+def test_duplicate_emit_is_rejected_as_noncanonical_graph():
+    with pytest.raises(NativePNVParseError, match='EMIT references must be unique'):
+        parse_pnv(
+            'PNV 1\nEPISTEMIC CHYBA\nMODE READ_ONLY\nOP A SOURCE x\nEMIT A\nEMIT A\n'
         )

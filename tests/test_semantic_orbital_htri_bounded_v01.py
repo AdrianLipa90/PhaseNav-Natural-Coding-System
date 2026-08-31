@@ -190,3 +190,42 @@ def test_invalid_bounded_parameters_fail_closed_before_parent_execution():
             max_ticks=2,
             settle_consecutive=3,
         )
+
+
+def test_bounded_real_parameters_reject_bool_string_and_objects():
+    kwargs = dict(
+        snapshot=_snapshot(),
+        bindings={"K.A": _binding()},
+        profile=_profile(),
+        max_ticks=2,
+        settle_consecutive=1,
+    )
+    for field in ("u_max", "tolerance_rad", "dt"):
+        for bad in (True, "1.0", object()):
+            params = {field: bad}
+            with pytest.raises(
+                SemanticOrbitalHTRIBoundedError,
+                match=f"{field} must be positive finite real",
+            ):
+                execute_bounded_semantic_orbital_htri_track(
+                    **kwargs,
+                    **params,  # type: ignore[arg-type]
+                )
+
+
+def test_bounded_integer_parameters_reject_bool_and_strings():
+    kwargs = dict(
+        snapshot=_snapshot(),
+        bindings={"K.A": _binding()},
+        profile=_profile(),
+        u_max=500.0,
+        tolerance_rad=1.0e-6,
+    )
+    for field in ("max_ticks", "settle_consecutive"):
+        for bad in (True, "2"):
+            params = {field: bad}
+            with pytest.raises(SemanticOrbitalHTRIBoundedError, match="positive integer"):
+                execute_bounded_semantic_orbital_htri_track(
+                    **kwargs,
+                    **params,  # type: ignore[arg-type]
+                )

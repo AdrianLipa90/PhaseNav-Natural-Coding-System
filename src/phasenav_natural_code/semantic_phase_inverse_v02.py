@@ -277,6 +277,8 @@ def encode_semantic_phase_placement(
     A_R: float,
     quantizer: OrbitQuantizerProfile,
 ) -> SemanticPhasePlacement:
+    if not isinstance(quantizer, OrbitQuantizerProfile):
+        raise SemanticPhaseInverseError("quantizer must be OrbitQuantizerProfile")
     phase = lifted_phase_from_semantic_value(semantic_target, B, omega, N, A_R)
     split = canonical_phase_split(phase)
     band = quantizer.quantize(semantic_target)

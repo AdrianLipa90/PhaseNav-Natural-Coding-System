@@ -144,6 +144,17 @@ def linearized_decay_bound(beta: float) -> float:
     return b * exact_normalized_gap()
 
 
+def phase_disagreement_energy(phi: Sequence[float]) -> float:
+    r"""Graph phase-disagreement Lyapunov potential.
+
+    V(phi) = sum_{(i,j) in E} [1 - cos(phi_i - phi_j)].
+    """
+    p = _phase_vector(phi)
+    a = adjacency36()
+    diff = p[:, None] - p[None, :]
+    return float(0.5 * np.sum(a * (1.0 - np.cos(diff))))
+
+
 def stabilizing_coupling(phi: Sequence[float], beta: float) -> np.ndarray:
     r"""Candidate sparse phase regularizer.
 

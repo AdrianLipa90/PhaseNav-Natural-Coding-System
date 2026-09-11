@@ -27,9 +27,9 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install package and test dependencies
-        run: python -m pip install -e '.[dev]'
+        run: python -m pip install -e . pytest
       - name: Run McKay closure tests
-        run: pytest -q tests/test_candidate_600cell_mckay_e8_v03.py
+        run: python -m pytest -q tests/test_candidate_600cell_mckay_e8_v03.py
       - name: Assert no runtime Laplacian promotion
         run: |
           python - <<'PY'

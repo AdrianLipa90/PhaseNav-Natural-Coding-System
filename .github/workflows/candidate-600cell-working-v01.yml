@@ -1,0 +1,36 @@
+name: Candidate 600-cell working layer v0.1
+
+on:
+  push:
+    branches:
+      - candidate/600cell-working-layer-v0.1-20260911
+  workflow_dispatch:
+
+jobs:
+  targeted-candidate-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test dependencies
+        run: python -m pip install --upgrade pip numpy pytest
+      - name: Run candidate and preserved carrier gates
+        run: >-
+          pytest -q
+          tests/test_candidate_600cell_s3_v01.py
+          tests/test_platonic_ramanujan_stabilizer_v01.py
+          tests/test_platonic_ramanujan_masked_runtime_v02.py
+
+  full-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test dependencies
+        run: python -m pip install --upgrade pip numpy pytest
+      - name: Run complete repository regression
+        run: pytest -q

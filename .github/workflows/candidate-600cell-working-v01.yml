@@ -22,6 +22,7 @@ jobs:
           tests/test_candidate_600cell_s3_v01.py
           tests/test_platonic_ramanujan_stabilizer_v01.py
           tests/test_platonic_ramanujan_masked_runtime_v02.py
+          tests/test_gremlin_cross_formalism_round28_candidate_v02.py
 
   full-regression:
     runs-on: ubuntu-latest

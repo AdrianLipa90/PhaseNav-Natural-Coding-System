@@ -105,3 +105,43 @@ def test_linearized_gap_bound_is_positive_and_exact():
     beta = 0.75
     expected = beta * (5.0 - math.sqrt(5.0)) / 7.0
     assert math.isclose(pr.linearized_decay_bound(beta), expected, rel_tol=0.0, abs_tol=1e-15)
+
+
+def test_regularizer_is_negative_gradient_of_disagreement_energy():
+    rng = np.random.default_rng(13)
+    phi = rng.uniform(-1.0, 1.0, size=36)
+    beta = 0.4
+    c = pr.stabilizing_coupling(phi, beta)
+    grad_from_flow = -(7.0 / beta) * c
+
+    eps = 1e-7
+    grad_fd = np.empty(36)
+    for i in range(36):
+        plus = phi.copy()
+        minus = phi.copy()
+        plus[i] += eps
+        minus[i] -= eps
+        grad_fd[i] = (
+            pr.phase_disagreement_energy(plus)
+            - pr.phase_disagreement_energy(minus)
+        ) / (2.0 * eps)
+
+    assert np.allclose(grad_from_flow, grad_fd, rtol=1e-7, atol=2e-8)
+    dV_dt = float(np.dot(grad_from_flow, c))
+    assert dV_dt <= 1e-12
+    assert math.isclose(
+        dV_dt,
+        -(beta / 7.0) * float(np.dot(grad_from_flow, grad_from_flow)),
+        rel_tol=1e-12,
+        abs_tol=1e-12,
+    )
+
+
+def test_small_euler_step_decreases_disagreement_energy():
+    rng = np.random.default_rng(23)
+    phi = rng.uniform(-math.pi, math.pi, size=36)
+    beta = 0.3
+    e0 = pr.phase_disagreement_energy(phi)
+    nxt = phi + 1e-3 * pr.stabilizing_coupling(phi, beta)
+    e1 = pr.phase_disagreement_energy(nxt)
+    assert e1 < e0

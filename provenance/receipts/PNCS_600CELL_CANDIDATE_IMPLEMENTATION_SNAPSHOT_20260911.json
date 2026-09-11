@@ -1,0 +1,16 @@
+{
+  "schema": "PNCS_600CELL_CANDIDATE_IMPLEMENTATION_SNAPSHOT_20260911",
+  "date": "2026-09-11",
+  "branch": "candidate/600cell-working-layer-v0.1-20260911",
+  "status": "CANDIDATE",
+  "surfaces": [
+    "src/phasenav_natural_code/candidate_600cell_s3_v01.py",
+    "tests/test_candidate_600cell_s3_v01.py",
+    "src/phasenav_natural_code/platonic_ramanujan_masked_runtime_v02.py",
+    "tests/test_platonic_ramanujan_masked_runtime_v02.py",
+    "registry/CANDIDATE_WORKING_IMPLEMENTATIONS_V0_2.json"
+  ],
+  "canonical_parent_modified": false,
+  "physical_binding": false,
+  "promotion_state": "PENDING_CI"
+}

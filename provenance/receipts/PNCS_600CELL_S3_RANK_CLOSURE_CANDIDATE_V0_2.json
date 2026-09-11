@@ -1,0 +1,22 @@
+{
+  "schema": "PNCS_600CELL_S3_RANK_CLOSURE_CANDIDATE_V0_2",
+  "date": "2026-09-11",
+  "status": "CANDIDATE",
+  "working_result": true,
+  "source": "TIR_600CELL_S3_RANK_CLOSURE_CANDIDATE_V0_2",
+  "per_sector_rank": {
+    "0": [1, 1],
+    "1": [4, 4],
+    "2": [9, 9],
+    "3": [16, 16],
+    "4": [25, 25],
+    "5": [36, 36],
+    "6": [49, 25],
+    "7": [64, 40]
+  },
+  "cumulative_rank": [1, 5, 14, 30, 55, 91, 116, 120],
+  "l6_first_rank_collapse": true,
+  "l7_finite_sampling_closure": true,
+  "physical_binding": false,
+  "fractal_interpretation": "OPEN"
+}

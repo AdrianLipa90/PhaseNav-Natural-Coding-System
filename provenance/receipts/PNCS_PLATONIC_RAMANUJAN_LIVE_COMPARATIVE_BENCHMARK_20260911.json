@@ -1,0 +1,63 @@
+{
+  "schema": "PNCS_PLATONIC_RAMANUJAN_LIVE_COMPARATIVE_BENCHMARK_V0_1",
+  "date_utc": "2026-09-11",
+  "status": "PASS_EXECUTED_WITH_RUNTIME_ACTIVATION_REJECTED_V0_1",
+  "tether": {"status": "ACTIVE", "guard_failures": [], "fresh_current_execution": true},
+  "method": {
+    "dt": 0.01,
+    "ticks": 100,
+    "perturbation_amplitudes_rad_rms": [0.01, 0.05, 0.1, 0.25],
+    "replicates_per_amplitude": 6,
+    "beta_sweep": [0, 0.1, 0.25, 0.5, 1, 2, 5, 10],
+    "semantic_targets": "frozen_v0_31_nisaba_seven_role_T36_addresses",
+    "free_evolution_model": "parent_like_read_only_derived_from_v0_32_precontrol_law",
+    "live_surface_writes": 0
+  },
+  "snapshot_sha256": {
+    "phi": "f9b995648bd8e53cd676256d1d5cd9a3e6b98eee6e09aa2e049812a4ca625418",
+    "omega": "a78b037500632b283fa2ea665f9f169129c0aa7a1dd3ad8410a61933fa0acc69",
+    "g": "1c680e0b1212af43a46a9518cc1baec64d3392891df4a99aa0ebfb5d0929a64a",
+    "flavor": "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+    "tau": "5239adcb95f0a6161ecec0c138596d74df5f5ce7a8888f0933b8b2280f39a4b5",
+    "gravity": "97163757a9ab579c20c420c06d6049423a90c0463dd6db06cdacea454361d2cc"
+  },
+  "exact_control": {
+    "baseline_total_l2": 2862.835017972925,
+    "beta_10_total_l2": 2859.1621899388238,
+    "beta_10_relative_change": -0.001282941,
+    "max_target_residual_rad": 1.7763568394002505e-15,
+    "verdict": "TARGET_EXACTNESS_PRESERVED_CONTROL_EFFORT_GAIN_TOO_SMALL_FOR_RUNTIME_PROMOTION"
+  },
+  "perturbation_recovery": {
+    "beta_0_1_median_distance_ratio_vs_baseline": 1.0030840821185012,
+    "beta_0_5_median_distance_ratio_vs_baseline": 1.0245903751080254,
+    "beta_1_median_distance_ratio_vs_baseline": 1.063545643207299,
+    "beta_2_median_distance_ratio_vs_baseline": 1.202549164461877,
+    "beta_5_median_distance_ratio_vs_baseline": 2.3469201050913733,
+    "beta_10_median_distance_ratio_vs_baseline": 8.012607462983016,
+    "beta_10_p90_distance_ratio_vs_baseline": 28.934193963609005,
+    "beta_1_median_disagreement_energy_ratio": 0.866295843107127,
+    "beta_10_median_disagreement_energy_ratio": 0.0505465462842498,
+    "verdict": "DISAGREEMENT_ENERGY_DECREASES_BUT_PAIRED_TRAJECTORY_PERTURBATION_RECOVERY_WORSENS_FOR_ALL_TESTED_POSITIVE_BETA"
+  },
+  "qhtri_safety": {
+    "baseline_H_hermiticity_error": 0.0,
+    "masked_H_hermiticity_error": 0.0,
+    "baseline_unitarity_error": 3.1086244689504383e-15,
+    "masked_unitarity_error": 3.3306690738754696e-15
+  },
+  "sparse_kernel_microbenchmark": {
+    "dense_seconds_per_call": 1.933119049999732e-05,
+    "edge_list_seconds_per_call": 6.353868000019247e-06,
+    "edge_list_over_dense_ratio": 0.3286847750023532,
+    "scope": "C_PR_KERNEL_ONLY_NOT_END_TO_END_RUNTIME"
+  },
+  "canonization_verdict": {
+    "G36_spectral_carrier": "PROMOTE_STRUCTURAL",
+    "sparse_support_and_operator_API": "PROMOTE_DISABLED_OPTIONAL_COMPONENT",
+    "isolated_Lyapunov_theorem": "PROMOTE_EXACT",
+    "additive_C_PR_runtime_activation": "REJECTED_V0_1",
+    "support_mask_parent_g_runtime_activation": "OPEN_SEPARATE_GATE",
+    "physical_claim": false
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "PNCS_PLATONIC_RAMANUJAN_STABILIZER_VALIDATION_V0_1",
+  "status": "LOCAL_REFERENCE_PASS_HOSTED_CI_PENDING",
+  "date_utc": "2026-09-11",
+  "tests": {"passed": 10, "failed": 0},
+  "graph": {
+    "factorization": "I12 square K3",
+    "vertices": 36,
+    "degree": 7,
+    "edges": 126,
+    "rho_nontrivial": "2+sqrt(5)",
+    "ramanujan_bound": "2*sqrt(6)",
+    "normalized_laplacian_gap": "(5-sqrt(5))/7",
+    "ramanujan": true
+  },
+  "stability": {
+    "local_linear_decay_bound": "beta*(5-sqrt(5))/7",
+    "lyapunov_potential": "sum_edges(1-cos(phi_i-phi_j))",
+    "continuous_isolated_derivative": "-(beta/7)*||grad V||^2 <= 0",
+    "global_lyapunov_monotonicity_isolated_term": true,
+    "global_synchronization_claim": false
+  },
+  "boundaries": {
+    "parent_v0_32_modified": false,
+    "runtime_default_enabled": false,
+    "live_surface_writes": 0,
+    "semantic_axis_meanings_added": 0,
+    "physical_claim": false,
+    "full_runtime_stability_claim": false
+  },
+  "tether_at_reference_validation": {
+    "status": "ACTIVE",
+    "guard_failures": [],
+    "fresh_current_execution": true
+  }
+}

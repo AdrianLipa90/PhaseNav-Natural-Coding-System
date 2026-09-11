@@ -1,0 +1,23 @@
+{
+  "schema": "PNCS_SUPPORT_MASK_PARENT_G_CANDIDATE_V0_2",
+  "date": "2026-09-11",
+  "status": "CANDIDATE",
+  "working_implementation": true,
+  "default_enabled": false,
+  "gate_target": "support_mask_parent_g_activation",
+  "parent_contract": "PNCS_ORDERED_T36_TO_HTRI_DRIVE_V0_32",
+  "structural_support": "I_12 square K_3",
+  "support_degree": 7,
+  "preserves": {
+    "parent_v0_32_source": "UNCHANGED",
+    "additive_C_PR_activation": "REJECTED_V0_1",
+    "physical_binding": false
+  },
+  "required_ci": [
+    "tests/test_platonic_ramanujan_masked_runtime_v02.py",
+    "tests/test_platonic_ramanujan_stabilizer_v01.py",
+    "tests/test_candidate_600cell_s3_v01.py",
+    "full pytest regression"
+  ],
+  "promotion_state": "PENDING_CI"
+}

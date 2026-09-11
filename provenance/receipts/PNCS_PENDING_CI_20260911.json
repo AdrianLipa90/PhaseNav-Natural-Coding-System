@@ -1,0 +1,9 @@
+{
+  "schema": "PNCS_PENDING_CI_20260911",
+  "status": "PENDING",
+  "branch": "candidate/600cell-working-layer-v0.1-20260911",
+  "required_jobs": [
+    "targeted-candidate-gates",
+    "full-regression"
+  ]
+}

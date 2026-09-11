@@ -43,6 +43,17 @@ SOURCE_PINS: Mapping[str, Mapping[str, str]] = {
 
 ALLOWED_CLASSES = {"EXACT", "EXACT_COORDINATE_ISOMORPHISM"}
 
+# Round28 uses three domain-specific relational names that deliberately remain
+# absent from the global compiler defaults. They connect distinct
+# representations, so IDENTITY would be semantically wrong. COMPOSITION keeps
+# both ordered operands in the native READ_ONLY candidate graph. Keeping this
+# mapping local preserves the compiler's fail-closed rule for unknown relations.
+ROUND28_RELATION_OPCODE_OVERRIDES: Mapping[str, str] = {
+    "DOUBLE_COVER_LIFT_OF": "COMPOSITION",
+    "EXACT_KERNEL_ISOMORPHISM": "COMPOSITION",
+    "COORDINATE_ISOMORPHIC_TO": "COMPOSITION",
+}
+
 
 class Round28Error(RuntimeError):
     pass
@@ -234,6 +245,7 @@ def round28_manifest() -> Mapping[str, object]:
             }
             for entry in entries
         ],
+        "relation_opcode_overrides": dict(sorted(ROUND28_RELATION_OPCODE_OVERRIDES.items())),
         "gremlin_role": "ROUND28_EXACT_CROSS_FORMALISM_RELATIONAL_ISOMORPHISM_BANK",
         "runtime_execution_authority": False,
         "canon_write_authority": False,
@@ -290,6 +302,7 @@ def compile_round28_candidates(
             generation_binding=generation_binding,
             identity=identity,
             authority=authority,
+            relation_opcode_overrides=ROUND28_RELATION_OPCODE_OVERRIDES,
             authoring_root=None,
         )
     return Round28Compilation(

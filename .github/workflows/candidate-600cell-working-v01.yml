@@ -32,5 +32,20 @@ jobs:
           python-version: '3.11'
       - name: Install test dependencies
         run: python -m pip install --upgrade pip numpy pytest
-      - name: Run complete repository regression
-        run: pytest -q
+      - name: Run complete repository regression and capture output
+        id: regression
+        shell: bash
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          pytest -q 2>&1 | tee full-regression.log
+      - name: Upload full regression log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pncs-full-regression-log
+          path: full-regression.log
+          retention-days: 7
+      - name: Preserve regression failure
+        if: steps.regression.outcome != 'success'
+        run: exit 1

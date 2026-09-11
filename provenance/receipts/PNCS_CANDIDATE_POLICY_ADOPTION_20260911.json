@@ -1,0 +1,13 @@
+{
+  "schema": "PNCS_CANDIDATE_POLICY_ADOPTION_20260911",
+  "date": "2026-09-11",
+  "status": "CANDIDATE_POLICY_ACTIVE_ON_BRANCH",
+  "rule": "CANDIDATE is an active working implementation, not an unused artifact",
+  "execution": {
+    "candidate_requires_explicit_admission": true,
+    "candidate_may_feed_candidate_surfaces": true,
+    "candidate_may_not_silently_satisfy_canonical_gate": true,
+    "quarantined_and_failed_are_not_ordinary_routes": true
+  },
+  "branch": "candidate/600cell-working-layer-v0.1-20260911"
+}

@@ -24,9 +24,12 @@ jobs:
           set -o pipefail
           pytest -q \
             tests/test_candidate_600cell_s3_v01.py \
+            tests/test_cell600_s3_candidate_v01.py \
             tests/test_platonic_ramanujan_stabilizer_v01.py \
             tests/test_platonic_ramanujan_masked_runtime_v02.py \
+            tests/test_gremlin_cross_formalism_round28_v01.py \
             tests/test_gremlin_cross_formalism_round28_candidate_v02.py \
+            tests/test_gremlin_round28_sealed_bundle_v01.py \
             2>&1 | tee targeted-candidate-gates.log
       - name: Upload targeted candidate log
         if: always()
@@ -39,7 +42,7 @@ jobs:
         if: steps.targeted.outcome != 'success'
         run: exit 1
 
-  full-regression:
+  hosted-pure-regression:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,20 +51,23 @@ jobs:
           python-version: '3.11'
       - name: Install test dependencies
         run: python -m pip install --upgrade pip numpy pytest
-      - name: Run complete repository regression and capture output
+      - name: Run complete hosted-pure repository regression and capture output
         id: regression
         shell: bash
         continue-on-error: true
         run: |
           set -o pipefail
-          pytest -q 2>&1 | tee full-regression.log
-      - name: Upload full regression log
+          # tests/live require the active NOEMA /dev/shm binding and are a
+          # separate live-environment gate. A GitHub-hosted runner must not
+          # convert absence of that runtime into a repository regression.
+          pytest -q --ignore=tests/live 2>&1 | tee hosted-pure-regression.log
+      - name: Upload hosted-pure regression log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pncs-full-regression-log
-          path: full-regression.log
+          name: pncs-hosted-pure-regression-log
+          path: hosted-pure-regression.log
           retention-days: 7
-      - name: Preserve regression failure
+      - name: Preserve hosted-pure regression failure
         if: steps.regression.outcome != 'success'
         run: exit 1

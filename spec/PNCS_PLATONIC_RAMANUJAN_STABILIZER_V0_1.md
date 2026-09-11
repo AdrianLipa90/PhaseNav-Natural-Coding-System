@@ -11,12 +11,8 @@ This candidate adds a deterministic sparse spectral topology for the existing 36
 The current v0.32 implementation already groups the 36 lanes as twelve consecutive local blocks of three. The candidate therefore uses
 
 \[
-\boxed{G_{36}=I_{12}\square K_3}
-\]
-
-with
-
-\[
+\boxed{G_{36}=I_{12}\square K_3},
+\qquad
 \boxed{A_{36}=A_I\otimes I_3+I_{12}\otimes A_{K_3}}.
 \]
 
@@ -75,13 +71,39 @@ On the mean-zero subspace the slowest linear decay rate is bounded below by
 \boxed{\beta\gamma_{36}=\beta\frac{5-\sqrt5}{7}}.
 \]
 
-This is local and linearized only; it is not a global nonlinear synchronization theorem for the full runtime.
-
 For explicit Euler applied to the isolated linearized term, a sufficient non-expansive condition is
 
 \[
 \Delta t\,\beta\le\frac{14}{8+\sqrt5}\approx1.3677126833.
 \]
+
+## Global Lyapunov property of the isolated regularizer
+
+Define the graph disagreement energy
+
+\[
+\boxed{V(\phi)=\sum_{(i,j)\in E(G_{36})}\left[1-\cos(\phi_i-\phi_j)\right]}.
+\]
+
+Its gradient is
+
+\[
+\frac{\partial V}{\partial\phi_i}=\sum_j(A_{36})_{ij}\sin(\phi_i-\phi_j).
+\]
+
+Therefore the candidate is exactly the negative gradient flow
+
+\[
+\dot\phi=-\frac{\beta}{7}\nabla V.
+\]
+
+For the isolated continuous-time regularizer,
+
+\[
+\boxed{\dot V=-\frac{\beta}{7}\|\nabla V\|^2\le0}.
+\]
+
+This is a global Lyapunov monotonicity theorem for the isolated candidate term. It does **not** imply global convergence to the synchronized state, because other stationary phase configurations can exist, and it does not imply stability after adding the complete v0.32/QHTRI dynamics. Those remain benchmark gates.
 
 ## Exact invariants
 
@@ -95,7 +117,7 @@ Input arrays are not mutated.
 
 ## Sparse support mode
 
-`support_mask()` and `apply_support_mask(g)` expose a research-only sparse transform. A complete 36-node graph has 630 undirected off-diagonal edges; this carrier has 126, exactly one fifth of that support. This means five times fewer candidate pair interactions at the combinatorial level. No wall-clock speedup is claimed before benchmark.
+`support_mask()` and `apply_support_mask(g)` expose a research-only sparse transform. A complete 36-node graph has 630 undirected off-diagonal edges; this carrier has 126, exactly one fifth of that support. This gives five times fewer candidate pair interactions at the combinatorial level. No wall-clock speedup is claimed before benchmark.
 
 Masking the parent adaptive `g` is not enabled by default and remains a separate experiment.
 
@@ -111,13 +133,11 @@ Operationally, the icosahedral inter-channel degree contributes 5 and each exist
 
 ## Orbital value
 
-The icosahedral factor has multiplicity blocks \(1,3,5,3\); the first three align with the dimensions of the low-angular-momentum \(s,p,d\) sectors. This makes the same finite factor a candidate for the existing semantic-orbital bridge while preserving the radial Hamiltonian.
-
-Full orbital equivalence still requires Wigner/Gaunt benchmarks.
+The icosahedral factor has multiplicity blocks \(1,3,5,3\); the first three align with dimensions of the low-angular-momentum \(s,p,d\) sectors. This makes the same finite factor a candidate for the existing semantic-orbital bridge while preserving the radial Hamiltonian. Full orbital equivalence still requires Wigner/Gaunt benchmarks.
 
 ## Benefits to test
 
-1. **Stability:** positive spectral gap supplies a quantitative local contraction scale.
+1. **Stability:** positive spectral gap gives a quantitative local contraction scale, while \(V\) gives a global non-increasing disagreement potential for the isolated regularizer.
 2. **Sparse conditioning:** every lane has equal degree; no graph-induced hubs.
 3. **Deterministic routing:** fixed topology independent of natural-language interpretation.
 4. **Orbital compatibility:** icosahedral symmetry provides finite low-\(\ell\) representation blocks.
@@ -134,7 +154,7 @@ semantic_axis_meanings_added = 0
 effect_authority_added = 0
 ```
 
-A future runtime gate must compare baseline v0.32 against v0.32 plus additive \(C^{PR}\), and treat support-masked coupling as a separate experiment. Required metrics include phase-dispersion decay, perturbation recovery, target error, ordered-path distinguishability, control effort, QHTRI Hermiticity/unitarity, latency, and adversarial/noisy robustness.
+A future runtime gate must compare baseline v0.32 against v0.32 plus additive \(C^{PR}\), and treat support-masked coupling as a separate experiment. Required metrics include phase-dispersion and disagreement-energy decay, perturbation recovery, target error, ordered-path distinguishability, control effort, QHTRI Hermiticity/unitarity, latency, and adversarial/noisy robustness.
 
 ## Reference implementation
 
@@ -144,6 +164,6 @@ Tests:
 
 `tests/test_platonic_ramanujan_stabilizer_v01.py`
 
-Local repo-style reference gate before commit: **8/8 PASS**.
+Local repo-style reference gate before commit: **10/10 PASS**. Tests include exact graph spectrum, Ramanujan bound, normalized gap, lane-order preservation, sparsity, global phase covariance, local contraction, finite-difference gradient verification, exact Lyapunov derivative identity, and discrete small-step energy decrease.
 
 Hosted CI and live-derived comparative runtime validation remain pending.

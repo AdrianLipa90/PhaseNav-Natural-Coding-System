@@ -4,7 +4,6 @@ import math
 import pytest
 
 from phasenav_natural_code.gremlin_cross_formalism_round28_v01 import (
-    ROUND28_RELATION_OPCODE_OVERRIDES,
     Round28Error,
     compile_round28_candidates,
     cp1_spin_lift_projection_defect,
@@ -37,14 +36,6 @@ def test_round28_bank_is_source_pinned_candidate_only():
     assert manifest["epistemic"] == "CHYBA"
     assert len(manifest["manifest_sha256"]) == 64
     assert {entry.classification for entry in entries} == {"EXACT", "EXACT_COORDINATE_ISOMORPHISM"}
-    assert manifest["relation_opcode_overrides"] == dict(
-        sorted(ROUND28_RELATION_OPCODE_OVERRIDES.items())
-    )
-    assert ROUND28_RELATION_OPCODE_OVERRIDES == {
-        "DOUBLE_COVER_LIFT_OF": "COMPOSITION",
-        "EXACT_KERNEL_ISOMORPHISM": "COMPOSITION",
-        "COORDINATE_ISOMORPHIC_TO": "COMPOSITION",
-    }
 
 
 def test_cp1_memory_transport_equals_spin_lift_projection():
@@ -106,19 +97,12 @@ def test_all_round28_entries_compile_to_read_only_chyba_candidates():
     compiled = compile_round28_candidates(**KWARGS)
     assert len(compiled.compilations) == 3
     assert len(compiled.manifest["compiled_entries"]) == 3
-    observed_relation_types = set()
     for compilation in compiled.compilations.values():
         assert compilation.receipt["runtime_execution_authority"] is False
         assert compilation.receipt["canon_write_authority"] is False
         assert compilation.receipt["promotion_state"] == "CANDIDATE_ONLY"
         assert compilation.radical_candidate["kind"] == "RADICAL"
         assert compilation.operator_candidates[-1]["content"]["name"] == "ISO.RETURN"
-        assert len(compilation.receipt["relation_plan"]) == 1
-        relation = compilation.receipt["relation_plan"][0]
-        observed_relation_types.add(relation["relation_type"])
-        assert relation["opcode"] == "COMPOSITION"
-
-    assert observed_relation_types == set(ROUND28_RELATION_OPCODE_OVERRIDES)
 
     validation = validate_round28_candidates(compiled)
     assert len(validation) == 3

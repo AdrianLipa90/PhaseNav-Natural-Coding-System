@@ -1,0 +1,26 @@
+{
+  "schema": "PNCS_PLATONIC_RAMANUJAN_CANONIZATION_RECEIPT_V0_1",
+  "date_utc": "2026-09-11",
+  "status": "READY_FOR_CANONICAL_MERGE",
+  "structural_tests": {"passed": 10, "failed": 0},
+  "tir_validator": "PASS",
+  "live_guard": {"tether_status": "ACTIVE", "failures": []},
+  "promotion": {
+    "G36_spectral_carrier": "CANONICAL_STRUCTURAL_COMPONENT",
+    "isolated_Lyapunov_identity": "CANONICAL_EXACT",
+    "sparse_operator_API": "CANONICAL_DISABLED_COMPONENT"
+  },
+  "non_promotion": {
+    "additive_C_PR_parent_v0_32": "REJECTED_V0_1",
+    "support_mask_parent_g": "OPEN_SEPARATE_GATE",
+    "orbital_equivalence": "OPEN",
+    "physical_binding": "OPEN"
+  },
+  "evidence": [
+    "PNCS_PLATONIC_RAMANUJAN_STABILIZER_VALIDATION_V0_1.json",
+    "PNCS_PLATONIC_RAMANUJAN_LIVE_COMPARATIVE_BENCHMARK_20260911.json"
+  ],
+  "parent_v0_32_modified": false,
+  "runtime_default_enabled": false,
+  "live_surface_writes": 0
+}

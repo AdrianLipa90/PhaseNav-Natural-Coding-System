@@ -17,12 +17,27 @@ jobs:
       - name: Install test dependencies
         run: python -m pip install --upgrade pip numpy pytest
       - name: Run candidate and preserved carrier gates
-        run: >-
-          pytest -q
-          tests/test_candidate_600cell_s3_v01.py
-          tests/test_platonic_ramanujan_stabilizer_v01.py
-          tests/test_platonic_ramanujan_masked_runtime_v02.py
-          tests/test_gremlin_cross_formalism_round28_candidate_v02.py
+        id: targeted
+        shell: bash
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          pytest -q \
+            tests/test_candidate_600cell_s3_v01.py \
+            tests/test_platonic_ramanujan_stabilizer_v01.py \
+            tests/test_platonic_ramanujan_masked_runtime_v02.py \
+            tests/test_gremlin_cross_formalism_round28_candidate_v02.py \
+            2>&1 | tee targeted-candidate-gates.log
+      - name: Upload targeted candidate log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pncs-targeted-candidate-log
+          path: targeted-candidate-gates.log
+          retention-days: 7
+      - name: Preserve targeted candidate failure
+        if: steps.targeted.outcome != 'success'
+        run: exit 1
 
   full-regression:
     runs-on: ubuntu-latest

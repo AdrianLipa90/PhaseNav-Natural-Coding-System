@@ -1,0 +1,25 @@
+{
+  "schema": "PNCS_600CELL_ORBITAL_EQUIVALENCE_CANDIDATE_V0_1",
+  "status": "PASS_CANDIDATE_MATHEMATICAL",
+  "candidate_id": "600CELL_S3_ANGULAR_L0_L5_V0_1",
+  "scope": "finite S^3 angular-sector equivalence only",
+  "validated_ell": [0, 1, 2, 3, 4, 5],
+  "expected_multiplicities": [1, 4, 9, 16, 25, 36],
+  "laplacian_eigenvalues": [0, 3, 8, 15, 24, 35],
+  "spherical_design_degree_tested": 11,
+  "first_tested_break_degree": 12,
+  "degree12_x1_12_error": "1/4096",
+  "isolated_tests": {
+    "status": "PASS",
+    "count": 6
+  },
+  "implementation_sha256": "5f0c3bd88ec9e6a20f84ed668aac0772c17c6e9f904c6a0f4063eae1d7010d37",
+  "test_sha256": "c634012a80f6451eb184124c0adef975099872f6f7f90fc7c2445e6bdc3b3de8",
+  "blockers": {
+    "orbital_equivalence": "PASS_CANDIDATE_MATHEMATICAL",
+    "support_mask_parent_g": "OPEN_SEPARATE_GATE",
+    "physical_binding": "OPEN",
+    "full_repository_regression": "NOT_RUN"
+  },
+  "promotion": "NOT_AUTHORIZED"
+}

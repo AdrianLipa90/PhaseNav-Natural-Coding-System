@@ -2,6 +2,7 @@ import math
 import pytest
 
 from phasenav_natural_code.gremlin_pnv_holonomy_v01 import (
+    PNVInformationHolonomyError,
     audit_information_holonomy,
     compile_information_holonomy_loop,
     exact_state_metric,
@@ -282,5 +283,7 @@ def test_source_loop_rejects_mixed_basis_before_compilation():
         role="right",
         phase=tuple((0.2 + i) / 36.0 for i in range(36)),
     )
-    with pytest.raises(PNVSourceHolonomyError, match="share one exact PNCS basis"):
+    # Basis identity is validated by the generic information-holonomy carrier
+    # before any source-specific transport executes, so preserve that provenance.
+    with pytest.raises(PNVInformationHolonomyError, match="share one exact PNCS basis"):
         build_carrier_normalization_loop(left, right)

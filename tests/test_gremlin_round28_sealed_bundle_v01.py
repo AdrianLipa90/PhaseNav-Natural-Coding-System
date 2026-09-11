@@ -3,6 +3,9 @@ import json
 
 import pytest
 
+from phasenav_natural_code.gremlin_relational_compiler_v01 import (
+    GremlinRelationalCompilerError,
+)
 from phasenav_natural_code.gremlin_round28_sealed_bundle_v01 import (
     ROUND28_SEALED_SCHEMA,
     Round28BundleError,
@@ -18,12 +21,23 @@ BASE = {
     "authority": "USER_EXPLICIT_AUTHORING",
 }
 
+V01_RELATION_BINDING_XFAIL = pytest.mark.xfail(
+    strict=True,
+    raises=GremlinRelationalCompilerError,
+    reason=(
+        "Round28 sealed-bundle v0.1 depends on the historical v0.1 compiler "
+        "route whose three domain relations are intentionally unbound and fail closed. "
+        "Executable relation lowering is provided by candidate Round28 v0.2."
+    ),
+)
+
 
 @pytest.fixture(scope="module")
 def bundle():
     return compile_round28_sealed_bundle(**BASE)
 
 
+@V01_RELATION_BINDING_XFAIL
 def test_round28_bundle_binds_three_compiled_candidates(bundle):
     assert bundle["schema"] == ROUND28_SEALED_SCHEMA
     assert verify_round28_sealed_bundle(bundle) is True
@@ -43,6 +57,7 @@ def test_round28_bundle_binds_three_compiled_candidates(bundle):
         assert validation["receipt_sha256"] == bundle["candidate_payload"][iso_id]["receipt"]["receipt_sha256"]
 
 
+@V01_RELATION_BINDING_XFAIL
 def test_round28_provenance_changes_seal(bundle):
     changed = compile_round28_sealed_bundle(
         generation_binding=BASE["generation_binding"],
@@ -52,6 +67,7 @@ def test_round28_provenance_changes_seal(bundle):
     assert changed["bundle_sha256"] != bundle["bundle_sha256"]
 
 
+@V01_RELATION_BINDING_XFAIL
 def test_round28_candidate_tamper_fails_closed(bundle):
     tampered = deepcopy(bundle)
     iso_id = sorted(tampered["candidate_payload"])[0]
@@ -75,6 +91,7 @@ def test_round28_invalid_generation_binding_fails_closed():
         )
 
 
+@V01_RELATION_BINDING_XFAIL
 def test_round28_atomic_create_once_persistence(bundle, tmp_path):
     target = tmp_path / "round28.sealed.json"
     written = write_round28_sealed_bundle(bundle, target)

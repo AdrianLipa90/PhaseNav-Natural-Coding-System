@@ -1,0 +1,4 @@
+CANONICAL=promoted
+CANDIDATE=active_working_explicit_admission
+QUARANTINED=diagnostic_only
+FAILED=evidence_or_diagnostic_only

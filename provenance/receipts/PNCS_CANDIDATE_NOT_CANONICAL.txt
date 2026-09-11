@@ -1,0 +1,1 @@
+This branch is executable CANDIDATE work. It is not a canonical promotion receipt.

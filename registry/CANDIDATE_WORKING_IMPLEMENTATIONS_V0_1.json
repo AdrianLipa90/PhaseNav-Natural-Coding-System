@@ -1,0 +1,34 @@
+{
+  "entries": [
+    {
+      "candidate_id": "600CELL_S3_ANGULAR_L0_L5_V0_1",
+      "default_enabled": false,
+      "entrypoint": "apply_s3_laplacian_candidate",
+      "executable": true,
+      "explicit_enable_argument": "candidate_enabled=True",
+      "module": "phasenav_natural_code.candidate_600cell_s3_v01",
+      "promotion_gate": "new benchmark + full regression + physical binding evidence if physical claim is made",
+      "status": "CANDIDATE",
+      "unresolved_domain": [
+        "ell>=6 physical interpretation",
+        "physical orbital binding",
+        "soliton binding",
+        "canonical runtime activation"
+      ],
+      "validated_domain": {
+        "carrier": "600-cell on S^3",
+        "design_degree": 11,
+        "ell": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    }
+  ],
+  "schema": "PNCS_CANDIDATE_WORKING_IMPLEMENTATIONS_V0_1",
+  "status": "CANONICAL_PROCESS_REGISTRY"
+}

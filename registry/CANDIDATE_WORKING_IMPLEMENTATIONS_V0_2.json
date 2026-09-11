@@ -1,0 +1,30 @@
+{
+  "schema": "PNCS_CANDIDATE_WORKING_IMPLEMENTATIONS_V0_2",
+  "date": "2026-09-11",
+  "policy": {
+    "CANONICAL": "promoted and default-admissible under its contract",
+    "CANDIDATE": "active executable working implementation requiring explicit admission",
+    "QUARANTINED": "diagnostic-only unless explicitly overridden",
+    "FAILED": "retained as evidence and diagnostics, not ordinary execution"
+  },
+  "implementations": [
+    {
+      "candidate_id": "600CELL_S3_ANGULAR_L0_L5_V0_1",
+      "status": "CANDIDATE",
+      "executable": true,
+      "default_enabled": false,
+      "module": "phasenav_natural_code.candidate_600cell_s3_v01",
+      "validated_domain": "S3 ell=0..5 angular sectors",
+      "unresolved_domain": "ell>=6 physical/orbital binding"
+    },
+    {
+      "candidate_id": "PNCS_SUPPORT_MASK_PARENT_G_V0_2",
+      "status": "CANDIDATE",
+      "executable": true,
+      "default_enabled": false,
+      "module": "phasenav_natural_code.platonic_ramanujan_masked_runtime_v02",
+      "validated_domain": "36D support-mask invariant around parent v0.32 controlled_step",
+      "unresolved_domain": "comparative perturbation-recovery and promotion gate"
+    }
+  ]
+}

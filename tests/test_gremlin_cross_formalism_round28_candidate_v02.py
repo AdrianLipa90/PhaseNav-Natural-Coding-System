@@ -30,7 +30,9 @@ def test_round28_v02_compiles_all_three_and_preserves_candidate_authority():
     compiled = compile_round28_candidates_v02(**KWARGS)
     assert len(compiled.compilations) == 3
     for compilation in compiled.compilations.values():
-        plan = compilation.receipt["relation_opcode_plan"]
+        # The canonical v0.1 compiler receipt calls this field relation_plan.
+        # Candidate v0.2 changes only the explicit bindings, not the receipt schema.
+        plan = compilation.receipt["relation_plan"]
         assert len(plan) == 1
         assert plan[0]["opcode"] == "COMPOSITION"
         assert compilation.receipt["promotion_state"] == "CANDIDATE_ONLY"

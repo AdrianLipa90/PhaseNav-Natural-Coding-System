@@ -1,0 +1,12 @@
+{
+  "schema": "PNCS_CANDIDATE_EXECUTION_CONTRACT_20260911",
+  "date": "2026-09-11",
+  "status": "CANDIDATE",
+  "execution_contract": {
+    "explicit_flag_required": true,
+    "candidate_receipt_required": true,
+    "default_route_unchanged": true,
+    "canonical_gate_auto_satisfaction": false,
+    "fail_closed_outside_validated_domain": true
+  }
+}

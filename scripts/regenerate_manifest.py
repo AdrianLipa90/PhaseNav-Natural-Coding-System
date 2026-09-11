@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -132,9 +133,20 @@ def tracked_paths(root: Path) -> tuple[str, ...]:
 
 def _entry(root: Path, rel: str) -> dict[str, object]:
     path = root / rel
-    if not path.is_file():
-        raise ManifestError(f"tracked path is not a regular file: {rel}")
-    raw = path.read_bytes()
+    if path.is_symlink():
+        # Git stores a symlink as mode 120000 whose blob is exactly the link
+        # target bytes. Hash that object identity without dereferencing it, so
+        # directory and dangling symlinks remain inside the authoritative tree.
+        try:
+            raw = os.fsencode(os.readlink(path))
+        except OSError as exc:
+            raise ManifestError(f"cannot read tracked symlink target: {rel}") from exc
+    elif path.is_file():
+        raw = path.read_bytes()
+    else:
+        # Submodules, devices, FIFOs or any other non-file tracked objects are
+        # not silently admitted by this schema.
+        raise ManifestError(f"tracked path has unsupported filesystem type: {rel}")
     return {
         "path": rel,
         "sha256": hashlib.sha256(raw).hexdigest(),
@@ -168,7 +180,7 @@ def build_manifest(root: Path, *, exclusions: Iterable[str] = DEFAULT_EXCLUSIONS
         "status": "AUTHORITATIVE_FOR_DECLARED_SCOPE",
         "hash_algorithm": "SHA-256",
         "path_order": "UTF8_LEXICOGRAPHIC_ASCENDING",
-        "scope": "ALL_GIT_TRACKED_REGULAR_FILES_EXCEPT_DECLARED_EXCLUSIONS",
+        "scope": "ALL_GIT_TRACKED_REGULAR_FILES_AND_SYMLINK_BLOBS_EXCEPT_DECLARED_EXCLUSIONS",
         "source_commit": source_commit,
         "source_tree": source_tree,
         "exclusions": list(excluded),

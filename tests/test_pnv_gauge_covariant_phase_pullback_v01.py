@@ -119,7 +119,7 @@ def test_rate_mismatch_is_visible_before_generator_promotion():
     assert defects["Delta_rate"] > 0.0
     assert defects["Delta_Q"] > 0.0
     with pytest.raises(PNVGaugeCovariantPhasePullbackError, match="Delta_rate"):
-        gauge_covariant_phase_pullback_transforms(tolerance=0.0)["gauge_phase.bind_common_u1_generator"](state)
+        gauge_covariant_phase_pullback_transforms(tolerance=1e-15)["gauge_phase.bind_common_u1_generator"](state)
 
 
 def test_normal_projection_mismatch_is_visible_even_with_matching_pullback_and_rotor_rate():
@@ -129,7 +129,7 @@ def test_normal_projection_mismatch_is_visible_even_with_matching_pullback_and_r
     assert defects["Delta_normal"] > 0.0
     assert defects["Delta_Q"] > 0.0
     with pytest.raises(PNVGaugeCovariantPhasePullbackError, match="Delta_normal"):
-        gauge_covariant_phase_pullback_transforms(tolerance=0.0)["gauge_phase.bind_common_u1_generator"](state)
+        gauge_covariant_phase_pullback_transforms(tolerance=1e-15)["gauge_phase.bind_common_u1_generator"](state)
 
 
 def test_inertia_mismatch_is_not_hidden_by_matching_rates():

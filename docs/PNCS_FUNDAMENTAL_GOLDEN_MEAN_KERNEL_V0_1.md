@@ -1,14 +1,15 @@
 # PNCS Fundamental Golden-Mean Dynamics Kernel v0.1
 
-Status: `CANDIDATE_ONLY / EXACT_SYMBOLIC_KERNEL / RUNTIME_DEFAULT_OFF / PHYSICAL_BINDING_OPEN`.
+Status: `CANONICAL_MATHEMATICAL_KERNEL / EXACT_SYMBOLIC_KERNEL / RUNTIME_DEFAULT_OFF / PHYSICAL_BINDING_OPEN`.
 
-This candidate imports the executable mathematical core of the current fundamental-repository chain into PNCS without changing the existing runtime, semantic hierarchy, PhaseNav 36D realization, or any physical binding. The implementation is intentionally additive.
+This import brings the executable mathematical core of the current fundamental-repository chain into PNCS without changing the existing runtime, semantic hierarchy, PhaseNav 36D realization, or any physical binding. The implementation is intentionally additive.
 
 ## Provenance
 
-The candidate is pinned to the following upstream merges:
+The kernel is pinned to the following upstream results and dependency-surface corrections:
 
 - IDT Collatz–Fubini–Study phase interface: `afed815f190ee5b162d1406878305a4259536af0`.
+- IDT canonical dependency export for that interface: `a7da5527b83ddabbbd142dceabde4da4b21b0c7c`.
 - TIR CP1 dyadic / Collatz-admissible fractal gate: `2c23cc50357c136cf21e14a8f9552a30e8496489`.
 - TIR homogeneous `5|1|2` fibration: `0772bca5852194a0bf0edbe2cdd49993bb7ed5ba`.
 - TIR golden-mean transfer / κ identity: `0593bfc5af98224b8f788ee958e7e011c785bf9e`.
@@ -16,7 +17,9 @@ The candidate is pinned to the following upstream merges:
 - TIR coding conjugacy / Artin–Mazur zeta: `2097ddc26f97dfca2141e52bf53fed7d9fee2994`.
 - TIR primitive-orbit Euler product: `18947402100145b5e8b88865ea90e4aab146a8dc`.
 - So½ fail-closed repository holonomy: `23eae95d8cbc33782c4a819ae40b2b166b566235`.
-- RFC Collatz–FS phase-fibre interface: `dbbfcc83de96246aa96217a9c40def64661474d7`.
+- RFC original Collatz–FS phase-fibre interface: `dbbfcc83de96246aa96217a9c40def64661474d7`.
+- RFC canonical renumbering to RF-E27: `5e55a193149bc096a029f2950eeac89b7d5275eb`.
+- RFC dependency-graph registration: `ce4af9ddd480ea40dfb5a3ee26ed396a58cb0e54`.
 
 Target base: PNCS `main` at `c031e58afe65762d2c60fad62ebf531ac0ef3f3d`.
 
@@ -36,11 +39,11 @@ Target base: PNCS `main` at `c031e58afe65762d2c60fad62ebf531ac0ef3f3d`.
 10. Exact finite-order expansion of the primitive-orbit Euler product and comparison with the Artin–Mazur series `1/(1-z-z^2)`.
 11. Weighted dynamical-zeta evaluation `1/(1-2^(-s)z-2^(-2s)z^2)`.
 
-The existing PNCS `temporal_fibre_v1.py` is deliberately not duplicated or modified. A later candidate may explicitly compose the new symbolic phase kernel with the existing temporal-fibre machinery after a separate admission contract is written and tested.
+The existing PNCS `temporal_fibre_v1.py` is deliberately not duplicated or modified. Composition of the symbolic kernel with temporal-fibre or PhaseNav runtime machinery is a separate typed integration step; it is not required for the mathematical kernel itself to be canonical in PNCS.
 
 ## Mandatory type and claim firewalls
 
-The following are invariants of this candidate:
+The following are invariants of this kernel:
 
 - `RUNTIME_DEFAULT_OFF`.
 - `PHYSICAL_BINDING_OPEN`.
@@ -52,14 +55,11 @@ The following are invariants of this candidate:
 - the `5|1|2` fibration is retained as typed geometric provenance; it does not make the symbolic kernel a physical dimensional-reduction mechanism.
 - no result here is a proof of the Collatz conjecture. The finite admissible-language theorem is local and exact; terminal-reaching claims retain their upstream boundary.
 
-## Candidate admission
+## Main-import gate
 
-Promotion beyond candidate status requires all of the following:
+The mathematical kernel is authorized for PNCS `main` once both repository checks pass:
 
-1. hosted branch CI passes the dedicated golden-mean test suite;
-2. all existing PNCS tests remain green;
-3. provenance SHAs remain pinned or are intentionally advanced with a new receipt;
-4. PhaseNav consumer integration is performed through its own repository contract and remains runtime-default-off until separately promoted;
-5. no existing PNCS runtime path is modified by this candidate.
+1. the dedicated golden-mean suite is green;
+2. the full existing PNCS suite remains green.
 
-No `main` promotion is authorized by this document.
+PhaseNav consumer integration remains a separate repository-contract operation and does not change the scientific status of this PNCS mathematical kernel.

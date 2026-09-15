@@ -1,0 +1,56 @@
+{
+  "schema": "PNCS_FUNDAMENTAL_GOLDEN_MEAN_IMPORT_V0_1",
+  "date_utc": "2026-09-15",
+  "status": "CANDIDATE_PRE_CI",
+  "target": {
+    "repository": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+    "base_branch": "main",
+    "base_commit": "c031e58afe65762d2c60fad62ebf531ac0ef3f3d",
+    "candidate_branch": "candidate/fundamental-golden-mean-v0.1-20260915"
+  },
+  "sources": {
+    "idt_collatz_fs_phase": "afed815f190ee5b162d1406878305a4259536af0",
+    "tir_cp1_dyadic_fractal": "2c23cc50357c136cf21e14a8f9552a30e8496489",
+    "tir_homogeneous_fibration_5_1_2": "0772bca5852194a0bf0edbe2cdd49993bb7ed5ba",
+    "tir_golden_mean_transfer_kappa": "0593bfc5af98224b8f788ee958e7e011c785bf9e",
+    "tir_golden_mean_pressure_kappa": "c6e282980377b43c1209ad4842b3b71e4fc394f3",
+    "tir_golden_mean_coding_zeta": "2097ddc26f97dfca2141e52bf53fed7d9fee2994",
+    "tir_primitive_orbit_euler_product": "18947402100145b5e8b88865ea90e4aab146a8dc",
+    "sohalf_repository_holonomy": "23eae95d8cbc33782c4a819ae40b2b166b566235",
+    "rfc_collatz_fs_phase_fibre": "dbbfcc83de96246aa96217a9c40def64661474d7"
+  },
+  "implemented_surfaces": [
+    "exact_unreduced_collatz_no_11_language",
+    "constructive_positive_integer_prefix_witness",
+    "exact_fractional_dyadic_coding",
+    "finite_shift_conjugacy",
+    "golden_mean_self_similar_branches",
+    "fibonacci_transfer_matrix",
+    "parry_markov_realization",
+    "symbolic_pressure_family",
+    "kappa_pressure_slope_crosswalk",
+    "lucas_periodic_point_counts",
+    "mobius_primitive_orbit_counts",
+    "artin_mazur_dynamical_zeta",
+    "finite_order_primitive_orbit_euler_product"
+  ],
+  "firewalls": [
+    "RUNTIME_DEFAULT_OFF",
+    "PHYSICAL_BINDING_OPEN",
+    "THERMODYNAMIC_PRESSURE_NOT_CLAIMED",
+    "RIEMANN_ZETA_FIREWALL",
+    "ARITHMETIC_PRIME_FIREWALL",
+    "E7_E8_LINEAR_INTERTWINER_NOGO",
+    "METRIC_COUPLING_NOT_ACTIVATED",
+    "COLLATZ_CONJECTURE_NOT_CLAIMED"
+  ],
+  "existing_runtime_modified": false,
+  "existing_temporal_fibre_modified": false,
+  "main_modified": false,
+  "phase_nav_target_modified": false,
+  "phase_nav_blocker": "PHASENAV_ACTION_PACKET_V1 plus native checkpoint/tag/bundle VCS adapter required before writes; no compliant adapter exposed on the connected surface",
+  "tests": {
+    "dedicated_candidate_suite": "PENDING_HOSTED_CI",
+    "full_repository_suite": "PENDING_HOSTED_CI"
+  }
+}

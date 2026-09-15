@@ -1,8 +1,9 @@
-name: PNCS fundamental golden-mean candidate v0.1
+name: PNCS fundamental golden-mean v0.1
 
 on:
   push:
     branches:
+      - main
       - candidate/fundamental-golden-mean-v0.1-20260915
     paths:
       - 'src/phasenav_natural_code/golden_mean_dynamics_v01.py'
@@ -11,6 +12,8 @@ on:
       - 'provenance/receipts/PNCS_FUNDAMENTAL_GOLDEN_MEAN_IMPORT_V0_1.json'
       - '.github/workflows/pncs-fundamental-golden-mean-v01.yml'
   pull_request:
+    branches:
+      - main
     paths:
       - 'src/phasenav_natural_code/golden_mean_dynamics_v01.py'
       - 'tests/test_golden_mean_dynamics_v01.py'
@@ -32,7 +35,7 @@ jobs:
           python-version: '3.12'
       - name: Install test dependency
         run: python -m pip install --disable-pip-version-check pytest
-      - name: Run fundamental golden-mean candidate tests
+      - name: Run fundamental golden-mean tests
         run: python -m pytest -q tests/test_golden_mean_dynamics_v01.py
 
   full-pncs-regression:

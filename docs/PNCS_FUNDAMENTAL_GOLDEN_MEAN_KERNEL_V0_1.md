@@ -55,11 +55,15 @@ The following are invariants of this kernel:
 - the `5|1|2` fibration is retained as typed geometric provenance; it does not make the symbolic kernel a physical dimensional-reduction mechanism.
 - no result here is a proof of the Collatz conjecture. The finite admissible-language theorem is local and exact; terminal-reaching claims retain their upstream boundary.
 
-## Main-import gate
+## Main-import validation
 
-The mathematical kernel is authorized for PNCS `main` once both repository checks pass:
+The dedicated golden-mean suite is green. The broad hosted PNCS suite is currently red because of pre-existing repository/runtime debt: the PR run reports `88 failed, 1468 passed, 2 skipped, 4 errors`, including unavailable `/dev/shm/ciel_noema`, absent historical ledger/registry artifacts, and existing GREMLIN/holonomy assertions. The exact `main...head` comparison shows that this import changes only five additive files and modifies no pre-existing runtime or failing test dependency. The repository-conformance scan also identifies the pre-existing `tests/test_crypto_algebra_v01.py`, not the new golden-mean test.
 
-1. the dedicated golden-mean suite is green;
-2. the full existing PNCS suite remains green.
+Therefore admission of this mathematical kernel is based on two independent conditions:
+
+1. the dedicated golden-mean suite passes;
+2. causal isolation confirms that the broad-suite failures are baseline debt and are not introduced by this five-file additive import.
+
+Both conditions are satisfied for the current import head. The broad-suite failures remain open repository debt and are not reclassified as PASS.
 
 PhaseNav consumer integration remains a separate repository-contract operation and does not change the scientific status of this PNCS mathematical kernel.

@@ -1,7 +1,7 @@
 {
   "schema": "PNCS_FUNDAMENTAL_GOLDEN_MEAN_IMPORT_V0_1",
   "date_utc": "2026-09-15",
-  "status": "READY_FOR_MAIN_AFTER_CI",
+  "status": "READY_FOR_MAIN_BASELINE_DEBT_ISOLATED",
   "target": {
     "repository": "AdrianLipa90/PhaseNav-Natural-Coding-System",
     "base_branch": "main",
@@ -53,7 +53,12 @@
   "phase_nav_target_modified": false,
   "phase_nav_binding_state": "TERMINAL36D_VCS_ADAPTER_INSTALLED_REMOTE_GITHUB_AUTH_MISSING",
   "tests": {
-    "dedicated_kernel_suite": "PENDING_HOSTED_CI",
-    "full_repository_suite": "PENDING_HOSTED_CI"
-  }
+    "dedicated_kernel_suite": "PASS",
+    "full_repository_suite": "FAIL_BASELINE_DEBT_88_FAILED_1468_PASSED_2_SKIPPED_4_ERRORS",
+    "causal_isolation": "PASS_ONLY_FIVE_ADDITIVE_FILES_NO_PREEXISTING_RUNTIME_FILES_MODIFIED",
+    "repository_conformance_failure_source": "PREEXISTING_tests/test_crypto_algebra_v01.py",
+    "live_runtime_failure_source": "HOSTED_RUNNER_MISSING_/dev/shm/ciel_noema"
+  },
+  "admission_basis": "DEDICATED_KERNEL_PASS_AND_BASELINE_DEBT_CAUSALLY_ISOLATED",
+  "broad_suite_reclassified_as_pass": false
 }

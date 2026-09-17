@@ -94,6 +94,7 @@ _POST_V1_IDEAS = (
     "primeflow_v02",
     "temporal_geometry_v02",
     "non_coboundary_prime_interaction",
+    "fundamental_golden_mean_v01",
 )
 
 

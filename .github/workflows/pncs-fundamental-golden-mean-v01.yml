@@ -49,7 +49,5 @@ jobs:
           python-version: '3.12'
       - name: Install test dependency
         run: python -m pip install --disable-pip-version-check pytest
-      - name: Re-run exact preserved golden-mean research witness
-        env:
-          PYTHONPATH: research/post_v1/fundamental_golden_mean_v01/src
-        run: python -m pytest -q research/post_v1/fundamental_golden_mean_v01/tests/test_golden_mean_dynamics_v01.py
+      - name: Re-run exact preserved golden-mean research witness in isolated pythonpath
+        run: python -m pytest -q -o pythonpath=research/post_v1/fundamental_golden_mean_v01/src research/post_v1/fundamental_golden_mean_v01/tests/test_golden_mean_dynamics_v01.py

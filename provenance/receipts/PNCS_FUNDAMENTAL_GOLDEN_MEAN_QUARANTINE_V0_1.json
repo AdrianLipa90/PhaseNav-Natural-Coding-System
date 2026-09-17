@@ -1,7 +1,7 @@
 {
   "schema": "PNCS_FUNDAMENTAL_GOLDEN_MEAN_QUARANTINE_V0_1",
   "date_utc": "2026-09-17",
-  "status": "STAGING_CANDIDATE_CI_REQUIRED",
+  "status": "PR_DEDICATED_CI_PASS_BASELINE_RELEASE_DEBT_RETAINED",
   "historical_import": {
     "commit": "85f0b3bebb67248f449fa13721481f44ce6840cf",
     "parent": "c031e58afe65762d2c60fad62ebf531ac0ef3f3d",
@@ -19,15 +19,49 @@
     "module_git_blob": "766d6ea951c820f5be0513eef2849cbca4d15b26",
     "test_git_blob": "0939ef460906fffeddc8081bb3ff9227de03ddf5"
   },
-  "required_gates": [
-    "release_train_tests_pass",
-    "quarantine_integrity_tests_pass",
-    "installed_package_import_absence_pass",
-    "preserved_research_math_pass",
-    "pr_context_ci_pass",
-    "post_merge_ci_pass"
-  ],
-  "broad_repository_suite": "NOT_RECLASSIFIED_AS_PASS",
+  "pr_evidence": {
+    "pull_request": 65,
+    "base_commit": "85f0b3bebb67248f449fa13721481f44ce6840cf",
+    "tested_head_commit": "e48cf366594f68262cc03d836ed1b111d3810e08",
+    "dedicated_workflow_run": 35225505139,
+    "dedicated_workflow_status": "PASS",
+    "dedicated_jobs": {
+      "preserved-research-math": "PASS",
+      "quarantine-integrity": "PASS"
+    },
+    "installed_package_import_absence": "PASS",
+    "exact_preserved_math": "PASS"
+  },
+  "broad_baseline_evidence": {
+    "reclassified_as_pass": false,
+    "v028_adversarial_run": 35225505127,
+    "v028_result": "206_PASS_1_FAIL",
+    "v028_only_failure": "tests/test_repository_conformance_v28.py::test_hosted_pure_tests_have_no_historical_mnt_data_dependency",
+    "v028_offender": "tests/test_crypto_algebra_v01.py",
+    "v028_relation_to_this_change": "UNCHANGED_PRE_EXISTING_PATH",
+    "release_closure_run": 35225505124,
+    "release_closure_result": "577_PASS_7_FAIL_4_ERROR",
+    "release_closure_failure_domains": [
+      "gremlin isomorphic codec merge",
+      "source holonomy exception typing",
+      "gauge-covariant phase pullback numerical tolerance/error ordering",
+      "cross-formalism round28 missing DOUBLE_COVER_LIFT_OF opcode",
+      "round28 sealed-bundle setup dependent on missing opcode"
+    ],
+    "release_closure_relation_to_this_change": "UNCHANGED_PRE_EXISTING_PATHS_AND_RELEASE_TRAIN_TESTS_DID_NOT_FAIL",
+    "historical_release_closure_status_receipt": "provenance/receipts/PNCS_V0_28_RELEASE_CLOSURE_STATUS_20260823.json",
+    "historical_release_closure_status": "BLOCKED_FAIL_CLOSED"
+  },
+  "required_gates": {
+    "release_train_tests_pass": true,
+    "quarantine_integrity_tests_pass": true,
+    "installed_package_import_absence_pass": true,
+    "preserved_research_math_pass": true,
+    "pr_context_dedicated_ci_pass": true,
+    "broad_repository_release_closure_pass": false,
+    "post_merge_ci_pass": false
+  },
+  "merge_scope_statement": "This correction is eligible only as a release-surface rollback/quarantine fix. It does not advance v0.28, does not clear existing release gates, and does not reclassify broad PNCS CI as green.",
   "runtime_authority": false,
   "physical_binding": false
 }

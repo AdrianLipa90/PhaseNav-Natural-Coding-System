@@ -1,0 +1,24 @@
+{
+  "base_main": "4962183a5dbb50f845709c3b47368078ee2117c1",
+  "canon_write_authority": false,
+  "epistemic": "CHYBA",
+  "generic_default_opcode_table_mutated": false,
+  "historical_mixed_candidate_head": "1d639f26560eeef311fa27b6db0b9f8c50dccfd1",
+  "historical_mixed_candidate_pr": 63,
+  "new_opcode_count": 0,
+  "rejected_alternative": {
+    "EXACT_KERNEL_ISOMORPHISM": "IDENTITY",
+    "reason": "native IDENTITY(a,b) is payload equality, stronger than representation/kernel isomorphism"
+  },
+  "relation_bindings": {
+    "COORDINATE_ISOMORPHIC_TO": "COMPOSITION",
+    "DOUBLE_COVER_LIFT_OF": "COMPOSITION",
+    "EXACT_KERNEL_ISOMORPHISM": "COMPOSITION"
+  },
+  "release_class": "CLOSURE_REQUIRED_CANDIDATE",
+  "required_before_release_route": "DEDICATED_CI_PASS",
+  "research_600cell_promoted": false,
+  "runtime_execution_authority": false,
+  "schema": "PNCS_ROUND28_RELATION_LOWERING_CANDIDATE_V0_3",
+  "status": "PREPARED_FOR_STAGING_GAUNTLET"
+}

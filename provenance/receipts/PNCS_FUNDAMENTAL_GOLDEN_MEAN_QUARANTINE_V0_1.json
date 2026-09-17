@@ -1,0 +1,33 @@
+{
+  "schema": "PNCS_FUNDAMENTAL_GOLDEN_MEAN_QUARANTINE_V0_1",
+  "date_utc": "2026-09-17",
+  "status": "STAGING_CANDIDATE_CI_REQUIRED",
+  "historical_import": {
+    "commit": "85f0b3bebb67248f449fa13721481f44ce6840cf",
+    "parent": "c031e58afe65762d2c60fad62ebf531ac0ef3f3d",
+    "historical_receipt": "provenance/receipts/PNCS_FUNDAMENTAL_GOLDEN_MEAN_IMPORT_V0_1.json"
+  },
+  "correction": {
+    "change_class": "EXPERIMENTAL_IDEA",
+    "decision": "QUARANTINE_POST_V1",
+    "release_stage": "V0_28_RELEASE_CLOSURE",
+    "remove_from_active_package": true,
+    "remove_from_active_test_graph": true,
+    "preserve_research_bytes": true
+  },
+  "preserved_payload": {
+    "module_git_blob": "766d6ea951c820f5be0513eef2849cbca4d15b26",
+    "test_git_blob": "0939ef460906fffeddc8081bb3ff9227de03ddf5"
+  },
+  "required_gates": [
+    "release_train_tests_pass",
+    "quarantine_integrity_tests_pass",
+    "installed_package_import_absence_pass",
+    "preserved_research_math_pass",
+    "pr_context_ci_pass",
+    "post_merge_ci_pass"
+  ],
+  "broad_repository_suite": "NOT_RECLASSIFIED_AS_PASS",
+  "runtime_authority": false,
+  "physical_binding": false
+}

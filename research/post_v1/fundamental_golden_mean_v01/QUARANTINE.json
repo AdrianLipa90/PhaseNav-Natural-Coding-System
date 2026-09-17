@@ -1,0 +1,24 @@
+{
+  "schema": "PNCS_POST_V1_QUARANTINE_V1",
+  "id": "fundamental_golden_mean_v01",
+  "decision": "QUARANTINE_POST_V1",
+  "change_class": "EXPERIMENTAL_IDEA",
+  "active_release_stage": "V0_28_RELEASE_CLOSURE",
+  "historical_main_commit": "85f0b3bebb67248f449fa13721481f44ce6840cf",
+  "historical_parent": "c031e58afe65762d2c60fad62ebf531ac0ef3f3d",
+  "preserved_payload": {
+    "module_path": "research/post_v1/fundamental_golden_mean_v01/src/phasenav_natural_code/golden_mean_dynamics_v01.py",
+    "module_git_blob": "766d6ea951c820f5be0513eef2849cbca4d15b26",
+    "test_path": "research/post_v1/fundamental_golden_mean_v01/tests/test_golden_mean_dynamics_v01.py",
+    "test_git_blob": "0939ef460906fffeddc8081bb3ff9227de03ddf5"
+  },
+  "active_paths_removed": [
+    "src/phasenav_natural_code/golden_mean_dynamics_v01.py",
+    "tests/test_golden_mean_dynamics_v01.py"
+  ],
+  "historical_import_receipt_preserved": "provenance/receipts/PNCS_FUNDAMENTAL_GOLDEN_MEAN_IMPORT_V0_1.json",
+  "runtime_authority": false,
+  "v1_release_dependency": false,
+  "mathematical_claims_invalidated": false,
+  "reason": "Validated research was promoted into the frozen PNCS v1 release surface without evidence that it closes a preregistered v0.28 release gate. Exact research bytes and provenance are preserved while active package membership is revoked."
+}

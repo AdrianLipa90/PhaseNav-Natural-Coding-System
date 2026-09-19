@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from typing import Any, Mapping
 
@@ -28,6 +29,16 @@ def _canonical_json(value: Any) -> bytes:
         separators=(",", ":"),
         ensure_ascii=False,
     ).encode("utf-8")
+
+
+def _finite(name: str, value: Any) -> float:
+    try:
+        number = float(value)
+    except (TypeError, ValueError) as exc:
+        raise RelationalEvidencePacketError(f"{name} must be finite") from exc
+    if not math.isfinite(number):
+        raise RelationalEvidencePacketError(f"{name} must be finite")
+    return number
 
 
 def _nonempty(name: str, value: Any) -> str:
@@ -96,6 +107,12 @@ def verify_gremlin_evidence_packet(packet: Mapping[str, Any]) -> None:
             "fully_identifiable inconsistent with declared phase ranks"
         )
 
+    top_admissible = packet.get("source_attribution_admissible")
+    if not isinstance(top_admissible, bool):
+        raise RelationalEvidencePacketError(
+            "source_attribution_admissible must be boolean"
+        )
+
     channels = packet.get("channels")
     if not isinstance(channels, list) or not channels:
         raise RelationalEvidencePacketError(
@@ -107,6 +124,23 @@ def verify_gremlin_evidence_packet(packet: Mapping[str, Any]) -> None:
                 f"channels[{index}] must be a mapping"
             )
         _nonempty(f"channels[{index}].name", channel.get("name"))
+        for field in (
+            "observed",
+            "predicted",
+            "sigma",
+            "residual",
+            "normalized_residual",
+        ):
+            value = _finite(f"channels[{index}].{field}", channel.get(field))
+            if field == "sigma" and value <= 0.0:
+                raise RelationalEvidencePacketError(
+                    f"channels[{index}].sigma must be > 0"
+                )
+        for field in ("independently_constrained", "circular_fit"):
+            if not isinstance(channel.get(field), bool):
+                raise RelationalEvidencePacketError(
+                    f"channels[{index}].{field} must be boolean"
+                )
         prov = channel.get("provenance")
         if not isinstance(prov, Mapping):
             raise RelationalEvidencePacketError(
@@ -122,14 +156,52 @@ def verify_gremlin_evidence_packet(packet: Mapping[str, Any]) -> None:
                 f"channels[{index}].provenance.commit must be a 40-char SHA"
             )
 
+    consistency = packet.get("consistency")
+    if not isinstance(consistency, Mapping):
+        raise RelationalEvidencePacketError(
+            "consistency must be a mapping"
+        )
+    for field in (
+        "chi_square",
+        "max_abs_normalized_residual",
+        "per_channel_sigma_threshold",
+        "residual_resolution_sigma",
+    ):
+        value = _finite(f"consistency.{field}", consistency.get(field))
+        if field in (
+            "per_channel_sigma_threshold",
+            "residual_resolution_sigma",
+        ) and value <= 0.0:
+            raise RelationalEvidencePacketError(
+                f"consistency.{field} must be > 0"
+            )
+    residual_dof = consistency.get("residual_dof")
+    if not isinstance(residual_dof, int) or residual_dof <= 0:
+        raise RelationalEvidencePacketError(
+            "consistency.residual_dof must be a positive integer"
+        )
+    if residual_dof != len(channels):
+        raise RelationalEvidencePacketError(
+            "consistency.residual_dof must equal channel count"
+        )
+
     source = packet.get("source_attribution")
     if not isinstance(source, Mapping):
         raise RelationalEvidencePacketError(
             "source_attribution must be a mapping"
         )
-    if source.get("admissible") is not packet.get(
-        "source_attribution_admissible"
+    for field in (
+        "known_sectors_independently_constrained",
+        "circular_fit_present",
+        "residual_resolved",
+        "required_source_bindings_admitted",
+        "admissible",
     ):
+        if not isinstance(source.get(field), bool):
+            raise RelationalEvidencePacketError(
+                f"source_attribution.{field} must be boolean"
+            )
+    if source.get("admissible") != top_admissible:
         raise RelationalEvidencePacketError(
             "source attribution admissibility fields disagree"
         )

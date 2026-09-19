@@ -1,0 +1,31 @@
+name: PNCS Round28 relation lowering v0.4 gauntlet
+
+on:
+  push:
+    branches:
+      - candidate/round28-relation-lowering-v0.4-20260917
+    paths:
+      - 'src/phasenav_natural_code/gremlin_cross_formalism_round28_v04.py'
+      - 'tests/test_gremlin_cross_formalism_round28_v04.py'
+      - 'spec/PNCS_ROUND28_RELATION_LOWERING_V0_4.md'
+      - 'provenance/receipts/PNCS_ROUND28_RELATION_LOWERING_CANDIDATE_V0_4.json'
+      - '.github/workflows/pncs-round28-relation-lowering-v04.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  round28-v04-gauntlet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependency
+        run: python -m pip install --disable-pip-version-check pytest numpy
+      - name: Run exact-math, expected-fail-closed, semantic-lowering and integrity gauntlet
+        run: python -m pytest -q tests/test_gremlin_cross_formalism_round28_v04.py

@@ -1,0 +1,21 @@
+{
+  "schema": "PNCS_NONLOCAL_SEMANTIC_U1_HOLONOMY_IMPLEMENTATION_RECEIPT_V0_1",
+  "date": "2026-09-19",
+  "base_main_sha": "4962183a5dbb50f845709c3b47368078ee2117c1",
+  "status": "IMPLEMENTED_ON_DEDICATED_BRANCH__CI_PENDING",
+  "epistemic": "CHYBA",
+  "canon_allowed": false,
+  "native_primary": "native/PNCS_NONLOCAL_SEMANTIC_U1_HOLONOMY_V0_1.pnv",
+  "specification": "spec/PNCS_NONLOCAL_SEMANTIC_U1_HOLONOMY_V0_1.md",
+  "python_reference": "src/phasenav_natural_code/semantic_u1_holonomy_v01.py",
+  "test": "tests/test_semantic_u1_holonomy_v01.py",
+  "parent_contract": "PNCS_PNV_INFORMATION_HOLONOMY_V0_1",
+  "semantic_definition": "W_sem[gamma]=exp(i integral_gamma A_sem); C_ij=W_sem z_ij",
+  "effect_boundary": {
+    "mode": "READ_ONLY",
+    "physical_gauge_field_claim": false,
+    "physical_nonlocal_signalling_claim": false,
+    "hypercharge_identification": false,
+    "weak_boson_identification": false
+  }
+}

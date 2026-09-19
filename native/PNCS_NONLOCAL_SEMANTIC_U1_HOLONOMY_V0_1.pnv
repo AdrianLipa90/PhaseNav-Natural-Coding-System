@@ -1,0 +1,13 @@
+# PNCS Nonlocal Semantic U(1) Holonomy W_sem from A_sem v0.1
+# Native PNV/1 declaration is primary. Python is reference/test only.
+# Epistemic boundary: mathematical/software phase transport; no physical gauge-field
+# or nonlocal-signalling promotion.
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+OP WSEM.A SOURCE semantic.connection.A_sem
+OP WSEM.TRANSPORT TRANSFORM WSEM.A u1_path_exponential
+OP WSEM.OVERLAP SOURCE semantic.projective.overlap
+OP WSEM.COUPLING COMPOSITION WSEM.TRANSPORT WSEM.OVERLAP nonlocal_semantic_coupling
+OP WSEM.RETURN RETURN WSEM.COUPLING
+EMIT WSEM.RETURN

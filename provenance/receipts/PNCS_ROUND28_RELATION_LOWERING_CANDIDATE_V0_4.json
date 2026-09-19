@@ -1,0 +1,25 @@
+{
+  "base_main": "4962183a5dbb50f845709c3b47368078ee2117c1",
+  "canon_write_authority": false,
+  "epistemic": "CHYBA",
+  "failed_v03_run": 35244108475,
+  "generic_default_opcode_table_mutated": false,
+  "new_opcode_count": 0,
+  "rejected_alternative": {
+    "EXACT_KERNEL_ISOMORPHISM": "IDENTITY",
+    "reason": "native IDENTITY(a,b) is payload equality, stronger than kernel/isomorphism semantics"
+  },
+  "relation_bindings": {
+    "COORDINATE_ISOMORPHIC_TO": "COMPOSITION",
+    "DOUBLE_COVER_LIFT_OF": "COMPOSITION",
+    "EXACT_KERNEL_ISOMORPHISM": "COMPOSITION"
+  },
+  "release_class": "CLOSURE_REQUIRED_CANDIDATE",
+  "required_before_release_route": "DEDICATED_V04_CI_PASS",
+  "research_600cell_promoted": false,
+  "runtime_execution_authority": false,
+  "schema": "PNCS_ROUND28_RELATION_LOWERING_CANDIDATE_V0_4",
+  "status": "PREPARED_FOR_STAGING_GAUNTLET",
+  "supersedes_failed_candidate_pr": 67,
+  "v03_failure_class": "WORKFLOW_EXPECTED_BLOCKER_MISCLASSIFIED_AS_REGRESSION"
+}

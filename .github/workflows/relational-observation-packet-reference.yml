@@ -1,11 +1,14 @@
-name: Relational observation packet reference
+name: Relational observation/evidence packet reference
 
 on:
   pull_request:
     paths:
       - 'spec/PNCS_RELATIONAL_OBSERVATION_PACKET_V0_1.md'
+      - 'spec/PNCS_RELATIONAL_EVIDENCE_PACKET_V0_1.md'
       - 'src/phasenav_natural_code/relational_observation_v01.py'
+      - 'src/phasenav_natural_code/relational_evidence_v01.py'
       - 'tests/test_relational_observation_v01.py'
+      - 'tests/test_relational_evidence_v01.py'
       - '.github/workflows/relational-observation-packet-reference.yml'
   workflow_dispatch:
 
@@ -19,5 +22,8 @@ jobs:
           python-version: '3.12'
       - name: Install test dependency
         run: python -m pip install pytest
-      - name: Run relational observation packet tests
-        run: python -m pytest -q tests/test_relational_observation_v01.py
+      - name: Run relational packet tests
+        run: >-
+          python -m pytest -q
+          tests/test_relational_observation_v01.py
+          tests/test_relational_evidence_v01.py

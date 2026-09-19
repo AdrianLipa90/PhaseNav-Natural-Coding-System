@@ -100,6 +100,8 @@ No coordinate order, canonical operator identity or 36D semantic basis changes i
   https://github.com/AdrianLipa90/The-Fundamental-Theory-of-Informational-Relations/pull/174
 - RFC:
   https://github.com/AdrianLipa90/Relational-Field-Closure/pull/142
+- noema-phasenav-core runtime sidecar:
+  https://github.com/AdrianLipa90/noema-phasenav-core/pull/35
 
 ## 6. Fail-closed rule
 

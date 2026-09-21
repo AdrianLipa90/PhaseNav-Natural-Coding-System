@@ -1,4 +1,4 @@
-from research.post_v1.fundamental_seam_bank_v01.src.fundamental_seam_bank_v01 import (
+from fundamental_seam_bank_v01 import (
     accelerated_collatz_block,
     bank_manifest,
     compile_fundamental_seam_candidates,

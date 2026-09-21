@@ -71,6 +71,16 @@ def _law_node(law_id: str, domain: str, kaku: Kaku, evidence_refs: Sequence[str]
     return LawFrameNode(law_id, domain, kaku, _refs(evidence_refs))
 
 
+def _require_common_basis(*kakus: Kaku) -> None:
+    if not kakus or any(not isinstance(kaku, Kaku) for kaku in kakus):
+        raise PNVSourceHolonomyError("source holonomy law gate requires Kaku")
+    basis_ids = {kaku.vector.basis_id for kaku in kakus}
+    if len(basis_ids) != 1:
+        raise PNVSourceHolonomyError(
+            "law-frame KAKU nodes must share one exact PNCS basis"
+        )
+
+
 # ---------------------------------------------------------------------------
 # 1. Extensive carrier <-> normalized profile
 # ---------------------------------------------------------------------------
@@ -150,6 +160,7 @@ def build_carrier_normalization_loop(
     evidence_refs: Sequence[str] = (),
     tolerance: float = 1e-12,
 ) -> InformationHolonomyLoop:
+    _require_common_basis(extensive_kaku, normalized_kaku)
     eps = _nonnegative(tolerance, "tolerance")
     refs = _refs(evidence_refs)
     extensive = _law_node("LAW.RFC.CARRIER_EXTENSIVE", "RFC", extensive_kaku, refs)
@@ -236,6 +247,7 @@ def build_q0_occupation_loop(
     evidence_refs: Sequence[str] = (),
     tolerance: float = 1e-12,
 ) -> InformationHolonomyLoop:
+    _require_common_basis(extensive_kaku, occupation_kaku)
     eps = _nonnegative(tolerance, "tolerance")
     refs = _refs((*evidence_refs, "gate:q0:CONDITIONAL"))
     extensive = _law_node("LAW.RFC.CARRIER_EXTENSIVE", "RFC", extensive_kaku, refs)
@@ -323,6 +335,7 @@ def build_epsilon_source_loop(
     evidence_refs: Sequence[str] = (),
     tolerance: float = 1e-12,
 ) -> InformationHolonomyLoop:
+    _require_common_basis(current_kaku, density_kaku)
     eps = _nonnegative(tolerance, "tolerance")
     refs = _refs((*evidence_refs, "gate:epsilon_Q:CONDITIONAL"))
     current = _law_node("LAW.CARRIER.CURRENT_DENSITY", "RFC_SOURCE_CARRIER", current_kaku, refs)
@@ -516,6 +529,7 @@ def build_euler_phase_intention_loop(
     evidence_refs: Sequence[str] = (),
     tolerance: float = 1e-12,
 ) -> InformationHolonomyLoop:
+    _require_common_basis(closure_kaku, charge_kaku, energy_kaku)
     eps = _nonnegative(tolerance, "tolerance")
     refs = _refs((*evidence_refs, "gate:epsilon_Q:AFTER_EULER", "gate:Q_Sigma_to_J_I:OPEN"))
     closure = _law_node("LAW.EULER.BERRY_CLOSURE", "PHASE_TOPOLOGY", closure_kaku, refs)

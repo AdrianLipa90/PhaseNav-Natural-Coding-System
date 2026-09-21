@@ -11,6 +11,7 @@ create a new opcode, or grant runtime/canon authority.
 from typing import Mapping
 
 from .gremlin_cross_formalism_round28_v01 import (
+    ROUND28_RELATION_OPCODE_BINDINGS,
     Round28Compilation,
     _compilation_manifest,
     round28_bank,
@@ -22,11 +23,6 @@ from .gremlin_relational_compiler_v01 import (
 )
 
 ROUND28_V04_SCHEMA = "PNCS_GREMLIN_CROSS_FORMALISM_ROUND28_EXECUTABLE_V0_4"
-ROUND28_RELATION_OPCODE_BINDINGS: Mapping[str, str] = {
-    "DOUBLE_COVER_LIFT_OF": "COMPOSITION",
-    "EXACT_KERNEL_ISOMORPHISM": "COMPOSITION",
-    "COORDINATE_ISOMORPHIC_TO": "COMPOSITION",
-}
 
 
 class Round28V04Error(RuntimeError):

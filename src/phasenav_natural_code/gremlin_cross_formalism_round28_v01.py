@@ -25,6 +25,11 @@ from .model import Kaku, Vector36
 ROUND28_BANK_SCHEMA = "PNCS_GREMLIN_CROSS_FORMALISM_ROUND28_BANK_V0_1"
 ROUND28_COMPILATION_SCHEMA = "PNCS_GREMLIN_CROSS_FORMALISM_ROUND28_COMPILATION_V0_1"
 ROUND28_BASIS = "pncs:t36:gremlin-cross-formalism-round28:v1"
+ROUND28_RELATION_OPCODE_BINDINGS: Mapping[str, str] = {
+    "DOUBLE_COVER_LIFT_OF": "COMPOSITION",
+    "EXACT_KERNEL_ISOMORPHISM": "COMPOSITION",
+    "COORDINATE_ISOMORPHIC_TO": "COMPOSITION",
+}
 
 SOURCE_PINS: Mapping[str, Mapping[str, str]] = {
     "IDT": {
@@ -290,6 +295,7 @@ def compile_round28_candidates(
             generation_binding=generation_binding,
             identity=identity,
             authority=authority,
+            relation_opcode_overrides=ROUND28_RELATION_OPCODE_BINDINGS,
             authoring_root=None,
         )
     return Round28Compilation(

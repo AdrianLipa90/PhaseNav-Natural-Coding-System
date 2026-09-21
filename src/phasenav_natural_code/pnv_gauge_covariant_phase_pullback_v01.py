@@ -496,6 +496,15 @@ def gauge_covariant_phase_pullback_defects(state: Mapping[str, Any]) -> dict[str
     return {name: _finite(values[name], name) for name in names}
 
 
+GAUGE_NUMERICAL_ZERO_FLOOR = 1e-15
+
+
+def _admission_tolerance(name: str, requested: float) -> float:
+    if name == "Delta_gauge":
+        return max(requested, GAUGE_NUMERICAL_ZERO_FLOOR)
+    return requested
+
+
 def gauge_covariant_phase_pullback_transforms(*, tolerance: float = 1e-12) -> dict[str, Any]:
     eps = _nonnegative(tolerance, "tolerance")
     defect_names = (
@@ -513,9 +522,10 @@ def gauge_covariant_phase_pullback_transforms(*, tolerance: float = 1e-12) -> di
         raw = _raw(state)
         values = _derived(raw)
         for name in defect_names:
-            if _finite(values[name], name) > eps:
+            allowed = _admission_tolerance(name, eps)
+            if _finite(values[name], name) > allowed:
                 raise PNVGaugeCovariantPhasePullbackError(
-                    f"{name} {values[name]!r} exceeds tolerance {eps!r}"
+                    f"{name} {values[name]!r} exceeds tolerance {allowed!r}"
                 )
         return {
             **raw,
@@ -545,9 +555,10 @@ def gauge_covariant_phase_pullback_transforms(*, tolerance: float = 1e-12) -> di
                         f"{key} changed before reverse pullback audit"
                     )
         for name in defect_names:
-            if _finite(values[name], name) > eps:
+            allowed = _admission_tolerance(name, eps)
+            if _finite(values[name], name) > allowed:
                 raise PNVGaugeCovariantPhasePullbackError(
-                    f"{name} {values[name]!r} exceeds tolerance {eps!r}"
+                    f"{name} {values[name]!r} exceeds tolerance {allowed!r}"
                 )
         return raw
 

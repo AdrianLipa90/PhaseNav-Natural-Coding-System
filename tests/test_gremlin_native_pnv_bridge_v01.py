@@ -121,7 +121,7 @@ def test_belzebub_native_executes_content_addressed_quarantine():
     assert boundary['external_effects'] is None
     assert boundary['external_effects_status'] == 'UNVERIFIED_CALLBACK_BOUNDARY'
     assert boundary['callback_effects_verified'] is False
-    assert boundary['callback_determinism_verified'] is False
+    assert run.result.receipt['callback_determinism_verified'] is False
     assert boundary['callbacks_invoked'] == [
         'comparator:invariant_violation',
         'transform:defensive_semantic_digest',

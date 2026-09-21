@@ -128,6 +128,13 @@ def fundamental_seam_bank() -> tuple[FundamentalSeamEntry, ...]:
         "K.FSI.IDT.COLLATZ.PHASE", 10, "collatz_parity_phase_shift", "IDT_COLLATZ", "IDT:CFS"
     )
 
+    inf_hilbert = _node(
+        "K.FSI.INF.HILBERT.SHIFT", 11, "unilateral_shift_successor_embedding", "INFINITIES_SHIFT", "INF:INF-010"
+    )
+    idt_history = _node(
+        "K.FSI.IDT.PREFIX.HISTORY", 12, "serial_realized_prefix_successor", "IDT_HISTORY", "IDT:NATURE-OF-TEMPORAL-STATE"
+    )
+
     return (
         FundamentalSeamEntry(
             spec=RelationalIsomorphism(
@@ -267,6 +274,48 @@ def fundamental_seam_bank() -> tuple[FundamentalSeamEntry, ...]:
                 "no identification of iteration count or phase with physical elapsed time",
             ),
         ),
+        FundamentalSeamEntry(
+            spec=RelationalIsomorphism(
+                isomorphism_id="FSI.05.HILBERT.SHIFT.COUNTABLE.HISTORY",
+                invariant_id="INV.FSI.COUNTABLE.SUCCESSOR.ORDER.EMBEDDING",
+                invariant_description=(
+                    "the unilateral-shift basis index map n->n+k and an IDT serial realized-prefix "
+                    "map nu_n->nu_(n+k) share the same injective order-preserving successor embedding on N; "
+                    "the first k indices lie outside the image"
+                ),
+                nodes=(inf_hilbert, idt_history),
+                edges=(
+                    RelationalEdge(
+                        "REL.FSI.05",
+                        inf_hilbert.kaku.kaku_id,
+                        idt_history.kaku.kaku_id,
+                        "ISOMORPHIC_TO",
+                    ),
+                ),
+                evidence_refs=(
+                    _source("INFINITIES", "FOUNDATIONS.md"),
+                    _source("INFINITIES", "CLAIMS.md"),
+                    _source("IDT", "formalism/NATURE_OF_TEMPORAL_STATE_SYNTHESIS.md"),
+                    _source("IDT", "formalism/06I_orchorbital_residence_ledger.md"),
+                ),
+            ),
+            classification="STRONG_STRUCTURAL",
+            preserved_structure=(
+                "countable successor indexing",
+                "injective order-preserving k-shift",
+                "k initial indices outside the shifted image",
+                "forward lineage order",
+            ),
+            falsification_gate=(
+                "the declared serial history cannot be indexed by N with prefix order, or its k-step successor "
+                "fails injectivity/order preservation"
+            ),
+            guardrails=(
+                "Hilbert-space linear structure and Fredholm index remain Infinities-only",
+                "IDT memory semantics are not derived from the unilateral shift",
+                "the bridge is an index/order isomorphism, not a Hilbert-space identification",
+            ),
+        ),
     )
 
 
@@ -327,6 +376,31 @@ def validate_accelerated_block(n: int) -> bool:
         observed.append(x % 2)
         x = unreduced_collatz_step(x)
     return x == accelerated and tuple(observed) == parity
+
+
+def history_successor_window(length: int, k: int) -> tuple[tuple[int, ...], tuple[int, ...]]:
+    """Finite witness for the countable successor embedding n -> n+k.
+
+    Returns the shifted image of 0..length-1 and the initial defect indices
+    0..k-1. This witnesses only the index/order seam; it does not encode the
+    Hilbert-space Fredholm theorem itself.
+    """
+    if not isinstance(length, int) or length < 0:
+        raise FundamentalSeamBankError("length must be a nonnegative integer")
+    if not isinstance(k, int) or k < 0:
+        raise FundamentalSeamBankError("k must be a nonnegative integer")
+    image = tuple(n + k for n in range(length))
+    defect = tuple(range(k))
+    return image, defect
+
+
+def validate_history_successor_window(length: int, k: int) -> bool:
+    image, defect = history_successor_window(length, k)
+    if len(set(image)) != len(image):
+        return False
+    if image != tuple(sorted(image)):
+        return False
+    return defect == tuple(range(k)) and all(i not in image for i in defect)
 
 
 def compile_fundamental_seam_candidates(

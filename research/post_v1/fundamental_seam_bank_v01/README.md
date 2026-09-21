@@ -192,3 +192,34 @@ physical/source witness missing
 
 No RH proof, Collatz-conjecture proof, physical-\(G\), flavour, clock, QHTRI
 binding, or Hilbert-space model of physical time is promoted by this bank.
+
+
+## Lean arbitration status
+
+The first two seams selected by GREMLIN have now also passed source-repository
+Lean gates.
+
+```text
+FSI.01  TIR <-> RFC affine composition/inverse crosswalk   LEAN PASS
+FSI.05  Infinities <-> IDT countable successor/history     LEAN PASS
+```
+
+FSI.01 was checked independently in TIR draft PR #175 and RFC draft PR #168.
+The theorem scope is the explicit coordinate-law crosswalk only; production
+overlap witnesses and physical curvature/torsion bindings remain external.
+
+FSI.05 was checked independently in Infinities draft PR #2 and IDT draft PR
+#103. The theorem scope is countable successor/order embedding plus append-only
+prefix preservation; no Hilbert-space identity or physical-time Fredholm
+observable is imported.
+
+This establishes the intended pipeline on two independent seam classes:
+
+```text
+GREMLIN detects seam
+ -> PNCS compiles candidate relation
+ -> Lean checks exact source-level theorem
+ -> physical/source gates remain typed and separate
+```
+
+The remaining formal targets are FSI.04, FSI.02 and FSI.03 in that order.

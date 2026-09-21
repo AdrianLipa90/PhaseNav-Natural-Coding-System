@@ -116,4 +116,13 @@ def test_belzebub_native_executes_content_addressed_quarantine():
     assert run.result.values['BELZEBUB.QUARANTINE.IDENTITY'] is True
     assert run.result.values['BELZEBUB.VIOLATION'] is True
     assert run.result.emitted['BELZEBUB.IMMUNITY.RETURN']
-    assert run.result.receipt['effect_boundary']['external_effects'] is False
+    boundary = run.result.receipt['effect_boundary']
+    assert boundary['interpreter_external_effects'] is False
+    assert boundary['external_effects'] is None
+    assert boundary['external_effects_status'] == 'UNVERIFIED_CALLBACK_BOUNDARY'
+    assert boundary['callback_effects_verified'] is False
+    assert boundary['callback_determinism_verified'] is False
+    assert boundary['callbacks_invoked'] == [
+        'comparator:invariant_violation',
+        'transform:defensive_semantic_digest',
+    ]

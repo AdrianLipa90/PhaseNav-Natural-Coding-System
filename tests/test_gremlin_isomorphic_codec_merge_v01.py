@@ -33,10 +33,13 @@ def test_partial_codec_isomorphisms_merge_to_full_union_graph():
     assert {n.kaku.kaku_id for n in merged.nodes} == {n.kaku.kaku_id for n in full.nodes}
     assert {e.relation_id for e in merged.edges} == {e.relation_id for e in full.edges}
     assert set(merged.evidence_refs) >= {
-        "fragment:left",
-        "fragment:right",
-        "isomorphism-fragment:ISO.PNLF.LEFT",
-        "isomorphism-fragment:ISO.PNLF.RIGHT",
+        "fragment:pncs-state-memory",
+        "fragment:state-memory-bioos",
+        "contract:PNCS_PNH5_TAU_FRAME_REALIZATION_V0_1",
+        "contract:BIOOS_PNH5_CONTAINER_V0_1",
+        "isomorphism-fragment:ISO.PNLF.PNCS.STATE",
+        "isomorphism-fragment:ISO.PNLF.STATE.BIOOS",
+        "isomorphism-fragment:ISO.PNLF.PNH5.REALIZATION",
     }
 
 

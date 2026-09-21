@@ -4,6 +4,7 @@ import base64
 import hashlib
 import hmac
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -184,9 +185,12 @@ def test_pnv_uses_existing_relation_alphabet_only():
 
 
 def test_dncrypt_v02_exact_native_crypto_conformance():
-    reference = Path("/mnt/data/dncrypt_work/DNCrypt_V0_2/src")
+    reference_env = os.environ.get("DNCRYPT_V02_REFERENCE")
+    if not reference_env:
+        pytest.skip("DNCrypt v0.2 reference tree not configured")
+    reference = Path(reference_env)
     if not reference.exists():
-        pytest.skip("DNCrypt v0.2 reference tree not mounted")
+        pytest.skip("configured DNCrypt v0.2 reference tree is unavailable")
     sys.path.insert(0, str(reference))
     from dncrypt.genome import initial_genome
     from dncrypt.surface import initial_surface

@@ -1,0 +1,52 @@
+name: PNCS fundamental seam bank post-v1 v0.1
+
+on:
+  push:
+    paths:
+      - 'src/phasenav_natural_code/gremlin_relational_compiler_v01.py'
+      - 'src/phasenav_natural_code/model.py'
+      - 'research/post_v1/fundamental_seam_bank_v01/**'
+      - '.github/workflows/pncs-fundamental-seam-bank-v01.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/phasenav_natural_code/gremlin_relational_compiler_v01.py'
+      - 'src/phasenav_natural_code/model.py'
+      - 'research/post_v1/fundamental_seam_bank_v01/**'
+      - '.github/workflows/pncs-fundamental-seam-bank-v01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preserved-research-seams:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependency
+        run: python -m pip install --disable-pip-version-check pytest
+      - name: Run fundamental seam bank through existing PNCS relational compiler
+        run: >-
+          python -m pytest -q
+          -o pythonpath=src:research/post_v1/fundamental_seam_bank_v01/src
+          research/post_v1/fundamental_seam_bank_v01/tests/test_fundamental_seam_bank_v01.py
+
+  quarantine-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify post-v1 seam bank is not active PNCS package authority
+        run: |
+          python -m pip install --disable-pip-version-check .
+          python - <<'PY'
+          import importlib.util
+          assert importlib.util.find_spec('phasenav_natural_code.fundamental_seam_bank_v01') is None
+          print('PASS: fundamental seam bank remains outside active PNCS package')
+          PY

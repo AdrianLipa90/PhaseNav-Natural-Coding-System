@@ -30,9 +30,10 @@ jobs:
       - name: Install test dependency
         run: python -m pip install --disable-pip-version-check pytest
       - name: Run fundamental seam bank through existing PNCS relational compiler
+        env:
+          PYTHONPATH: src:research/post_v1/fundamental_seam_bank_v01/src
         run: >-
           python -m pytest -q
-          -o pythonpath=src:research/post_v1/fundamental_seam_bank_v01/src
           research/post_v1/fundamental_seam_bank_v01/tests/test_fundamental_seam_bank_v01.py
 
   quarantine-boundary:

@@ -193,6 +193,144 @@ class ObservedHydroWaveTraceReplay:
     phase_states: tuple[PhaseFlowState36, ...]
 
 
+@dataclass(frozen=True, slots=True)
+class ObservedHydroPairTransportWitness:
+    pair_index: int
+    left_step_index: int
+    right_step_index: int
+    imbalance_u: float
+    left_delta: float
+    right_delta: float
+    left_delta_dot: float
+    right_delta_dot: float
+    left_omega: tuple[float, float, float]
+    right_omega: tuple[float, float, float]
+    omega_cross: tuple[float, float, float]
+    cross_norm: float
+
+    @property
+    def nonabelian(self) -> bool:
+        return self.cross_norm > 0.0
+
+    @property
+    def payload(self) -> dict[str, object]:
+        return {
+            "schema": "PNCS_OBSERVED_HYDRO_PAIR_TRANSPORT_WITNESS_V0_1",
+            "contract_id": CONTRACT_ID,
+            "pair_index": self.pair_index,
+            "left_step_index": self.left_step_index,
+            "right_step_index": self.right_step_index,
+            "imbalance_u": self.imbalance_u,
+            "left_delta": self.left_delta,
+            "right_delta": self.right_delta,
+            "left_delta_dot": self.left_delta_dot,
+            "right_delta_dot": self.right_delta_dot,
+            "left_omega": list(self.left_omega),
+            "right_omega": list(self.right_omega),
+            "omega_cross": list(self.omega_cross),
+            "cross_norm": self.cross_norm,
+            "nonabelian": self.nonabelian,
+            "qhtri_graph_hamiltonian_used": False,
+        }
+
+
+def _wrapped_delta(right: float, left: float) -> float:
+    return math.atan2(math.sin(right - left), math.cos(right - left))
+
+
+def _omega_fixed_imbalance(
+    imbalance_u: float,
+    delta: float,
+    delta_dot: float,
+) -> tuple[float, float, float]:
+    r = math.sqrt(max(0.0, 1.0 - imbalance_u * imbalance_u))
+    return (
+        delta_dot * (-imbalance_u * r * math.cos(delta)),
+        delta_dot * (-imbalance_u * r * math.sin(delta)),
+        delta_dot * (r * r),
+    )
+
+
+def _cross3(
+    left: tuple[float, float, float],
+    right: tuple[float, float, float],
+) -> tuple[float, float, float]:
+    return (
+        left[1] * right[2] - left[2] * right[1],
+        left[2] * right[0] - left[0] * right[2],
+        left[0] * right[1] - left[1] * right[0],
+    )
+
+
+def observed_hydro_pair_transport_witness(
+    observation: TemporalObservationReceipt,
+    replay: ObservedHydroWaveTraceReplay,
+    pair_index: int,
+    left_step_index: int,
+    right_step_index: int,
+) -> ObservedHydroPairTransportWitness:
+    if not isinstance(replay, ObservedHydroWaveTraceReplay):
+        raise ObservedHydroWaveTraceError(
+            "replay must be ObservedHydroWaveTraceReplay"
+        )
+    if observation.receipt_id != replay.binding.observation_receipt_id:
+        raise ObservedHydroWaveTraceError(
+            "observation/replay binding identity mismatch"
+        )
+
+    profile = observed_pair_profile(observation, pair_index)
+    for name, value in (
+        ("left_step_index", left_step_index),
+        ("right_step_index", right_step_index),
+    ):
+        if isinstance(value, bool) or not isinstance(value, int):
+            raise ObservedHydroWaveTraceError(f"{name} must be integer")
+        if value < 0 or value >= len(replay.phase_states):
+            raise ObservedHydroWaveTraceError(f"{name} outside replay domain")
+    if right_step_index <= left_step_index:
+        raise ObservedHydroWaveTraceError(
+            "right_step_index must be greater than left_step_index"
+        )
+
+    left_state = replay.phase_states[left_step_index]
+    right_state = replay.phase_states[right_step_index]
+    li = profile.left_index
+    ri = profile.right_index
+
+    left_delta = _wrapped_delta(left_state.theta[ri], left_state.theta[li])
+    right_delta = _wrapped_delta(right_state.theta[ri], right_state.theta[li])
+    left_delta_dot = left_state.velocity[ri] - left_state.velocity[li]
+    right_delta_dot = right_state.velocity[ri] - right_state.velocity[li]
+
+    left_omega = _omega_fixed_imbalance(
+        profile.imbalance_u,
+        left_delta,
+        left_delta_dot,
+    )
+    right_omega = _omega_fixed_imbalance(
+        profile.imbalance_u,
+        right_delta,
+        right_delta_dot,
+    )
+    cross = _cross3(left_omega, right_omega)
+    cross_norm = math.sqrt(sum(x * x for x in cross))
+
+    return ObservedHydroPairTransportWitness(
+        pair_index=pair_index,
+        left_step_index=left_step_index,
+        right_step_index=right_step_index,
+        imbalance_u=profile.imbalance_u,
+        left_delta=left_delta,
+        right_delta=right_delta,
+        left_delta_dot=left_delta_dot,
+        right_delta_dot=right_delta_dot,
+        left_omega=left_omega,
+        right_omega=right_omega,
+        omega_cross=cross,
+        cross_norm=cross_norm,
+    )
+
+
 def bind_observed_hydro_wave_trace(
     observation: TemporalObservationReceipt,
     initial_phase_state: PhaseFlowState36,

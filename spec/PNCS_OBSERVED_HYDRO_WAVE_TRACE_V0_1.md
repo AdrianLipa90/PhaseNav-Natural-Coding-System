@@ -173,3 +173,83 @@ Reference implementation:
 Reference tests:
 
 `tests/test_observed_hydro_wave_trace_v01.py`
+
+
+## 10. Native pair transport witness
+
+For a successfully replayed binding, v0.1 can evaluate a declared pair on two
+ordered replay sections without introducing a graph Hamiltonian.
+
+Let
+
+[
+u_j=rac{p_L-p_R}{p_L+p_R},
+qquad
+r_j=sqrt{1-u_j^2},
+]
+
+with probabilities fixed by the bound post-observation state.
+
+For one replay state,
+
+[
+delta_j
+=
+operatorname{wrap}(	heta_R-	heta_L),
+qquad
+dotdelta_j
+=
+v_R-v_L.
+]
+
+The coefficient-free local connection vector is
+
+[
+oxed{
+Omega_j
+=
+dotdelta_j
+(-u_jr_jcosdelta_j,,-u_jr_jsindelta_j,,r_j^2).
+}
+]
+
+For two ordered replay sections (a<b), the native witness reports
+
+[
+oxed{
+W_{ab,j}
+=
+|Omega_{a,j}	imesOmega_{b,j}|.
+}
+]
+
+The witness is typed as non-Abelian when (W_{ab,j}>0).
+
+The deterministic reference fixture uses pair 9 and replay sections 50 and 100.
+It gives
+
+[
+oxed{
+W_{50,100,9}
+approx
+5.440204449331002	imes10^{-6}>0.
+}
+]
+
+The payload explicitly records
+
+`qhtri_graph_hamiltonian_used=false`.
+
+This is an operator/trajectory statement inside the composed PNCS model.  It
+does not identify a physical neutrino or gravitational carrier.
+
+## 11. Falsification gates
+
+The native tests additionally require:
+
+- observation identity supplied to the witness equals the replay binding;
+- replay sections are in range and strictly ordered;
+- changing observation resolution changes binding identity even when the phase
+  trace is unchanged;
+- zero-support observed pairs fail closed;
+- wrong drive fails exact hydrodynamic replay.

@@ -13,6 +13,7 @@ from phasenav_natural_code.observed_hydro_wave_trace_v01 import (
     FROZEN_POST_OBSERVATION,
     ObservedHydroWaveTraceError,
     bind_observed_hydro_wave_trace,
+    observed_hydro_pair_transport_witness,
     observed_pair_profile,
     replay_observed_hydro_wave_trace,
 )
@@ -99,6 +100,38 @@ def test_replay_returns_full_ordered_phase_state_sequence():
     assert replay.phase_states[0].state_id == initial.state_id
     assert replay.phase_states[-1].state_id == trace.final_state.state_id
     assert replay.binding.hydro_trace_id == trace.trace_id
+
+
+def test_native_pair_transport_witness_is_nonabelian_without_qhtri_graph_hamiltonian():
+    obs, initial, trace = stack(steps=100)
+    replay = replay_observed_hydro_wave_trace(obs, initial, trace, DRIVE)
+    witness = observed_hydro_pair_transport_witness(obs, replay, 9, 50, 100)
+
+    assert witness.imbalance_u == pytest.approx(math.tanh(0.25), abs=2e-15)
+    assert witness.left_delta == pytest.approx(-0.4963329771385685)
+    assert witness.right_delta == pytest.approx(-0.5152177486710774)
+    assert witness.left_delta_dot == pytest.approx(-0.025005054316652828)
+    assert witness.right_delta_dot == pytest.approx(-0.05004108365853668)
+    assert witness.cross_norm == pytest.approx(5.440204449331002e-06, rel=1e-12)
+    assert witness.nonabelian
+    assert witness.payload["qhtri_graph_hamiltonian_used"] is False
+
+
+def test_pair_transport_witness_rejects_observation_not_bound_to_replay():
+    obs, initial, trace = stack(steps=100)
+    replay = replay_observed_hydro_wave_trace(obs, initial, trace, DRIVE)
+    other = observation(sigma=0.75)
+
+    with pytest.raises(ObservedHydroWaveTraceError, match="observation/replay"):
+        observed_hydro_pair_transport_witness(other, replay, 9, 50, 100)
+
+
+def test_pair_transport_witness_requires_ordered_distinct_sections():
+    obs, initial, trace = stack(steps=100)
+    replay = replay_observed_hydro_wave_trace(obs, initial, trace, DRIVE)
+
+    with pytest.raises(ObservedHydroWaveTraceError, match="greater"):
+        observed_hydro_pair_transport_witness(obs, replay, 9, 100, 50)
 
 
 def test_pair_profile_matches_gaussian_source_imbalance():

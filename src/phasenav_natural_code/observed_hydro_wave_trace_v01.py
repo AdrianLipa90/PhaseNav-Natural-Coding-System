@@ -192,15 +192,6 @@ class ObservedHydroWaveTraceReplay:
     binding: ObservedHydroWaveTraceBinding
     phase_states: tuple[PhaseFlowState36, ...]
 
-    @property
-    def probabilities(self) -> tuple[float, ...]:
-        # Probabilities are committed by the binding's observed_after_state_id and
-        # observed_probabilities_sha256.  The native replay intentionally stores
-        # only phase states to avoid duplicating the source observation object.
-        raise AttributeError(
-            "probabilities remain owned by the TemporalObservationReceipt source"
-        )
-
 
 def bind_observed_hydro_wave_trace(
     observation: TemporalObservationReceipt,

@@ -1,0 +1,34 @@
+name: PNCS observed-hydro wave trace v0.1
+
+on:
+  push:
+    paths:
+      - 'src/phasenav_natural_code/observed_hydro_wave_trace_v01.py'
+      - 'spec/PNCS_OBSERVED_HYDRO_WAVE_TRACE_V0_1.md'
+      - 'tests/test_observed_hydro_wave_trace_v01.py'
+      - '.github/workflows/pncs-observed-hydro-wave-trace-v01.yml'
+  pull_request:
+    paths:
+      - 'src/phasenav_natural_code/observed_hydro_wave_trace_v01.py'
+      - 'spec/PNCS_OBSERVED_HYDRO_WAVE_TRACE_V0_1.md'
+      - 'tests/test_observed_hydro_wave_trace_v01.py'
+      - '.github/workflows/pncs-observed-hydro-wave-trace-v01.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-observed-hydro-wave-trace:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install package and test runner
+        run: python -m pip install --disable-pip-version-check -e . pytest
+
+      - name: Run observed-hydro wave trace gate
+        run: python -m pytest -q tests/test_observed_hydro_wave_trace_v01.py

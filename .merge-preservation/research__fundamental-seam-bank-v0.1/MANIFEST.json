@@ -1,0 +1,25 @@
+{
+  "schema": "LOSSLESS_BRANCH_MERGE_MANIFEST_V1",
+  "repository": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "target_branch": "main",
+  "source_branch": "research/fundamental-seam-bank-v0.1",
+  "source_head_sha": "9574c53908c16764ec8ccad1654bd01bc1ba5c1b",
+  "merge_base_sha": "3aa3393cea390c8703a5bf50209f10939beb9b34",
+  "target_parent_sha": "a39fda264b30f8f9012149500b4014c017511430",
+  "policy": "APPLY_BRANCH_ONLY_CHANGES_KEEP_TARGET_ON_TRUE_CONFLICT_ARCHIVE_BRANCH_BLOB_NEVER_DELETE_TARGET",
+  "applied_paths": [
+    ".github/workflows/pncs-fundamental-seam-bank-v01.yml",
+    "research/post_v1/fundamental_seam_bank_v01/README.md",
+    "research/post_v1/fundamental_seam_bank_v01/src/__init__.py",
+    "research/post_v1/fundamental_seam_bank_v01/src/fundamental_seam_bank_v01.py",
+    "research/post_v1/fundamental_seam_bank_v01/tests/test_fundamental_seam_bank_v01.py"
+  ],
+  "conflicts": [
+    {
+      "path": "tests/test_crypto_algebra_v01.py",
+      "archive_path": ".merge-preservation/research__fundamental-seam-bank-v0.1/tests/test_crypto_algebra_v01.py",
+      "action": "kept_main_archived_branch"
+    }
+  ],
+  "deletion_intents_preserved_without_deletion": []
+}

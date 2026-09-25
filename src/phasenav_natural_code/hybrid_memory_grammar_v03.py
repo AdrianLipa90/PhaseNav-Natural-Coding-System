@@ -259,6 +259,10 @@ class RepresentationProfile:
             raise HybridMemoryGrammarError("invalid representation cost metrics")
         if self.evidence_status not in REPRESENTATION_EVIDENCE:
             raise HybridMemoryGrammarError("invalid representation evidence status")
+        if self.evidence_status == "PHYSICAL_QUANTUM_NECESSITY":
+            raise HybridMemoryGrammarError(
+                "v0.3 cannot self-promote a representation to physical quantum necessity"
+            )
         if self.physical_substrate_claim:
             raise HybridMemoryGrammarError(
                 "v0.3 cannot assert physical quantum substrate necessity"
@@ -917,6 +921,10 @@ def compile_hybrid_memory_program(source: str) -> CompiledHybridMemoryProgram:
             raise HybridMemoryGrammarError(
                 f"internal recall binding missing base symbol {recall.symbol}"
             )
+
+    operation_ids = [op.op_id for op in operations]
+    if len(operation_ids) != len(set(operation_ids)):
+        raise HybridMemoryGrammarError("duplicate memory operation id")
 
     return CompiledHybridMemoryProgram(
         source=source,

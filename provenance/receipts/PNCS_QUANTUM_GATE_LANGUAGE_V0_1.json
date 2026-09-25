@@ -1,0 +1,39 @@
+{
+  "schema": "PNCS_QUANTUM_GATE_LANGUAGE_V0_1_VALIDATION_RECEIPT",
+  "date": "2026-09-25",
+  "status": "TARGETED_LOCAL_TEST_PASS",
+  "authority": "CANDIDATE_ONLY",
+  "branch": "feat/quantum-gate-language-v01-20260925",
+  "artifacts": {
+    "src/phasenav_natural_code/quantum_gate_language_v01.py": {
+      "blob_sha": "3116f8ee0275a8f57427401bd47e4668cb9f54da"
+    },
+    "tests/test_quantum_gate_language_v01.py": {
+      "blob_sha": "7be304cc55be7808c1ac975eeb3fe84342052fac"
+    }
+  },
+  "tests": {
+    "targeted_unit_tests": {
+      "passed": 6,
+      "failed": 0
+    },
+    "cross_repo_e2e": {
+      "status": "PASS",
+      "paired_repo": "AdrianLipa90/noema-phasenav-core",
+      "paired_branch": "feat/result-directed-quantum-gate-ir-v1-20260925",
+      "qir_hash_match": true,
+      "logical_qubits": 1000000,
+      "active_workspace_qubits": 8,
+      "q28_total_materialized_qubits": 14,
+      "q28_native_gate_count": 22
+    }
+  },
+  "claims": {
+    "backend_neutral_language": true,
+    "physical_qpu": false,
+    "quantum_advantage": false,
+    "canon_allowed": false,
+    "full_repository_regression_suite": false
+  },
+  "note": "Language accepts only H/X/RZ/PHASE/CNOT/CZ and explicit OBSERVE; unsupported gates fail closed."
+}

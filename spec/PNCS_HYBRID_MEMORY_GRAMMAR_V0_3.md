@@ -289,3 +289,48 @@ valid optimization.
 
 This is the bridge from Memory-Ontology's binaryization frontier to PNCS
 `MODE AUTO`.
+
+
+## Operational runtime status — 2026-09-25
+
+The candidate branch now includes executable in-memory runtime components:
+
+- `procedural_memory_runtime_v03.py` — history-bearing route/path memory;
+- `memory_guided_planner_v03.py` — implicit `GUIDE` affects future route selection;
+- `memory_coupling_runtime_v03.py` — incremental `CONSOLIDATE` and non-mutating `REACTIVATE`.
+
+Targeted package-layout tests:
+
+```text
+19 passed, 0 failed
+```
+
+Randomized Memory-Ontology gate:
+
+```text
+500/500 history encoding PASS
+500/500 persistence PASS
+500/500 causal intervention PASS
+```
+
+Randomized coupling gate:
+
+```text
+300/300 exact transfer PASS
+300/300 duplicate-transfer prevention PASS
+300/300 non-mutating reactivation PASS
+```
+
+The implementation therefore operationalizes, for this narrow synthetic
+runtime, the loop:
+
+```text
+EVENT -> TRACE -> PATH update -> GUIDE -> future route
+                    |
+                    +-> CONSOLIDATE -> slower layer
+                                      |
+                                      +-> REACTIVATE -> active suggestion
+```
+
+This does not establish the universality of the Memory Ontology law, durable
+memory persistence, physical quantum memory, or quantum advantage.

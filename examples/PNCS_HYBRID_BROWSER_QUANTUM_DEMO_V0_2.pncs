@@ -1,0 +1,30 @@
+PROGRAM hybrid_browser_quantum_demo
+TASK search
+
+INPUT query : QUERY
+
+FIND pages : SET<PAGE> FROM web.index RELATED_TO query
+FILTER verified : SET<PAGE> FROM pages BY verified_source
+COMPUTE ranked : LIST<PAGE> USING semantic_rank INPUT verified query MODE AUTO
+REQUIRE verified_source ON compute.ranked
+
+TASK quantum_probe
+
+QUANTUM BEGIN local_probe QUBITS 1000000 MODE RESULT_DIRECTED
+GATE H q0
+GATE CZ q0 q1
+GATE CZ q1 q2
+GATE CZ q2 q3
+GATE CZ q3 q4
+GATE CZ q4 q5
+GATE CZ q5 q6
+GATE CZ q6 q7
+OBSERVE Z q7
+QUANTUM END
+
+OBSERVE probe_score : REAL FROM local_probe
+
+TASK output
+EFFECT render USING browser.render INPUT ranked probe_score REQUIRE user_authorization
+
+RETURN ranked probe_score

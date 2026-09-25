@@ -161,9 +161,11 @@ class MemoryGuidedPlanner:
         try:
             model = ir["memory_model"]
             operations = model["operations"]
+            objects = model["objects"]
         except Exception as exc:
             raise MemoryGuidedPlannerError("missing v0.3 memory_model") from exc
 
+        object_by_id = {obj.get("memory_id"): obj for obj in objects}
         guide_pairs: list[tuple[str, str]] = []
         for op in operations:
             if op.get("kind") != "GUIDE":
@@ -173,6 +175,17 @@ class MemoryGuidedPlanner:
             memory_id = attrs.get("memory_id")
             if not isinstance(target, str) or not isinstance(memory_id, str):
                 raise MemoryGuidedPlannerError("malformed GUIDE operation")
+            obj = object_by_id.get(memory_id)
+            if obj is None:
+                raise MemoryGuidedPlannerError(
+                    f"GUIDE references unknown memory object {memory_id}"
+                )
+            effects = {str(x).lower() for x in obj.get("effects", [])}
+            if "routing" not in effects:
+                raise MemoryGuidedPlannerError(
+                    f"current memory-guided planner requires ROUTING effect; "
+                    f"memory {memory_id} declares {sorted(effects)}"
+                )
             guide_pairs.append((target, memory_id))
 
         if not guide_pairs:

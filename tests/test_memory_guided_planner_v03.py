@@ -1,7 +1,7 @@
 import pytest
 
-from procedural_memory_runtime_v03 import ProceduralMemoryRuntime, RouteState
-from memory_guided_planner_v03 import (
+from phasenav_natural_code.procedural_memory_runtime_v03 import ProceduralMemoryRuntime, RouteState
+from phasenav_natural_code.memory_guided_planner_v03 import (
     MemoryGuidedPlanner,
     MemoryGuidedPlannerError,
 )

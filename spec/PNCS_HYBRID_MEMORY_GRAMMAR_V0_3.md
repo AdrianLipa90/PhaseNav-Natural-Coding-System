@@ -334,3 +334,111 @@ EVENT -> TRACE -> PATH update -> GUIDE -> future route
 
 This does not establish the universality of the Memory Ontology law, durable
 memory persistence, physical quantum memory, or quantum advantage.
+
+
+## Lifecycle, latent access, checkpoints, and ternary representation — 2026-09-25
+
+### Latent access
+
+A memory declared with `ACCESS LATENT` may exist without being expressed under
+the current context.
+
+Conditional expression uses:
+
+```text
+GUIDE compute.rank USING search_skill WHEN context.search
+```
+
+The activation context gates expression only. It must not mutate the underlying
+memory digest.
+
+An unconditional `GUIDE` still requires `IMPLICIT` access. A conditional
+`GUIDE ... WHEN ...` requires `LATENT` access.
+
+### Explicit semantic-time decay
+
+A candidate forgetting/decay policy may be declared as:
+
+```text
+DECAY search_skill TAU 100 THRESHOLD 0.01
+```
+
+Runtime evolution requires an explicit semantic elapsed time `delta_time`.
+No hidden wall-clock timer is used.
+
+The current candidate implements
+
+```text
+w' = w exp(-delta_time / tau)
+```
+
+followed by optional extinction below the declared threshold. The threshold
+makes loss of causal efficacy operationally testable. This is one candidate
+forgetting mechanism only; Memory Ontology also permits interference,
+rerouting, or other loss of causal efficacy.
+
+### Checkpoint is representation, not memory
+
+`memory_checkpoint_v03.py` serializes a procedural-memory state and its
+append-only update provenance into a content-addressed checkpoint.
+
+It explicitly reports:
+
+```text
+durable_write_performed = false
+```
+
+A checkpoint therefore does not itself imply durable storage. External
+persistence remains behind the PNCS `PERSIST ... REQUIRE storage_write`
+capability boundary.
+
+### Ternary Stella candidate
+
+The Memory-Ontology TODO `ternary-stella-intuition-v0.1` is implemented as a
+classical candidate representation.
+
+A standard balanced trit has three states. PNCS Stella-3 uses three trits and
+therefore has exactly:
+
+```text
+3^3 = 27 = 1 center + 6 axis + 12 edge + 8 corner
+```
+
+states.
+
+The sign-only one-trit routing baseline is rejected as too lossy for general
+route ranking. Stella-3 is substantially better but is still a coarse
+representation whose admissibility must be decided by the normal
+`(epsilon, horizon, observable, distance)` equivalence contract.
+
+Measured exact-decision parity for Stella-3 over random route-weight sets:
+
+```text
+routes:  2      4      8      16     32     64
+parity: .9908  .9732  .9374  .8702  .7695  .6167
+```
+
+Mean regret remains small in this synthetic benchmark, but exact parity clearly
+degrades with route count. No exact-equivalence claim is made.
+
+A fixed-width binary serialization of the 27-symbol alphabet uses five bits
+per Stella state, giving a theoretical 12.8x weight-field reduction versus a
+float64 weight. This is not a whole-runtime RAM claim and is not native ternary
+hardware.
+
+### Current local integration gate
+
+The local PNCS v0.3 package mirror currently reports:
+
+```text
+94 passed, 0 failed
+```
+
+across gate language, hybrid grammar, memory grammar, procedural memory,
+memory-guided planning, inter-layer coupling, representation planning,
+checkpointing, lifecycle/decay, and ternary Stella tests.
+
+Provenance limitation: the local mirror of the base
+`hybrid_grammar_v02.py` is not blob-identical to the GitHub feature branch.
+This prevents calling the 94-test run a full exact-branch regression receipt.
+The limitation is recorded rather than silently normalized.

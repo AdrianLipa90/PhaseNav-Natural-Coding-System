@@ -807,6 +807,49 @@ def compile_hybrid_memory_program(source: str) -> CompiledHybridMemoryProgram:
             )
             continue
 
+        if head == "DECAY":
+            # DECAY memory TAU value [THRESHOLD value]
+            if len(parts) not in {4, 6} or parts[2].upper() != "TAU":
+                raise HybridMemoryGrammarError(
+                    f"line {line_no}: DECAY syntax is DECAY memory TAU value [THRESHOLD value]"
+                )
+            mem = _id(parts[1], "memory id")
+            if mem not in memories:
+                raise HybridMemoryGrammarError(f"line {line_no}: unknown memory {mem}")
+            try:
+                tau = float(parts[3])
+            except ValueError as exc:
+                raise HybridMemoryGrammarError(f"line {line_no}: invalid decay TAU") from exc
+            if not math.isfinite(tau) or tau <= 0:
+                raise HybridMemoryGrammarError(f"line {line_no}: decay TAU must be finite and positive")
+            threshold = 0.0
+            if len(parts) == 6:
+                if parts[4].upper() != "THRESHOLD":
+                    raise HybridMemoryGrammarError(f"line {line_no}: expected THRESHOLD")
+                try:
+                    threshold = float(parts[5])
+                except ValueError as exc:
+                    raise HybridMemoryGrammarError(f"line {line_no}: invalid decay THRESHOLD") from exc
+                if not math.isfinite(threshold) or threshold < 0:
+                    raise HybridMemoryGrammarError(
+                        f"line {line_no}: decay THRESHOLD must be finite and non-negative"
+                    )
+            operations.append(
+                MemoryOperation(
+                    op_id=f"decay.{mem}",
+                    kind="DECAY_POLICY",
+                    task_id=current_task,
+                    attributes={
+                        "memory_id": mem,
+                        "tau": tau,
+                        "extinction_threshold": threshold,
+                        "explicit_semantic_time_required": True,
+                        "wall_clock_used": False,
+                    },
+                )
+            )
+            continue
+
         if head == "RECALL":
             if (
                 len(parts) not in {8, 10}
@@ -853,30 +896,44 @@ def compile_hybrid_memory_program(source: str) -> CompiledHybridMemoryProgram:
             continue
 
         if head == "GUIDE":
-            if len(parts) != 4 or parts[2].upper() != "USING":
+            if len(parts) not in {4, 6} or parts[2].upper() != "USING":
                 raise HybridMemoryGrammarError(
-                    f"line {line_no}: GUIDE syntax is GUIDE node_id USING memory"
+                    f"line {line_no}: GUIDE syntax is GUIDE node_id USING memory [WHEN context]"
                 )
             target = _id(parts[1], "guide target")
             mem = _id(parts[3], "memory id")
             if mem not in memories:
                 raise HybridMemoryGrammarError(f"line {line_no}: unknown memory {mem}")
-            if "IMPLICIT" not in memories[mem].access:
+            activation_context = None
+            if len(parts) == 6:
+                if parts[4].upper() != "WHEN":
+                    raise HybridMemoryGrammarError(f"line {line_no}: expected WHEN")
+                activation_context = _id(parts[5], "activation context")
+                if "LATENT" not in memories[mem].access:
+                    raise HybridMemoryGrammarError(
+                        f"line {line_no}: conditional GUIDE requires memory with LATENT access"
+                    )
+            elif "IMPLICIT" not in memories[mem].access:
                 raise HybridMemoryGrammarError(
-                    f"line {line_no}: GUIDE requires memory with IMPLICIT access"
+                    f"line {line_no}: unconditional GUIDE requires memory with IMPLICIT access"
                 )
+            attrs = {
+                "target_node_id": target,
+                "memory_id": mem,
+                "effects": [x.lower() for x in memories[mem].effects],
+                "direct_retrieval": False,
+                "changes_future_transition_policy": True,
+                "latent_expression": activation_context is not None,
+            }
+            if activation_context is not None:
+                attrs["activation_context"] = activation_context
+            suffix = f".{activation_context}" if activation_context is not None else ""
             operations.append(
                 MemoryOperation(
-                    op_id=f"guide.{target}.{mem}",
+                    op_id=f"guide.{target}.{mem}{suffix}",
                     kind="GUIDE",
                     task_id=current_task,
-                    attributes={
-                        "target_node_id": target,
-                        "memory_id": mem,
-                        "effects": [x.lower() for x in memories[mem].effects],
-                        "direct_retrieval": False,
-                        "changes_future_transition_policy": True,
-                    },
+                    attributes=attrs,
                 )
             )
             continue

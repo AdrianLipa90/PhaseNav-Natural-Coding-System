@@ -191,3 +191,101 @@ v0.3 does not yet provide:
 - physical quantum-memory necessity.
 
 Those remain runtime/benchmark gates, not syntax claims.
+
+
+## Operational memory gate
+
+A runtime state is not promoted to a memory claim merely because it is stored
+or survives a function call. The operational gate mirrors Memory-Ontology
+v0.1 and requires all three properties:
+
+1. **history encoding** — distinct prior trajectories can alter the current
+   memory structure;
+2. **persistence** — the alteration remains present for a non-zero relevant
+   interval in the absence of a new trace;
+3. **causal efficacy** — intervention on the memory state, while keeping the
+   current condition fixed, changes a future reachable route or output.
+
+For the candidate procedural runtime the control is expressed as:
+
+```text
+same current_condition_digest
++ factual history-conditioned memory
++ counterfactual intervention on memory only
+-> compare selected future route
+```
+
+The exact-blob package gate on this branch passed 13/13 targeted tests. In the
+10,000-feedback control, history changed route choice from `a` to `b`; a
+counterfactual intervention on memory alone changed the choice back to `a`
+without mutating factual memory. The receipt is:
+
+`provenance/receipts/PNCS_MEMORY_GUIDED_PLANNER_PACKAGE_GATE_V0_3.json`
+
+This is evidence for the candidate computational memory mechanism, not for a
+physical quantum substrate or quantum advantage.
+
+## Checkpoint boundary
+
+A serialized checkpoint is a **representation of memory state and
+provenance**, not the ontological definition of memory.
+
+Therefore:
+
+```text
+MEMORY != CHECKPOINT
+MEMORY != FILE
+MEMORY != DATABASE_ROW
+```
+
+A checkpoint may encode the current route weights, counters, state digest and
+append-only update receipts, but durable external persistence remains behind
+the existing `PERSIST ... REQUIRE <capability>` boundary.
+
+The intended next codec contract is:
+
+```text
+memory runtime
+-> canonical state + provenance checkpoint
+-> content digest
+-> explicit PERSIST capability
+-> durable store
+-> verified restore
+-> same future-routing behavior
+```
+
+Restore equivalence must preserve the task-relevant behavioral contract, not
+only byte identity.
+
+## Representation-aware planning — next gate
+
+Memory-Ontology v0.1 keeps representation orthogonal to the memory object.
+PNCS therefore must compare execution representations under a declared
+behavioral equivalence contract before choosing among backends.
+
+For a memory/program fragment, the planner target is:
+
+```text
+same observable contract
+same epsilon
+same horizon H
+-> compare BINARY / HYBRID / QUANTUM_NATIVE resource vectors
+```
+
+with resource coordinates at least:
+
+```text
+storage
+compile_time
+update_time
+query_time
+sample_count
+sequential_depth
+```
+
+A representation may be selected only after semantic equivalence is
+established. A cheaper backend that violates the observable contract is not a
+valid optimization.
+
+This is the bridge from Memory-Ontology's binaryization frontier to PNCS
+`MODE AUTO`.

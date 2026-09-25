@@ -14,7 +14,7 @@ import hashlib
 import json
 from typing import Iterable, Mapping
 
-from procedural_memory_runtime_v03 import (
+from .procedural_memory_runtime_v03 import (
     ProceduralMemoryRuntime,
     ProceduralMemoryRuntimeError,
 )

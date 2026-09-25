@@ -1,0 +1,22 @@
+# PNCS Quantum Gate Language v0.1
+# Candidate-only declarative bridge. No hardware authority.
+# Backend-neutral logical program -> PhaseNav QIR -> result-directed planner.
+
+OP QG.PROGRAM DECLARE program_id logical_qubit_extent
+OP QG.MODE CONDITION execution_mode equals RESULT_DIRECTED
+OP QG.H TRANSFORM qubit H qubit
+OP QG.X TRANSFORM qubit X qubit
+OP QG.RZ TRANSFORM qubit theta RZ qubit
+OP QG.PHASE TRANSFORM qubit theta PHASE qubit
+OP QG.CNOT COMPOSITION control target CNOT
+OP QG.CZ COMPOSITION control target CZ
+OP QG.OBSERVE DERIVE pauli_word logical_qubits requested_observable
+OP QG.CAUSAL_CONE DERIVE gate_graph requested_observable backward_dependency_cone
+OP QG.BEFORE_HYDRATION ORDER backward_dependency_cone hydration
+OP QG.COMPACT_REMAP TRANSFORM backward_dependency_cone compact_workspace
+OP QG.RECEIPT COMPOSITION program_digest qir_digest plan_digest result_receipt
+
+# Explicit firewalls.
+OP QG.NO_PHYSICAL_QPU_CLAIM CONDITION physical_qpu_claim equals FALSE
+OP QG.NO_GLOBAL_STATE_CLAIM CONDITION global_state_materialized equals FALSE
+OP QG.NO_SILENT_APPROX CONDITION unsupported_gate_count equals ZERO

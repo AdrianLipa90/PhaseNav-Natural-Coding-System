@@ -75,8 +75,8 @@ def test_multiple_guides_for_same_target_fail_closed():
     ir = {
         "memory_model": {
             "objects": [
-                {"memory_id": "m1", "retained_objects": ["path"]},
-                {"memory_id": "m2", "retained_objects": ["path"]},
+                {"memory_id": "m1", "retained_objects": ["path"], "effects": ["routing"]},
+                {"memory_id": "m2", "retained_objects": ["path"], "effects": ["routing"]},
             ],
             "operations": [
                 {"kind": "PATH", "attributes": {"route_id": "a", "node_path": ["n0", "n1"]}},
@@ -96,8 +96,8 @@ def test_from_hybrid_ir_builds_only_guided_memory_runtime():
     ir = {
         "memory_model": {
             "objects": [
-                {"memory_id": "skill", "retained_objects": ["path", "topology"]},
-                {"memory_id": "unused", "retained_objects": ["path"]},
+                {"memory_id": "skill", "retained_objects": ["path", "topology"], "effects": ["routing"]},
+                {"memory_id": "unused", "retained_objects": ["path"], "effects": ["routing"]},
             ],
             "operations": [
                 {"kind": "PATH", "attributes": {"route_id": "a", "node_path": ["n0", "n1"]}},
@@ -139,3 +139,20 @@ def test_feedback_receipts_chain_memory_digests():
         current_condition_digest="ctx",
     )
     assert r1.memory_after_digest == r2.memory_before_digest
+
+
+def test_nonrouting_memory_effect_fails_closed_in_guided_planner():
+    ir = {
+        "memory_model": {
+            "objects": [
+                {"memory_id": "m", "retained_objects": ["path"], "effects": ["generative"]},
+            ],
+            "operations": [
+                {"kind": "PATH", "attributes": {"route_id": "a", "node_path": ["n0", "n1"]}},
+                {"kind": "REINFORCE", "attributes": {"route_id": "a", "memory_id": "m"}},
+                {"kind": "GUIDE", "attributes": {"target_node_id": "n1", "memory_id": "m"}},
+            ],
+        }
+    }
+    with pytest.raises(MemoryGuidedPlannerError):
+        MemoryGuidedPlanner.from_hybrid_ir(ir)

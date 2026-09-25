@@ -1,0 +1,18 @@
+{
+  "schema": "PNCS_MEMORY_GUIDED_PLANNER_OPERATIONAL_GATE_V0_3",
+  "status": "PASS",
+  "same_current_conditions_control": true,
+  "initial_choice": "a",
+  "history_conditioned_choice": "b",
+  "counterfactual_choice": "a",
+  "factual_memory_unchanged_by_counterfactual": true,
+  "history_encoding": true,
+  "persistence": true,
+  "causal_efficacy": true,
+  "updates_timed": 10000,
+  "feedback_ms_median": 0.0500655,
+  "feedback_ms_p95": 0.11334955000000001,
+  "durable_write_performed": false,
+  "physical_quantum_claim": false,
+  "quantum_advantage_claim": false
+}

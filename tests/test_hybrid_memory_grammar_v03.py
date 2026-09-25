@@ -189,3 +189,14 @@ RETURN x
     b = compile_hybrid_memory_program(source)
     assert a.ir_sha256 == b.ir_sha256
     assert a.to_dict() == b.to_dict()
+
+
+def test_physical_quantum_necessity_evidence_cannot_be_self_promoted():
+    source = """PROGRAM bad_physical_evidence
+INPUT x : TEXT
+MEMORY m RETAINS PATH PERSISTENCE STRUCTURAL ACCESS IMPLICIT PLASTICITY ADAPTIVE EFFECT ROUTING EPISTEMIC HYPOTHESIS
+REPRESENT m AS QUANTUM_NATIVE EPSILON 0.01 HORIZON 10 OBSERVABLE next_step COST STORAGE EVIDENCE PHYSICAL_QUANTUM_NECESSITY
+RETURN x
+"""
+    with pytest.raises(HybridMemoryGrammarError):
+        compile_hybrid_memory_program(source)

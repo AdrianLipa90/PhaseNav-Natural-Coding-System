@@ -1,0 +1,125 @@
+{
+  "schema": "PNCS_TERNARY_STELLA_ROUTING_BENCHMARK_V0_3",
+  "date": "2026-09-25",
+  "status": "MEASURED_CANDIDATE",
+  "seed": 20260925,
+  "trials_per_route_count": 30000,
+  "route_counts": [
+    2,
+    4,
+    8,
+    16,
+    32,
+    64
+  ],
+  "rows": [
+    {
+      "routes": 2,
+      "trials": 30000,
+      "sign_exact_parity": 0.7504333333333333,
+      "stella3_exact_parity": 0.9908333333333333,
+      "sign_mean_regret": 0.08315518471109787,
+      "stella3_mean_regret": 0.00012301201206737006,
+      "sign_p95_regret": 0.5546979996268131,
+      "stella3_p95_regret": 0,
+      "stella3_max_regret": 0.03727983745134722,
+      "stella3_mean_abs_quantization_error": 0.006394276364746291,
+      "elapsed_s": 0.41882080100003805
+    },
+    {
+      "routes": 4,
+      "trials": 30000,
+      "sign_exact_parity": 0.5490333333333333,
+      "stella3_exact_parity": 0.9731666666666666,
+      "sign_mean_regret": 0.16412518579223329,
+      "stella3_mean_regret": 0.0004870069440748208,
+      "sign_p95_regret": 0.7099308723397486,
+      "stella3_p95_regret": 0,
+      "stella3_max_regret": 0.07153209003855387,
+      "stella3_mean_abs_quantization_error": 0.01154130486428932,
+      "elapsed_s": 0.7151393939993795
+    },
+    {
+      "routes": 8,
+      "trials": 30000,
+      "sign_exact_parity": 0.2952666666666667,
+      "stella3_exact_parity": 0.9374,
+      "sign_mean_regret": 0.2824182811146366,
+      "stella3_mean_regret": 0.0012374558283393127,
+      "sign_p95_regret": 0.8005060307674454,
+      "stella3_p95_regret": 0.007030526877668475,
+      "stella3_max_regret": 0.07244267676014204,
+      "stella3_mean_abs_quantization_error": 0.014941629746821105,
+      "elapsed_s": 1.2547574899999745
+    },
+    {
+      "routes": 16,
+      "trials": 30000,
+      "sign_exact_parity": 0.1314333333333333,
+      "stella3_exact_parity": 0.8702333333333333,
+      "sign_mean_regret": 0.38437714859657346,
+      "stella3_mean_regret": 0.002680992080098591,
+      "sign_p95_regret": 0.8636264945141674,
+      "stella3_p95_regret": 0.023489162017482412,
+      "stella3_max_regret": 0.07443268552900362,
+      "stella3_mean_abs_quantization_error": 0.016966883220904855,
+      "elapsed_s": 2.3815160220001417
+    },
+    {
+      "routes": 32,
+      "trials": 30000,
+      "sign_exact_parity": 0.06440000000000001,
+      "stella3_exact_parity": 0.7694666666666666,
+      "sign_mean_regret": 0.4412016785826589,
+      "stella3_mean_regret": 0.0046691367572691015,
+      "sign_p95_regret": 0.8988765851246503,
+      "stella3_p95_regret": 0.030754016700869524,
+      "stella3_max_regret": 0.0744688384881993,
+      "stella3_mean_abs_quantization_error": 0.018066124668077298,
+      "elapsed_s": 4.461875632000556
+    },
+    {
+      "routes": 64,
+      "trials": 30000,
+      "sign_exact_parity": 0.030333333333333323,
+      "stella3_exact_parity": 0.6167333333333334,
+      "sign_mean_regret": 0.46979372683325105,
+      "stella3_mean_regret": 0.007470717173183259,
+      "sign_p95_regret": 0.9202960189722074,
+      "stella3_p95_regret": 0.03422004490006558,
+      "stella3_max_regret": 0.07545236692635982,
+      "stella3_mean_abs_quantization_error": 0.018646748251501373,
+      "elapsed_s": 10.296269006999864
+    }
+  ],
+  "serialization": {
+    "states": 100000,
+    "roundtrip_exact": true,
+    "packed_bytes": 62500,
+    "expected_packed_bytes": 62500,
+    "elapsed_s": 0.2591424920001373
+  },
+  "logical_storage_bits": {
+    "float64_weights": 6400000,
+    "stella3_binary_pack": 500000,
+    "stella3_shannon_floor": 475488.7502163468
+  },
+  "weight_only_compression_ratio_float64_to_5bit": 12.8,
+  "weight_only_compression_ratio_float64_to_entropy_floor": 13.45983474285776,
+  "shell_counts": {
+    "center": 1,
+    "axis": 6,
+    "edge": 12,
+    "corner": 8
+  },
+  "interpretation": {
+    "one_standard_trit_states": 3,
+    "three_trit_stella_states": 27,
+    "corner_sign_states": 8,
+    "sign_only_baseline_expected_to_be_lossy": true,
+    "stella3_is_classical": true,
+    "physical_quantum_claim": false,
+    "quantum_advantage_claim": false,
+    "exact_decision_equivalence_claim": false
+  }
+}

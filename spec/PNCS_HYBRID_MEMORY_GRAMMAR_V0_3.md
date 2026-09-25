@@ -1,0 +1,193 @@
+# PNCS Hybrid Memory Grammar v0.3
+
+Status: `CANDIDATE_ONLY / MEMORY-ONTOLOGY-INFORMED / FAIL_CLOSED`
+
+## Core change
+
+v0.2 treated a program primarily as a typed semantic DAG. v0.3 adds a
+history-bearing layer whose state can modify the future transition policy of
+that DAG.
+
+The governing distinction is:
+
+\[
+Z_t=(X_t,M_t)
+\]
+
+where \(X_t\) is active execution state and \(M_t\) is persistent
+history-bearing structure.
+
+The imported candidate memory law is:
+
+> Memory is a persistent, history-dependent modification of a system's
+> transition structure that causally changes its future reachable trajectories.
+
+Therefore PNCS memory is not defined as a file, variable, record, or recall API.
+
+## Ontological chain
+
+v0.3 exposes the Memory-Ontology chain directly:
+
+\[
+EVENT \rightarrow TRACE \rightarrow PATH \rightarrow STRUCTURE \rightarrow LAW.
+\]
+
+- `EVENT` binds a program occurrence to a semantic event.
+- `TRACE` requests a history-dependent memory update.
+- `ROUTE` defines a traversed execution path.
+- `MEMORY` declares the persistent structure.
+- `LAW` binds the update operator governing that structure.
+
+## Memory declaration
+
+Example:
+
+```text
+MEMORY search_skill
+  RETAINS PATH TOPOLOGY OPERATOR
+  PERSISTENCE STRUCTURAL
+  ACCESS IMPLICIT RECONSTRUCTIVE
+  PLASTICITY ADAPTIVE CONSOLIDATING
+  EFFECT ROUTING ATTRACTOR
+  EPISTEMIC FORMAL_EXAMPLE
+```
+
+The declaration mirrors Memory-Ontology v0.1:
+
+\[
+M=(Q,\tau,A,P,E,C),
+\]
+
+with coupling \(C\) represented by explicit `COUPLE` operations.
+
+## Procedural memory
+
+A procedure is not stored as a symbolic recipe by definition. A procedural
+memory may be a metastable reusable path/topology/operator structure.
+
+Example:
+
+```text
+ROUTE search_route : find.pages filter.verified compute.ranked
+REINFORCE search_route INTO search_skill MODE ADAPTIVE LAW search_learning
+GUIDE compute.ranked USING search_skill
+```
+
+This represents the loop:
+
+\[
+\text{traversal}
+\rightarrow
+\text{trace}
+\rightarrow
+\text{path reinforcement}
+\rightarrow
+\text{changed future routing}.
+\]
+
+`GUIDE` is intentionally distinct from `RECALL`. An implicit memory can
+change execution without exposing a record.
+
+## Access and provenance
+
+Direct retrieval and reconstruction are explicit:
+
+```text
+RECALL item : STATE FROM memory_x MODE DIRECT PROVENANCE RECALLED
+RECALL route : PATH FROM memory_y MODE RECONSTRUCTIVE PROVENANCE RECONSTRUCTED
+```
+
+v0.3 does not permit `MODE IMPLICIT` in `RECALL`; implicit memory must affect
+execution through `GUIDE`.
+
+This prevents conflating memory object with access mode.
+
+## Inter-layer coupling
+
+```text
+COUPLE fast_context TO search_skill MODE CONSOLIDATE TIMESCALE slow
+COUPLE search_skill TO fast_context MODE REACTIVATE TIMESCALE fast
+```
+
+This represents the candidate coupled-layer law:
+
+\[
+\dot M_i=A_i+\sum_{j\ne i}C_{ij}B_{ij}.
+\]
+
+## Representation is orthogonal
+
+A memory object declaration does not contain a representation family.
+
+Representation is declared separately:
+
+```text
+REPRESENT search_skill AS QUANTUM_NATIVE
+  EPSILON 0.001
+  HORIZON 100
+  OBSERVABLE trajectory_choice
+  COST STORAGE UPDATE_TIME QUERY_TIME SAMPLE_COUNT SEQUENTIAL_DEPTH
+  EVIDENCE FORMAL_ONLY
+  PHYSICAL_QUANTUM FALSE
+```
+
+This preserves:
+
+\[
+\text{memory law}
+\neq
+\text{representation}
+\neq
+\text{physical substrate}.
+\]
+
+v0.3 deliberately rejects `PHYSICAL_QUANTUM TRUE`. Physical substrate
+necessity is not a grammar-level inference.
+
+## Persistence boundary
+
+`TRACE`, `REINFORCE`, and `COUPLE` are semantic memory-transition requests.
+They do not themselves write durable external storage.
+
+A durable write still requires the explicit v0.2 capability boundary:
+
+```text
+PERSIST symbol AS slot REQUIRE storage_write
+```
+
+Thus:
+
+\[
+\text{memory semantics}\neq\text{storage actuation}.
+\]
+
+## Quantum path
+
+v0.3 does not introduce another quantum IR.
+
+The existing path remains:
+
+```text
+PNCS Hybrid Memory Grammar v0.3
+  -> PNCS Hybrid Grammar v0.2
+  -> Quantum Gate Language v0.1
+  -> PHASENAV_QUANTUM_GATE_IR_V1
+  -> causal-cone planning
+  -> execution backend
+```
+
+Memory representation may be tagged `QUANTUM_NATIVE` without claiming a
+physical QPU.
+
+## Current non-claims
+
+v0.3 does not yet provide:
+
+- a durable memory runtime;
+- automatic reinforcement weights from live execution receipts;
+- decay/forgetting dynamics;
+- operator-signature type inference for memory laws;
+- proof that a representation is quantum-advantaged;
+- physical quantum-memory necessity.
+
+Those remain runtime/benchmark gates, not syntax claims.

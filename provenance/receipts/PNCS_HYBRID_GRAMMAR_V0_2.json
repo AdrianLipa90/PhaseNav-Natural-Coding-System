@@ -1,0 +1,97 @@
+{
+  "schema": "PNCS_HYBRID_GRAMMAR_V0_2_VALIDATION_RECEIPT",
+  "date": "2026-09-25",
+  "status": "STATIC_CONTRACT_REVIEW_PASS__TARGETED_RUNTIME_BLOCKED_BY_EXTERNAL_RUNNER_AUTH",
+  "authority": "CANDIDATE_ONLY",
+  "branch": "feat/pncs-hybrid-grammar-v02-20260925",
+  "base_branch": "feat/quantum-gate-language-v01-20260925",
+  "artifacts": {
+    "src/phasenav_natural_code/hybrid_grammar_v02.py": {
+      "blob_sha": "b3e5a8ecf47b7a6d2aeb649e8459a306df678ba8",
+      "display_url": "https://github.com/AdrianLipa90/PhaseNav-Natural-Coding-System/blob/feat/pncs-hybrid-grammar-v02-20260925/src/phasenav_natural_code/hybrid_grammar_v02.py"
+    },
+    "tests/test_hybrid_grammar_v02.py": {
+      "blob_sha": "a75b3dc382222f9f312526761eed1906b7643fc4",
+      "display_url": "https://github.com/AdrianLipa90/PhaseNav-Natural-Coding-System/blob/feat/pncs-hybrid-grammar-v02-20260925/tests/test_hybrid_grammar_v02.py"
+    },
+    "spec/PNCS_HYBRID_GRAMMAR_V0_2.md": {
+      "blob_sha": "818df21570ad5a25343131709a3f8f0534896be8",
+      "display_url": "https://github.com/AdrianLipa90/PhaseNav-Natural-Coding-System/blob/feat/pncs-hybrid-grammar-v02-20260925/spec/PNCS_HYBRID_GRAMMAR_V0_2.md"
+    },
+    "native/experimental/PNCS_HYBRID_GRAMMAR_V0_2.pnv": {
+      "blob_sha": "d6f9476d3ab7a97f3550ae8b55b4eebf7d55b95c",
+      "display_url": "https://github.com/AdrianLipa90/PhaseNav-Natural-Coding-System/blob/feat/pncs-hybrid-grammar-v02-20260925/native/experimental/PNCS_HYBRID_GRAMMAR_V0_2.pnv"
+    },
+    "examples/PNCS_HYBRID_BROWSER_QUANTUM_DEMO_V0_2.pncs": {
+      "blob_sha": "d2d8d2b13074982947771b2a30bd66ef9842a474",
+      "display_url": "https://github.com/AdrianLipa90/PhaseNav-Natural-Coding-System/blob/feat/pncs-hybrid-grammar-v02-20260925/examples/PNCS_HYBRID_BROWSER_QUANTUM_DEMO_V0_2.pncs"
+    }
+  },
+  "branch_compare": {
+    "status": "ahead",
+    "ahead_by": 5,
+    "behind_by": 0,
+    "total_commits": 5,
+    "files": [
+      {
+        "filename": "examples/PNCS_HYBRID_BROWSER_QUANTUM_DEMO_V0_2.pncs",
+        "status": "added",
+        "additions": 30,
+        "deletions": 0,
+        "changes": 30
+      },
+      {
+        "filename": "native/experimental/PNCS_HYBRID_GRAMMAR_V0_2.pnv",
+        "status": "added",
+        "additions": 28,
+        "deletions": 0,
+        "changes": 28
+      },
+      {
+        "filename": "spec/PNCS_HYBRID_GRAMMAR_V0_2.md",
+        "status": "added",
+        "additions": 219,
+        "deletions": 0,
+        "changes": 219
+      },
+      {
+        "filename": "src/phasenav_natural_code/hybrid_grammar_v02.py",
+        "status": "added",
+        "additions": 869,
+        "deletions": 0,
+        "changes": 869
+      },
+      {
+        "filename": "tests/test_hybrid_grammar_v02.py",
+        "status": "added",
+        "additions": 180,
+        "deletions": 0,
+        "changes": 180
+      }
+    ]
+  },
+  "contract_checks": {
+    "deterministic_typed_ir": "REVIEW_PASS",
+    "existing_quantum_gate_language_reused": true,
+    "duplicate_quantum_ir_introduced": false,
+    "unsupported_constructs_fail_closed": true,
+    "external_effects_self_authorized": false,
+    "persistence_self_authorized": false,
+    "free_form_natural_language_execution": false,
+    "backend_names_required_in_semantics": false,
+    "return_required_terminal": true
+  },
+  "planned_targeted_tests": 11,
+  "targeted_runtime_execution": {
+    "status": "BLOCKED_BY_EXTERNAL_RUNNER_AUTH",
+    "reason": "YepCode runner returned FORBIDDEN: Not authorized, empty team ID",
+    "test_results_claimed": false
+  },
+  "claims": {
+    "physical_qpu": false,
+    "quantum_advantage": false,
+    "general_purpose_language_completeness": false,
+    "main_mutated": false,
+    "canon_allowed": false
+  }
+}

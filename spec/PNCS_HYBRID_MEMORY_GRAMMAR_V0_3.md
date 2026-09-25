@@ -442,3 +442,27 @@ Provenance limitation: the local mirror of the base
 `hybrid_grammar_v02.py` is not blob-identical to the GitHub feature branch.
 This prevents calling the 94-test run a full exact-branch regression receipt.
 The limitation is recorded rather than silently normalized.
+
+
+### Representation-independent procedural memory identity
+
+v0.3 now includes a narrow behavioral identity witness for procedural memory.
+
+Two procedural-memory manifestations are admitted as equivalent under this
+witness only when:
+
+1. route topology is preserved;
+2. traversal/provenance counters are preserved;
+3. future route-choice behavior remains within the declared error contract.
+
+For memories with at most 12 routes the current witness exhaustively evaluates
+every non-empty candidate-route subset. Internal weight coordinates need not be
+equal.
+
+This permits a representation migration such as float-weight -> Stella-3 to
+retain memory identity for a declared routing observable when all tested causal
+constraints are preserved. Near ties can fail exact identity even when numeric
+weight error is small.
+
+The witness is deliberately narrow and does not constitute a universal
+ontological identity theorem.

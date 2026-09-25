@@ -1,0 +1,45 @@
+{
+  "schema": "PNCS_MEMORY_COUPLING_RANDOMIZED_GATE_V0_3",
+  "date": "2026-09-25",
+  "status": "PASS",
+  "seed": 20260925,
+  "trials": 300,
+  "exact_transfer": {
+    "passed": 300,
+    "failed": 0
+  },
+  "no_double_count": {
+    "passed": 300,
+    "failed": 0
+  },
+  "reactivation_nonmutating": {
+    "passed": 300,
+    "failed": 0
+  },
+  "all_pass": true,
+  "consolidate_ms_median": 0.7847839999999999,
+  "consolidate_ms_p95": 1.7317891500000002,
+  "package_layout_tests_total": {
+    "passed": 19,
+    "failed": 0
+  },
+  "tested_blobs": {
+    "src/phasenav_natural_code/memory_coupling_runtime_v03.py": "a6a74a8259ec3d1f90e2803176aaea7a67ca646b",
+    "tests/test_memory_coupling_runtime_v03.py": "339f5d863cfe76162e6f63207ffcefa237a3f94a",
+    "src/phasenav_natural_code/procedural_memory_runtime_v03.py": "0f15643bea303cd5327e896521e37080230f1c4e",
+    "src/phasenav_natural_code/memory_guided_planner_v03.py": "81eb9c7f00baaa39b9985a361719059e05bca0f7"
+  },
+  "semantics": {
+    "fast_to_slow_consolidation": true,
+    "incremental_receipt_cursor": true,
+    "duplicate_transfer_prevented": true,
+    "slow_to_active_reactivation": true,
+    "reactivation_mutates_target": false
+  },
+  "claims": {
+    "general_memory_coupling_proven": false,
+    "durable_persistence": false,
+    "physical_quantum_claim": false,
+    "quantum_advantage": false
+  }
+}

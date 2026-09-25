@@ -1,0 +1,29 @@
+{
+  "branch_blob_hashes": {
+    "planner": "81eb9c7f00baaa39b9985a361719059e05bca0f7",
+    "planner_tests": "d7d8bfb6a113a1780392fe0fb378bc0c0756baef",
+    "runtime": "0f15643bea303cd5327e896521e37080230f1c4e",
+    "runtime_tests": "9700a0a425485bdc443484a3533d304e346d3076"
+  },
+  "causal_efficacy": true,
+  "counterfactual_choice": "a",
+  "durable_write_performed": false,
+  "factual_memory_unchanged_by_counterfactual": true,
+  "feedback_ms_median": 0.051054,
+  "feedback_ms_p95": 0.13668215,
+  "history_conditioned_choice": "b",
+  "history_encoding": true,
+  "initial_choice": "a",
+  "max_rss_kib": 132364,
+  "persistence": true,
+  "physical_quantum_claim": false,
+  "quantum_advantage_claim": false,
+  "same_current_condition_digest": "ctx:fixed",
+  "schema": "PNCS_MEMORY_GUIDED_PLANNER_PACKAGE_BENCH_V0_3",
+  "status": "PASS",
+  "targeted_package_tests": {
+    "failed": 0,
+    "passed": 13
+  },
+  "updates": 10000
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "PNCS_HYBRID_MEMORY_RUNTIME_V0_3_VALIDATION_RECEIPT",
+  "date": "2026-09-25",
+  "status": "TARGETED_PACKAGE_RUNTIME_PASS",
+  "authority": "CANDIDATE_ONLY",
+  "branch": "feat/pncs-hybrid-memory-grammar-v03-20260925",
+  "package_layout_tests": {
+    "passed": 27,
+    "failed": 0
+  },
+  "components": {
+    "procedural_memory": {
+      "tests": 6,
+      "source_sha": "0f15643bea303cd5327e896521e37080230f1c4e",
+      "test_sha": "9700a0a425485bdc443484a3533d304e346d3076"
+    },
+    "memory_guided_planner": {
+      "tests": 7,
+      "source_sha": "81eb9c7f00baaa39b9985a361719059e05bca0f7",
+      "test_sha": "d7d8bfb6a113a1780392fe0fb378bc0c0756baef"
+    },
+    "memory_coupling": {
+      "tests": 6,
+      "source_sha": "a6a74a8259ec3d1f90e2803176aaea7a67ca646b",
+      "test_sha": "339f5d863cfe76162e6f63207ffcefa237a3f94a"
+    },
+    "representation_arbiter": {
+      "tests": 8,
+      "source_sha": "d73f13770b947a490a39d11272d01bb5037fee5f",
+      "test_sha": "9ed4d83800e33dcff321b3e984a8c10d37e216f5"
+    }
+  },
+  "randomized_gates": {
+    "memory_ontology": {
+      "trials": 500,
+      "history_encoding_pass": 500,
+      "persistence_pass": 500,
+      "causal_intervention_pass": 500
+    },
+    "coupling": {
+      "trials": 300,
+      "exact_transfer_pass": 300,
+      "no_double_count_pass": 300,
+      "reactivation_nonmutating_pass": 300
+    }
+  },
+  "invariants": {
+    "memory_not_equated_with_storage": true,
+    "memory_object_not_equated_with_access": true,
+    "representation_separate_from_memory_ontology": true,
+    "representation_separate_from_physical_substrate": true,
+    "equivalence_before_cost_selection": true,
+    "external_actuation_performed": false,
+    "durable_write_performed": false
+  },
+  "claims": {
+    "full_repository_regression_suite": false,
+    "durable_memory_runtime": false,
+    "physical_quantum_memory": false,
+    "quantum_advantage": false,
+    "memory_law_universality_proven": false
+  }
+}

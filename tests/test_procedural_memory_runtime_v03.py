@@ -1,5 +1,5 @@
 
-from procedural_memory_runtime_v03 import (
+from phasenav_natural_code.procedural_memory_runtime_v03 import (
     ProceduralMemoryRuntime,
     ProceduralMemoryRuntimeError,
     RouteState,

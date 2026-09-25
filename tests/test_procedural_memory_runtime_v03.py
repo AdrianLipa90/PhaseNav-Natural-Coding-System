@@ -16,7 +16,7 @@ def test_history_changes_memory_and_future_routing():
         learning_rate=0.1,
     )
     initial = rt.digest
-    assert rt.guide() == "route_a"  # deterministic tie in break
+    assert rt.guide() == "route_a"  # deterministic tie break
 
     for i in range(6):
         rt.apply_trace("route_b", outcome="POSITIVE", event_id=f"b{i}")

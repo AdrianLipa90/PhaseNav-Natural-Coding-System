@@ -216,7 +216,7 @@ class ProceduralMemoryRuntime:
         try:
             route = self._routes[route_id]
         except KeyError as exc:
-            raise ProceduralMemoryRuntimeError(f"unkown route {route_id}") from exc
+            raise ProceduralMemoryRuntimeError(f"unknown route {route_id}") from exc
 
         outcome_u = str(outcome).upper()
         if outcome_u not in {"POSITIVE", "NEGATIVE"}:
@@ -250,7 +250,7 @@ class ProceduralMemoryRuntime:
             before_digest=before,
             after_digest=after,
             event_id=event_id,
-         )
+        )
         self._receipts.append(receipt)
         return receipt
 

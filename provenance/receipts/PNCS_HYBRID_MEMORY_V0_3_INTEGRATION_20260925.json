@@ -1,0 +1,124 @@
+{
+  "schema": "PNCS_HYBRID_MEMORY_V0_3_INTEGRATION_RECEIPT",
+  "date": "2026-09-25",
+  "status": "LOCAL_INTEGRATION_PASS_WITH_BASE_V02_BLOB_MISMATCH",
+  "authority": "CANDIDATE_ONLY",
+  "branch": "feat/pncs-hybrid-memory-grammar-v03-20260925",
+  "local_integration_tests": {
+    "passed": 101,
+    "failed": 0
+  },
+  "operational_layers": [
+    "quantum_gate_language_v01",
+    "hybrid_grammar_v02",
+    "hybrid_memory_grammar_v03",
+    "procedural_memory_runtime_v03",
+    "memory_guided_planner_v03",
+    "memory_coupling_runtime_v03",
+    "representation_planner_v03",
+    "representation_arbiter_v03",
+    "memory_checkpoint_v03",
+    "memory_lifecycle_v03",
+    "ternary_stella_v03",
+    "memory_identity_v03"
+  ],
+  "exact_branch_or_branch_synced_components": {
+    "quantum_gate_language": {
+      "source_sha": "3116f8ee0275a8f57427401bd47e4668cb9f54da",
+      "test_sha": "7be304cc55be7808c1ac975eeb3fe84342052fac"
+    },
+    "hybrid_memory_grammar": {
+      "source_sha": "1eb91d3ab0e8c08d08959d5aef56ca0ff43a3aa3",
+      "local_blob_match": true
+    },
+    "procedural_memory": {
+      "source_sha": "0f15643bea303cd5327e896521e37080230f1c4e",
+      "test_sha": "9700a0a425485bdc443484a3533d304e346d3076"
+    },
+    "memory_guided_planner": {
+      "source_sha": "e924f6f2fa824b2753466128e0534570e82cee5e",
+      "test_sha": "9baed753cc344ba4d37f813a11a562bf2a9686ec",
+      "local_blob_match": true
+    },
+    "memory_coupling": {
+      "source_sha": "a6a74a8259ec3d1f90e2803176aaea7a67ca646b",
+      "test_sha": "339f5d863cfe76162e6f63207ffcefa237a3f94a"
+    },
+    "representation_planner": {
+      "source_sha": "ba18dd1a0633b269c0ec3b09b2dcd58b443d38b9",
+      "test_sha": "4e595251c2a9d499f93c21b543ddc6450b81cc9f"
+    },
+    "representation_arbiter": {
+      "source_sha": "b0069ba811c38ad5b6fcc780255d59043b6fd98d",
+      "test_sha": "c7d87705e3b887a2542c6bbcd998d3a91439048e"
+    },
+    "memory_checkpoint": {
+      "source_sha": "3b0e550fe9ffdda25600203fdf60670b7ad9f503",
+      "test_sha": "5cc74d788466dc3ecb0119f6d7019623ac7c269e",
+      "targeted_tests": {
+        "passed": 6,
+        "failed": 0
+      }
+    }
+  },
+  "local_mirror_provenance_caveat": {
+    "base_hybrid_grammar_v02": {
+      "branch_sha": "b3e5a8ecf47b7a6d2aeb649e8459a306df678ba8",
+      "local_sha": "285a6d16f21a6457ec495f713afd553e96534a34"
+    },
+    "full_exact_branch_regression": false
+  },
+  "memory_ontology_gates": {
+    "history_encoding": "PASS",
+    "persistence": "PASS",
+    "causal_intervention": "PASS",
+    "typed_ROUTING_effect": "PASS",
+    "nonrouting_GUIDE_fails_closed": "PASS",
+    "latent_expression_without_mutation": "PASS_LOCAL",
+    "explicit_semantic_time_decay": "PASS_LOCAL",
+    "loss_of_causal_efficacy_forgetting": "PASS_LOCAL",
+    "checkpoint_representation_not_storage": "PASS",
+    "representation_before_cost_selection": "PASS",
+    "procedural_identity_under_behavioral_contract": "PASS_LOCAL",
+    "ternary_sign_only_general_routing": "FAIL_AS_EXPECTED",
+    "ternary_stella_coarse_routing": "MEASURED_CANDIDATE"
+  },
+  "identity_contract": {
+    "topology_preserved": true,
+    "provenance_counters_preserved": true,
+    "internal_coordinate_equality_required": false,
+    "exhaustive_candidate_subset_queries_max_routes": 12,
+    "exact_equivalence_can_fail_on_ternary_near_ties": true
+  },
+  "ternary_benchmark": {
+    "seed": 20260925,
+    "trials_per_width": 30000,
+    "widths": [
+      2,
+      4,
+      8,
+      16,
+      32,
+      64
+    ],
+    "stella_exact_parity": [
+      0.9908333333333333,
+      0.9731666666666666,
+      0.9374,
+      0.8702333333333333,
+      0.7694666666666666,
+      0.6167333333333334
+    ],
+    "weight_field_fixed_width_ratio_float64_to_5bit": 12.8,
+    "exact_equivalence_claim": false
+  },
+  "claims": {
+    "full_exact_branch_regression": false,
+    "durable_storage_runtime": false,
+    "physical_quantum_memory": false,
+    "quantum_advantage": false,
+    "universal_memory_law_proven": false,
+    "native_ternary_hardware": false,
+    "universal_memory_identity_theorem": false
+  }
+}

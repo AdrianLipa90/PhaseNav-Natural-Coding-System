@@ -1,0 +1,79 @@
+{
+  "schema": "PNCS_HYBRID_MEMORY_RUNTIME_V0_3_VALIDATION_RECEIPT",
+  "date": "2026-09-25",
+  "status": "TARGETED_PACKAGE_RUNTIME_PASS",
+  "authority": "CANDIDATE_ONLY",
+  "branch": "feat/pncs-hybrid-memory-grammar-v03-20260925",
+  "package_layout_tests": {
+    "passed": 36,
+    "failed": 0
+  },
+  "components": {
+    "procedural_memory": {
+      "tests": 6,
+      "source_sha": "0f15643bea303cd5327e896521e37080230f1c4e",
+      "test_sha": "9700a0a425485bdc443484a3533d304e346d3076"
+    },
+    "memory_guided_planner": {
+      "tests": 7,
+      "source_sha": "81eb9c7f00baaa39b9985a361719059e05bca0f7",
+      "test_sha": "d7d8bfb6a113a1780392fe0fb378bc0c0756baef"
+    },
+    "memory_coupling": {
+      "tests": 6,
+      "source_sha": "a6a74a8259ec3d1f90e2803176aaea7a67ca646b",
+      "test_sha": "339f5d863cfe76162e6f63207ffcefa237a3f94a"
+    },
+    "canonical_representation_planner": {
+      "tests": 9,
+      "source_sha": "2dc34d9c79fb15bd9ac925ed61767fc36c28b8eb",
+      "test_sha": "4e595251c2a9d499f93c21b543ddc6450b81cc9f",
+      "canonical": true
+    },
+    "measured_representation_adapter": {
+      "tests": 8,
+      "source_sha": "b0069ba811c38ad5b6fcc780255d59043b6fd98d",
+      "test_sha": "c7d87705e3b887a2542c6bbcd998d3a91439048e",
+      "delegates_to": "PNCS_REPRESENTATION_PLANNER_V0_3"
+    }
+  },
+  "randomized_gates": {
+    "memory_ontology": {
+      "trials": 500,
+      "history_encoding_pass": 500,
+      "persistence_pass": 500,
+      "causal_intervention_pass": 500
+    },
+    "coupling": {
+      "trials": 300,
+      "exact_transfer_pass": 300,
+      "no_double_count_pass": 300,
+      "reactivation_nonmutating_pass": 300
+    }
+  },
+  "representation_contract": {
+    "semantic_equivalence_checked_before_cost": true,
+    "observable_contract_checked": true,
+    "horizon_checked": true,
+    "distance_contract_checked": true,
+    "pareto_frontier": true,
+    "declared_weight_selection": true,
+    "economic_ratio_1e_minus_7_tested": true,
+    "quantum_native_label_not_privileged": true
+  },
+  "invariants": {
+    "memory_not_equated_with_storage": true,
+    "memory_object_not_equated_with_access": true,
+    "representation_separate_from_memory_ontology": true,
+    "representation_separate_from_physical_substrate": true,
+    "external_actuation_performed": false,
+    "durable_write_performed": false
+  },
+  "claims": {
+    "full_repository_regression_suite": false,
+    "durable_memory_runtime": false,
+    "physical_quantum_memory": false,
+    "quantum_advantage": false,
+    "memory_law_universality_proven": false
+  }
+}

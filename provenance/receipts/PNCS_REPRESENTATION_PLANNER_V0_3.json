@@ -1,0 +1,22 @@
+{
+  "schema": "PNCS_REPRESENTATION_PLANNER_V0_3_VALIDATION_RECEIPT",
+  "status": "PASS",
+  "targeted_tests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "semantic_equivalence_checked_before_cost": true,
+  "zero_cost_semantically_invalid_backend_rejected": true,
+  "pareto_frontier_tested": true,
+  "declared_weight_selection_tested": true,
+  "economic_ratio_1e_minus_7_tested": true,
+  "physical_quantum_self_claim_rejected": true,
+  "quantum_advantage_claim": false,
+  "physical_quantum_claim": false,
+  "durable_write_performed": false,
+  "branch_blob_hashes": {
+    "src/phasenav_natural_code/representation_planner_v03.py": "2dc34d9c79fb15bd9ac925ed61767fc36c28b8eb",
+    "tests/test_representation_planner_v03.py": "4e595251c2a9d499f93c21b543ddc6450b81cc9f"
+  },
+  "exact_branch_blob_package_test": true
+}

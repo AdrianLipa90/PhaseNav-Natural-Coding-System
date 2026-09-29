@@ -1,0 +1,28 @@
+# PNCS Hybrid Grammar v0.2
+# Candidate-only semantic execution grammar.
+# CIELingo-inspired roles -> typed PNCS DAG -> existing execution IRs.
+
+OP HYB.PROGRAM DECLARE program_id semantic_program
+OP HYB.TASK DECLARE task_id task_scope
+OP HYB.INPUT BIND input_symbol semantic_type
+OP HYB.FIND RELATION source_ref query_symbol result_set
+OP HYB.FILTER CONDITION source_symbol predicate filtered_symbol
+OP HYB.COMPUTE TRANSFORM operator input_symbols output_symbol
+OP HYB.OBSERVE DERIVE quantum_kernel requested_observable real_result
+OP HYB.WHEN CONDITION boolean_symbol target_node
+OP HYB.PARALLEL ORDER member_nodes scheduler_group
+OP HYB.REQUIRE CONDITION capability target_node
+OP HYB.PERSIST EFFECT symbol persistence_slot authorization_required
+OP HYB.EXTERNAL_EFFECT EFFECT adapter input_symbols authorization_required
+OP HYB.RETURN RETURN output_symbols
+
+# Quantum sublanguage is not duplicated here.
+OP HYB.QUANTUM_BIND COMPOSITION PNCS_QUANTUM_GATE_PROGRAM_V0_1 PHASENAV_QUANTUM_GATE_IR_V1
+OP HYB.RESULT_DIRECTED ORDER requested_observable backward_causal_cone hydration
+OP HYB.BACKEND_POLICY CONDITION semantic_program backend_independent TRUE
+
+# Safety / authority firewalls.
+OP HYB.NO_FREEFORM_GUESS CONDITION free_form_natural_language equals FALSE
+OP HYB.NO_IMPLICIT_EFFECTS CONDITION implicit_authorization equals FALSE
+OP HYB.NO_ACTUATION CONDITION actuation_performed equals FALSE
+OP HYB.FAIL_CLOSED CONDITION unsupported_constructs equals FAIL_CLOSED

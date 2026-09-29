@@ -1,0 +1,22 @@
+# PNCS Hybrid Memory Grammar v0.3
+# Memory-Ontology-informed candidate semantic layer.
+
+OP MEM.EVENT TRACE source_symbol event_id
+OP MEM.TRACE TRANSFORM event_id memory_id trace_id
+OP MEM.PATH ORDER execution_nodes route_id
+OP MEM.STRUCTURE BIND memory_id retained_objects persistence access plasticity effects
+OP MEM.LAW OPERATOR memory_id update_operator
+OP MEM.REINFORCE TRANSFORM route_id memory_id path_weight_update
+OP MEM.COUPLE RELATION source_memory target_memory coupling_mode
+OP MEM.RECALL DERIVE memory_id explicit_access provenance_class
+OP MEM.GUIDE ROUTING memory_id target_node implicit_future_transition_bias
+
+# Ontology / representation firewall.
+OP MEM.REPRESENTATION_PROFILE BIND memory_id representation_family equivalence_contract
+OP MEM.NO_ONTOLOGY_REPRESENTATION_COLLAPSE CONDITION ontology_is_representation equals FALSE
+OP MEM.NO_REPRESENTATION_SUBSTRATE_COLLAPSE CONDITION representation_is_physical_substrate equals FALSE
+OP MEM.NO_IMPLICIT_RECALL CONDITION implicit_memory_direct_retrieval equals FALSE
+
+# Persistence / external-effect firewall.
+OP MEM.SEMANTIC_UPDATE CONDITION durable_write_performed equals FALSE
+OP MEM.DURABLE_PERSISTENCE_GATE REQUIRE PERSIST storage_write

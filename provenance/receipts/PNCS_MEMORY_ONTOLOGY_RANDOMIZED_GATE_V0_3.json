@@ -1,0 +1,47 @@
+{
+  "schema": "PNCS_MEMORY_ONTOLOGY_RANDOMIZED_GATE_V0_3",
+  "date": "2026-09-25",
+  "status": "PASS",
+  "seed": 20260925,
+  "trials": 500,
+  "updates_per_trial": 20,
+  "feedback_updates_total": 10000,
+  "same_current_condition_digest": "ctx:fixed",
+  "history_encoding": {
+    "passed": 500,
+    "failed": 0
+  },
+  "persistence": {
+    "passed": 500,
+    "failed": 0
+  },
+  "causal_intervention": {
+    "passed": 500,
+    "failed": 0
+  },
+  "all_pass": true,
+  "feedback_ms_median": 0.050999,
+  "feedback_ms_p95": 0.1503307,
+  "package_layout_tests": {
+    "passed": 13,
+    "failed": 0
+  },
+  "tested_branch": "feat/pncs-hybrid-memory-grammar-v03-20260925",
+  "tested_blobs": {
+    "src/phasenav_natural_code/procedural_memory_runtime_v03.py": "0f15643bea303cd5327e896521e37080230f1c4e",
+    "src/phasenav_natural_code/memory_guided_planner_v03.py": "81eb9c7f00baaa39b9985a361719059e05bca0f7",
+    "tests/test_procedural_memory_runtime_v03.py": "9700a0a425485bdc443484a3533d304e346d3076",
+    "tests/test_memory_guided_planner_v03.py": "d7d8bfb6a113a1780392fe0fb378bc0c0756baef"
+  },
+  "ontology_criteria": {
+    "history_encoding": "PASS",
+    "nonzero_persistence": "PASS",
+    "causal_efficacy_under_intervention": "PASS"
+  },
+  "claims": {
+    "durable_storage_runtime": false,
+    "physical_quantum_memory": false,
+    "quantum_advantage": false,
+    "general_memory_law_proven": false
+  }
+}

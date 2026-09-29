@@ -1,0 +1,16 @@
+{
+  "schema": "PNCS_PROCEDURAL_MEMORY_OPERATIONAL_GATE_V0_3",
+  "status": "PASS",
+  "history_encoding": true,
+  "persistence": true,
+  "causal_efficacy": true,
+  "same_current_conditions_control": true,
+  "factual_choice": "route_a",
+  "counterfactual_choice": "route_b",
+  "updates_timed": 10000,
+  "update_ms_median": 0.024882,
+  "update_ms_p95": 0.057794500000000006,
+  "durable_write_performed": false,
+  "physical_quantum_claim": false,
+  "quantum_advantage_claim": false
+}

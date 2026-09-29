@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 import re
 
+from phasenav_natural_code.native_pnv_exec_v01 import parse_pnv
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = ROOT / "spec" / "PNCS_QUANTUM_APPLICATION_RUNTIME_V0_31.md"
@@ -28,3 +30,11 @@ def test_quantum_application_contract_introduces_no_new_pnv_opcode() -> None:
         for match in re.finditer(r"^OP\s+\S+\s+(\S+)", native, flags=re.MULTILINE)
     }
     assert opcodes <= ALLOWED
+
+
+def test_quantum_application_native_source_parses_as_pnv1() -> None:
+    program = parse_pnv(PNV.read_text(encoding="utf-8"))
+    assert program.version == 1
+    assert program.epistemic == "CHYBA"
+    assert program.mode == "INTERNAL_EXECUTION"
+    assert program.emits == ("APP.RETURN",)

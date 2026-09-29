@@ -44,9 +44,9 @@ Native authority:
 
 The architectural invariant is:
 
-[
+$
 \boxed{\text{preserve full PhaseNav/tensor/scalar state} \rightarrow \text{explicit observation} \rightarrow \text{classical result}}
-]
+$
 
 Boolean predicates remain valid for explicit safety, admission, protocol and measurement boundaries; they are not the internal application-state model. The default execution policy is local-first. Remote services are optional adapters rather than runtime authority.
 

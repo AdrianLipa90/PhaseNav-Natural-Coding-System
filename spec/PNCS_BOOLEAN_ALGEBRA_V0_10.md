@@ -91,9 +91,9 @@ No `TRUE` or `FALSE` KAKU/opcode is introduced by this pass. The existing truth 
 
 For quantum-application state, the internal carrier remains PhaseNav/tensor/scalar state until an explicitly declared measurement, admission, protocol, or safety boundary. Boolean evaluation is therefore a projection:
 
-[
+$
 \mathcal M_{bool}:\Psi\rightarrow\{0,1\},
-]
+$
 
 not the internal ontology of \(\Psi\).
 

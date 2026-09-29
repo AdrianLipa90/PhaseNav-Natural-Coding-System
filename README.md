@@ -32,6 +32,26 @@ v0.28 release closure
 
 The v1.0 train is scope-frozen. Research artifacts remain preserved through the post-v1 quarantine registry and carry zero release-gate authority unless a later explicit release contract admits them.
 
+## Quantum application runtime — v0.31 candidate
+
+PNCS now has an explicit post-v1 research contract for quantum applications:
+
+`spec/PNCS_QUANTUM_APPLICATION_RUNTIME_V0_31.md`
+
+Native authority:
+
+`native/PNCS_QUANTUM_APPLICATION_RUNTIME_V0_31.pnv`
+
+The architectural invariant is:
+
+[
+\boxed{\text{preserve full PhaseNav/tensor/scalar state} \rightarrow \text{explicit observation} \rightarrow \text{classical result}}
+]
+
+Boolean predicates remain valid for explicit safety, admission, protocol and measurement boundaries; they are not the internal application-state model. The default execution policy is local-first. Remote services are optional adapters rather than runtime authority.
+
+This is a quantum-state application contract. CPU/GPU execution remains computational unless a receipt explicitly names a physical QPU backend.
+
 ## Operational 36D authority
 
 Operational 36D execution authority is the live `/dev/shm/ciel_noema` surface. Repository and Library artifacts provide persistence, recovery, specification, and provenance. Live admission is fail-closed and requires the canonical tether guard.

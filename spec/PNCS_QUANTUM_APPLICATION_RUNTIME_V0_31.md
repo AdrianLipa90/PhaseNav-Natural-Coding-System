@@ -8,9 +8,9 @@ PNCS treats an application as an evolving PhaseNav state, not as a sequence of B
 
 The canonical application state is
 
-[
+$
 \Psi_{app}=(\Phi_{36},\mathcal A,\mathcal T,s,\tau,\Sigma,\mathcal P),
-]
+$
 
 where:
 
@@ -26,27 +26,27 @@ No component is implicitly reduced to a Boolean merely because a later interface
 
 ## Core invariant
 
-[
+$
 \boxed{\text{NEVER COLLAPSE EARLY}}
-]
+$
 
 Internal operators transform the full state:
 
-[
+$
 \Psi_{t+1}=\mathcal U_k(\Psi_t).
-]
+$
 
 The operator may be phase, relational, orbital, tensor, scalar or mixed. A classical result is produced only by an explicit observation boundary
 
-[
+$
 \mathcal M_c:\Psi\rightarrow y_c.
-]
+$
 
 For a two-outcome boundary,
 
-[
+$
 y_c\in\{0,1\}.
-]
+$
 
 For a multi-outcome or continuous observation, PNCS must preserve the declared outcome space rather than force it into 0/1.
 
@@ -61,29 +61,29 @@ For a multi-outcome or continuous observation, PNCS must preserve the declared o
 
 Thus
 
-[
+$
 \text{Boolean layer}\subset\text{observation/protocol boundary},
-]
+$
 
 not
 
-[
+$
 \text{application state}\equiv\text{Boolean layer}.
-]
+$
 
 ## Local-first execution
 
 The normative execution target is local PNCS/PhaseNav capacity. Remote services are optional adapters, never required runtime authority.
 
-[
+$
 \boxed{\text{LOCAL FIRST} > \text{REMOTE OPTIONAL}}
-]
+$
 
 Workers are represented by capabilities rather than server identity:
 
-[
+$
 C_j=(\Phi_j^{cap},CPU,GPU,RAM,toolchain,trust,latency).
-]
+$
 
 Task placement is a multidimensional matching problem over application state and capability state. FIFO or flat service selection is not primary.
 
@@ -100,13 +100,13 @@ Every observation must declare:
 
 For a binary release gate:
 
-[
+$
 \mathcal M_{release}(\Psi)=
 \begin{cases}
 1 & \text{RELEASE},\\
 0 & \text{QUARANTINE}.
 \end{cases}
-]
+$
 
 This bit is the boundary result. It is not the internal state that produced it.
 

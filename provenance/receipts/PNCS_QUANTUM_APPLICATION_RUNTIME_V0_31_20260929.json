@@ -1,0 +1,53 @@
+{
+  "schema": "PNCS_QUANTUM_APPLICATION_RUNTIME_RECEIPT_V0_31",
+  "date": "2026-09-29",
+  "repository": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+  "base_branch": "main",
+  "base_head_at_audit": "a6365d3784c41b49eaebccd131a4b4a5c1c2ffa5",
+  "feature_branch": "feat/quantum-app-no-early-collapse-20260929",
+  "implementation_head_before_receipt": "bec88fc235d8a7c821ef4cefa406eb05c18596c7",
+  "policy": {
+    "never_collapse_early": true,
+    "boolean_internal_ontology": false,
+    "classical_projection_boundary_explicit": true,
+    "local_execution_primary": true,
+    "remote_provider_required": false,
+    "physical_quantum_claim_default": false,
+    "qpu_physical_required_for_physical_quantum_claim": true,
+    "main_mutated": false
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "blob_sha": "d83737a988c0b9e49370b9120283d9489adcd03c"
+    },
+    {
+      "path": "native/PNCS_QUANTUM_APPLICATION_RUNTIME_V0_31.pnv",
+      "blob_sha": "cb5cdc2f88e9fd3736af2c9edf11c09f6b78150a"
+    },
+    {
+      "path": "spec/PNCS_BOOLEAN_ALGEBRA_V0_10.md",
+      "blob_sha": "e2fd08aae58422bbb5d40e66fdea8caebddf55db"
+    },
+    {
+      "path": "spec/PNCS_QUANTUM_APPLICATION_RUNTIME_V0_31.md",
+      "blob_sha": "200d4976700514388a524771cf82049ba453dd91"
+    },
+    {
+      "path": "tests/test_quantum_application_runtime_v31_contract.py",
+      "blob_sha": "b59962079672ceaa4f1d2721a36b1b8b6f7b811a"
+    }
+  ],
+  "validation": {
+    "static_contract_audit": "PASS",
+    "display_math_delimiters": "PASS",
+    "cross_repository_contract_ids": "PASS",
+    "pnv1_statement_and_opcode_static_parse": "PASS",
+    "json_parse": "NOT_APPLICABLE",
+    "gremlin_scheduler_measurement_invariants": "NOT_APPLICABLE",
+    "pytest_execution": "NOT_RUN_IN_THIS_SESSION",
+    "full_repository_regression": "NOT_RUN_IN_THIS_SESSION",
+    "promotion_allowed": false
+  },
+  "authority": "FEATURE_BRANCH_ONLY / NO_MAIN_MERGE / NO_CANON_PROMOTION"
+}

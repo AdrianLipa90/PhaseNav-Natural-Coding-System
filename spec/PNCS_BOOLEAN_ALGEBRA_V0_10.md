@@ -83,3 +83,28 @@ No `TRUE` or `FALSE` KAKU/opcode is introduced by this pass. The existing truth 
 - no invented TRUE/FALSE primitive;
 - surface parser remains fail-closed on ambiguous ungrouped mixed AND/OR;
 - Python is a reference/test normalizer; native PNV remains the project representation.
+
+
+## v0.31 architectural binding — Boolean is a projection boundary
+
+`PNCS_QUANTUM_APPLICATION_RUNTIME_V0_31` does not invalidate the equivalences in this document. It narrows their architectural role.
+
+For quantum-application state, the internal carrier remains PhaseNav/tensor/scalar state until an explicitly declared measurement, admission, protocol, or safety boundary. Boolean evaluation is therefore a projection:
+
+$
+\mathcal M_{bool}:\Psi\rightarrow\{0,1\},
+$
+
+not the internal ontology of \(\Psi\).
+
+Normative consequences:
+
+- `TRUE/FALSE`, `PASS/FAIL`, `allow/deny` and `ready/not-ready` are legal when the surrounding contract names the projection boundary;
+- unresolved residual, uncertainty, phase or relational state must not be silently rewritten as FALSE;
+- pure-predicate canonicalization in v0.10 remains valid after the boundary has been selected;
+- fail-closed high-consequence gates remain Boolean where their contract requires a binary authorization decision;
+- Boolean state must not replace richer pre-measurement state in provenance.
+
+Canonical owner of the no-early-collapse rule:
+
+`spec/PNCS_QUANTUM_APPLICATION_RUNTIME_V0_31.md`.

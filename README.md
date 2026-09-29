@@ -130,6 +130,19 @@ tag payload / manifest identity match
 
 Passing the complete v0.30 gate advances the frozen train to `V1_0_RELEASED`.
 
+## Post-v1 quantum application runtime candidate
+
+The post-v1 research branch now defines a native quantum-application state contract:
+
+- `spec/PNCS_QUANTUM_APPLICATION_RUNTIME_V0_1.md`
+- `native/PNCS_QUANTUM_APPLICATION_RUNTIME_V0_1.pnv`
+
+The application state remains multidimensional PhaseNav/relational state until an explicit observation boundary. Existing Boolean predicates, PASS/FAIL, readiness and release gates remain classical control/projection metadata and do not replace the running application state.
+
+For a declared two-outcome observable, only the explicit observation boundary may emit `0` or `1`.
+
+This work is post-v1 research and carries zero authority over the scope-frozen v1.0 release train.
+
 ## Post-v1 research registry
 
 The current release policy preserves research work including Prime-Temporal Hydro, Radical Engine, 1024-ion embedding, PrimeFlow v0.2, Temporal Geometry v0.2, and non-coboundary prime-interaction work under the post-v1 registry.

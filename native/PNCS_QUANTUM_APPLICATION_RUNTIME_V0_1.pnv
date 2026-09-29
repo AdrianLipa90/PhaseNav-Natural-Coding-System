@@ -1,0 +1,47 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PNCS Quantum Application Runtime v0.1
+# Post-v1 candidate contract.
+# Native PNV1 interpreter subset only; NEW_PNV_OPCODES 0.
+# Internal application state remains multidimensional until an explicit
+# observation transform projects a declared binary observable.
+
+OP QAPP.PHASE SOURCE exact_phase_state_36d
+OP QAPP.AMPLITUDE SOURCE normalized_complex_amplitude_carrier
+OP QAPP.RELATION SOURCE typed_relational_tensor
+OP QAPP.SCALAR SOURCE bounded_control_scalar
+OP QAPP.TAU SOURCE internal_evolution_coordinate
+OP QAPP.RESIDUAL SOURCE residual_uncertainty_structure
+OP QAPP.PROVENANCE SOURCE immutable_operator_lineage
+
+OP QAPP.STATE COMPOSITION QAPP.PHASE QAPP.AMPLITUDE QAPP.RELATION QAPP.SCALAR QAPP.TAU QAPP.RESIDUAL QAPP.PROVENANCE
+OP QAPP.STATE.VALID CONDITION QAPP.STATE exact_36d_finite_normalized_lineage_bound
+OP QAPP.EVOLVE TRANSFORM QAPP.STATE preserve_multidimensional_state
+OP QAPP.NO_EARLY_COLLAPSE CONDITION QAPP.EVOLVE state_not_replaced_by_boolean_metadata
+
+OP QAPP.OBSERVABLE SOURCE declared_binary_observable
+OP QAPP.OBSERVATION TRANSFORM QAPP.EVOLVE explicit_binary_observation_projection
+OP QAPP.BINARY_RESULT CONDITION QAPP.OBSERVATION result_in_0_or_1
+OP QAPP.MEASUREMENT_RECEIPT COMPOSITION QAPP.STATE QAPP.OBSERVABLE QAPP.BINARY_RESULT QAPP.PROVENANCE
+
+OP QAPP.CLASSICAL_METADATA SOURCE predicate_ready_pass_fail_done_release_effect_metadata
+OP QAPP.METADATA_FIREWALL CONDITION QAPP.CLASSICAL_METADATA does_not_overwrite_quantum_application_state
+
+ASSERT QAPP.STATE.VALID
+ASSERT QAPP.NO_EARLY_COLLAPSE
+ASSERT QAPP.BINARY_RESULT
+ASSERT QAPP.METADATA_FIREWALL
+
+EMIT QAPP.STATE
+EMIT QAPP.EVOLVE
+EMIT QAPP.OBSERVATION
+EMIT QAPP.BINARY_RESULT
+EMIT QAPP.MEASUREMENT_RECEIPT
+
+# AUTHORITY
+# POST_V1_RESEARCH TRUE
+# RELEASE_GATE_AUTHORITY FALSE
+# PHYSICAL_QPU_CLAIM FALSE
+# STATIC_RUNTIME_FALLBACK FALSE

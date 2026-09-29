@@ -1,0 +1,56 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PNCS Quantum Application Runtime v0.1
+# Post-v1 candidate contract.
+# The internal application state remains multidimensional until an explicit
+# observation boundary projects a declared binary observable.
+# NEW_PNV_OPCODES 0
+
+SYSTEM PNCS_QUANTUM_APPLICATION_RUNTIME_V0_1
+
+OP QAPP.PHASE SOURCE exact_phase_state_36d
+OP QAPP.AMPLITUDE SOURCE normalized_complex_amplitude_carrier
+OP QAPP.RELATION SOURCE typed_relational_tensor
+OP QAPP.SCALAR SOURCE bounded_control_scalar
+OP QAPP.TAU SOURCE internal_evolution_coordinate
+OP QAPP.RESIDUAL SOURCE residual_uncertainty_structure
+OP QAPP.PROVENANCE SOURCE immutable_operator_lineage
+
+OP QAPP.STATE COMPOSITION QAPP.PHASE QAPP.AMPLITUDE QAPP.RELATION QAPP.SCALAR QAPP.TAU QAPP.RESIDUAL QAPP.PROVENANCE
+OP QAPP.STATE.VALID CONDITION QAPP.STATE exact_36d finite normalized lineage_bound
+OP QAPP.EVOLVE TRANSFORM QAPP.STATE preserve_multidimensional_state
+OP QAPP.NO_EARLY_COLLAPSE CONDITION QAPP.EVOLVE internal_predicate_must_not_replace_state
+
+# Observation is expressed with existing PNV boundary/condition operators.
+# No new OBSERVE opcode is introduced in v0.1.
+OP QAPP.OBSERVABLE SOURCE declared_binary_observable
+OP QAPP.OBSERVATION_BOUNDARY BOUNDARY QAPP.EVOLVE QAPP.OBSERVABLE classical_projection
+OP QAPP.BINARY_RESULT CONDITION QAPP.OBSERVATION_BOUNDARY result_in_0_or_1
+OP QAPP.MEASUREMENT_RECEIPT COMPOSITION QAPP.STATE QAPP.OBSERVABLE QAPP.BINARY_RESULT QAPP.PROVENANCE
+
+# Legacy Boolean and release predicates remain control metadata only.
+OP QAPP.CLASSICAL_METADATA SCOPE predicate_ready_pass_fail_done release_and_effect_boundary
+OP QAPP.METADATA_FIREWALL BOUNDARY QAPP.CLASSICAL_METADATA QAPP.STATE no_state_overwrite
+
+ASSERT QAPP.STATE.VALID
+ASSERT QAPP.NO_EARLY_COLLAPSE
+ASSERT QAPP.BINARY_RESULT
+ASSERT QAPP.METADATA_FIREWALL
+
+VECTOR V.QAPP.STATE "PNCS.quantum_application.multidimensional_state" CHYBA
+VECTOR V.QAPP.OBSERVATION "PNCS.quantum_application.explicit_binary_observation" CHYBA
+VECTOR V.QAPP.FIREWALL "PNCS.quantum_application.never_collapse_early" CHYBA
+
+EMIT QAPP.STATE
+EMIT QAPP.EVOLVE
+EMIT QAPP.OBSERVATION_BOUNDARY
+EMIT QAPP.BINARY_RESULT
+EMIT QAPP.MEASUREMENT_RECEIPT
+
+# AUTHORITY
+# POST_V1_RESEARCH TRUE
+# RELEASE_GATE_AUTHORITY FALSE
+# PHYSICAL_QPU_CLAIM FALSE
+# STATIC_RUNTIME_FALLBACK FALSE

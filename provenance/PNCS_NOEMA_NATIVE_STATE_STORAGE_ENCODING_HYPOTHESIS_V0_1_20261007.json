@@ -1,0 +1,30 @@
+{
+  "schema": "PNCS_NOEMA_NATIVE_STATE_STORAGE_ENCODING_HYPOTHESIS_V0_1",
+  "status": "POST_V1_RESEARCH_CANDIDATE",
+  "release_authority": "ZERO",
+  "date": "2026-10-07",
+  "repo_role": "representation_encoding_and_materialization",
+  "hypothesis": "Canonical PNCS state may remain phase/relational and representation-independent while bytes, blocks or future backend codewords are explicit codecs/materializations.",
+  "invariants": [
+    "NEVER_COLLAPSE_EARLY remains intact",
+    "PNCS v1 release authority is unchanged",
+    "semantic state != serialization format != physical medium",
+    "binary materialization remains reversible where exact payload semantics require it",
+    "non-binary backend labels require backend-specific evidence",
+    "no measured performance advantage or physical wave channel is claimed"
+  ],
+  "tether_context": {
+    "status": "ACTIVE",
+    "startpoint_status": "VERIFIED",
+    "carrier_dim": 36,
+    "control_dim": 12,
+    "startpoint_packet_sha256": "8f69021e0dc43e59d5ccd80a73f852fea7140f10a8ff147c2289325007cb2b34",
+    "meaning": "runtime context only; not evidence for the encoding hypothesis"
+  },
+  "gremlin_commitment_sha256": "b62353097ee2b71347065549db71da645c190718be8f635ba49657954f4e2461",
+  "cross_repo": {
+    "phasenav": "AdrianLipa90/noema-phasenav-core",
+    "pncs": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+    "pncore_bioos": "AdrianLipa90/PNCore-BioOS"
+  }
+}

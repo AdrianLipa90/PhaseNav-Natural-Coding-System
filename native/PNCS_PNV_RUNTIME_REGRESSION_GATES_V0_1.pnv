@@ -1,0 +1,36 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# Native PNV/PNCS migration: four regression requirements.
+# SOURCE STATUS: REQUIREMENTS_ONLY, NOT_EXECUTED.
+# No Python source is added by this change.
+# Canonical prior source: NOEMA Library pnv_runtime.py
+# SHA256 0b4df86cd01db313ea46ebac0eceee9cf6df0673391edd1a3fb2667c30464a32
+# Scope: atan2 reference, exact 36D dimensions, punctuation-aware negation,
+# noncommutative sentence ordering.
+# Promote only after native interpreter has executed all four adversarial suites.
+
+OP V01.MATH.REFERENCE SOURCE atan2_all_four_quadrants_finite_reference
+OP V01.MATH.ZERO SOURCE atan2_signed_axis_and_zero_cases
+OP V01.MATH.CHECK COMPOSITION V01.MATH.REFERENCE V01.MATH.ZERO
+
+OP V01.DIM36.EXACT SOURCE exactly_36_finite_real_coordinates
+OP V01.DIM36.REJECT SOURCE reject_non36_length_and_nonnumeric_inputs
+OP V01.DIM36.CHECK COMPOSITION V01.DIM36.EXACT V01.DIM36.REJECT
+
+OP V01.NEGATION.NORMALIZE SOURCE punctuation_aware_casefold_tokenization
+OP V01.NEGATION.CASES SOURCE negation_with_trailing_punctuation
+OP V01.NEGATION.CHECK COMPOSITION V01.NEGATION.NORMALIZE V01.NEGATION.CASES
+
+OP V01.ORDER.SEQUENCE SOURCE ordered_word_token_sequence
+OP V01.ORDER.DIFFERENT SOURCE require_distinct_sentence_realizations_for_distinct_order
+OP V01.ORDER.CHECK COMPOSITION V01.ORDER.SEQUENCE V01.ORDER.DIFFERENT
+
+OP V01.REGRESSION.GATE COMPOSITION V01.MATH.CHECK V01.DIM36.CHECK V01.NEGATION.CHECK V01.ORDER.CHECK
+
+# Assertions below are a native witness graph, not execution of numeric tests.
+# Until native receipts demonstrate each case: RELEASE_STATUS BLOCKED.
+# NO_AUTO_PROMOTION TRUE
+# EXTERNAL_EFFECTS FALSE
+EMIT V01.REGRESSION.GATE

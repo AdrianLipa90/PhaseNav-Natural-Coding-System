@@ -1,0 +1,20 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# Exact built-in PNV/1 operator arities and resolved numeric source literals.
+# Proves ordering as a structural noncommutative sequence witness.
+# Numerical atan2, Unicode tokenization, and vector-length validation are NOT
+# implemented by the admitted PNV/1 opcode set; release remains BLOCKED.
+# No callback dependency in this program.
+# REPRODUCIBILITY Execute exact source; record source/graph/trace SHA256.
+
+OP TOKEN.A SOURCE 1
+OP TOKEN.B SOURCE 2
+OP ORDER.FORWARD ORDER TOKEN.A TOKEN.B
+OP ORDER.REVERSE ORDER TOKEN.B TOKEN.A
+OP ORDER.SELF.IDENTITY IDENTITY ORDER.FORWARD ORDER.FORWARD
+OP ORDER.DIFFERENCE DIFFERENCE ORDER.FORWARD ORDER.REVERSE
+OP ORDER.EVIDENCE COMPOSITION ORDER.FORWARD ORDER.REVERSE ORDER.DIFFERENCE
+ASSERT ORDER.SELF.IDENTITY
+EMIT ORDER.EVIDENCE ORDER.DIFFERENCE

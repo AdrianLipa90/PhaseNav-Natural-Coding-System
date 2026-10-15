@@ -21,6 +21,7 @@ pub struct Phi36 {
 pub enum Phi36Error {
     NonFinite { index: usize },
     InvalidK { k: usize, len: usize },
+    InvalidDimension { expected: usize, got: usize },
 }
 
 impl Phi36 {
@@ -38,6 +39,37 @@ impl Phi36 {
     #[inline]
     pub fn as_array(&self) -> &[f64; DIM] {
         &self.x
+    }
+
+    /// Strictly decode a runtime vector; no padding, truncation or coercion.
+    #[inline]
+    pub fn try_from_slice(values: &[f64]) -> Result<Self, Phi36Error> {
+        if values.len() != DIM {
+            return Err(Phi36Error::InvalidDimension {
+                expected: DIM,
+                got: values.len(),
+            });
+        }
+        let mut x = [0.0; DIM];
+        x.copy_from_slice(values);
+        Self::new(x)
+    }
+
+    /// Directed signed phase differences (from -> self), in [-pi, pi].
+    ///
+    /// Each argument is reduced separately to prevent subtraction overflow
+    /// for finite values near +/- f64::MAX. This extension is not claimed to be
+    /// bit-identical to Python atan2(sin(to-from), cos(to-from)).
+    #[inline]
+    pub fn signed_delta_radians_from(&self, from: &Self) -> Self {
+        let mut out = [0.0; DIM];
+        for (i, out_i) in out.iter_mut().enumerate() {
+            let a = from.x[i].rem_euclid(TAU);
+            let b = self.x[i].rem_euclid(TAU);
+            let delta = b - a;
+            *out_i = delta.sin().atan2(delta.cos());
+        }
+        Self::from_finite_unchecked(out)
     }
 
     #[inline]
@@ -83,6 +115,19 @@ pub fn validate_finite(x: &[f64; DIM]) -> Result<(), Phi36Error> {
         i += 1;
     }
     Ok(())
+}
+
+/// Scalar two-argument angle, matching the canonical atan2 argument order.
+/// Input type is f64: booleans/strings never enter this native function.
+#[inline]
+pub fn atan2_finite(y: f64, x: f64) -> Result<f64, Phi36Error> {
+    if !y.is_finite() {
+        return Err(Phi36Error::NonFinite { index: 0 });
+    }
+    if !x.is_finite() {
+        return Err(Phi36Error::NonFinite { index: 1 });
+    }
+    Ok(y.atan2(x))
 }
 
 #[inline]
@@ -252,6 +297,53 @@ mod tests {
             i += 1;
         }
         Phi36::new(x).unwrap()
+    }
+
+    #[test]
+    fn strict_slice_requires_36_finite_coordinates() {
+        assert!(matches!(
+            Phi36::try_from_slice(&[0.0; DIM - 1]),
+            Err(Phi36Error::InvalidDimension { expected: DIM, got: 35 })
+        ));
+        assert!(matches!(
+            Phi36::try_from_slice(&[0.0; DIM + 1]),
+            Err(Phi36Error::InvalidDimension { expected: DIM, got: 37 })
+        ));
+        let mut nonfinite = [0.0; DIM];
+        nonfinite[35] = f64::INFINITY;
+        assert_eq!(Phi36::try_from_slice(&nonfinite), Err(Phi36Error::NonFinite { index: 35 }));
+        assert!(Phi36::try_from_slice(&[0.0; DIM]).is_ok());
+    }
+
+    #[test]
+    fn atan2_finite_checks_arguments_and_quadrants() {
+        assert_eq!(atan2_finite(0.0, 1.0).unwrap(), 0.0);
+        assert_eq!(atan2_finite(1.0, 0.0).unwrap(), PI / 2.0);
+        assert_eq!(atan2_finite(0.0, -1.0).unwrap().abs(), PI);
+        assert_eq!(atan2_finite(-1.0, 0.0).unwrap(), -PI / 2.0);
+        assert_eq!(atan2_finite(f64::NAN, 1.0), Err(Phi36Error::NonFinite { index: 0 }));
+        assert_eq!(atan2_finite(1.0, f64::INFINITY), Err(Phi36Error::NonFinite { index: 1 }));
+    }
+
+    #[test]
+    fn directed_signed_delta_retains_orientation_and_wraps() {
+        let from = Phi36::new([0.1; DIM]).unwrap();
+        let to = Phi36::new([TAU - 0.1; DIM]).unwrap();
+        let forward = to.signed_delta_radians_from(&from);
+        let backward = from.signed_delta_radians_from(&to);
+        for i in 0..DIM {
+            assert!((forward.x[i] + 0.2).abs() < 2.0e-14);
+            assert!((backward.x[i] - 0.2).abs() < 2.0e-14);
+            assert!((forward.x[i] + backward.x[i]).abs() < 1.0e-14);
+        }
+    }
+
+    #[test]
+    fn directed_signed_delta_handles_extreme_finite_angles() {
+        let from = Phi36::new([-f64::MAX; DIM]).unwrap();
+        let to = Phi36::new([f64::MAX; DIM]).unwrap();
+        let delta = to.signed_delta_radians_from(&from);
+        assert!(delta.as_array().iter().all(|v| v.is_finite() && v.abs() <= PI));
     }
 
     #[test]

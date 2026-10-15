@@ -1,0 +1,25 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# PARTIAL Python -> native PhaseNav migration.
+# Reference: src/phasenav_natural_code/observed_hydro_wave_trace_v01.py
+# Source Git blob SHA: bbef428f6f195a13a3d6df2ba92d0e2f23f87c58
+# Reference function: _wrapped_delta(right, left)
+# Reference formula: atan2(sin(right-left), cos(right-left))
+# Proposed native engine: native/libpnv36-rs/src/lib.rs
+# Actual binder: NOT_REGISTERED; no Python compatibility execution.
+# State: CANDIDATE_ONLY / NO_PRODUCTION_ADMISSION / NO_CANON_PROMOTION
+# Input schema: {from:[36 finite f64], to:[36 finite f64]}
+# Output schema: [36 signed phase deltas in radians]
+# Gate: Rust compile + native binding + parity checks, including branch cuts.
+# Accuracy: modulo 2pi with declared float tolerance, not byte-identical.
+# Internal mathematical transport only; phase coordinates are NOT authority.
+
+OP PNCS.GEOM.PAIR SOURCE pncs.t36.phase_pair.v1
+OP PNCS.GEOM.CHECKED TRANSFORM PNCS.GEOM.PAIR pnv36.native.strict_pair36
+OP PNCS.GEOM.SIGNED TRANSFORM PNCS.GEOM.CHECKED pnv36.native.signed_delta_radians
+OP PNCS.GEOM.RETURN RETURN PNCS.GEOM.SIGNED
+EMIT PNCS.GEOM.RETURN
+
+# No external writes, network, shell, Git, authorization or device effects.

@@ -70,11 +70,12 @@ def main():
             time_label=f't_synth_{i:03d}',tags=('kurwa','social_index'),
             situation='dialogue',scene=scene,context='humour' if i%2 else 'frustration',
             object_id='utterance',utterance='kurwa',affect_social='humour' if i%2 else 'frustration',
-            aux_observation_ref='LIVE_LOCAL_AUX_SNAP_REFERENCE_FOR_TEST_NOT_EPISODE_SOURCE',occurrence=i))
+            aux_observation_ref=f'synthetic:aux_history:{i:03d}',occurrence=i))
     ambiguous=mem.recall(('kurwa','social_index'),reinforce=False)
     found=0
     for i in range(200):
-        got=mem.recall(('kurwa',),scene=f'scene_{i:03d}',source_id=f'synthetic:episode:{i:03d}',reinforce=False)
+        got=mem.recall(('kurwa',),scene=f'scene_{i:03d}',source_id=f'synthetic:episode:{i:03d}',
+                       aux_observation_ref=f'synthetic:aux_history:{i:03d}',reinforce=False)
         found+=(got['status']=='EXACT_EPISODE' and got['episode']['id']==f'ep_{i:03d}')
     baseline=mem.route_dynamic_liveness()
     mem.store(Episode('legacy','CIEL_SYNTHETIC_TEST','synthetic:correction:old','before',('guard',),
@@ -109,8 +110,8 @@ def main():
         'allocated_hilbert_rooms':len(mem.addresses),
         'semantic_only_status':ambiguous['status'],
         'semantic_only_candidate_count':len(ambiguous['candidates']),
-        'scene_source_queries_correct':found,
-        'scene_source_queries_total':200,
+        'scene_source_aux_queries_correct':found,
+        'scene_source_aux_queries_total':200,
         'history_conditioned_route_before':baseline,
         'history_conditioned_route_after':after,
         'read_only_no_host_change':True,

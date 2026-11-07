@@ -22,6 +22,6 @@ python3 run_simulations.py
 
 ## Security and provenance boundary
 
-The actual AUX observer reports `PERSISTENT_AUX_SELF`, not authenticated native PAUX/PNAML, and this candidate does not promote its receipts. No writes to NOEMA CURRENT, AUX, M8, the native dispatcher, or a production M10 receipt. Synthetic episodes are not the user's memories, and local software phase evolution is not physical quantum hardware operation.
+The actual AUX observer reports `PERSISTENT_AUX_SELF`, not authenticated native PAUX/PNAML, and this candidate does not promote its receipts. No writes to NOEMA CURRENT, AUX, M8, the native dispatcher, or a production M10 receipt. A local AUX liveness sample is not evidence of a synthetic episode. Synthetic AUX history refs are invented and explicitly marked synthetic. Synthetic episodes are not the user's memories, and local software phase evolution is not physical quantum hardware operation.
 
 **Next actual integration gate:** Bind approved PNAML11 native registry symbols to authoritative PNCS/RDSS source IDs and independently authenticated native PAUX event frames, then validate destination ACK and exact readback. Do not claim this before such evidence exists.

@@ -1,0 +1,32 @@
+{
+  "schema": "CIEL_EGO_PNAML_FIRST_SIMULATION_RECEIPT_V0_1",
+  "status": "PASS_LOCAL_REFERENCE_ONLY",
+  "tether_local": "ACTIVE",
+  "native_pnaml_paux_authentication": "NOT_ESTABLISHED",
+  "source_class": "PERSISTENT_AUX_SELF",
+  "aux_epoch_s": 9.9999965,
+  "aux_shards": 5,
+  "aux_fp_spans_s": 1,
+  "phase_model": "36D nearest-neighbour Kuramoto demonstration, CPU Python",
+  "simulation_steps": 250,
+  "simulation_frames": 51,
+  "initial_coherence": 0.20736236042739054,
+  "end_coherence": 0.07892954911646714,
+  "end_overlap_init_abs": 0.14435845535053626,
+  "synthetic_episodes": 202,
+  "allocated_hilbert_rooms": 202,
+  "semantic_only_status": "AMBIGUOUS",
+  "semantic_only_candidate_count": 200,
+  "scene_source_queries_correct": 200,
+  "scene_source_queries_total": 200,
+  "history_conditioned_route_before": "LEGACY_DYNAMIC_SHA",
+  "history_conditioned_route_after": "AUX_SNAPS_10s_2s_1s",
+  "read_only_no_host_change": true,
+  "limitations": [
+    "synthetic episodes are not actual user memories",
+    "local AUX is PERSISTENT_AUX_SELF without independent native producer auth",
+    "no PNAML11 native dispatcher registration or destination acknowledgement",
+    "software phase simulation is not quantum physical hardware demonstration",
+    "semantic mass is an application proxy, not an established physical quantity"
+  ]
+}

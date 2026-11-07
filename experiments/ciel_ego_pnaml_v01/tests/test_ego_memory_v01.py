@@ -118,6 +118,16 @@ class EgoReferenceTests(unittest.TestCase):
         aux["shards"][2]["fingerprint_1s"]["seq_delta"]["tether"]=0
         with self.assertRaises(ValueError): aux_receipt_summary(aux)
 
+    def test_aux_history_stamp_disambiguates_same_semantic_scene_and_source(self):
+        first=replace(self.m.rooms["a"], id="c", aux_observation_ref="synthetic:aux:first")
+        second=replace(self.m.rooms["a"], id="d", aux_observation_ref="synthetic:aux:second")
+        self.m.store(first)
+        self.m.store(second)
+        self.assertEqual("AMBIGUOUS", self.m.recall(("kurwa",),scene="debug_session",source_id="synthetic:1")["status"])
+        r=self.m.recall(("kurwa",),scene="debug_session",source_id="synthetic:1",aux_observation_ref="synthetic:aux:second")
+        self.assertEqual("EXACT_EPISODE",r["status"])
+        self.assertEqual("d",r["episode"]["id"])
+
     def test_ambiguous_recall_does_not_increment_salience(self):
         self.m.recall(("kurwa",))
         self.assertEqual(0,sum(self.m.salience.values()))

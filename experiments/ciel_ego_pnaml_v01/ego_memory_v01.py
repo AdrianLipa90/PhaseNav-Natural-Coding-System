@@ -107,7 +107,7 @@ class EgoMemory:
                             "justification_source": justification_source})
 
     def recall(self, tags=(), *, event_id=None, situation=None, scene=None,
-               context=None, object_id=None, source_id=None, reinforce=True):
+               context=None, object_id=None, source_id=None, aux_observation_ref=None, reinforce=True):
         if event_id is not None:
             e = self.rooms.get(event_id)
             selected = [e] if e is not None else []
@@ -119,7 +119,8 @@ class EgoMemory:
                     continue
                 if any(val is not None and getattr(e, key) != val for key, val in
                        (("situation", situation), ("scene", scene), ("context", context),
-                        ("object_id", object_id), ("source_id", source_id))):
+                        ("object_id", object_id), ("source_id", source_id),
+                        ("aux_observation_ref", aux_observation_ref))):
                     continue
                 selected.append(e)
         if not selected:
@@ -216,7 +217,8 @@ def pnaml_reference_frame(memory, episode_id, aux_summary):
         "exact_rdss_occurrence": e.occurrence,
         "ordered_braid": e.braid_word,
         "lifted_winding": e.phase_winding,
-        "source_provenance": {"source_id": e.source_id, "auth_status": "SIMULATED"},
+        "source_provenance": {"source_id": e.source_id, "auth_status": "SIMULATED",
+                              "local_aux_liveness_is_not_episode_witness": True},
         "aux_observation": aux_summary,
         "derived_fingerprint_is_full_state": False,
         "no_host_mutation": True,

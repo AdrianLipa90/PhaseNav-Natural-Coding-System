@@ -1,0 +1,19 @@
+PNV 1
+EPISTEMIC CHYBA
+MODE READ_ONLY
+
+# Research source-level PNCS binding only; not live-registered; not executable
+# by the existing canonical v0.20–v0.32 PNCS operator registry.
+# Actual native snapshot encoder/decoder: codec/pnv_codec.S, explicit local CLI.
+# PNV source admission and effect permissions remain separate.
+OP PNVC01.PHASE SOURCE admitted_36d_finite_unwrapped_phase_snapshot
+OP PNVC01.TER SOURCE admitted_12_signed_trit_snapshot
+OP PNVC01.HOLD SOURCE ternary_zero_maintains_pair_plus_i_minus_i
+OP PNVC01.FORMAT SOURCE pnvc_v1_320_byte_le_record
+OP PNVC01.ORDER ORDER PNVC01.PHASE PNVC01.TER
+OP PNVC01.STATE COMPOSITION PNVC01.PHASE PNVC01.TER PNVC01.HOLD
+OP PNVC01.WITNESS COMPOSITION PNVC01.STATE PNVC01.ORDER PNVC01.FORMAT
+ASSERT PNVC01.PHASE
+ASSERT PNVC01.TER
+ASSERT PNVC01.WITNESS
+EMIT PNVC01.WITNESS

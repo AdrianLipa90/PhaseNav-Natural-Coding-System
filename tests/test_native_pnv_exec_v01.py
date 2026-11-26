@@ -241,3 +241,77 @@ def test_mixed_numeric_difference_keeps_float_semantics():
     assert result.emitted["D"] == 2.5
     with pytest.raises(NativePNVResolutionError, match="numeric difference must be finite"):
         execute_pnv(program, sources={"left": 10**400, "right": 0.5})
+
+
+# PNAML 1.0 source integration: existing PNCS generator, existing PNV executor.
+# These immutable input fixtures do not represent a live AUX or a socket exchange.
+from pathlib import Path as _Path
+from phasenav_natural_code.semantic_address_v31 import (
+    generate_semantic_address as _generate_semantic_address,
+    GENERATOR_ID as _PNAML_ADDRESS_GENERATOR_ID,
+)
+
+_PNAML_ROUTER = (_Path(__file__).resolve().parents[1] / "native"
+                 / "PNAML10_PNCS_MACHINE_SEMANTIC_ROUTER.pnv")
+_PNAML_BEFORE = "pncs:semantic-role:sha256:" + "1" * 64
+_PNAML_AFTER = "pncs:semantic-role:sha256:" + "2" * 64
+
+
+def _pnaml_test_sources(before, after, n):
+    return {
+        "typed_semantic_role_content": before,
+        "semantic_role_before": before,
+        "semantic_role_after": after,
+        "rdss_exact_typed_relational_occurrence": {
+            "index": n, "parent": n - 1, "content_id": after},
+        "rdss_ordered_braid_word_and_sector": [n - 1, n],
+    }
+
+
+def _pnaml_address_callback(content_id):
+    # Adapt only the existing dataclass's payload to the PNV1 value domain.
+    # No additional address algorithm or runtime transport.
+    return _generate_semantic_address(content_id).payload
+
+
+def test_pnaml10_router_has_existing_transform_arity():
+    p = parse_pnv(_PNAML_ROUTER.read_text())
+    assert all(len(op.args) == 2 for op in p.ops if op.opcode == "TRANSFORM")
+    assert [op.opcode for op in p.ops if op.name.startswith("PNAML10.PNCS.ADDRESS")] == [
+        "TRANSFORM", "TRANSFORM", "COMPOSITION"]
+
+
+@pytest.mark.parametrize("before,after", [
+    (_PNAML_BEFORE, _PNAML_AFTER),
+    (_PNAML_AFTER, _PNAML_BEFORE),
+    (_PNAML_BEFORE, _PNAML_BEFORE),
+])
+@pytest.mark.parametrize("n", [1, 2**53+1, 2**63+1, 10**100])
+def test_pnaml10_real_generator_and_exact_occurrence_prefix(before, after, n):
+    # Execute the exact PNCS/RDSS prefix of the source; no simulated QHTRI callback.
+    text = _PNAML_ROUTER.read_text().split("OP PNAML10.QHTRI.SOURCE ", 1)[0]
+    text += "EMIT PNAML10.PNCS.BIND\nEMIT PNAML10.RDSS.COMPOSE\n"
+    r = execute_pnv(text, sources=_pnaml_test_sources(before, after, n),
+                    transforms={_PNAML_ADDRESS_GENERATOR_ID: _pnaml_address_callback})
+    pair = r.emitted["PNAML10.PNCS.BIND"]
+    assert pair[0] == [before, after]
+    assert pair[1] == [_generate_semantic_address(before).payload,
+                       _generate_semantic_address(after).payload]
+    assert len(pair[1][0]["phase36"]) == len(pair[1][1]["phase36"]) == 36
+    occurrence, braid = r.emitted["PNAML10.RDSS.COMPOSE"]
+    assert occurrence == {"index": n, "parent": n-1, "content_id": after}
+    assert type(occurrence["index"]) is int
+    assert braid == [n-1,n]
+    if before == after:
+        assert pair[1][0] == pair[1][1]
+        assert occurrence["index"] != occurrence["parent"]
+
+
+def test_pnaml10_missing_drive_is_not_substituted():
+    src = _pnaml_test_sources(_PNAML_BEFORE, _PNAML_AFTER, 1)
+    # Explicit immutable fixture, not a producer or a QHTRI drive.
+    src["typed_semantic_t36_trajectory"] = [_generate_semantic_address(_PNAML_BEFORE).payload,
+                                            _generate_semantic_address(_PNAML_AFTER).payload]
+    with pytest.raises(NativePNVResolutionError, match="exact_one_step_inverse_dynamics_control"):
+        execute_pnv(_PNAML_ROUTER.read_text(), sources=src,
+                    transforms={_PNAML_ADDRESS_GENERATOR_ID: _pnaml_address_callback})

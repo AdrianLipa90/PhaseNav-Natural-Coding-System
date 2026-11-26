@@ -185,3 +185,59 @@ def test_duplicate_emit_is_rejected_as_noncanonical_graph():
         parse_pnv(
             'PNV 1\nEPISTEMIC CHYBA\nMODE READ_ONLY\nOP A SOURCE x\nEMIT A\nEMIT A\n'
         )
+
+
+@pytest.mark.parametrize("n", [0, 1, 2**53 - 2, 2**53 - 1, 2**53, 2**53 + 1, 2**63, 10**100, 10**400])
+def test_pip_integer_winding_preserves_identity_and_half_time(n):
+    # Same integer relations used by Pip's PNV/1 serial step.
+    program = (
+        "PNV 1\nEPISTEMIC CHYBA\nMODE INTERNAL_EXECUTION\n"
+        "OP WINDING_BEFORE SOURCE now.winding\n"
+        "OP SIGN_BEFORE SOURCE now.spinor_i_sign\n"
+        "OP WINDING DIFFERENCE WINDING_BEFORE -1\n"
+        "OP SIGN DIFFERENCE 0 SIGN_BEFORE\n"
+        "OP NEG_WINDING DIFFERENCE 0 WINDING\n"
+        "OP THETA DIFFERENCE WINDING NEG_WINDING\n"
+        "OP INDEX IDENTITY WINDING\n"
+        "EMIT WINDING\nEMIT SIGN\nEMIT THETA\nEMIT INDEX\n"
+    )
+    sign = (-1)**(n % 2)
+    indices = []
+    receipts = []
+    for _ in range(3):
+        result = execute_pnv(program, sources={
+            "now.winding": n, "now.spinor_i_sign": sign,
+        })
+        n += 1
+        sign = -sign
+        assert result.emitted == {
+            "WINDING": n, "SIGN": sign, "THETA": 2*n, "INDEX": n,
+        }
+        assert all(type(v) is int for v in result.emitted.values())
+        indices.append(result.emitted["INDEX"])
+        receipts.append(result.receipt["receipt_sha256"])
+    assert len(set(indices)) == len(set(receipts)) == 3
+
+
+def test_exact_large_integer_literal_and_difference():
+    n = 10**400 + 1
+    program = (
+        f"PNV 1\nEPISTEMIC CHYBA\nMODE READ_ONLY\n"
+        f"OP A SOURCE {n}\nOP D DIFFERENCE A -1\nEMIT D\n"
+    )
+    result = execute_pnv(program)
+    assert type(result.emitted["D"]) is int
+    assert result.emitted["D"] == n + 1
+
+
+def test_mixed_numeric_difference_keeps_float_semantics():
+    program = (
+        "PNV 1\nEPISTEMIC CHYBA\nMODE READ_ONLY\n"
+        "OP A SOURCE left\nOP B SOURCE right\n"
+        "OP D DIFFERENCE A B\nEMIT D\n"
+    )
+    result = execute_pnv(program, sources={"left": 3, "right": 0.5})
+    assert type(result.emitted["D"]) is float
+    assert result.emitted["D"] == 2.5
+    with pytest.raises(NativePNVResolutionError, match="numeric difference must be finite"):
+        execute_pnv(program, sources={"left": 10**400, "right": 0.5})

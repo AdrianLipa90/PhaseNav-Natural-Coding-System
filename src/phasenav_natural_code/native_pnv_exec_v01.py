@@ -90,13 +90,11 @@ def _sha256(value: Any) -> str:
 
 
 def _finite_number(value: Any) -> bool:
-    if not isinstance(value, (int, float)) or isinstance(value, bool):
+    if isinstance(value, bool):
         return False
-    try:
-        converted = float(value)
-    except (TypeError, ValueError, OverflowError):
-        return False
-    return math.isfinite(converted)
+    if isinstance(value, int):
+        return True
+    return isinstance(value, float) and math.isfinite(value)
 
 
 def _finite_result(value: Any, field: str) -> float:
@@ -495,8 +493,18 @@ class NativePNVExecutor:
             left = self._resolve(op.args[0], values)
             right = self._resolve(op.args[1], values)
             if _finite_number(left) and _finite_number(right):
+                # Winding and other integer coordinates must not be rounded
+                # through binary64. Float operands retain the float path.
+                if isinstance(left, int) and isinstance(right, int):
+                    return left - right
+                try:
+                    difference = float(left) - float(right)
+                except OverflowError as exc:
+                    raise NativePNVResolutionError(
+                        f"{op.name} numeric difference must be finite"
+                    ) from exc
                 return _finite_result(
-                    float(left) - float(right),
+                    difference,
                     f"{op.name} numeric difference",
                 )
             return {

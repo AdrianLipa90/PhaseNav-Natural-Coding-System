@@ -63,12 +63,14 @@ Rules:
 
 - JSON object keys are strings;
 - tuples and lists share one canonical JSON-array representation;
+- JSON integers are admitted without binary64 conversion; integer–integer `DIFFERENCE` returns an exact integer (within the host JSON implementation's serialization limits);
+- if either numeric operand is a float, `DIFFERENCE` retains binary64 semantics and rejects non-finite conversion or results;
 - finite floats are admitted;
 - non-finite floats fail closed;
 - unsupported Python objects fail closed;
 - numeric operations that overflow to non-finite values fail closed before receipt construction.
 
-This prevents Python-object distinctions from creating ambiguous JSON commitments.
+This prevents Python-object distinctions from creating ambiguous JSON commitments. Integer-only results no longer serialize as rounded floats; new receipts for affected executions can differ from historical receipts. Historical receipts retain their original interpreter provenance.
 
 ## External semantics and effect boundary
 
